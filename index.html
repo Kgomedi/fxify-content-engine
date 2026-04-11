@@ -1007,7 +1007,7 @@ select.finput{cursor:pointer;}
 <!-- PIN MODAL -->
 <div class="mov" id="pin-modal">
   <div class="mbox" style="max-width:360px;text-align:center;">
-    <p style="font-size:24px;margin-bottom:8px;" id="pin-role-icon">⚡</p>
+    <p style="font-size:14px;font-weight:700;color:var(--tealB);margin-bottom:8px;letter-spacing:.1em;text-transform:uppercase;" id="pin-role-icon">FXIFY</p>
     <p class="mtitle" id="pin-role-title">Admin Access</p>
     <p class="msub">Enter your access code to continue</p>
     <input type="password" class="finput" id="pin-input" placeholder="Access code..." style="text-align:center;letter-spacing:.2em;font-size:18px;margin-bottom:4px;"/>
@@ -1121,7 +1121,7 @@ async function loadPipeline(){
     col.innerHTML='';
     var list=groups[st]||[];
     if(cnt) cnt.textContent=list.length;
-    if(!list.length){col.innerHTML='<p class="pempty">Nothing here yet 👀</p>';return;}
+    if(!list.length){col.innerHTML='<p class="pempty">Nothing here yet </p>';return;}
     list.forEach(function(art){
       var c=document.createElement('div');
       c.className='pcard';
@@ -1134,10 +1134,10 @@ async function loadPipeline(){
       if (art.due_date) {
         var dueDate = new Date(art.due_date);
         var daysUntil = Math.ceil((dueDate - Date.now())/(1000*60*60*24));
-        if (daysUntil < 0) { dueStr = '⚠️ Overdue '+Math.abs(daysUntil)+'d'; dueColor = 'var(--urgent)'; }
-        else if (daysUntil === 0) { dueStr = '🔥 Due today'; dueColor = 'var(--urgent)'; }
+        if (daysUntil < 0) { dueStr = 'Warning️ Overdue '+Math.abs(daysUntil)+'d'; dueColor = 'var(--urgent)'; }
+        else if (daysUntil === 0) { dueStr = ' Due today'; dueColor = 'var(--urgent)'; }
         else if (daysUntil === 1) { dueStr = '⏰ Due tomorrow'; dueColor = 'var(--high)'; }
-        else { dueStr = '📅 Due '+dueDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
+        else { dueStr = 'Due Due '+dueDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
       }
       c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p><div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="pcw">'+(art.assignee||'—')+'</span></div>'+
         (dueStr?'<p style="font-size:9px;font-weight:500;margin-top:3px;color:'+dueColor+';">'+dueStr+'</p>':'')+(dateStr?'<p style="font-size:9px;color:#475569;margin-top:1px;">Created '+dateStr+'</p>':'');
@@ -1168,7 +1168,7 @@ function makeReviewCard(art,opts){
     e.stopPropagation();
     openSendback(function(){
       dbUpdate(art.id,{status:'Drafting'}).then(function(){
-        c.remove(); toast('Sent back — writer needs to fix a few things 🔄');
+        c.remove(); toast('Sent back — writer needs to fix a few things ');
         loadPipeline(); loadWriterDrafts();
         checkEmpty(opts.listId);
       });
@@ -1177,7 +1177,7 @@ function makeReviewCard(art,opts){
   c.querySelector('[data-a="fwd"]').addEventListener('click',function(e){
     e.stopPropagation();
     dbUpdate(art.id,{status:opts.nextStatus}).then(function(){
-      c.remove(); toast('Approved → '+opts.nextStatus+' ✓');
+      c.remove(); toast('Approved → '+opts.nextStatus+' done');
       loadPipeline();
       if(opts.nextStatus==='Liam Review') loadLiamQ();
       if(opts.nextStatus==='David Approval') loadDavidQ();
@@ -1218,7 +1218,7 @@ async function loadDavidQ(){
   if(!l) return;
   if(res.error||!res.data||!res.data.length){l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p>';var nb=document.getElementById('nb-david');if(nb)nb.textContent='';return;}
   l.innerHTML='';
-  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'david',fwdLabel:'Final approval ✓',nextStatus:'Publishing',listId:'d-approval-list'}));});
+  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'david',fwdLabel:'Final approval done',nextStatus:'Publishing',listId:'d-approval-list'}));});
   var nb=document.getElementById('nb-david');if(nb)nb.textContent=res.data.length;
 }
 
@@ -1226,7 +1226,7 @@ async function loadWriterDrafts(){
   var res=await supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
   var l=document.getElementById('w-drafts-list');
   if(!l) return;
-  if(res.error||!res.data||!res.data.length){l.innerHTML='<p style="font-size:13px;color:var(--muted);padding:20px 0;">No drafts yet — sit tight, Sheperd's cooking up briefs 🍳</p>';var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
+  if(res.error||!res.data||!res.data.length){l.innerHTML='<p style="font-size:13px;color:var(--muted);padding:20px 0;">No drafts yet — sit tight, Sheperd's cooking up briefs </p>';var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
   l.innerHTML='';
   res.data.forEach(function(art){
     var c=document.createElement('div');
@@ -1294,7 +1294,7 @@ function openEditor(art,role){
     var labels={sheperd:'Reviewing as Sheperd — 1st review',liam:'SEO Review — Liam',david:'Final Approval — David Xavier'};
     if(rl) rl.textContent=labels[role]||'Reviewing';
     var fwd=document.getElementById('ed-fwd-btn');
-    var flabels={sheperd:'Approve → Liam',liam:'Approve → David',david:'Final approval ✓'};
+    var flabels={sheperd:'Approve → Liam',liam:'Approve → David',david:'Final approval done'};
     if(fwd) fwd.textContent=flabels[role]||'Approve';
     // Reviewers can comment and suggest but not edit content freely
     if(role==='david'){
@@ -1335,7 +1335,7 @@ function parseArt(text,kw){
     if(l.startsWith('# ')){ca();html+='<h1>'+pr(l.slice(2))+'</h1>';return;}
     if(l.startsWith('## ')){ca();html+='<h2>'+pr(l.slice(3))+'</h2>';return;}
     if(l.startsWith('### ')){ca();html+='<h3>'+pr(l.slice(4))+'</h3>';return;}
-    if(l.startsWith('[VISUAL:')){ca();var vc=l.replace('[VISUAL:','').replace(']','').trim();html+='<div class="img-placeholder" data-imgplaceholder="true" style="cursor:pointer;"><div style="font-size:28px;pointer-events:none;">📷</div><span style="font-size:12px;color:#64748b;pointer-events:none;text-align:center;padding:0 16px;">'+vc+'</span><span style="font-size:10px;color:#0ec4ad;font-weight:600;pointer-events:none;margin-top:4px;">CLICK TO UPLOAD</span></div>';return;}
+    if(l.startsWith('[VISUAL:')){ca();var vc=l.replace('[VISUAL:','').replace(']','').trim();html+='<div class="img-placeholder" data-imgplaceholder="true" style="cursor:pointer;"><div style="font-size:28px;pointer-events:none;">[IMAGE]</div><span style="font-size:12px;color:#64748b;pointer-events:none;text-align:center;padding:0 16px;">'+vc+'</span><span style="font-size:10px;color:#0ec4ad;font-weight:600;pointer-events:none;margin-top:4px;">CLICK TO UPLOAD</span></div>';return;}
     if(l.startsWith('[INTERNAL LINK:')) return;
     if(l.startsWith('|')){
       if(l.replace(/[\|:\- ]/g,'')==='') return;
@@ -1488,7 +1488,7 @@ async function generate(){
     '[VISUAL: description] for image placeholders\n'+
     '[INTERNAL LINK: topic] for internal links\n'+
     'No HTML tags. No markdown tables with pipes. Use plain text tables.\n'+
-    '⚠ WORD COUNT ENFORCEMENT: Your output MUST be '+len+'. Count your words before finishing. If under, expand sections. If over, cut filler.\n'+
+    'Warning WORD COUNT ENFORCEMENT: Your output MUST be '+len+'. Count your words before finishing. If under, expand sections. If over, cut filler.\n'+
     'No asterisks except for bold. No extra formatting.';
   try{
     var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:4000})});
@@ -1501,7 +1501,7 @@ async function generate(){
     var wc=text.split(/\s+/).filter(Boolean).length;
     currentArt={title:title,category:cat,assignee:writer,primaryKw:pkw,content:text,tone:tone,length:len,word_count:wc,dueDate:dueDate,priority:priority};
     var saved=await dbInsert(currentArt);
-    if(saved){currentArt.id=saved.id;toast("Draft saved — it's in the pipeline 🔥");loadPipeline();loadWriterDrafts();}
+    if(saved){currentArt.id=saved.id;toast("Draft saved — it's in the pipeline ");loadPipeline();loadWriterDrafts();}
     // Parse and store meta
     var meta = parseMeta(text);
     if (currentArt) currentArt.meta = meta;
@@ -1604,7 +1604,7 @@ function markdownToHtml(text) {
     if (l.startsWith('# ')) { ca(); html += '<h1>' + pr(l.slice(2)) + '</h1>'; return; }
     if (l.startsWith('## ')) { ca(); html += '<h2>' + pr(l.slice(3)) + '</h2>'; return; }
     if (l.startsWith('### ')) { ca(); html += '<h3>' + pr(l.slice(4)) + '</h3>'; return; }
-    if (l.startsWith('[VISUAL:')) { ca(); html += '<p><em>📷 ' + l.replace('[VISUAL:','').replace(']','').trim() + '</em></p>'; return; }
+    if (l.startsWith('[VISUAL:')) { ca(); html += '<p><em>[IMAGE] ' + l.replace('[VISUAL:','').replace(']','').trim() + '</em></p>'; return; }
     if (l.startsWith('[INTERNAL LINK:')) return;
     if (l.startsWith('|')) { ca(); return; } // skip tables for now
     if (l.match(/^[-*•]\s/)) { if(inOl){html+='</ol>';inOl=false;} if(!inUl){html+='<ul>';inUl=true;} html+='<li>'+pr(l.replace(/^[-*•]\s/,''))+'</li>'; return; }
@@ -1718,8 +1718,8 @@ function wireToolbar() {
     var jsonLd = scriptOpen + JSON.stringify(schemaObj) + scriptClose;
     wpHtml = jsonLd + '\n\n' + wpHtml;
     navigator.clipboard.writeText(wpHtml).then(function() {
-      toast('HTML copied — go paste it in WordPress, you know the drill 🚀');
-      tcopy.textContent = 'Copied ✓';
+      toast('HTML copied — go paste it in WordPress, you know the drill ');
+      tcopy.textContent = 'Copied done';
       setTimeout(function(){ tcopy.textContent = 'Copy HTML'; }, 2000);
     }).catch(function() {
       // Fallback
@@ -1729,7 +1729,7 @@ function wireToolbar() {
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      toast('HTML copied — go paste it in WordPress, you know the drill 🚀');
+      toast('HTML copied — go paste it in WordPress, you know the drill ');
     });
   });
 
@@ -1799,7 +1799,7 @@ async function addComment(content, quote) {
   }]).select();
   if (res.error) { toast('Failed to post comment'); return; }
   loadComments(currentArt.id);
-  toast('Comment dropped 💬');
+  toast('Comment dropped ');
 }
 
 function wireComments() {
@@ -1970,7 +1970,7 @@ function wireMeta() {
       'Schema Type: ' + (m.SCHEMA_TYPE||'Article') + '\n' +
       'Reading Time: ' + rt + ' min\n';
     navigator.clipboard.writeText(metaText).then(function() {
-      toast('Meta copied — paste it into Yoast and you're done 🎯");
+      toast('Meta copied — paste it into Yoast and you're done ");
     }).catch(function() {
       var ta = document.createElement('textarea');
       ta.value = metaText;
@@ -1978,7 +1978,7 @@ function wireMeta() {
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      toast('Meta copied — paste it into Yoast and you're done 🎯");
+      toast('Meta copied — paste it into Yoast and you're done ");
     });
   });
 }
@@ -2075,7 +2075,7 @@ function renderInternalLinks(links) {
         document.execCommand('insertHTML', false, 
           '<a href="' + link.url + '" style="color:var(--blue);text-decoration:underline;">' + link.title + '</a> ');
         autoSave(edEl.innerHTML);
-        toast('Link in — good for SEO 🔗');
+        toast('Link in — good for SEO ');
       }
     });
     panel.appendChild(item);
@@ -2199,7 +2199,7 @@ function initInlineComments() {
         var span = document.createElement('span');
         span.className = 'suggestion-highlight';
         span.setAttribute('data-suggestion', newText);
-        span.title = '✏️ Click to accept or reject this suggestion';
+        span.title = '️ Click to accept or reject this suggestion';
         span.style.cursor = 'pointer';
         selectedRange.surroundContents(span);
       } catch(e) { console.warn('Could not highlight:', e); }
@@ -2212,11 +2212,11 @@ function initInlineComments() {
     if (edEl2 && currentArt && currentArt.id) {
       var content = edEl2.innerHTML;
       dbUpdate(currentArt.id, { content: content }).then(function() {
-        toast('Suggestion sent — writer will see it 👀');
+        toast('Suggestion sent — writer will see it ');
         wireSuggestionSpans();
       });
     } else {
-      toast('Suggestion posted ✓');
+      toast('Suggestion posted done');
     }
   });
 }
@@ -2269,7 +2269,7 @@ function initImageUpload() {
         document.execCommand('insertHTML', false, newImg);
       }
       setTimeout(function() { autoSave(edEl.innerHTML); }, 100);
-      toast('Image dropped in — looking fresh 🖼️');
+      toast('Image dropped in — looking fresh ');
     };
     reader.readAsDataURL(file);
     input.value = '';
@@ -2289,7 +2289,7 @@ function wireSuggestionSpans() {
     var suggestion = span.dataset.suggestion;
     if (!suggestion) return;
     // Add visual hint
-    span.title = '✏️ Suggestion: "' + suggestion + '" — click to accept or reject';
+    span.title = '️ Suggestion: "' + suggestion + '" — click to accept or reject';
     span.style.cursor = 'pointer';
     // Remove old listeners by cloning
     var newSpan = span.cloneNode(true);
@@ -2310,8 +2310,8 @@ function wireSuggestionSpans() {
         '<p style="font-size:12px;color:var(--urgent);margin-bottom:4px;text-decoration:line-through;">' + (newSpan.textContent) + '</p>' +
         '<p style="font-size:12px;color:var(--green);margin-bottom:10px;">→ ' + suggestion + '</p>' +
         '<div style="display:flex;gap:8px;">' +
-          '<button id="sug-accept" style="flex:1;padding:6px;border-radius:6px;border:none;background:var(--green);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;">✓ Accept</button>' +
-          '<button id="sug-reject" style="flex:1;padding:6px;border-radius:6px;border:1px solid #334155;background:transparent;color:#94a3b8;font-size:12px;cursor:pointer;font-family:inherit;">✗ Reject</button>' +
+          '<button id="sug-accept" style="flex:1;padding:6px;border-radius:6px;border:none;background:var(--green);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;">done Accept</button>' +
+          '<button id="sug-reject" style="flex:1;padding:6px;border-radius:6px;border:1px solid #334155;background:transparent;color:#94a3b8;font-size:12px;cursor:pointer;font-family:inherit;"> Reject</button>' +
         '</div>';
       document.body.appendChild(ui);
       // Accept
@@ -2320,7 +2320,7 @@ function wireSuggestionSpans() {
         ui.remove();
         var edEl2 = document.getElementById('tiptap-editor');
         if (edEl2) autoSave(edEl2.innerHTML);
-        toast('Change accepted — respect the reviewer 🤝');
+        toast('Change accepted — respect the reviewer ');
       });
       // Reject
       document.getElementById('sug-reject').addEventListener('click', function() {
@@ -2328,7 +2328,7 @@ function wireSuggestionSpans() {
         ui.remove();
         var edEl2 = document.getElementById('tiptap-editor');
         if (edEl2) autoSave(edEl2.innerHTML);
-        toast('Rejected — standing your ground 💪');
+        toast('Rejected — standing your ground ');
       });
       // Close on outside click
       setTimeout(function() {
@@ -2346,10 +2346,10 @@ function makeImgPlaceholders() {
 
   // Match multiple possible formats the parser might produce
   var patterns = [
-    // <p><em>📷 caption</em></p>
-    { re: /<p><em>📷\s*([^<]*)<\/em><\/p>/g },
-    // <p>📷 caption</p>  
-    { re: /<p>📷\s*([^<]*)<\/p>/g },
+    // <p><em>[IMAGE] caption</em></p>
+    { re: /<p><em>[IMAGE]\s*([^<]*)<\/em><\/p>/g },
+    // <p>[IMAGE] caption</p>  
+    { re: /<p>[IMAGE]\s*([^<]*)<\/p>/g },
     // plain [VISUAL: caption] that wasn't converted
     { re: /\[VISUAL:\s*([^\]]*)\]/g }
   ];
@@ -2362,7 +2362,7 @@ function makeImgPlaceholders() {
       replaced = true;
       var label = (caption || '').trim() || 'Click to add image';
       return '<div class="img-placeholder" data-imgplaceholder="true">' +
-        '<div style="font-size:28px;pointer-events:none;">📷</div>' +
+        '<div style="font-size:28px;pointer-events:none;">[IMAGE]</div>' +
         '<span style="font-size:12px;color:var(--muted);pointer-events:none;text-align:center;padding:0 16px;">' + label + '</span>' +
         '<span style="font-size:10px;color:var(--tealB);font-weight:600;pointer-events:none;margin-top:4px;">CLICK TO UPLOAD</span>' +
         '</div>';
@@ -2502,7 +2502,7 @@ async function runPlanner() {
     renderPlannerResults(plan);
     loading.style.display = 'none';
     results.style.display = 'block';
-    toast('Analysis done — check what Claude found 🧠');
+    toast('Analysis done — check what Claude found ');
 
   } catch(e) {
     console.error('Planner error:', e);
@@ -2522,7 +2522,7 @@ function renderPlannerResults(plan) {
     plan.gaps.forEach(function(gap) {
       var chip = document.createElement('div');
       chip.style.cssText = 'background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--urgent);font-weight:500;';
-      chip.textContent = '⚡ ' + gap;
+      chip.textContent = ' ' + gap;
       gapsEl.appendChild(chip);
     });
   }
@@ -2542,8 +2542,8 @@ function renderPlannerResults(plan) {
           '<p style="font-size:14px;font-weight:500;color:var(--text);line-height:1.4;">' + t.title + '</p>' +
           '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--highL);color:' + priorityColor + ';white-space:nowrap;flex-shrink:0;">' + (t.priority||'Normal') + '</span>' +
         '</div>' +
-        '<p style="font-size:12px;color:var(--muted);margin-bottom:6px;font-style:italic;">📌 ' + (t.angle||'') + '</p>' +
-        (t.geo_angle ? '<p style="font-size:11px;color:var(--teal);margin-bottom:6px;">🤖 GEO: ' + t.geo_angle + '</p>' : '') +
+        '<p style="font-size:12px;color:var(--muted);margin-bottom:6px;font-style:italic;"> ' + (t.angle||'') + '</p>' +
+        (t.geo_angle ? '<p style="font-size:11px;color:var(--teal);margin-bottom:6px;"> GEO: ' + t.geo_angle + '</p>' : '') +
         (t.aeo_snippet ? '<p style="font-size:11px;color:var(--purple);margin-bottom:8px;">⭐ Snippet target: ' + t.aeo_snippet + '</p>' : '') +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
           '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">' + (t.keyword||'') + '</span>' +
@@ -2570,7 +2570,7 @@ function renderPlannerResults(plan) {
         }
         // Switch to generate page
         document.querySelector('[data-pg="a-generate"]').click();
-        toast('Brief pre-filled — add details and generate ✓');
+        toast('Brief pre-filled — add details and generate done');
       });
 
       topicsEl.appendChild(card);
@@ -2585,14 +2585,14 @@ function renderPlannerResults(plan) {
       var item = document.createElement('div');
       item.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;';
       item.innerHTML = 
-        '<p style="font-size:13px;color:var(--text);">❓ ' + q + '</p>' +
+        '<p style="font-size:13px;color:var(--text);"> ' + q + '</p>' +
         '<button class="btn btn-s" style="flex-shrink:0;font-size:11px;" data-use-paa="true">Use as FAQ</button>';
       item.querySelector('[data-use-paa]').addEventListener('click', function() {
         var aeoEl = document.getElementById('b-aeo-question');
         if (aeoEl) aeoEl.value = q;
         document.querySelector('[data-pg="a-generate"]').click();
         setTimeout(function() { var t = document.querySelector('[data-tab="aeo"]'); if(t) t.click(); }, 100);
-        toast('Added to AEO brief ✓');
+        toast('Added to AEO brief done');
       });
       paaEl.appendChild(item);
     });
@@ -2611,7 +2611,7 @@ function renderPlannerResults(plan) {
       '<div style="background:var(--tealL);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:12px 16px;margin-bottom:20px;">' +
       '<p style="font-size:11px;color:var(--teal);margin-bottom:8px;font-weight:500;">Topics that should rank in Perplexity, ChatGPT and Google AI Overviews</p>' +
       plan.geo_topics.map(function(t) {
-        return '<p style="font-size:13px;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(14,196,173,.1);">🤖 ' + t + '</p>';
+        return '<p style="font-size:13px;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(14,196,173,.1);"> ' + t + '</p>';
       }).join('') + '</div>';
   }
 
@@ -2630,7 +2630,7 @@ function renderPlannerResults(plan) {
         var urlHtml = b.example_url ? 
           '<a href="' + b.example_url + '" target="_blank" style="font-size:11px;color:var(--tealB);word-break:break-all;display:block;margin-bottom:4px;">↗ ' + b.example_url + '</a>' : '';
         return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">' +
-          '<p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;">🔗 ' + b.angle + '</p>' +
+          '<p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;"> ' + b.angle + '</p>' +
           urlHtml +
           '<p style="font-size:11px;color:var(--blue);margin-bottom:4px;">Target: ' + b.target_type + '</p>' +
           '<p style="font-size:12px;color:var(--muted);">Hook: ' + b.content_hook + '</p>' +
@@ -2686,9 +2686,9 @@ function init(){
   var greetingEl=document.getElementById('writer-greeting');
   var sublineEl=document.getElementById('writer-subline');
   var greetings=[
-    {t:'Good morning',msg:"Rise and grind ☀️ Let's get these articles done.",sub:"Coffee in hand? Good. Let's go."},
-    {t:'Good afternoon',msg:"Afternoon check-in 👋 How are the drafts looking?",sub:"You've got time. Make it count."},
-    {t:'Good evening',msg:"Evening session? Respect 🌙 Let's finish strong.",sub:"Almost there. Push through."}
+    {t:'Good morning',msg:"Rise and grind  Let's get these articles done.",sub:"Coffee in hand? Good. Let's go."},
+    {t:'Good afternoon',msg:"Afternoon check-in  How are the drafts looking?",sub:"You've got time. Make it count."},
+    {t:'Good evening',msg:"Evening session? Respect  Let's finish strong.",sub:"Almost there. Push through."}
   ];
   var gi=hr<12?0:hr<17?1:2;
   if(greetEl) greetEl.textContent=greetings[gi].t;
@@ -2702,7 +2702,7 @@ function init(){
 
   // Login with PIN modal
   var rolePins = { admin: 'fxify2024', writer: 'writer2024', liam: 'seo2024', david: 'manager2024' };
-  var roleIcons = { admin: '⚡', writer: '✍️', liam: '🔍', david: '✅' };
+  var roleIcons = { admin: 'Admin', writer: 'Writer', liam: 'SEO Review', david: 'Manager' };
   var roleTitles = { admin: 'Admin Access', writer: 'Writer Access', liam: 'SEO Reviewer Access', david: 'Manager Access' };
 
   function openPinModal() {
@@ -2710,7 +2710,7 @@ function init(){
     var title = document.getElementById('pin-role-title');
     var input = document.getElementById('pin-input');
     var error = document.getElementById('pin-error');
-    if (icon) icon.textContent = roleIcons[activeRole] || '⚡';
+    if (icon) icon.textContent = roleIcons[activeRole] || 'Login';
     if (title) title.textContent = roleTitles[activeRole] || 'Access';
     if (input) { input.value = ''; }
     if (error) error.style.display = 'none';
@@ -2800,8 +2800,8 @@ function init(){
     if(currentArt&&currentArt.id) {
       var content = getEditorHTML();
       var text = getEditorText(); var wc = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
-      dbUpdate(currentArt.id,{content:content, word_count:wc}).then(function(){toast('Saved ✓ — nice work');});
-    } else toast('Saved ✓ — nice work');
+      dbUpdate(currentArt.id,{content:content, word_count:wc}).then(function(){toast('Saved done — nice work');});
+    } else toast('Saved done — nice work');
   });
 
   // Editor submit (writer)
@@ -2811,7 +2811,7 @@ function init(){
     var text = getEditorText(); var wc = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
     var scores = calculateScores(content, currentArt.primaryKw||'');
     dbUpdate(currentArt.id,{status:'Sheperd Review', content:content, word_count:wc, seo_score:scores.seo, geo_score:scores.geo, aeo_score:scores.aeo}).then(function(){
-      toast("Sent to Sheperd — ball's in his court now 👀");
+      toast("Sent to Sheperd — ball's in his court now ");
       loadPipeline(); loadReviewQ(); loadWriterDrafts();
       setTimeout(function(){goScreen(prevScreen);},1800);
     });
@@ -2824,7 +2824,7 @@ function init(){
     var next=map[currentRole];
     if(!next) return;
     dbUpdate(currentArt.id,{status:next}).then(function(){
-      toast("Approved and moving — let's go! ✅");
+      toast("Approved and moving — let's go! ");
       loadPipeline(); loadReviewQ(); loadLiamQ(); loadDavidQ();
       setTimeout(function(){goScreen(prevScreen);},1800);
     });
@@ -2835,7 +2835,7 @@ function init(){
     if(!currentArt||!currentArt.id) return;
     openSendback(function(){
       dbUpdate(currentArt.id,{status:'Drafting'}).then(function(){
-        toast('Sent back — writer needs to fix a few things 🔄');
+        toast('Sent back — writer needs to fix a few things ');
         loadPipeline(); loadWriterDrafts();
         setTimeout(function(){goScreen(prevScreen);},1800);
       });
@@ -2851,7 +2851,7 @@ function init(){
     var res = await supa.from('articles').delete().eq('id', drawerArt.id);
     if (res.error) { toast('Delete failed'); return; }
     closeDrawer();
-    toast('Gone. Deleted. Never existed. 💀');
+    toast('Gone. Deleted. Never existed. ');
     loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadLiamQ(); loadDavidQ();
   });
   document.getElementById('d-save').addEventListener('click',async function(){
@@ -2861,7 +2861,7 @@ function init(){
     var status=document.getElementById('d-status').value;
     var due=document.getElementById('d-due')?document.getElementById('d-due').value||null:null;
     await dbUpdate(drawerArt.id,{assignee:assignee,priority:priority,status:status,due_date:due});
-    closeDrawer(); toast('Updated — looking good 👌');
+    closeDrawer(); toast('Updated — looking good ');
     loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadLiamQ(); loadDavidQ();
   });
 
@@ -2875,7 +2875,7 @@ function init(){
     item.addEventListener('click',function(){
       var cb=item.querySelector('.chkb');
       cb.classList.toggle('on');
-      cb.textContent=cb.classList.contains('on')?'✓':'';
+      cb.textContent=cb.classList.contains('on')?'done':'';
     });
   });
 }
