@@ -14,11 +14,11 @@ body{font-family:'IBM Plex Sans',sans-serif;background:#f8fafc;color:#0f172a;min
 input,select,textarea,button{font-family:inherit;}
 
 :root{
-  --navy:#08111f;--navy2:#0c1a2e;--navy3:#112240;
-  --teal:#0a9d8a;--tealB:#0ec4ad;--tealL:#e0faf7;
+  --navy:#0B0C10;--navy2:#111318;--navy3:#1a1c22;
+  --teal:#1EAA90;--tealB:#1EAA90;--tealL:#e8f7f4;
   --blue:#1a56db;--blueL:#eff6ff;
-  --surface:#fff;--bg:#f8fafc;--bg2:#f1f5f9;
-  --border:#e2e8f0;--text:#0f172a;--text2:#334155;--muted:#64748b;
+  --surface:#ffffff;--bg:#f5f5f5;--bg2:#EAEAEA;
+  --border:#d4d4d4;--text:#0f172a;--text2:#334155;--muted:#64748b;
   --urgent:#ef4444;--urgentL:#fef2f2;
   --high:#f97316;--highL:#fff7ed;
   --green:#059669;--greenL:#ecfdf5;
@@ -451,8 +451,8 @@ select.finput{cursor:pointer;}
   <div class="lg lg1"></div><div class="lg lg2"></div>
   <div class="lcard">
     <div class="llogo"><div class="lbars"><span></span><span></span><span></span></div><div class="lword">FXIFY</div></div>
-    <p class="lsub">Content Engine</p>
-    <p class="lrlbl">Select your role</p>
+    <p class="lsub">Content Engine — Let's get it 🔥</p>
+    <p class="lrlbl">Who are you today?</p>
     <div class="rgrid">
       <div class="rbtn active" data-role="admin"><span class="ri">⚡</span>Admin</div>
       <div class="rbtn" data-role="writer"><span class="ri">✍️</span>Writer</div>
@@ -463,7 +463,7 @@ select.finput{cursor:pointer;}
       <svg width="16" height="16" viewBox="0 0 16 16"><path d="M15.68 8.18c0-.57-.05-1.11-.14-1.64H8v3.1h4.31a3.68 3.68 0 01-1.6 2.42v2h2.58c1.51-1.39 2.38-3.44 2.38-5.88z" fill="#4285F4"/><path d="M8 16c2.16 0 3.97-.72 5.29-1.94l-2.58-2A4.8 4.8 0 018 12.75a4.8 4.8 0 01-4.52-3.32H.83v2.07A8 8 0 008 16z" fill="#34A853"/><path d="M3.48 9.43A4.84 4.84 0 013.23 8c0-.52.09-1.02.25-1.49V4.44H.83A8 8 0 000 8c0 1.29.31 2.51.83 3.56l2.65-2.13z" fill="#FBBC05"/><path d="M8 3.18c1.22 0 2.31.42 3.17 1.24l2.37-2.37A8 8 0 008 0 8 8 0 00.83 4.44l2.65 2.07A4.8 4.8 0 018 3.18z" fill="#EA4335"/></svg>
       Continue with Google
     </button>
-    <p class="lnote">Access restricted to <strong>@fxify.com</strong> accounts</p>
+    <p class="lnote">FXIFY crew only. Don't share your code 🤫</p>
   </div>
 </div>
 
@@ -498,7 +498,7 @@ select.finput{cursor:pointer;}
       <!-- PIPELINE -->
       <div id="a-pipeline" class="pg active">
         <div class="pgh">Content Pipeline</div>
-        <p class="pgs">All articles across the team. Click any card to reassign or update status.</p>
+        <p class="pgs">Full picture. Move things, assign things, keep it moving. 🚀</p>
         <div class="srow">
           <div class="sc sc-r"><p class="slbl">Needs attention</p><p class="sval" style="color:var(--urgent)" id="st-overdue">—</p><p class="shin">overdue</p></div>
           <div class="sc sc-b"><p class="slbl">In progress</p><p class="sval" id="st-drafting">—</p><p class="shin">drafting</p></div>
@@ -520,7 +520,7 @@ select.finput{cursor:pointer;}
       <!-- GENERATE -->
       <div id="a-generate" class="pg">
         <div class="pgh">Generate Draft</div>
-        <p class="pgs">Fill in the brief — Claude writes a structured draft in ~60 seconds</p>
+        <p class="pgs">Fill in the brief and let Claude do the heavy lifting. Back in 60 seconds. ⚡</p>
         <div class="tabbar">
           <button class="tabbtn active" data-tab="core">Core</button>
           <button class="tabbtn" data-tab="seo">SEO</button>
@@ -534,6 +534,10 @@ select.finput{cursor:pointer;}
             <div class="frow fg">
               <div><label class="flbl">Category</label><select class="finput" id="b-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option><option>Crypto</option></select></div>
               <div><label class="flbl">Length</label><select class="finput" id="b-len"><option>~500 words</option><option selected>~900 words</option><option>~1,400 words</option><option>~2,000 words</option></select></div>
+            </div>
+            <div class="frow fg">
+              <div><label class="flbl">Due date</label><input class="finput" id="b-due" type="date"/></div>
+              <div><label class="flbl">Priority</label><select class="finput" id="b-priority"><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent — drop everything</option><option value="Low">Low — when you get to it</option></select></div>
             </div>
             <div class="fg"><label class="flbl">Tone</label><div class="topts"><div class="topt active">Educational</div><div class="topt">Analytical</div><div class="topt">Motivational</div><div class="topt">News</div></div></div>
             <div class="frow fg">
@@ -595,7 +599,7 @@ select.finput{cursor:pointer;}
       <!-- REVIEW QUEUE -->
       <div id="a-review" class="pg">
         <div class="pgh">Review Queue</div>
-        <p class="pgs">Submitted by writers — your first review before Liam</p>
+        <p class="pgs">Writers did their thing — now it's your turn. Be fair, be fast. ✍️</p>
         <div id="a-review-list"><p class="pempty" style="padding:40px 0;">No articles in review yet.</p></div>
       </div>
 
@@ -717,8 +721,8 @@ select.finput{cursor:pointer;}
     <div class="ma">
       <div id="w-drafts" class="pg active">
         <p style="font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;" id="greet">Good morning</p>
-        <h1 style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:.03em;">Hey Fariha, here's<br>your plate today. 👋</h1>
-        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Click any article to open it in the editor.</p>
+        <h1 style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:.03em;" id="writer-greeting">What's good? Here's your plate. 👊</h1>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;" id="writer-subline">Let's get these drafts done — you've got this.</p>
         <div class="gbox">
           <div class="ghdr"><span style="font-size:13px;font-weight:500;">Weekly goal</span><span style="font-size:11px;color:var(--muted);">3 of 4 articles</span></div>
           <div class="gi"><span class="glbl">Articles done</span><div class="gtrack"><div class="gbar" style="width:75%;background:var(--tealB)"></div></div><span class="gval" style="color:var(--tealB)">3/4</span></div>
@@ -734,7 +738,7 @@ select.finput{cursor:pointer;}
       </div>
       <div id="w-style" class="pg">
         <div class="pgh">Style Guide</div>
-        <p class="pgs">How every FXIFY article should sound.</p>
+        <p class="pgs">The FXIFY voice. Read it. Live it. Don't sound like a robot. 🤖❌</p>
         <div style="display:grid;gap:12px;">
           <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
             <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">We sound like</p>
@@ -778,7 +782,7 @@ select.finput{cursor:pointer;}
     <div class="ma">
       <div id="l-review" class="pg active">
         <div class="pgh">SEO Review Queue</div>
-        <p class="pgs">Cleared by Sheperd — check SEO, GEO and AEO before sending to David</p>
+        <p class="pgs">Sheperd signed off — now make sure Google loves it before it hits David. 🔍</p>
         <div id="l-review-list"><p class="pempty" style="padding:40px 0;">No articles in your queue.</p></div>
       </div>
       <div id="l-approved" class="pg">
@@ -810,7 +814,7 @@ select.finput{cursor:pointer;}
     <div class="ma">
       <div id="d-approval" class="pg active">
         <div class="pgh">Final Approval</div>
-        <p class="pgs">Cleared by Liam's SEO review — your sign-off sends it to publishing</p>
+        <p class="pgs">Liam checked the SEO. One tap from you and it's heading to publish. 💪</p>
         <div id="d-approval-list"><p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p></div>
       </div>
       <div id="d-log" class="pg">
@@ -961,6 +965,7 @@ select.finput{cursor:pointer;}
   <div class="fg"><label class="flbl">Assign to writer</label><select class="finput" id="d-writer"><option value="">— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
   <div class="fg"><label class="flbl">Priority</label><select class="finput" id="d-pri"><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent</option><option value="Low">Low</option></select></div>
   <div class="fg"><label class="flbl">Status</label><select class="finput" id="d-status"><option value="Briefed">Briefed</option><option value="Drafting">Drafting</option><option value="Sheperd Review">Sheperd Review</option><option value="Liam Review">Liam Review</option><option value="David Approval">David Approval</option><option value="Publishing">Publishing</option><option value="Live">Live</option></select></div>
+  <div class="fg"><label class="flbl">Due date</label><input class="finput" type="date" id="d-due"/></div>
   <button class="btn btn-p btn-f" id="d-save">Save changes</button>
   <button class="btn btn-d btn-f" id="d-delete" style="margin-top:8px;">Delete article</button>
 </div>
@@ -1073,7 +1078,8 @@ async function dbInsert(data){
     assignee:(data.assignee==='— Unassigned —'?'':data.assignee)||'',
     content:data.content||'', doc_url:data.docUrl||'',
     word_count:data.content?data.content.split(/\s+/).filter(Boolean).length:0,
-    tone:data.tone||'', length:data.length||''
+    tone:data.tone||'', length:data.length||'',
+    due_date:data.dueDate||null
   }]).select();
   if(res.error){console.error('insert:',res.error);return null;}
   return res.data[0];
@@ -1100,7 +1106,7 @@ async function loadPipeline(){
     col.innerHTML='';
     var list=groups[st]||[];
     if(cnt) cnt.textContent=list.length;
-    if(!list.length){col.innerHTML='<p class="pempty">Empty</p>';return;}
+    if(!list.length){col.innerHTML='<p class="pempty">Nothing here yet 👀</p>';return;}
     list.forEach(function(art){
       var c=document.createElement('div');
       c.className='pcard';
@@ -1108,7 +1114,18 @@ async function loadPipeline(){
       if(art.priority==='High') c.style.borderLeft='2px solid var(--high)';
       var daysAgo = art.created_at ? Math.floor((Date.now()-new Date(art.created_at))/(1000*60*60*24)) : null;
       var dateStr = daysAgo === 0 ? 'Today' : daysAgo === 1 ? '1d ago' : daysAgo ? daysAgo+'d ago' : '';
-      c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p><div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="pcw">'+(art.assignee||'—')+'</span></div>'+(dateStr?'<p style="font-size:9px;color:#475569;margin-top:3px;">'+dateStr+'</p>':'');
+      var dueStr = '';
+      var dueColor = '#64748b';
+      if (art.due_date) {
+        var dueDate = new Date(art.due_date);
+        var daysUntil = Math.ceil((dueDate - Date.now())/(1000*60*60*24));
+        if (daysUntil < 0) { dueStr = '⚠️ Overdue '+Math.abs(daysUntil)+'d'; dueColor = 'var(--urgent)'; }
+        else if (daysUntil === 0) { dueStr = '🔥 Due today'; dueColor = 'var(--urgent)'; }
+        else if (daysUntil === 1) { dueStr = '⏰ Due tomorrow'; dueColor = 'var(--high)'; }
+        else { dueStr = '📅 Due '+dueDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
+      }
+      c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p><div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="pcw">'+(art.assignee||'—')+'</span></div>'+
+        (dueStr?'<p style="font-size:9px;font-weight:500;margin-top:3px;color:'+dueColor+';">'+dueStr+'</p>':'')+(dateStr?'<p style="font-size:9px;color:#475569;margin-top:1px;">Created '+dateStr+'</p>':'');
       c.addEventListener('click',function(){openDrawer(art);});
       col.appendChild(c);
     });
@@ -1136,7 +1153,7 @@ function makeReviewCard(art,opts){
     e.stopPropagation();
     openSendback(function(){
       dbUpdate(art.id,{status:'Drafting'}).then(function(){
-        c.remove(); toast('Sent back to writer');
+        c.remove(); toast('Sent back — writer needs to fix a few things 🔄');
         loadPipeline(); loadWriterDrafts();
         checkEmpty(opts.listId);
       });
@@ -1194,7 +1211,7 @@ async function loadWriterDrafts(){
   var res=await supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
   var l=document.getElementById('w-drafts-list');
   if(!l) return;
-  if(res.error||!res.data||!res.data.length){l.innerHTML='<p style="font-size:13px;color:var(--muted);padding:20px 0;">No drafts assigned yet.</p>';var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
+  if(res.error||!res.data||!res.data.length){l.innerHTML='<p style="font-size:13px;color:var(--muted);padding:20px 0;">No drafts yet — sit tight, Sheperd's cooking up briefs 🍳</p>';var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
   l.innerHTML='';
   res.data.forEach(function(art){
     var c=document.createElement('div');
@@ -1327,6 +1344,8 @@ function openDrawer(art){
   document.getElementById('d-writer').value=art.assignee||'';
   document.getElementById('d-pri').value=art.priority||'Normal';
   document.getElementById('d-status').value=art.status||'Briefed';
+  var dueEl=document.getElementById('d-due');
+  if(dueEl) dueEl.value=art.due_date||'';
   document.getElementById('drawer').classList.add('open');
   document.getElementById('dov').classList.add('open');
 }
@@ -1352,6 +1371,8 @@ async function generate(){
   var writer=document.getElementById('b-writer').value;
   var tone=document.querySelector('.topt.active')?document.querySelector('.topt.active').textContent.trim():'Educational';
   var pkw=document.getElementById('b-pkw').value.trim()||title.toLowerCase();
+  var dueDate=document.getElementById('b-due')?document.getElementById('b-due').value:'';
+  var priority=document.getElementById('b-priority')?document.getElementById('b-priority').value:'Normal';
   var skw=document.getElementById('b-skw').value.trim();
   var intent=document.getElementById('b-intent').value;
   var links=document.getElementById('b-links').value.trim();
@@ -1412,7 +1433,7 @@ async function generate(){
     '━━ SEO RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
     '- Primary keyword in H1, first paragraph, at least 2 H2s\n'+
     '- No keyword stuffing\n'+
-    '- Add [INTERNAL LINK: relevant topic] placeholders contextually\n\n'+
+    '- Add [INTERNAL LINK: relevant topic] placeholders contextually\n'+    '- Use these real FXIFY URLs where relevant: /programs, /rules, /pricing, /get-funded, /blog\n\n'+
     '━━ E-E-A-T REQUIREMENTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
     'AUTHOR: '+author.name+' — '+author.title+'\n'+
     '- Include 2 first-person FXIFY experience signals: "At FXIFY, we have seen..."\n'+
@@ -1463,9 +1484,9 @@ async function generate(){
     else if(data.text) text=data.text;
     if(!text) throw new Error('No content returned from n8n');
     var wc=text.split(/\s+/).filter(Boolean).length;
-    currentArt={title:title,category:cat,assignee:writer,primaryKw:pkw,content:text,tone:tone,length:len,word_count:wc};
+    currentArt={title:title,category:cat,assignee:writer,primaryKw:pkw,content:text,tone:tone,length:len,word_count:wc,dueDate:dueDate,priority:priority};
     var saved=await dbInsert(currentArt);
-    if(saved){currentArt.id=saved.id;toast('Draft saved to pipeline ✓');loadPipeline();loadWriterDrafts();}
+    if(saved){currentArt.id=saved.id;toast('Draft saved — it\'s in the pipeline 🔥');loadPipeline();loadWriterDrafts();}
     // Parse and store meta
     var meta = parseMeta(text);
     if (currentArt) currentArt.meta = meta;
@@ -1671,7 +1692,7 @@ function wireToolbar() {
     var jsonLd = '<script type="application/ld+json">{"@context":"https://schema.org","@type":"' + schemaType + '","headline":"' + schemaTitle.replace(/"/g,'\'') + '","description":"' + schemaDesc.replace(/"/g,'\'') + '","author":{"@type":"Person","name":"' + authorName + '","url":"https://fxify.com"},"publisher":{"@type":"Organization","name":"FXIFY","url":"https://fxify.com"},"datePublished":"' + new Date().toISOString().split('T')[0] + '"}<\/script>';
     wpHtml = jsonLd + '\n\n' + wpHtml;
     navigator.clipboard.writeText(wpHtml).then(function() {
-      toast('HTML copied — paste into WordPress code editor ✓');
+      toast('HTML copied — go paste it in WordPress, you know the drill 🚀');
       tcopy.textContent = 'Copied ✓';
       setTimeout(function(){ tcopy.textContent = 'Copy HTML'; }, 2000);
     }).catch(function() {
@@ -1682,7 +1703,7 @@ function wireToolbar() {
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      toast('HTML copied — paste into WordPress code editor ✓');
+      toast('HTML copied — go paste it in WordPress, you know the drill 🚀');
     });
   });
 
@@ -1752,7 +1773,7 @@ async function addComment(content, quote) {
   }]).select();
   if (res.error) { toast('Failed to post comment'); return; }
   loadComments(currentArt.id);
-  toast('Comment posted ✓');
+  toast('Comment dropped 💬');
 }
 
 function wireComments() {
@@ -1923,7 +1944,7 @@ function wireMeta() {
       'Schema Type: ' + (m.SCHEMA_TYPE||'Article') + '\n' +
       'Reading Time: ' + rt + ' min\n';
     navigator.clipboard.writeText(metaText).then(function() {
-      toast('Full Yoast meta copied ✓');
+      toast('Meta copied — paste it into Yoast and you\'re done 🎯');
     }).catch(function() {
       var ta = document.createElement('textarea');
       ta.value = metaText;
@@ -1931,7 +1952,7 @@ function wireMeta() {
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      toast('Full Yoast meta copied ✓');
+      toast('Meta copied — paste it into Yoast and you\'re done 🎯');
     });
   });
 }
@@ -1942,36 +1963,72 @@ var internalLinksCache = null;
 async function loadInternalLinks() {
   var panel = document.getElementById('il-panel');
   if (!panel) return;
-  
-  // Use cache if available
   if (internalLinksCache) { renderInternalLinks(internalLinksCache); return; }
-  
-  panel.innerHTML = '<p style="font-size:11px;color:#475569;">Scraping fxify.com/blog...</p>';
-  
+  panel.innerHTML = '<p style="font-size:11px;color:#475569;">Loading FXIFY links...</p>';
   try {
-    var data = await scrapeUrls(['https://fxify.com/blog']);
-    // Extract URLs and titles from scraped content
-    var lines = data.split('\n');
-    var links = [];
-    lines.forEach(function(line) {
-      // Look for markdown links [title](url) or just URLs with titles
-      var mdMatch = line.match(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/);
-      if (mdMatch) links.push({ title: mdMatch[1], url: mdMatch[2] });
+    // Scrape the blog index page
+    var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
+      body: JSON.stringify({ url: 'https://fxify.com/blog', formats: ['markdown'], onlyMainContent: true })
     });
-    // Fallback: ask Claude to extract links
+    var data = await res.json();
+    var links = [];
+    if (data.success && data.data && data.data.markdown) {
+      var md = data.data.markdown;
+      // Extract all markdown links [title](url)
+      var re = /\[([^\]]{5,80})\]\((https?:\/\/[^)]+|\/[^)]+)\)/g;
+      var match;
+      while ((match = re.exec(md)) !== null) {
+        var title = match[1].trim();
+        var url = match[2].trim();
+        // Filter: skip nav/footer links, keep blog post links
+        if (title.length > 10 && !title.match(/^(Home|Blog|About|Contact|Login|Sign)/i)) {
+          // Make relative URLs absolute
+          if (url.startsWith('/')) url = 'https://fxify.com' + url;
+          // Avoid duplicates
+          if (!links.find(function(l){ return l.url === url; })) {
+            links.push({ title: title, url: url });
+          }
+        }
+      }
+    }
+    // Also try to get links relevant to current article topic
+    if (links.length < 3 && currentArt && currentArt.primary_kw) {
+      var searchRes = await fetch('https://api.firecrawl.dev/v1/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
+        body: JSON.stringify({ query: currentArt.primary_kw + ' site:fxify.com', limit: 5 })
+      });
+      var searchData = await searchRes.json();
+      if (searchData.success && searchData.data) {
+        searchData.data.forEach(function(r) {
+          if (r.url && r.title && !links.find(function(l){ return l.url === r.url; })) {
+            links.push({ title: r.title, url: r.url });
+          }
+        });
+      }
+    }
+    // Fallback with real FXIFY URLs if scrape returns nothing
     if (links.length < 3) {
       links = [
-        { title: 'FXIFY Evaluation Programs', url: '/programs' },
-        { title: 'How to Pass Your Evaluation', url: '/blog/pass-evaluation' },
-        { title: 'Drawdown Rules Explained', url: '/blog/drawdown-rules' },
-        { title: 'FXIFY vs Competitors', url: '/blog/fxify-comparison' },
-        { title: 'Risk Management Guide', url: '/blog/risk-management' }
+        { title: 'FXIFY Evaluation Programs', url: 'https://fxify.com/programs' },
+        { title: 'FXIFY Challenge Rules', url: 'https://fxify.com/rules' },
+        { title: 'Funded Trader Dashboard', url: 'https://fxify.com/dashboard' },
+        { title: 'FXIFY Pricing & Plans', url: 'https://fxify.com/pricing' },
+        { title: 'How to Get Funded', url: 'https://fxify.com/get-funded' }
       ];
     }
     internalLinksCache = links;
     renderInternalLinks(links);
   } catch(e) {
-    panel.innerHTML = '<p style="font-size:11px;color:#475569;">Could not load — add links manually</p>';
+    // Fallback silently
+    internalLinksCache = [
+      { title: 'FXIFY Evaluation Programs', url: 'https://fxify.com/programs' },
+      { title: 'FXIFY Challenge Rules', url: 'https://fxify.com/rules' },
+      { title: 'Funded Trader Dashboard', url: 'https://fxify.com/dashboard' }
+    ];
+    renderInternalLinks(internalLinksCache);
   }
 }
 
@@ -1992,7 +2049,7 @@ function renderInternalLinks(links) {
         document.execCommand('insertHTML', false, 
           '<a href="' + link.url + '" style="color:var(--blue);text-decoration:underline;">' + link.title + '</a> ');
         autoSave(edEl.innerHTML);
-        toast('Link inserted ✓');
+        toast('Link in — good for SEO 🔗');
       }
     });
     panel.appendChild(item);
@@ -2129,7 +2186,7 @@ function initInlineComments() {
     if (edEl2 && currentArt && currentArt.id) {
       var content = edEl2.innerHTML;
       dbUpdate(currentArt.id, { content: content }).then(function() {
-        toast('Suggestion saved — writer will see it ✓');
+        toast('Suggestion sent — writer will see it 👀');
         wireSuggestionSpans();
       });
     } else {
@@ -2186,7 +2243,7 @@ function initImageUpload() {
         document.execCommand('insertHTML', false, newImg);
       }
       setTimeout(function() { autoSave(edEl.innerHTML); }, 100);
-      toast('Image added ✓');
+      toast('Image dropped in — looking fresh 🖼️');
     };
     reader.readAsDataURL(file);
     input.value = '';
@@ -2237,7 +2294,7 @@ function wireSuggestionSpans() {
         ui.remove();
         var edEl2 = document.getElementById('tiptap-editor');
         if (edEl2) autoSave(edEl2.innerHTML);
-        toast('Suggestion accepted ✓');
+        toast('Change accepted — respect the reviewer 🤝');
       });
       // Reject
       document.getElementById('sug-reject').addEventListener('click', function() {
@@ -2245,7 +2302,7 @@ function wireSuggestionSpans() {
         ui.remove();
         var edEl2 = document.getElementById('tiptap-editor');
         if (edEl2) autoSave(edEl2.innerHTML);
-        toast('Suggestion rejected');
+        toast('Rejected — standing your ground 💪');
       });
       // Close on outside click
       setTimeout(function() {
@@ -2419,7 +2476,7 @@ async function runPlanner() {
     renderPlannerResults(plan);
     loading.style.display = 'none';
     results.style.display = 'block';
-    toast('Analysis complete ✓');
+    toast('Analysis done — check what Claude found 🧠');
 
   } catch(e) {
     console.error('Planner error:', e);
@@ -2544,8 +2601,11 @@ function renderPlannerResults(plan) {
     blSection.innerHTML = '<div class="shead" style="margin-top:8px;">Backlink opportunities</div>' +
       '<div style="display:grid;gap:10px;margin-bottom:20px;">' +
       plan.backlink_angles.map(function(b) {
+        var urlHtml = b.example_url ? 
+          '<a href="' + b.example_url + '" target="_blank" style="font-size:11px;color:var(--tealB);word-break:break-all;display:block;margin-bottom:4px;">↗ ' + b.example_url + '</a>' : '';
         return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">' +
-          '<p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">🔗 ' + b.angle + '</p>' +
+          '<p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:6px;">🔗 ' + b.angle + '</p>' +
+          urlHtml +
           '<p style="font-size:11px;color:var(--blue);margin-bottom:4px;">Target: ' + b.target_type + '</p>' +
           '<p style="font-size:12px;color:var(--muted);">Hook: ' + b.content_hook + '</p>' +
           '</div>';
@@ -2594,10 +2654,20 @@ async function scrapeUrls(urls) {
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init(){
-  // Greeting
-  var h=new Date().getHours();
-  var g=document.getElementById('greet');
-  if(g) g.textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+  // Dynamic friendly greeting
+  var hr=new Date().getHours();
+  var greetEl=document.getElementById('greet');
+  var greetingEl=document.getElementById('writer-greeting');
+  var sublineEl=document.getElementById('writer-subline');
+  var greetings=[
+    {t:'Good morning',msg:"Rise and grind ☀️ Let's get these articles done.",sub:"Coffee in hand? Good. Let's go."},
+    {t:'Good afternoon',msg:"Afternoon check-in 👋 How are the drafts looking?",sub:"You've got time. Make it count."},
+    {t:'Good evening',msg:"Evening session? Respect 🌙 Let's finish strong.",sub:"Almost there. Push through."}
+  ];
+  var gi=hr<12?0:hr<17?1:2;
+  if(greetEl) greetEl.textContent=greetings[gi].t;
+  if(greetingEl) greetingEl.textContent=greetings[gi].msg;
+  if(sublineEl) sublineEl.textContent=greetings[gi].sub;
 
   // Load data
   loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
@@ -2674,8 +2744,8 @@ function init(){
     if(currentArt&&currentArt.id) {
       var content = getEditorHTML();
       var text = getEditorText(); var wc = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
-      dbUpdate(currentArt.id,{content:content, word_count:wc}).then(function(){toast('Saved ✓');});
-    } else toast('Saved ✓');
+      dbUpdate(currentArt.id,{content:content, word_count:wc}).then(function(){toast('Saved ✓ — nice work');});
+    } else toast('Saved ✓ — nice work');
   });
 
   // Editor submit (writer)
@@ -2685,7 +2755,7 @@ function init(){
     var text = getEditorText(); var wc = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
     var scores = calculateScores(content, currentArt.primaryKw||'');
     dbUpdate(currentArt.id,{status:'Sheperd Review', content:content, word_count:wc, seo_score:scores.seo, geo_score:scores.geo, aeo_score:scores.aeo}).then(function(){
-      toast('Submitted to Sheperd ✓');
+      toast('Sent to Sheperd — ball\'s in his court now 👀');
       loadPipeline(); loadReviewQ(); loadWriterDrafts();
       setTimeout(function(){goScreen(prevScreen);},1800);
     });
@@ -2698,7 +2768,7 @@ function init(){
     var next=map[currentRole];
     if(!next) return;
     dbUpdate(currentArt.id,{status:next}).then(function(){
-      toast('Approved → '+next+' ✓');
+      toast('Approved and moving — let\'s go! ✅');
       loadPipeline(); loadReviewQ(); loadLiamQ(); loadDavidQ();
       setTimeout(function(){goScreen(prevScreen);},1800);
     });
@@ -2709,7 +2779,7 @@ function init(){
     if(!currentArt||!currentArt.id) return;
     openSendback(function(){
       dbUpdate(currentArt.id,{status:'Drafting'}).then(function(){
-        toast('Sent back to writer');
+        toast('Sent back — writer needs to fix a few things 🔄');
         loadPipeline(); loadWriterDrafts();
         setTimeout(function(){goScreen(prevScreen);},1800);
       });
@@ -2725,7 +2795,7 @@ function init(){
     var res = await supa.from('articles').delete().eq('id', drawerArt.id);
     if (res.error) { toast('Delete failed'); return; }
     closeDrawer();
-    toast('Article deleted');
+    toast('Gone. Deleted. Never existed. 💀');
     loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadLiamQ(); loadDavidQ();
   });
   document.getElementById('d-save').addEventListener('click',async function(){
@@ -2733,8 +2803,9 @@ function init(){
     var assignee=document.getElementById('d-writer').value;
     var priority=document.getElementById('d-pri').value;
     var status=document.getElementById('d-status').value;
-    await dbUpdate(drawerArt.id,{assignee:assignee,priority:priority,status:status});
-    closeDrawer(); toast('Updated ✓');
+    var due=document.getElementById('d-due')?document.getElementById('d-due').value||null:null;
+    await dbUpdate(drawerArt.id,{assignee:assignee,priority:priority,status:status,due_date:due});
+    closeDrawer(); toast('Updated — looking good 👌');
     loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadLiamQ(); loadDavidQ();
   });
 
