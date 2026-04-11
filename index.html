@@ -516,6 +516,15 @@ select.finput{cursor:pointer;}
             <div style="background:var(--blueL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--blue);">Optimise for search engines — keywords, meta, and internal linking.</div>
             <div class="frow fg"><div><label class="flbl">Primary keyword</label><input class="finput" id="b-pkw" type="text" placeholder="e.g. funded account drawdown"/></div><div><label class="flbl">Secondary keywords</label><input class="finput" id="b-skw" type="text" placeholder="e.g. prop firm drawdown rules"/></div></div>
             <div class="frow fg"><div><label class="flbl">Search intent</label><select class="finput" id="b-intent"><option>Informational</option><option>Commercial</option><option>Navigational</option><option>Transactional</option></select></div><div><label class="flbl">Internal links</label><input class="finput" id="b-links" type="text" placeholder="e.g. /blog/drawdown, /programs"/></div></div>
+            <div class="fg">
+              <label class="flbl">Research URLs <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label>
+              <textarea class="finput" id="b-research" rows="3" placeholder="Paste URLs to scrape — one per line&#10;e.g. https://fxify.com/programs (your own rules)&#10;https://ftmo.com/en/evaluation/ (competitor data)&#10;https://forexfactory.com/news (market context)" style="resize:vertical;min-height:80px;"></textarea>
+              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;">
+                <div style="background:var(--tealL);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--teal);font-weight:500;">✓ Fact checking<br><span style="font-weight:300;color:var(--muted);">Verify claims against source</span></div>
+                <div style="background:var(--blueL);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--blue);font-weight:500;">✓ Prop comparisons<br><span style="font-weight:300;color:var(--muted);">Real competitor data</span></div>
+                <div style="background:var(--purpleL);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--purple);font-weight:500;">✓ Market context<br><span style="font-weight:300;color:var(--muted);">Current news &amp; data</span></div>
+              </div>
+            </div>
           </div>
           <div class="tabpanel" id="tab-geo">
             <div style="background:var(--tealL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--teal);">Optimise for answer engines — Perplexity, Google AI Overviews, ChatGPT.</div>
@@ -1220,6 +1229,17 @@ async function generate(){
   var q=document.getElementById('b-q').value.trim();
   var btn=document.getElementById('gen-btn');
   btn.textContent='Writing...'; btn.disabled=true;
+  
+  // Firecrawl research URLs
+  var researchRaw = document.getElementById('b-research') ? document.getElementById('b-research').value.trim() : '';
+  var researchUrls = researchRaw ? researchRaw.split('\n').filter(function(u){ return u.trim(); }) : [];
+  var researchContext = '';
+  if (researchUrls.length) {
+    btn.textContent = 'Researching...';
+    toast('Scraping ' + researchUrls.length + ' URL(s) with Firecrawl...');
+    researchContext = await scrapeUrls(researchUrls);
+    btn.textContent = 'Writing...';
+  }
   var prompt=
     'You are a senior content writer for FXIFY, a professional prop trading firm. Write a complete blog article.\n\n'+
     'TOPIC: '+title+'\n'+
@@ -1266,6 +1286,15 @@ async function generate(){
     'Meta description: (max 160 chars)\n'+
     'URL slug: (lowercase-hyphenated)\n'+
     'Schema type: (Article/FAQPage/HowTo)\n\n'+
+    (researchContext ? '━━ RESEARCH CONTEXT (SCRAPED DATA) ━━━━━━━━━━━━━━━━━━\n' +
+    'The following content was scraped live from research URLs provided by the editor.\n' +
+    'INSTRUCTIONS FOR RESEARCH CONTEXT:\n' +
+    '- Use specific facts, figures, rules and data from this content\n' +
+    '- Fact-check any claims against this data\n' +
+    '- For comparison articles: use the actual rules, prices and conditions shown\n' +
+    '- Cite sources naturally in the article where relevant\n' +
+    '- Do not invent or hallucinate data — only use what is in the research\n\n' +
+    researchContext + '\n\n' : '')+
     'IMPORTANT: Output plain text with these markers only:\n'+
     '# for H1, ## for H2, ### for H3\n'+
     '**bold text** for emphasis\n'+
@@ -1939,6 +1968,42 @@ function makeImgPlaceholders() {
   });
 
   if (replaced) edEl.innerHTML = content;
+}
+
+
+// ── FIRECRAWL ─────────────────────────────────────────────────────────────
+var FIRECRAWL_KEY = 'fc-918ef0f7ffac439caca532272347e770';
+
+async function scrapeUrls(urls) {
+  if (!urls || !urls.length) return '';
+  var results = [];
+  for (var i = 0; i < Math.min(urls.length, 3); i++) {
+    var url = urls[i].trim();
+    if (!url) continue;
+    try {
+      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + FIRECRAWL_KEY
+        },
+        body: JSON.stringify({
+          url: url,
+          formats: ['markdown'],
+          onlyMainContent: true
+        })
+      });
+      var data = await res.json();
+      if (data.success && data.data && data.data.markdown) {
+        // Truncate to 2000 chars per URL to keep prompt manageable
+        var content = data.data.markdown.substring(0, 2000);
+        results.push('--- SOURCE: ' + url + ' ---\n' + content);
+      }
+    } catch(e) {
+      console.warn('Firecrawl failed for', url, e);
+    }
+  }
+  return results.join('\n\n');
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
