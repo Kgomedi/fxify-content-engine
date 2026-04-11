@@ -1774,7 +1774,18 @@ function wireToolbar() {
     var schemaTitle = (currentArt && currentArt.meta && currentArt.meta.SEO_TITLE) || (currentArt && currentArt.title) || '';
     var schemaDesc = (currentArt && currentArt.meta && currentArt.meta.META_DESC) || '';
     var authorName = 'Sheperd Morena';
-    var jsonLd = '<script type="application/ld+json">{"@context":"https://schema.org","@type":"' + schemaType + '","headline":"' + schemaTitle.replace(/"/g,'\'') + '","description":"' + schemaDesc.replace(/"/g,'\'') + '","author":{"@type":"Person","name":"' + authorName + '","url":"https://fxify.com"},"publisher":{"@type":"Organization","name":"FXIFY","url":"https://fxify.com"},"datePublished":"' + new Date().toISOString().split('T')[0] + '"}<\/script>';
+    var schemaObj = {
+      '@context': 'https://schema.org',
+      '@type': schemaType,
+      'headline': schemaTitle,
+      'description': schemaDesc,
+      'author': {'@type': 'Person', 'name': authorName, 'url': 'https://fxify.com'},
+      'publisher': {'@type': 'Organization', 'name': 'FXIFY', 'url': 'https://fxify.com'},
+      'datePublished': new Date().toISOString().split('T')[0]
+    };
+    var scriptOpen = '<scr' + 'ipt type="application/ld+json">';
+    var scriptClose = '<' + '/scr' + 'ipt>';
+    var jsonLd = scriptOpen + JSON.stringify(schemaObj) + scriptClose;
     wpHtml = jsonLd + '\n\n' + wpHtml;
     navigator.clipboard.writeText(wpHtml).then(function() {
       toast('HTML copied — go paste it in WordPress, you know the drill 🚀');
