@@ -5,6 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FXIFY — Content Engine</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://unpkg.com/@tiptap/core@2.1.13/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/pm@2.1.13/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/starter-kit@2.1.13/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-underline@2.1.13/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-placeholder@2.1.13/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-text-align@2.1.13/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-image@2.1.13/dist/index.umd.js"></script>
+<script src="https://unpkg.com/@tiptap/extension-highlight@2.1.13/dist/index.umd.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -328,6 +336,64 @@ select.finput{cursor:pointer;}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--tealB);border:1px solid rgba(14,196,173,.22);border-radius:var(--r);padding:10px 18px;font-size:13px;font-weight:500;opacity:0;transition:.3s;z-index:500;white-space:nowrap;max-width:90vw;text-align:center;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
+
+/* ── TIPTAP EDITOR ── */
+.tiptap-wrap{flex:1;overflow-y:auto;background:#fff;display:flex;flex-direction:column;}
+.editor-toolbar{position:sticky;top:0;z-index:100;background:#fff;border-bottom:1px solid var(--border);padding:8px 16px;display:flex;align-items:center;gap:4px;flex-wrap:wrap;}
+.tb-btn{width:28px;height:28px;border:none;border-radius:4px;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;color:var(--text2);transition:.15s;}
+.tb-btn:hover{background:var(--bg2);}
+.tb-btn.active{background:var(--tealL);color:var(--teal);}
+.tb-sep{width:1px;height:18px;background:var(--border);margin:0 4px;}
+.tb-select{padding:3px 6px;border:1px solid var(--border);border-radius:4px;font-size:12px;color:var(--text);background:var(--surface);cursor:pointer;outline:none;}
+.tiptap-editor{flex:1;padding:28px 40px 60px;max-width:720px;outline:none;font-family:'IBM Plex Sans',sans-serif;font-size:15px;line-height:1.85;color:var(--text2);}
+@media(max-width:600px){.tiptap-editor{padding:20px 18px 40px;}}
+.tiptap-editor:focus{outline:none;}
+.tiptap-editor h1{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--text);line-height:1.15;margin-bottom:14px;letter-spacing:.02em;}
+.tiptap-editor h2{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin:28px 0 10px;letter-spacing:.03em;text-transform:uppercase;}
+.tiptap-editor h3{font-size:15px;font-weight:600;color:var(--text);margin:18px 0 8px;}
+.tiptap-editor p{margin-bottom:14px;font-weight:300;}
+.tiptap-editor ul,.tiptap-editor ol{padding-left:20px;margin-bottom:14px;}
+.tiptap-editor li{margin-bottom:5px;font-weight:300;}
+.tiptap-editor strong{font-weight:600;color:var(--text);}
+.tiptap-editor em{font-style:italic;}
+.tiptap-editor u{text-decoration:underline;}
+.tiptap-editor blockquote{border-left:3px solid var(--tealB);margin:20px 0;padding:12px 16px;background:var(--navy);border-radius:0 var(--r) var(--r) 0;font-style:italic;color:#94a3b8;}
+.tiptap-editor img{max-width:100%;border-radius:var(--r);margin:16px 0;}
+.tiptap-editor mark{background:rgba(14,196,173,.2);border-radius:2px;padding:0 2px;}
+.tiptap-editor p.is-editor-empty:first-child::before{content:attr(data-placeholder);float:left;color:var(--muted);pointer-events:none;height:0;font-style:italic;}
+.tiptap-editor a{color:var(--blue);text-decoration:underline;}
+
+/* WORD COUNT BAR */
+.wc-bar{background:var(--bg2);border-top:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;gap:16px;font-size:11px;color:var(--muted);}
+.wc-bar span{font-weight:500;color:var(--text);}
+
+/* COMMENTS PANEL */
+.comments-panel{width:280px;min-width:280px;flex-shrink:0;background:var(--bg);border-left:1px solid var(--border);overflow-y:auto;display:none;}
+@media(min-width:1100px){.comments-panel{display:block;}}
+.cp-head{padding:14px 16px;border-bottom:1px solid var(--border);font-size:13px;font-weight:500;color:var(--text);display:flex;align-items:center;justify-content:space-between;}
+.cp-add{font-size:11px;color:var(--tealB);cursor:pointer;font-weight:400;}
+.comment-item{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);}
+.comment-item:hover{background:var(--bg);}
+.ci-head{display:flex;align-items:center;gap:8px;margin-bottom:6px;}
+.ci-av{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:600;color:#fff;flex-shrink:0;}
+.ci-name{font-size:12px;font-weight:500;color:var(--text);}
+.ci-role{font-size:10px;color:var(--muted);}
+.ci-text{font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:8px;}
+.ci-actions{display:flex;gap:6px;}
+.ci-quote{font-size:11px;color:var(--muted);background:var(--bg2);border-radius:4px;padding:4px 8px;margin-bottom:6px;border-left:2px solid var(--border);font-style:italic;}
+.add-comment-form{padding:12px 16px;border-bottom:1px solid var(--border);background:var(--surface);}
+.ac-ta{width:100%;padding:8px 10px;border:1px solid var(--border);border-radius:var(--r);font-size:12px;resize:none;min-height:72px;outline:none;font-family:inherit;}
+.ac-ta:focus{border-color:var(--tealB);}
+.ac-actions{display:flex;gap:6px;margin-top:8px;justify-content:flex-end;}
+
+/* SEO PANEL */
+.seo-scores{padding:12px 16px;border-bottom:1px solid var(--border);}
+.score-row{display:flex;align-items:center;gap:8px;margin-bottom:8px;}
+.score-row:last-child{margin-bottom:0;}
+.score-lbl{font-size:11px;font-weight:600;width:30px;flex-shrink:0;}
+.score-track{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;}
+.score-fill{height:100%;border-radius:3px;transition:width .4s;}
+.score-num{font-size:11px;font-weight:700;width:28px;text-align:right;flex-shrink:0;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
@@ -692,10 +758,55 @@ select.finput{cursor:pointer;}
         </div>
       </div>
     </div>
-    <div class="ecanvas" id="ed-canvas">
-      <div class="afeat"><span>Featured image</span></div>
-      <div class="ambar"><span class="amtag" id="ed-cat">Guides</span><span class="ami">By Fariha Khan</span><span class="ami">·</span><span class="ami" id="ed-date">April 2026</span></div>
-      <div class="abody" id="ed-body"><p style="color:var(--muted);font-style:italic;">Generate a draft to see it here.</p></div>
+    <div class="tiptap-wrap" id="ed-canvas">
+      <!-- Toolbar -->
+      <div class="editor-toolbar" id="ed-toolbar">
+        <select class="tb-select" id="tb-heading" title="Heading">
+          <option value="p">Paragraph</option>
+          <option value="h1">Heading 1</option>
+          <option value="h2">Heading 2</option>
+          <option value="h3">Heading 3</option>
+        </select>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="tb-bold" title="Bold"><strong>B</strong></button>
+        <button class="tb-btn" id="tb-italic" title="Italic"><em>I</em></button>
+        <button class="tb-btn" id="tb-underline" title="Underline"><u>U</u></button>
+        <button class="tb-btn" id="tb-highlight" title="Highlight" style="font-size:11px;">🖊</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="tb-ul" title="Bullet list">≡</button>
+        <button class="tb-btn" id="tb-ol" title="Numbered list">1.</button>
+        <button class="tb-btn" id="tb-quote" title="Blockquote">"</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="tb-img" title="Insert image" style="font-size:11px;">📷</button>
+        <button class="tb-btn" id="tb-comment" title="Add comment" style="font-size:11px;">💬</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="tb-undo" title="Undo">↩</button>
+        <button class="tb-btn" id="tb-redo" title="Redo">↪</button>
+      </div>
+      <!-- Editor body -->
+      <div style="display:flex;flex:1;overflow:hidden;">
+        <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
+          <div class="afeat"><span>Featured image · click to replace</span></div>
+          <div class="ambar"><span class="amtag" id="ed-cat">Guides</span><span class="ami">By Fariha Khan</span><span class="ami">·</span><span class="ami" id="ed-date">April 2026</span></div>
+          <div id="tiptap-editor" class="tiptap-editor" style="min-height:400px;"></div>
+          <div class="wc-bar"><span id="wc-display">0 words</span> · <span id="char-display">0 characters</span></div>
+        </div>
+        <!-- Comments panel -->
+        <div class="comments-panel" id="comments-panel">
+          <div class="cp-head">
+            Comments
+            <span class="cp-add" id="cp-add-btn">+ Add comment</span>
+          </div>
+          <div id="add-comment-form" class="add-comment-form" style="display:none;">
+            <textarea class="ac-ta" id="comment-input" placeholder="Leave a comment or suggestion..."></textarea>
+            <div class="ac-actions">
+              <button class="btn btn-s" id="comment-cancel">Cancel</button>
+              <button class="btn btn-p btn-s" id="comment-submit">Post</button>
+            </div>
+          </div>
+          <div id="comments-list"></div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
@@ -1078,6 +1189,322 @@ async function generate(){
   btn.textContent='Create Draft'; btn.disabled=false;
 }
 
+
+// ── TIPTAP EDITOR ─────────────────────────────────────────────────────────
+var editor = null;
+var autoSaveTimer = null;
+
+function initEditor(content) {
+  var el = document.getElementById('tiptap-editor');
+  if (!el) return;
+
+  // Destroy existing editor
+  if (editor) { editor.destroy(); editor = null; }
+
+  try {
+    editor = new tiptap.Editor({
+      element: el,
+      extensions: [
+        tiptap.StarterKit,
+        tiptap.Underline,
+        tiptap.TextAlign.configure({ types: ['heading', 'paragraph'] }),
+        tiptap.Image,
+        tiptap.Highlight,
+        tiptap.Placeholder.configure({ placeholder: 'Start writing your article...' }),
+      ],
+      content: content || '<p>Generate a draft to start editing.</p>',
+      onUpdate: function({ editor }) {
+        updateWordCount(editor);
+        updateToolbarState(editor);
+        // Autosave
+        clearTimeout(autoSaveTimer);
+        autoSaveTimer = setTimeout(function() {
+          autoSave(editor.getHTML());
+        }, 2000);
+      },
+      onSelectionUpdate: function({ editor }) {
+        updateToolbarState(editor);
+      },
+    });
+    updateWordCount(editor);
+  } catch(e) {
+    console.error('TipTap init error:', e);
+    // Fallback to contenteditable
+    el.contentEditable = 'true';
+    el.innerHTML = content || '<p>Start writing...</p>';
+  }
+}
+
+function updateWordCount(ed) {
+  var text = ed.getText();
+  var words = text.trim() ? text.trim().split(/\s+/).length : 0;
+  var chars = text.length;
+  var wcel = document.getElementById('wc-display');
+  var ccel = document.getElementById('char-display');
+  if (wcel) wcel.textContent = words + ' words';
+  if (ccel) ccel.textContent = chars + ' characters';
+  var wcEl = document.getElementById('ed-wc');
+  if (wcEl) wcEl.textContent = words + ' words';
+}
+
+function updateToolbarState(ed) {
+  var boldBtn = document.getElementById('tb-bold');
+  var italicBtn = document.getElementById('tb-italic');
+  var ulBtn = document.getElementById('tb-ul');
+  var olBtn = document.getElementById('tb-ol');
+  if (boldBtn) boldBtn.classList.toggle('active', ed.isActive('bold'));
+  if (italicBtn) italicBtn.classList.toggle('active', ed.isActive('italic'));
+  if (ulBtn) ulBtn.classList.toggle('active', ed.isActive('bulletList'));
+  if (olBtn) olBtn.classList.toggle('active', ed.isActive('orderedList'));
+  // Update heading select
+  var hsel = document.getElementById('tb-heading');
+  if (hsel) {
+    if (ed.isActive('heading', { level: 1 })) hsel.value = 'h1';
+    else if (ed.isActive('heading', { level: 2 })) hsel.value = 'h2';
+    else if (ed.isActive('heading', { level: 3 })) hsel.value = 'h3';
+    else hsel.value = 'p';
+  }
+}
+
+function autoSave(htmlContent) {
+  if (!currentArt || !currentArt.id) return;
+  var wc = editor ? editor.getText().trim().split(/\s+/).filter(Boolean).length : 0;
+  dbUpdate(currentArt.id, { content: htmlContent, word_count: wc });
+  var saveEl = document.getElementById('ed-save-txt');
+  if (saveEl) { saveEl.textContent = '● Saved'; setTimeout(function(){ saveEl.textContent = ''; }, 2000); }
+}
+
+function markdownToHtml(text) {
+  if (!text) return '<p>No content.</p>';
+  // Strip meta section
+  var mi = text.search(/\n(Meta title|7\. META)/i);
+  var body = mi > 0 ? text.substring(0, mi) : text;
+  var lines = body.split('\n');
+  var html = '', inUl = false, inOl = false;
+
+  function ca() { if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} }
+  function pr(s) {
+    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+    s = s.replace(/\[INTERNAL LINK: ([^\]]+)\]/g, '<a href="#">$1 ↗</a>');
+    return s;
+  }
+
+  lines.forEach(function(raw) {
+    var l = raw.trim();
+    if (!l) { ca(); return; }
+    if (l.startsWith('# ')) { ca(); html += '<h1>' + pr(l.slice(2)) + '</h1>'; return; }
+    if (l.startsWith('## ')) { ca(); html += '<h2>' + pr(l.slice(3)) + '</h2>'; return; }
+    if (l.startsWith('### ')) { ca(); html += '<h3>' + pr(l.slice(4)) + '</h3>'; return; }
+    if (l.startsWith('[VISUAL:')) { ca(); html += '<p><em>📷 ' + l.replace('[VISUAL:','').replace(']','').trim() + '</em></p>'; return; }
+    if (l.startsWith('[INTERNAL LINK:')) return;
+    if (l.startsWith('|')) { ca(); return; } // skip tables for now
+    if (l.match(/^[-*•]\s/)) { if(inOl){html+='</ol>';inOl=false;} if(!inUl){html+='<ul>';inUl=true;} html+='<li>'+pr(l.replace(/^[-*•]\s/,''))+'</li>'; return; }
+    if (l.match(/^\d+\.\s/)) { if(inUl){html+='</ul>';inUl=false;} if(!inOl){html+='<ol>';inOl=true;} html+='<li>'+pr(l.replace(/^\d+\.\s/,''))+'</li>'; return; }
+    ca();
+    html += '<p>' + pr(l) + '</p>';
+  });
+  ca();
+  return html || '<p>No content.</p>';
+}
+
+function wireToolbar() {
+  var tb = document.getElementById('tb-bold');
+  if (tb) tb.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleBold().run(); });
+  
+  var ti = document.getElementById('tb-italic');
+  if (ti) ti.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleItalic().run(); });
+  
+  var tu = document.getElementById('tb-underline');
+  if (tu) tu.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleUnderline().run(); });
+
+  var th = document.getElementById('tb-highlight');
+  if (th) th.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleHighlight().run(); });
+  
+  var tul = document.getElementById('tb-ul');
+  if (tul) tul.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleBulletList().run(); });
+  
+  var tol = document.getElementById('tb-ol');
+  if (tol) tol.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleOrderedList().run(); });
+  
+  var tq = document.getElementById('tb-quote');
+  if (tq) tq.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleBlockquote().run(); });
+  
+  var tundo = document.getElementById('tb-undo');
+  if (tundo) tundo.addEventListener('click', function(){ if(editor) editor.chain().focus().undo().run(); });
+  
+  var tredo = document.getElementById('tb-redo');
+  if (tredo) tredo.addEventListener('click', function(){ if(editor) editor.chain().focus().redo().run(); });
+
+  var timg = document.getElementById('tb-img');
+  if (timg) timg.addEventListener('click', function(){
+    var url = prompt('Image URL:');
+    if (url && editor) editor.chain().focus().setImage({ src: url }).run();
+  });
+
+  var tcom = document.getElementById('tb-comment');
+  if (tcom) tcom.addEventListener('click', function(){
+    document.getElementById('add-comment-form').style.display = 'block';
+    document.getElementById('comment-input').focus();
+    var cp = document.getElementById('comments-panel');
+    if (cp) cp.style.display = 'block';
+  });
+
+  var hsel = document.getElementById('tb-heading');
+  if (hsel) hsel.addEventListener('change', function(){
+    if (!editor) return;
+    var v = hsel.value;
+    if (v === 'p') editor.chain().focus().setParagraph().run();
+    else if (v === 'h1') editor.chain().focus().setHeading({ level: 1 }).run();
+    else if (v === 'h2') editor.chain().focus().setHeading({ level: 2 }).run();
+    else if (v === 'h3') editor.chain().focus().setHeading({ level: 3 }).run();
+  });
+}
+
+// ── COMMENTS SYSTEM ────────────────────────────────────────────────────────
+async function loadComments(articleId) {
+  if (!supa || !articleId) return;
+  var res = await supa.from('comments').select('*').eq('article_id', articleId).order('created_at', { ascending: true });
+  if (res.error || !res.data) return;
+  renderComments(res.data);
+}
+
+function renderComments(comments) {
+  var list = document.getElementById('comments-list');
+  if (!list) return;
+  list.innerHTML = '';
+  if (!comments.length) {
+    list.innerHTML = '<p style="font-size:12px;color:var(--muted);padding:16px;text-align:center;">No comments yet.</p>';
+    return;
+  }
+  var roleColors = { Admin: 'linear-gradient(135deg,var(--blue),#2563eb)', Writer: 'linear-gradient(135deg,var(--teal),var(--tealB))', 'SEO Reviewer': 'linear-gradient(135deg,var(--purple),#9333ea)', Manager: 'linear-gradient(135deg,var(--amber),#f59e0b)' };
+  comments.forEach(function(c) {
+    var item = document.createElement('div');
+    item.className = 'comment-item';
+    var initials = c.author ? c.author.split(' ').map(function(n){return n[0];}).join('').toUpperCase() : '?';
+    var color = roleColors[c.role] || roleColors['Admin'];
+    item.innerHTML =
+      '<div class="ci-head">' +
+        '<div class="ci-av" style="background:' + color + '">' + initials + '</div>' +
+        '<div><p class="ci-name">' + (c.author||'Unknown') + '</p><p class="ci-role">' + (c.role||'') + '</p></div>' +
+      '</div>' +
+      (c.quote ? '<div class="ci-quote">"' + c.quote + '"</div>' : '') +
+      '<p class="ci-text">' + (c.content||'') + '</p>' +
+      '<div class="ci-actions">' +
+        '<button class="btn btn-s btn-d" data-id="' + c.id + '" style="font-size:10px;padding:3px 8px;">Delete</button>' +
+      '</div>';
+    item.querySelector('.btn-d').addEventListener('click', function() {
+      deleteComment(c.id, item);
+    });
+    list.appendChild(item);
+  });
+}
+
+async function deleteComment(id, el) {
+  await supa.from('comments').delete().eq('id', id);
+  el.remove();
+  toast('Comment deleted');
+}
+
+async function addComment(content, quote) {
+  if (!currentArt || !currentArt.id || !content.trim()) return;
+  var roleMap = { admin: 'Admin', writer: 'Writer', liam: 'SEO Reviewer', david: 'Manager' };
+  var nameMap = { admin: 'Sheperd Morena', writer: 'Fariha Khan', liam: 'Liam', david: 'David Xavier' };
+  var res = await supa.from('comments').insert([{
+    article_id: currentArt.id,
+    author: nameMap[currentRole] || 'Admin',
+    role: roleMap[currentRole] || 'Admin',
+    content: content,
+    quote: quote || null
+  }]).select();
+  if (res.error) { toast('Failed to post comment'); return; }
+  loadComments(currentArt.id);
+  toast('Comment posted ✓');
+}
+
+function wireComments() {
+  var addBtn = document.getElementById('cp-add-btn');
+  if (addBtn) addBtn.addEventListener('click', function(){
+    var form = document.getElementById('add-comment-form');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+    if (form.style.display === 'block') document.getElementById('comment-input').focus();
+  });
+
+  var cancelBtn = document.getElementById('comment-cancel');
+  if (cancelBtn) cancelBtn.addEventListener('click', function(){
+    document.getElementById('add-comment-form').style.display = 'none';
+    document.getElementById('comment-input').value = '';
+  });
+
+  var submitBtn = document.getElementById('comment-submit');
+  if (submitBtn) submitBtn.addEventListener('click', function(){
+    var content = document.getElementById('comment-input').value.trim();
+    if (!content) return;
+    // Get selected text as quote
+    var quote = editor ? editor.state.doc.textBetween(editor.state.selection.from, editor.state.selection.to) : '';
+    addComment(content, quote);
+    document.getElementById('comment-input').value = '';
+    document.getElementById('add-comment-form').style.display = 'none';
+  });
+}
+
+// ── SEO SCORING ────────────────────────────────────────────────────────────
+function calculateScores(content, primaryKw) {
+  if (!content || !primaryKw) return { seo: 0, geo: 0, aeo: 0 };
+  
+  var text = content.replace(/<[^>]+>/g, ' ').toLowerCase();
+  var kw = primaryKw.toLowerCase();
+  var kwCount = (text.match(new RegExp(kw, 'g')) || []).length;
+  var words = text.trim().split(/\s+/).filter(Boolean).length;
+  
+  // SEO score
+  var seo = 0;
+  if (kwCount >= 1) seo += 20;
+  if (kwCount >= 3) seo += 15;
+  if (kwCount <= 12) seo += 10;
+  if (content.includes('<h1>') || content.includes('<h2>')) seo += 20;
+  if (words >= 600) seo += 15;
+  if (words >= 900) seo += 10;
+  if (content.includes('<ul>') || content.includes('<ol>')) seo += 10;
+  seo = Math.min(seo, 100);
+
+  // GEO score
+  var geo = 0;
+  if (text.indexOf(kw) < 200) geo += 25; // early mention
+  var sentences = text.split(/[.!?]+/).filter(Boolean);
+  var shortSentences = sentences.filter(function(s){ return s.trim().split(/\s+/).length < 20; }).length;
+  if (shortSentences / sentences.length > 0.6) geo += 20;
+  if (content.includes('<strong>')) geo += 15;
+  if (words >= 500) geo += 20;
+  if (content.includes('?')) geo += 20; // has questions
+  geo = Math.min(geo, 100);
+
+  // AEO score
+  var aeo = 0;
+  if (content.includes('<h2>') || content.includes('<h3>')) aeo += 25;
+  if ((content.match(/<li>/g) || []).length >= 3) aeo += 25;
+  if (text.includes('what') || text.includes('how') || text.includes('why')) aeo += 25;
+  if (words >= 400 && words <= 1800) aeo += 25;
+  aeo = Math.min(aeo, 100);
+
+  return { seo: seo, geo: geo, aeo: aeo };
+}
+
+function updateScoreDisplay(scores) {
+  function setScore(type, score) {
+    var n = document.getElementById('ed-' + type);
+    var b = document.getElementById('ed-' + type + '-bar');
+    var h = document.getElementById('ed-' + type + '-h');
+    if (n) n.textContent = score;
+    if (b) b.style.width = score + '%';
+    var color = score >= 85 ? 'var(--green)' : score >= 70 ? 'var(--amber)' : 'var(--urgent)';
+    if (b) b.style.background = color;
+    if (h) h.textContent = score >= 85 ? 'Good' : score >= 70 ? 'Needs work' : 'Poor';
+  }
+  setScore('seo', scores.seo);
+  setScore('geo', scores.geo);
+  setScore('aeo', scores.aeo);
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init(){
   // Greeting
@@ -1145,14 +1572,20 @@ function init(){
 
   // Editor save
   document.getElementById('ed-save-btn').addEventListener('click',function(){
-    if(currentArt&&currentArt.id) dbUpdate(currentArt.id,{content:currentArt.content}).then(function(){toast('Saved ✓');});
-    else toast('Saved ✓');
+    if(currentArt&&currentArt.id) {
+      var content = editor ? editor.getHTML() : '';
+      var wc = editor ? editor.getText().trim().split(/\s+/).filter(Boolean).length : 0;
+      dbUpdate(currentArt.id,{content:content, word_count:wc}).then(function(){toast('Saved ✓');});
+    } else toast('Saved ✓');
   });
 
   // Editor submit (writer)
   document.getElementById('ed-submit-btn').addEventListener('click',function(){
     if(!currentArt||!currentArt.id){toast('No draft to submit');return;}
-    dbUpdate(currentArt.id,{status:'Sheperd Review'}).then(function(){
+    var content = editor ? editor.getHTML() : '';
+    var wc = editor ? editor.getText().trim().split(/\s+/).filter(Boolean).length : 0;
+    var scores = calculateScores(content, currentArt.primaryKw||'');
+    dbUpdate(currentArt.id,{status:'Sheperd Review', content:content, word_count:wc, seo_score:scores.seo, geo_score:scores.geo, aeo_score:scores.aeo}).then(function(){
       toast('Submitted to Sheperd ✓');
       loadPipeline(); loadReviewQ(); loadWriterDrafts();
       setTimeout(function(){goScreen(prevScreen);},1800);
