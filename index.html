@@ -1164,7 +1164,7 @@ function parseArt(text,kw){
     if(l.startsWith('# ')){ca();html+='<h1>'+pr(l.slice(2))+'</h1>';return;}
     if(l.startsWith('## ')){ca();html+='<h2>'+pr(l.slice(3))+'</h2>';return;}
     if(l.startsWith('### ')){ca();html+='<h3>'+pr(l.slice(4))+'</h3>';return;}
-    if(l.startsWith('[VISUAL:')){ca();html+='<div class="aimg">📷 '+l.replace('[VISUAL:','').replace(']','').trim()+'</div>';return;}
+    if(l.startsWith('[VISUAL:')){ca();var vc=l.replace('[VISUAL:','').replace(']','').trim();html+='<div class="img-placeholder" data-imgplaceholder="true" style="cursor:pointer;"><div style="font-size:28px;pointer-events:none;">📷</div><span style="font-size:12px;color:#64748b;pointer-events:none;text-align:center;padding:0 16px;">'+vc+'</span><span style="font-size:10px;color:#0ec4ad;font-weight:600;pointer-events:none;margin-top:4px;">CLICK TO UPLOAD</span></div>';return;}
     if(l.startsWith('[INTERNAL LINK:')) return;
     if(l.startsWith('|')){
       if(l.replace(/[\|:\- ]/g,'')==='') return;
