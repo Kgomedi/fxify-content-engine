@@ -1226,7 +1226,7 @@ async function loadWriterDrafts(){
   var res=await supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
   var l=document.getElementById('w-drafts-list');
   if(!l) return;
-  if(res.error||!res.data||!res.data.length){l.innerHTML="<p style='font-size:13px;color:var(--muted);padding:20px 0;'>No drafts yet. Briefs coming soon.</p>"var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
+  if(res.error||!res.data||!res.data.length){l.innerHTML="<p style='font-size:13px;color:var(--muted);padding:20px 0;'>No drafts yet. Briefs coming soon.</p>";var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
   l.innerHTML='';
   res.data.forEach(function(art){
     var c=document.createElement('div');
@@ -2698,9 +2698,41 @@ function init(){
   // Load data
   loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
 
-  // Login - select role and click to enter
-  document.getElementById('login-btn').addEventListener('click', function(){
-    goScreen(activeRole);
+  // Login with PIN modal
+  var rolePins = { admin: 'fxify2024', writer: 'writer2024', liam: 'seo2024', david: 'manager2024' };
+  var roleTitles = { admin: 'Admin Access', writer: 'Writer Access', liam: 'SEO Reviewer Access', david: 'Manager Access' };
+
+  function openPinModal() {
+    var title = document.getElementById('pin-role-title');
+    var input = document.getElementById('pin-input');
+    var error = document.getElementById('pin-error');
+    if (title) title.textContent = roleTitles[activeRole] || 'Access';
+    if (input) input.value = '';
+    if (error) error.style.display = 'none';
+    document.getElementById('pin-modal').classList.add('open');
+    setTimeout(function(){ if(input) input.focus(); }, 100);
+  }
+
+  function checkPin() {
+    var input = document.getElementById('pin-input');
+    var error = document.getElementById('pin-error');
+    var val = input ? input.value.trim().toLowerCase() : '';
+    if (val === rolePins[activeRole]) {
+      document.getElementById('pin-modal').classList.remove('open');
+      goScreen(activeRole);
+    } else {
+      if (error) error.style.display = 'block';
+      if (input) { input.value = ''; input.focus(); }
+    }
+  }
+
+  document.getElementById('login-btn').addEventListener('click', openPinModal);
+  document.getElementById('pin-confirm').addEventListener('click', checkPin);
+  document.getElementById('pin-cancel').addEventListener('click', function(){
+    document.getElementById('pin-modal').classList.remove('open');
+  });
+  document.getElementById('pin-input').addEventListener('keydown', function(e){
+    if (e.key === 'Enter') checkPin();
   });
 
   // Role buttons
