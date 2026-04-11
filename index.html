@@ -1049,8 +1049,18 @@ function openEditor(art,role){
   setScore('aeo',art.aeo_score||0);
   var priEl=document.getElementById('ed-pri');
   if(priEl){priEl.textContent=art.priority||'Normal';priEl.className='badge '+pclass(art.priority);}
-  var body=document.getElementById('ed-body');
-  if(body) body.innerHTML=art.content?parseArt(art.content,art.primary_kw):'<p style="color:var(--muted);font-style:italic;">No content yet.</p>';
+  // Load content into editor
+  var htmlContent = art.content 
+    ? (art.content.trim().startsWith('<') ? art.content : parseArt(art.content, art.primary_kw))
+    : '<p>Start writing your article here...</p>';
+  setTimeout(function() {
+    initEditor(htmlContent);
+    var scores = calculateScores(htmlContent, art.primary_kw || '');
+    updateScoreDisplay(scores);
+    if (art.id) loadComments(art.id);
+    wireToolbar();
+    wireComments();
+  }, 50);
   var wa=document.getElementById('ed-writer-acts');
   var ra=document.getElementById('ed-rv-acts');
   var rb=document.getElementById('rv-bar');
