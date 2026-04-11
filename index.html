@@ -459,6 +459,7 @@ select.finput{cursor:pointer;}
       <div class="ngrp">Pipeline</div>
       <div class="nlink active" data-pg="a-pipeline" data-sc="admin"><span class="nico">◈</span>Pipeline<span class="nbadge" id="nb-pipeline">0</span></div>
       <div class="nlink" data-pg="a-generate" data-sc="admin"><span class="nico">⚡</span>Generate Draft</div>
+      <div class="nlink" data-pg="a-planner" data-sc="admin"><span class="nico">◈</span>Topic Planner</div>
       <div class="nlink" data-pg="a-review" data-sc="admin"><span class="nico">◎</span>Review Queue<span class="nbadge" id="nb-review">0</span></div>
       <div class="ndiv"></div>
       <div class="ngrp">Content</div>
@@ -501,6 +502,7 @@ select.finput{cursor:pointer;}
           <button class="tabbtn" data-tab="seo">SEO</button>
           <button class="tabbtn" data-tab="geo">GEO</button>
           <button class="tabbtn" data-tab="aeo">AEO</button>
+          <button class="tabbtn" data-tab="research">Research</button>
         </div>
         <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:12px;">
           <div class="tabpanel active" id="tab-core">
@@ -516,15 +518,6 @@ select.finput{cursor:pointer;}
             <div style="background:var(--blueL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--blue);">Optimise for search engines — keywords, meta, and internal linking.</div>
             <div class="frow fg"><div><label class="flbl">Primary keyword</label><input class="finput" id="b-pkw" type="text" placeholder="e.g. funded account drawdown"/></div><div><label class="flbl">Secondary keywords</label><input class="finput" id="b-skw" type="text" placeholder="e.g. prop firm drawdown rules"/></div></div>
             <div class="frow fg"><div><label class="flbl">Search intent</label><select class="finput" id="b-intent"><option>Informational</option><option>Commercial</option><option>Navigational</option><option>Transactional</option></select></div><div><label class="flbl">Internal links</label><input class="finput" id="b-links" type="text" placeholder="e.g. /blog/drawdown, /programs"/></div></div>
-            <div class="fg">
-              <label class="flbl">Research URLs <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label>
-              <textarea class="finput" id="b-research" rows="3" placeholder="Paste URLs to scrape — one per line&#10;e.g. https://fxify.com/programs (your own rules)&#10;https://ftmo.com/en/evaluation/ (competitor data)&#10;https://forexfactory.com/news (market context)" style="resize:vertical;min-height:80px;"></textarea>
-              <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:8px;">
-                <div style="background:var(--tealL);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--teal);font-weight:500;">✓ Fact checking<br><span style="font-weight:300;color:var(--muted);">Verify claims against source</span></div>
-                <div style="background:var(--blueL);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--blue);font-weight:500;">✓ Prop comparisons<br><span style="font-weight:300;color:var(--muted);">Real competitor data</span></div>
-                <div style="background:var(--purpleL);border-radius:6px;padding:6px 8px;font-size:10px;color:var(--purple);font-weight:500;">✓ Market context<br><span style="font-weight:300;color:var(--muted);">Current news &amp; data</span></div>
-              </div>
-            </div>
           </div>
           <div class="tabpanel" id="tab-geo">
             <div style="background:var(--tealL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--teal);">Optimise for answer engines — Perplexity, Google AI Overviews, ChatGPT.</div>
@@ -535,6 +528,30 @@ select.finput{cursor:pointer;}
             <div style="background:var(--purpleL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--purple);">Optimise for featured snippets, People Also Ask, and voice search.</div>
             <div class="fg"><label class="flbl">Primary question</label><input class="finput" id="b-q" type="text" placeholder="e.g. How do I pass a prop firm evaluation?"/></div>
             <div class="fg"><label class="flbl">PAA targets</label><input class="finput" id="b-paa" type="text" placeholder="e.g. What happens if I fail? Can I retry?"/></div>
+          </div>
+          <div class="tabpanel" id="tab-research">
+            <div style="background:var(--tealL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;">
+              <p style="font-size:12px;color:var(--teal);font-weight:500;margin-bottom:2px;">Powered by Firecrawl</p>
+              <p style="font-size:12px;color:var(--teal);font-weight:300;">Paste URLs and Claude will use the scraped content to write a better informed draft.</p>
+            </div>
+            <div class="fg">
+              <label class="flbl">Research URLs — one per line</label>
+              <textarea class="finput" id="b-research" rows="4" placeholder="https://fxify.com/programs&#10;https://ftmo.com/en/evaluation/&#10;https://forexfactory.com/news" style="resize:vertical;min-height:100px;"></textarea>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
+              <div style="background:var(--tealL);border-radius:8px;padding:10px 12px;">
+                <p style="font-size:11px;color:var(--teal);font-weight:600;margin-bottom:3px;">Fact checking</p>
+                <p style="font-size:11px;color:var(--muted);">Paste your own rules page. Claude writes accurately about your product.</p>
+              </div>
+              <div style="background:var(--blueL);border-radius:8px;padding:10px 12px;">
+                <p style="font-size:11px;color:var(--blue);font-weight:600;margin-bottom:3px;">Prop comparisons</p>
+                <p style="font-size:11px;color:var(--muted);">Paste competitor pages. Claude pulls real figures for comparison articles.</p>
+              </div>
+              <div style="background:var(--purpleL);border-radius:8px;padding:10px 12px;">
+                <p style="font-size:11px;color:var(--purple);font-weight:600;margin-bottom:3px;">Market context</p>
+                <p style="font-size:11px;color:var(--muted);">Paste news articles. Claude incorporates current market conditions.</p>
+              </div>
+            </div>
           </div>
           <button class="btn btn-p btn-f" style="max-width:200px;" id="gen-btn">Create Draft</button>
         </div>
@@ -606,6 +623,40 @@ select.finput{cursor:pointer;}
 
 <span class="pc">━━ 4. OUTPUT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
 <span class="pc">Clean draft + meta title + meta description + slug</span></pre></div>
+      </div>
+
+      <!-- TOPIC & SEO PLANNER -->
+      <div id="a-planner" class="pg">
+        <div class="pgh">Topic & SEO Planner</div>
+        <p class="pgs">Analyse competitors, find keyword gaps, build your content strategy</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:16px;">
+          <div class="fg">
+            <label class="flbl">Seed topic or keyword</label>
+            <input class="finput" id="pl-topic" type="text" placeholder="e.g. prop trading drawdown rules, funded account evaluation"/>
+          </div>
+          <div class="frow fg">
+            <div><label class="flbl">Your site <span style="color:var(--muted);font-weight:300;font-size:10px;">(optional)</span></label><input class="finput" id="pl-own" type="text" placeholder="https://fxify.com/blog"/></div>
+            <div><label class="flbl">Category focus</label><select class="finput" id="pl-cat"><option>All categories</option><option>Guides</option><option>Trading Strategy</option><option>Platform &amp; Programs</option><option>Market Analysis</option><option>Trading Psychology</option></select></div>
+          </div>
+          <div class="fg">
+            <label class="flbl">Competitor URLs <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label>
+            <textarea class="finput" id="pl-competitors" rows="3" placeholder="https://ftmo.com/en/blog&#10;https://myfundedfx.tech/blog&#10;https://apextraderfunding.com/blog" style="resize:vertical;min-height:80px;"></textarea>
+          </div>
+          <button class="btn btn-p" style="min-width:180px;" id="pl-analyse-btn">Analyse &amp; Generate Topics</button>
+        </div>
+        <div id="pl-loading" style="display:none;text-align:center;padding:40px 20px;">
+          <div style="font-size:24px;margin-bottom:12px;">⚡</div>
+          <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="pl-loading-txt">Scraping competitors...</p>
+          <p style="font-size:12px;color:var(--muted);">This takes 15-30 seconds</p>
+        </div>
+        <div id="pl-results" style="display:none;">
+          <div class="shead">Keyword gaps found</div>
+          <div id="pl-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
+          <div class="shead">Topic cluster ideas</div>
+          <div id="pl-topics" style="display:grid;gap:10px;margin-bottom:20px;"></div>
+          <div class="shead">People Also Ask targets</div>
+          <div id="pl-paa" style="display:grid;gap:8px;margin-bottom:20px;"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -1971,6 +2022,184 @@ function makeImgPlaceholders() {
 }
 
 
+
+// ── TOPIC PLANNER ─────────────────────────────────────────────────────────
+async function runPlanner() {
+  var topic = document.getElementById('pl-topic').value.trim();
+  if (!topic) { toast('Add a topic or keyword first'); return; }
+
+  var competitors = document.getElementById('pl-competitors').value.trim().split('\n').filter(Boolean);
+  var ownSite = document.getElementById('pl-own').value.trim();
+  var cat = document.getElementById('pl-cat').value;
+  var btn = document.getElementById('pl-analyse-btn');
+  var loading = document.getElementById('pl-loading');
+  var results = document.getElementById('pl-results');
+  var loadTxt = document.getElementById('pl-loading-txt');
+
+  btn.disabled = true;
+  btn.textContent = 'Analysing...';
+  loading.style.display = 'block';
+  results.style.display = 'none';
+
+  // Step 1: Scrape competitors
+  var competitorData = '';
+  if (competitors.length) {
+    loadTxt.textContent = 'Scraping ' + competitors.length + ' competitor(s) with Firecrawl...';
+    competitorData = await scrapeUrls(competitors);
+  }
+
+  // Step 2: Scrape own site if provided
+  var ownData = '';
+  if (ownSite) {
+    loadTxt.textContent = 'Analysing your existing content...';
+    ownData = await scrapeUrls([ownSite]);
+  }
+
+  // Step 3: Build analysis prompt
+  loadTxt.textContent = 'Claude is building your topic strategy...';
+  var prompt = 
+    'You are a senior SEO and content strategist specialising in prop trading and fintech.\n\n' +
+    'SEED TOPIC: ' + topic + '\n' +
+    'CATEGORY FOCUS: ' + cat + '\n' +
+    (ownData ? 'OWN SITE CONTENT:\n' + ownData + '\n\n' : '') +
+    (competitorData ? 'COMPETITOR CONTENT (scraped):\n' + competitorData + '\n\n' : '') +
+    'Analyse the above and produce a content strategy. Respond ONLY with valid JSON in this exact format:\n' +
+    '{\n' +
+    '  "gaps": ["keyword gap 1", "keyword gap 2", "keyword gap 3", "keyword gap 4", "keyword gap 5"],\n' +
+    '  "topics": [\n' +
+    '    {\n' +
+    '      "title": "Article title here",\n' +
+    '      "keyword": "primary keyword",\n' +
+    '      "intent": "Informational",\n' +
+    '      "angle": "What makes this different from competitors",\n' +
+    '      "priority": "High",\n' +
+    '      "category": "Guides"\n' +
+    '    }\n' +
+    '  ],\n' +
+    '  "paa": ["Question 1?", "Question 2?", "Question 3?", "Question 4?", "Question 5?"]\n' +
+    '}\n\n' +
+    'Generate 5 keyword gaps, 8 topic ideas, and 6 PAA questions. No other text, just the JSON.';
+
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 2000 })
+    });
+    var data = await r.json();
+    var text = '';
+    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
+    else if (data.content && data.content[0]) text = data.content[0].text;
+    else if (data.text) text = data.text;
+
+    // Parse JSON
+    var jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('Invalid response format');
+    var plan = JSON.parse(jsonMatch[0]);
+
+    // Render results
+    renderPlannerResults(plan);
+    loading.style.display = 'none';
+    results.style.display = 'block';
+    toast('Analysis complete ✓');
+
+  } catch(e) {
+    console.error('Planner error:', e);
+    loading.style.display = 'none';
+    toast('Error: ' + e.message);
+  }
+
+  btn.disabled = false;
+  btn.textContent = 'Analyse & Generate Topics';
+}
+
+function renderPlannerResults(plan) {
+  // Keyword gaps
+  var gapsEl = document.getElementById('pl-gaps');
+  if (gapsEl && plan.gaps) {
+    gapsEl.innerHTML = '';
+    plan.gaps.forEach(function(gap) {
+      var chip = document.createElement('div');
+      chip.style.cssText = 'background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--urgent);font-weight:500;';
+      chip.textContent = '⚡ ' + gap;
+      gapsEl.appendChild(chip);
+    });
+  }
+
+  // Topic ideas
+  var topicsEl = document.getElementById('pl-topics');
+  if (topicsEl && plan.topics) {
+    topicsEl.innerHTML = '';
+    plan.topics.forEach(function(t) {
+      var card = document.createElement('div');
+      card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;cursor:pointer;transition:.15s;';
+      card.onmouseenter = function(){ card.style.borderColor = 'var(--tealB)'; card.style.boxShadow = '0 0 0 3px rgba(14,196,173,.06)'; };
+      card.onmouseleave = function(){ card.style.borderColor = 'var(--border)'; card.style.boxShadow = 'none'; };
+      var priorityColor = t.priority === 'High' ? 'var(--high)' : t.priority === 'Urgent' ? 'var(--urgent)' : 'var(--blue)';
+      card.innerHTML = 
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;">' +
+          '<p style="font-size:14px;font-weight:500;color:var(--text);line-height:1.4;">' + t.title + '</p>' +
+          '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--highL);color:' + priorityColor + ';white-space:nowrap;flex-shrink:0;">' + (t.priority||'Normal') + '</span>' +
+        '</div>' +
+        '<p style="font-size:12px;color:var(--muted);margin-bottom:8px;font-style:italic;">' + (t.angle||'') + '</p>' +
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+          '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">' + (t.keyword||'') + '</span>' +
+          '<span style="font-size:11px;color:var(--muted);">' + (t.intent||'') + '</span>' +
+          '<span style="font-size:11px;color:var(--muted);">·</span>' +
+          '<span style="font-size:11px;color:var(--muted);">' + (t.category||'') + '</span>' +
+          '<button class="btn btn-p btn-s" style="margin-left:auto;font-size:11px;" data-use-topic="true">Use this topic →</button>' +
+        '</div>';
+      
+      // Click to use topic
+      card.querySelector('[data-use-topic]').addEventListener('click', function(e) {
+        e.stopPropagation();
+        // Pre-fill generate form
+        var titleEl = document.getElementById('b-title');
+        var kwEl = document.getElementById('b-pkw');
+        var catEl = document.getElementById('b-cat');
+        if (titleEl) titleEl.value = t.title;
+        if (kwEl) kwEl.value = t.keyword || '';
+        if (catEl) {
+          var opts = catEl.options;
+          for (var i = 0; i < opts.length; i++) {
+            if (opts[i].value === t.category) { catEl.selectedIndex = i; break; }
+          }
+        }
+        // Switch to generate page
+        document.querySelector('[data-pg="a-generate"]').click();
+        toast('Brief pre-filled — add details and generate ✓');
+      });
+
+      topicsEl.appendChild(card);
+    });
+  }
+
+  // PAA questions
+  var paaEl = document.getElementById('pl-paa');
+  if (paaEl && plan.paa) {
+    paaEl.innerHTML = '';
+    plan.paa.forEach(function(q) {
+      var item = document.createElement('div');
+      item.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:12px;';
+      item.innerHTML = 
+        '<p style="font-size:13px;color:var(--text);">❓ ' + q + '</p>' +
+        '<button class="btn btn-s" style="flex-shrink:0;font-size:11px;" data-use-paa="true">Use as FAQ</button>';
+      item.querySelector('[data-use-paa]').addEventListener('click', function() {
+        var aeoEl = document.getElementById('b-aeo-question');
+        if (aeoEl) aeoEl.value = q;
+        document.querySelector('[data-pg="a-generate"]').click();
+        // Switch to AEO tab
+        setTimeout(function() {
+          var aeoTab = document.querySelector('[data-tab="aeo"]');
+          if (aeoTab) aeoTab.click();
+        }, 100);
+        toast('Added to AEO brief ✓');
+      });
+      paaEl.appendChild(item);
+    });
+  }
+}
+
 // ── FIRECRAWL ─────────────────────────────────────────────────────────────
 var FIRECRAWL_KEY = 'fc-918ef0f7ffac439caca532272347e770';
 
@@ -2066,6 +2295,8 @@ function init(){
 
   // Generate
   document.getElementById('gen-btn').addEventListener('click',generate);
+  var plBtn = document.getElementById('pl-analyse-btn');
+  if (plBtn) plBtn.addEventListener('click', runPlanner);
   document.getElementById('open-ed-btn').addEventListener('click',function(){if(currentArt) openEditor(currentArt,'sheperd');});
 
   // Editor back
