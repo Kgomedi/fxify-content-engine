@@ -1,0 +1,1219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>FXIFY — Content Engine</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'IBM Plex Sans',sans-serif;background:#f8fafc;color:#0f172a;min-height:100vh;}
+input,select,textarea,button{font-family:inherit;}
+
+:root{
+  --navy:#08111f;--navy2:#0c1a2e;--navy3:#112240;
+  --teal:#0a9d8a;--tealB:#0ec4ad;--tealL:#e0faf7;
+  --blue:#1a56db;--blueL:#eff6ff;
+  --surface:#fff;--bg:#f8fafc;--bg2:#f1f5f9;
+  --border:#e2e8f0;--text:#0f172a;--text2:#334155;--muted:#64748b;
+  --urgent:#ef4444;--urgentL:#fef2f2;
+  --high:#f97316;--highL:#fff7ed;
+  --green:#059669;--greenL:#ecfdf5;
+  --amber:#d97706;--amberL:#fef9c3;
+  --purple:#7c3aed;--purpleL:#f5f3ff;
+  --r:10px;--rl:14px;
+  --topH:56px;--sbW:220px;
+}
+
+/* SCREENS */
+.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen.active{display:flex;}
+
+/* LOGIN */
+#login{background:var(--navy);align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;}
+#login::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(0deg,transparent,transparent 48px,rgba(14,196,173,.04) 48px,rgba(14,196,173,.04) 50px);}
+.lg{position:absolute;border-radius:50%;pointer-events:none;}
+.lg1{width:500px;height:500px;top:-20%;right:-10%;background:radial-gradient(circle,rgba(10,157,138,.12),transparent 70%);}
+.lg2{width:350px;height:350px;bottom:-10%;left:-8%;background:radial-gradient(circle,rgba(26,86,219,.08),transparent 70%);}
+.lcard{position:relative;z-index:1;background:rgba(12,26,46,.96);border:1px solid rgba(14,196,173,.18);border-radius:var(--rl);padding:36px;width:100%;max-width:400px;text-align:center;}
+.llogo{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:4px;}
+.lbars{display:flex;flex-direction:column;gap:3px;}
+.lbars span{display:block;background:#fff;border-radius:1px;}
+.lbars span:nth-child(1){width:22px;height:3px;}
+.lbars span:nth-child(2){width:15px;height:3px;}
+.lbars span:nth-child(3){width:9px;height:3px;}
+.lword{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:#fff;letter-spacing:.12em;text-transform:uppercase;}
+.lsub{font-size:11px;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--tealB);margin-bottom:26px;}
+.lrlbl{font-size:12px;color:#475569;margin-bottom:10px;}
+.rgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px;}
+.rbtn{padding:13px 8px;border-radius:var(--r);border:1px solid rgba(255,255,255,.08);background:rgba(255,255,255,.04);color:#94a3b8;font-size:13px;font-weight:500;cursor:pointer;transition:.2s;}
+.rbtn .ri{font-size:17px;display:block;margin-bottom:4px;}
+.rbtn:hover{border-color:rgba(14,196,173,.3);color:#cbd5e1;}
+.rbtn.active{border-color:rgba(14,196,173,.5);background:rgba(14,196,173,.1);color:var(--tealB);}
+.gbtn{width:100%;padding:13px;border-radius:var(--r);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:10px;transition:.2s;}
+.gbtn:hover{background:rgba(255,255,255,.1);}
+.lnote{font-size:11px;color:#475569;}
+.lnote strong{color:var(--tealB);}
+
+/* TOPBAR */
+.topbar{position:sticky;top:0;z-index:200;background:var(--navy);height:var(--topH);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(14,196,173,.09);flex-shrink:0;}
+.tbl{display:flex;align-items:center;gap:12px;}
+.tblogo{display:flex;align-items:center;gap:8px;cursor:pointer;}
+.tbbars{display:flex;flex-direction:column;gap:2px;}
+.tbbars span{display:block;background:#fff;border-radius:1px;}
+.tbbars span:nth-child(1){width:14px;height:2.5px;}
+.tbbars span:nth-child(2){width:10px;height:2.5px;}
+.tbbars span:nth-child(3){width:6px;height:2.5px;}
+.tbname{font-family:'Barlow Condensed',sans-serif;font-size:16px;font-weight:800;color:#fff;letter-spacing:.12em;text-transform:uppercase;}
+.tbsep{width:1px;height:18px;background:rgba(255,255,255,.1);}
+.tbctx{font-size:12px;color:#475569;}
+.tbr{display:flex;align-items:center;gap:8px;}
+.tbu{font-size:13px;color:#94a3b8;}
+.tbav{width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#fff;background:linear-gradient(135deg,var(--teal),var(--tealB));}
+.tbav.b{background:linear-gradient(135deg,var(--blue),#2563eb);}
+.tbav.a{background:linear-gradient(135deg,var(--amber),#f59e0b);}
+.mtoggle{display:flex;flex-direction:column;gap:4px;width:32px;height:32px;border:1px solid rgba(255,255,255,.08);border-radius:8px;background:transparent;cursor:pointer;align-items:center;justify-content:center;}
+.mtoggle span{display:block;width:13px;height:2px;background:#94a3b8;border-radius:1px;}
+@media(min-width:768px){.mtoggle{display:none;}}
+
+/* LAYOUT */
+.awrap{display:flex;flex:1;overflow:hidden;}
+.sb{width:var(--sbW);flex-shrink:0;background:var(--navy2);border-right:1px solid rgba(14,196,173,.07);overflow-y:auto;transition:transform .25s;position:fixed;top:var(--topH);bottom:0;left:0;z-index:150;transform:translateX(-100%);padding:12px 0 24px;}
+.sb.open{transform:translateX(0);}
+@media(min-width:768px){.sb{position:relative;top:auto;bottom:auto;transform:none !important;}}
+.sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:140;}
+.sbov.show{display:block;}
+@media(min-width:768px){.sbov{display:none !important;}}
+.ma{flex:1;overflow-y:auto;background:var(--bg);}
+@media(min-width:768px){.ma{margin-left:0;}}
+
+/* NAV */
+.ngrp{font-size:9px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;color:#334155;padding:10px 18px 5px;}
+.nlink{display:flex;align-items:center;gap:10px;padding:9px 18px;font-size:13px;color:#64748b;cursor:pointer;transition:.15s;border-left:2px solid transparent;}
+.nlink:hover{color:#cbd5e1;background:rgba(255,255,255,.03);}
+.nlink.active{color:var(--tealB);background:rgba(14,196,173,.07);border-left-color:var(--tealB);}
+.nico{font-size:13px;width:17px;text-align:center;}
+.nbadge{margin-left:auto;background:var(--teal);color:#fff;font-size:10px;font-weight:600;padding:1px 6px;border-radius:20px;}
+.ndiv{height:1px;background:rgba(255,255,255,.05);margin:6px 14px;}
+
+/* PAGES */
+.pg{display:none;padding:24px;}
+.pg.active{display:block;}
+.pgh{font-family:'Barlow Condensed',sans-serif;font-size:24px;font-weight:800;color:var(--text);margin-bottom:2px;letter-spacing:.04em;text-transform:uppercase;}
+.pgs{font-size:13px;color:var(--muted);margin-bottom:20px;}
+
+/* STATS */
+.srow{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:20px;}
+@media(min-width:480px){.srow{grid-template-columns:repeat(4,1fr);}}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;position:relative;overflow:hidden;}
+.sc::after{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--rl) var(--rl) 0 0;}
+.sc-r::after{background:var(--urgent);}
+.sc-b::after{background:var(--blue);}
+.sc-t::after{background:var(--tealB);}
+.sc-g::after{background:var(--green);}
+.slbl{font-size:11px;color:var(--muted);margin-bottom:5px;}
+.sval{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:var(--text);line-height:1;}
+.shin{font-size:11px;color:var(--muted);margin-top:3px;}
+
+/* SECTION HEAD */
+.shead{font-size:11px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;display:flex;align-items:center;gap:8px;}
+.shead::after{content:'';flex:1;height:1px;background:var(--border);}
+
+/* BADGES */
+.badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;white-space:nowrap;}
+.bu{background:var(--urgentL);color:var(--urgent);}
+.bh{background:var(--highL);color:var(--high);}
+.bn{background:var(--blueL);color:var(--blue);}
+.bl{background:var(--bg2);color:var(--muted);border:1px solid var(--border);}
+.bg{background:var(--greenL);color:var(--green);}
+.bp{background:var(--purpleL);color:var(--purple);}
+.bt{background:var(--tealL);color:var(--teal);}
+
+/* BUTTONS */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:7px 14px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:12px;font-weight:500;cursor:pointer;transition:.15s;white-space:nowrap;}
+.btn:hover{background:var(--navy);color:#fff;border-color:var(--navy);}
+.btn-p{background:var(--tealB);color:#fff;border-color:var(--tealB);}
+.btn-p:hover{background:var(--teal);}
+.btn-d{background:transparent;border:1px solid rgba(239,68,68,.3);color:var(--urgent);}
+.btn-d:hover{background:var(--urgentL);}
+.btn-s{padding:5px 10px;font-size:11px;}
+.btn-f{width:100%;justify-content:center;padding:11px;}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:10px;overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s;}
+.card:hover{border-color:var(--teal);box-shadow:0 0 0 3px rgba(10,157,138,.06);}
+.card.pu{border-left:3px solid var(--urgent);}
+.card.ph{border-left:3px solid var(--high);}
+.cbody{padding:14px 14px 10px;}
+.ctop{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:8px;}
+.ctitle{font-size:14px;font-weight:500;color:var(--text);line-height:1.4;flex:1;}
+.cmeta{display:flex;align-items:center;gap:6px;flex-wrap:wrap;padding:0 14px 10px;}
+.mkw{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);}
+.mtime{font-size:11px;color:var(--muted);}
+.mdue{font-size:11px;font-weight:500;}
+.du{color:var(--urgent);}
+.ds{color:var(--amber);}
+.do{color:var(--green);}
+.cfoot{padding:10px 14px;border-top:1px solid var(--bg2);background:var(--bg2);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;}
+.cfi{font-size:11px;color:var(--muted);}
+.iblock{background:var(--navy);border-radius:8px;padding:10px 12px;margin:0 14px 10px;}
+.itag{font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--tealB);margin-bottom:3px;}
+.itext{font-size:12px;color:#94a3b8;font-weight:300;line-height:1.5;}
+
+/* PIPELINE */
+.pboard{display:grid;grid-template-columns:repeat(7,minmax(148px,1fr));gap:10px;overflow-x:auto;padding-bottom:4px;}
+.pcol{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;min-height:180px;}
+.phead{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.plbl{font-size:11px;font-weight:600;letter-spacing:.04em;text-transform:uppercase;}
+.pcnt{font-size:10px;font-weight:600;background:var(--bg2);color:var(--muted);padding:1px 6px;border-radius:20px;}
+.pbody{padding:8px;}
+.pcard{background:var(--bg2);border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;border:1px solid transparent;transition:.15s;}
+.pcard:hover{border-color:var(--tealB);background:#fff;}
+.pcard:last-child{margin-bottom:0;}
+.pct{font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.35;}
+.pcm{display:flex;align-items:center;justify-content:space-between;}
+.pcw{font-size:10px;color:var(--muted);}
+.pempty{font-size:12px;color:var(--muted);padding:12px;text-align:center;font-style:italic;}
+
+/* FORMS */
+.flbl{display:block;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
+.finput{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;}
+.finput:focus{border-color:var(--tealB);}
+select.finput{cursor:pointer;}
+.frow{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:480px){.frow{grid-template-columns:1fr 1fr;}}
+.fg{margin-bottom:14px;}
+.topts{display:flex;gap:6px;flex-wrap:wrap;}
+.topt{padding:5px 12px;border-radius:var(--r);border:1px solid var(--border);background:var(--surface);font-size:12px;cursor:pointer;transition:.15s;}
+.topt.active,.topt:hover{background:var(--tealL);border-color:var(--tealB);color:var(--teal);}
+
+/* TABS */
+.tabbar{display:flex;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;width:fit-content;margin-bottom:16px;}
+.tabbtn{padding:7px 16px;font-size:12px;font-weight:500;border:none;background:var(--surface);color:var(--muted);cursor:pointer;border-left:1px solid var(--border);}
+.tabbtn:first-child{border-left:none;}
+.tabbtn.active{background:var(--navy);color:var(--tealB);}
+.tabpanel{display:none;}
+.tabpanel.active{display:block;}
+
+/* EDITOR */
+#editor{background:var(--surface);}
+.etop{background:var(--navy);height:var(--topH);display:flex;align-items:center;justify-content:space-between;padding:0 20px;border-bottom:1px solid rgba(14,196,173,.09);flex-shrink:0;position:sticky;top:0;z-index:200;}
+.ebc{display:flex;align-items:center;gap:7px;font-size:12px;color:#475569;flex:1;min-width:0;}
+.ebc .active{color:#fff;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.eacts{display:flex;gap:6px;align-items:center;flex-shrink:0;}
+.rlayout{display:flex;flex:1;overflow:hidden;flex-direction:column;}
+@media(min-width:768px){.rlayout{flex-direction:row;}}
+.esb{background:var(--navy2);border-bottom:1px solid rgba(14,196,173,.07);padding:14px;display:flex;gap:12px;flex-wrap:wrap;overflow-y:auto;}
+@media(min-width:768px){.esb{width:220px;min-width:220px;flex-shrink:0;border-bottom:none;border-right:1px solid rgba(14,196,173,.07);flex-direction:column;flex-wrap:nowrap;gap:14px;max-height:calc(100vh - var(--topH));}}
+.esblk{min-width:100px;}
+@media(min-width:768px){.esblk{width:100%;}}
+.eslbl{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#334155;margin-bottom:5px;}
+.eschip{display:inline-block;font-size:11px;font-weight:500;padding:3px 9px;border-radius:20px;margin-top:2px;background:rgba(14,196,173,.15);color:var(--tealB);}
+.snum{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;line-height:1;}
+.sbg{background:#1e3a5f;border-radius:4px;height:5px;overflow:hidden;margin-top:5px;}
+.sbf{height:100%;border-radius:4px;}
+.sh{font-size:10px;color:#475569;margin-top:3px;}
+.esdiv{height:1px;background:rgba(255,255,255,.04);width:100%;display:none;}
+@media(min-width:768px){.esdiv{display:block;}}
+.chk{display:flex;align-items:center;gap:7px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);font-size:12px;color:#64748b;cursor:pointer;}
+.chk:last-child{border-bottom:none;}
+.chkb{width:14px;height:14px;min-width:14px;border-radius:3px;border:1px solid #334155;display:flex;align-items:center;justify-content:center;font-size:9px;}
+.chkb.on{background:var(--teal);border-color:var(--teal);color:#fff;}
+.ecanvas{flex:1;overflow-y:auto;background:#fff;}
+.rvbar{background:var(--navy3);border-bottom:1px solid rgba(14,196,173,.1);padding:10px 20px;display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+.rvlbl{font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:#475569;flex-shrink:0;}
+.rvnote{flex:1;min-width:180px;padding:7px 11px;border:1px solid rgba(255,255,255,.08);border-radius:var(--r);font-size:12px;color:#cbd5e1;background:rgba(255,255,255,.04);outline:none;}
+.rvnote::placeholder{color:#334155;}
+.rvacts{display:flex;gap:6px;flex-shrink:0;}
+
+/* ARTICLE BODY */
+.afeat{width:100%;height:180px;background:linear-gradient(135deg,var(--navy),var(--navy3));display:flex;align-items:center;justify-content:center;font-size:12px;color:#334155;letter-spacing:.08em;text-transform:uppercase;}
+.ambar{display:flex;align-items:center;gap:10px;padding:12px 40px;border-bottom:1px solid var(--border);flex-wrap:wrap;}
+.amtag{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--tealL);color:var(--teal);}
+.ami{font-size:11px;color:var(--muted);}
+.abody{padding:28px 40px 60px;max-width:720px;}
+@media(max-width:600px){.abody{padding:20px 18px 40px;}}
+.abody h1{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--text);line-height:1.15;margin-bottom:14px;letter-spacing:.02em;}
+.abody .deck{font-size:16px;color:var(--muted);line-height:1.7;margin-bottom:22px;border-left:3px solid var(--tealB);padding-left:14px;font-weight:300;}
+.abody h2{font-family:'Barlow Condensed',sans-serif;font-size:20px;font-weight:700;color:var(--text);margin:28px 0 10px;letter-spacing:.03em;text-transform:uppercase;}
+.abody h3{font-size:15px;font-weight:600;color:var(--text);margin:18px 0 8px;}
+.abody p{font-size:15px;line-height:1.85;color:var(--text2);margin-bottom:14px;font-weight:300;}
+.abody ul,.abody ol{padding-left:20px;margin-bottom:14px;}
+.abody li{font-size:15px;line-height:1.7;color:var(--text2);margin-bottom:5px;font-weight:300;}
+.apq{background:var(--navy);border-left:3px solid var(--tealB);border-radius:0 var(--r) var(--r) 0;padding:16px 20px;margin:20px 0;font-size:15px;font-style:italic;color:#94a3b8;line-height:1.6;}
+.aimg{width:100%;height:130px;background:var(--bg2);border-radius:var(--r);border:1px dashed var(--border);display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted);margin:18px 0;text-transform:uppercase;letter-spacing:.06em;}
+.akt{background:var(--greenL);border:1px solid #6ee7b7;border-radius:var(--rl);padding:14px 18px;margin:20px 0;}
+.akt p{font-size:11px;font-weight:600;color:var(--green);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;}
+.acta{background:linear-gradient(135deg,var(--navy),var(--navy3));border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:18px 22px;margin:24px 0;text-align:center;}
+.acta p{font-size:14px;color:#94a3b8;margin-bottom:10px;font-weight:300;}
+.kw-hl{background:rgba(14,196,173,.15);border-radius:2px;padding:0 2px;}
+.int-link{color:var(--blue);text-decoration:underline;cursor:pointer;}
+
+/* DRAWER */
+.dov{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:299;display:none;}
+.dov.open{display:block;}
+.drawer{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;background:var(--surface);border-top:1px solid var(--border);border-radius:14px 14px 0 0;padding:20px;z-index:300;box-shadow:0 -4px 24px rgba(0,0,0,.12);display:none;}
+.drawer.open{display:block;}
+.dhead{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;}
+.dtitle{font-family:'Barlow Condensed',sans-serif;font-size:17px;font-weight:800;color:var(--text);text-transform:uppercase;letter-spacing:.04em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:80%;}
+.dclose{background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);line-height:1;}
+
+/* MODAL */
+.mov{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:400;display:none;align-items:center;justify-content:center;padding:20px;}
+.mov.open{display:flex;}
+.mbox{background:var(--surface);border-radius:var(--rl);padding:24px;width:100%;max-width:460px;box-shadow:0 20px 60px rgba(0,0,0,.2);}
+.mtitle{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;color:var(--text);margin-bottom:6px;letter-spacing:.04em;}
+.msub{font-size:12px;color:var(--muted);margin-bottom:16px;line-height:1.5;}
+.mta{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;color:var(--text);resize:vertical;min-height:100px;outline:none;}
+.mta:focus{border-color:var(--tealB);}
+.macts{display:flex;gap:8px;justify-content:flex-end;margin-top:14px;}
+
+/* SCORES */
+.spill{display:flex;align-items:center;gap:5px;font-size:11px;}
+.spv{font-weight:700;}
+.spt{width:40px;height:4px;background:var(--border);border-radius:2px;overflow:hidden;}
+.spf{height:100%;border-radius:2px;}
+.sbar{display:flex;gap:10px;padding:10px 14px;background:var(--bg2);flex-wrap:wrap;align-items:center;}
+
+/* GOALS */
+.gbox{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:20px;}
+.ghdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;}
+.gi{display:flex;align-items:center;gap:10px;margin-bottom:8px;}
+.gi:last-child{margin-bottom:0;}
+.glbl{font-size:12px;color:var(--text2);width:110px;flex-shrink:0;}
+.gtrack{flex:1;background:var(--bg2);border-radius:20px;height:5px;overflow:hidden;}
+.gbar{height:100%;border-radius:20px;}
+.gval{font-size:11px;font-weight:500;width:34px;text-align:right;flex-shrink:0;}
+
+/* WRITERS */
+.wgrid{display:grid;grid-template-columns:1fr;gap:12px;}
+@media(min-width:640px){.wgrid{grid-template-columns:repeat(2,1fr);}}
+@media(min-width:960px){.wgrid{grid-template-columns:repeat(3,1fr);}}
+.wcard{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;}
+.wtop{display:flex;align-items:center;gap:10px;margin-bottom:12px;}
+.wav{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff;flex-shrink:0;}
+.wname{font-size:14px;font-weight:500;color:var(--text);}
+.wemail{font-size:11px;color:var(--muted);}
+
+/* TABLE */
+.twrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;overflow-x:auto;}
+.dtable{width:100%;min-width:500px;border-collapse:collapse;}
+.dtable th{padding:10px 14px;text-align:left;font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);background:var(--bg2);border-bottom:1px solid var(--border);}
+.dtable td{padding:11px 14px;font-size:13px;color:var(--text);border-bottom:1px solid var(--bg2);}
+.dtable tr:last-child td{border-bottom:none;}
+
+/* RESULT BANNER */
+.rbanner{background:var(--greenL);border:1px solid #6ee7b7;border-radius:var(--rl);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:12px;}
+.rbt p:first-child{font-size:13px;font-weight:500;color:var(--green);}
+.rbt p:last-child{font-size:12px;color:var(--green);font-weight:300;margin-top:2px;}
+
+/* PROMPT */
+.pbox{background:var(--navy);border-radius:var(--rl);padding:16px;overflow-x:auto;}
+.pbox pre{font-family:'Courier New',monospace;font-size:12px;line-height:1.8;color:#94a3b8;white-space:pre-wrap;word-break:break-word;}
+.pv{color:#f59e0b;}
+.pc{color:#475569;}
+
+/* ANALYTICS */
+.agrid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-bottom:20px;}
+@media(min-width:640px){.agrid{grid-template-columns:repeat(3,1fr);}}
+.acard{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;}
+.albl{font-size:11px;color:var(--muted);margin-bottom:4px;}
+.aval{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:var(--text);margin-bottom:3px;line-height:1;}
+.ach{font-size:11px;font-weight:500;}
+.cu{color:var(--green);}
+.cd{color:var(--urgent);}
+
+/* TOAST */
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--tealB);border:1px solid rgba(14,196,173,.22);border-radius:var(--r);padding:10px 18px;font-size:13px;font-weight:500;opacity:0;transition:.3s;z-index:500;white-space:nowrap;max-width:90vw;text-align:center;}
+.toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
+
+::-webkit-scrollbar{width:4px;height:4px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="screen active">
+  <div class="lg lg1"></div><div class="lg lg2"></div>
+  <div class="lcard">
+    <div class="llogo"><div class="lbars"><span></span><span></span><span></span></div><div class="lword">FXIFY</div></div>
+    <p class="lsub">Content Engine</p>
+    <p class="lrlbl">Select your role</p>
+    <div class="rgrid">
+      <div class="rbtn active" data-role="admin"><span class="ri">⚡</span>Admin</div>
+      <div class="rbtn" data-role="writer"><span class="ri">✍️</span>Writer</div>
+      <div class="rbtn" data-role="liam"><span class="ri">🔍</span>SEO Review</div>
+      <div class="rbtn" data-role="david"><span class="ri">✅</span>Manager</div>
+    </div>
+    <button class="gbtn" id="login-btn">
+      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M15.68 8.18c0-.57-.05-1.11-.14-1.64H8v3.1h4.31a3.68 3.68 0 01-1.6 2.42v2h2.58c1.51-1.39 2.38-3.44 2.38-5.88z" fill="#4285F4"/><path d="M8 16c2.16 0 3.97-.72 5.29-1.94l-2.58-2A4.8 4.8 0 018 12.75a4.8 4.8 0 01-4.52-3.32H.83v2.07A8 8 0 008 16z" fill="#34A853"/><path d="M3.48 9.43A4.84 4.84 0 013.23 8c0-.52.09-1.02.25-1.49V4.44H.83A8 8 0 000 8c0 1.29.31 2.51.83 3.56l2.65-2.13z" fill="#FBBC05"/><path d="M8 3.18c1.22 0 2.31.42 3.17 1.24l2.37-2.37A8 8 0 008 0 8 8 0 00.83 4.44l2.65 2.07A4.8 4.8 0 018 3.18z" fill="#EA4335"/></svg>
+      Continue with Google
+    </button>
+    <p class="lnote">Access restricted to <strong>@fxify.com</strong> accounts</p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="admin" class="screen">
+  <div class="topbar">
+    <div class="tbl">
+      <button class="mtoggle" id="admin-menu-btn"><span></span><span></span><span></span></button>
+      <div class="tblogo" id="admin-logo"><div class="tbbars"><span></span><span></span><span></span></div><div class="tbname">FXIFY</div></div>
+      <div class="tbsep"></div><span class="tbctx">Admin</span>
+    </div>
+    <div class="tbr"><span class="tbu">Sheperd M.</span><div class="tbav b">SM</div></div>
+  </div>
+  <div class="awrap">
+    <div class="sbov" id="admin-ov"></div>
+    <nav class="sb" id="admin-sb">
+      <div class="ngrp">Pipeline</div>
+      <div class="nlink active" data-pg="a-pipeline" data-sc="admin"><span class="nico">◈</span>Pipeline<span class="nbadge" id="nb-pipeline">0</span></div>
+      <div class="nlink" data-pg="a-generate" data-sc="admin"><span class="nico">⚡</span>Generate Draft</div>
+      <div class="nlink" data-pg="a-review" data-sc="admin"><span class="nico">◎</span>Review Queue<span class="nbadge" id="nb-review">0</span></div>
+      <div class="ndiv"></div>
+      <div class="ngrp">Content</div>
+      <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico">▲</span>Analytics</div>
+      <div class="ndiv"></div>
+      <div class="ngrp">Settings</div>
+      <div class="nlink" data-pg="a-writers" data-sc="admin"><span class="nico">≡</span>Writers</div>
+      <div class="nlink" data-pg="a-prompts" data-sc="admin"><span class="nico">⚙</span>Prompts</div>
+    </nav>
+    <div class="ma">
+
+      <!-- PIPELINE -->
+      <div id="a-pipeline" class="pg active">
+        <div class="pgh">Content Pipeline</div>
+        <p class="pgs">All articles across the team. Click any card to reassign or update status.</p>
+        <div class="srow">
+          <div class="sc sc-r"><p class="slbl">Needs attention</p><p class="sval" style="color:var(--urgent)" id="st-overdue">—</p><p class="shin">overdue</p></div>
+          <div class="sc sc-b"><p class="slbl">In progress</p><p class="sval" id="st-drafting">—</p><p class="shin">drafting</p></div>
+          <div class="sc sc-t"><p class="slbl">In review</p><p class="sval" id="st-review">—</p><p class="shin">with reviewers</p></div>
+          <div class="sc sc-g"><p class="slbl">Published</p><p class="sval" id="st-live">—</p><p class="shin">articles live</p></div>
+        </div>
+        <div class="shead">Board</div>
+        <div class="pboard">
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--muted)">Briefed</span><span class="pcnt" id="cnt-briefed">0</span></div><div class="pbody" id="col-briefed"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--blue)">Drafting</span><span class="pcnt" id="cnt-drafting">0</span></div><div class="pbody" id="col-drafting"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--purple)">Sheperd Review</span><span class="pcnt" id="cnt-sr">0</span></div><div class="pbody" id="col-sr"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--blue)">Liam Review</span><span class="pcnt" id="cnt-lr">0</span></div><div class="pbody" id="col-lr"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--amber)">David Approval</span><span class="pcnt" id="cnt-da">0</span></div><div class="pbody" id="col-da"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--tealB)">Publishing</span><span class="pcnt" id="cnt-pub">0</span></div><div class="pbody" id="col-pub"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--green)">Live</span><span class="pcnt" id="cnt-live">0</span></div><div class="pbody" id="col-live"></div></div>
+        </div>
+      </div>
+
+      <!-- GENERATE -->
+      <div id="a-generate" class="pg">
+        <div class="pgh">Generate Draft</div>
+        <p class="pgs">Fill in the brief — Claude writes a structured draft in ~60 seconds</p>
+        <div class="tabbar">
+          <button class="tabbtn active" data-tab="core">Core</button>
+          <button class="tabbtn" data-tab="seo">SEO</button>
+          <button class="tabbtn" data-tab="geo">GEO</button>
+          <button class="tabbtn" data-tab="aeo">AEO</button>
+        </div>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:12px;">
+          <div class="tabpanel active" id="tab-core">
+            <div class="fg"><label class="flbl">Article title</label><input class="finput" id="b-title" type="text" placeholder="e.g. How to Manage Drawdown on a Funded Account"/></div>
+            <div class="frow fg">
+              <div><label class="flbl">Category</label><select class="finput" id="b-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option><option>Crypto</option></select></div>
+              <div><label class="flbl">Length</label><select class="finput" id="b-len"><option>~500 words</option><option selected>~900 words</option><option>~1,400 words</option><option>~2,000 words</option></select></div>
+            </div>
+            <div class="fg"><label class="flbl">Tone</label><div class="topts"><div class="topt active">Educational</div><div class="topt">Analytical</div><div class="topt">Motivational</div><div class="topt">News</div></div></div>
+            <div class="fg"><label class="flbl">Assign to writer</label><select class="finput" id="b-writer"><option>— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
+          </div>
+          <div class="tabpanel" id="tab-seo">
+            <div style="background:var(--blueL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--blue);">Optimise for search engines — keywords, meta, and internal linking.</div>
+            <div class="frow fg"><div><label class="flbl">Primary keyword</label><input class="finput" id="b-pkw" type="text" placeholder="e.g. funded account drawdown"/></div><div><label class="flbl">Secondary keywords</label><input class="finput" id="b-skw" type="text" placeholder="e.g. prop firm drawdown rules"/></div></div>
+            <div class="frow fg"><div><label class="flbl">Search intent</label><select class="finput" id="b-intent"><option>Informational</option><option>Commercial</option><option>Navigational</option><option>Transactional</option></select></div><div><label class="flbl">Internal links</label><input class="finput" id="b-links" type="text" placeholder="e.g. /blog/drawdown, /programs"/></div></div>
+          </div>
+          <div class="tabpanel" id="tab-geo">
+            <div style="background:var(--tealL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--teal);">Optimise for answer engines — Perplexity, Google AI Overviews, ChatGPT.</div>
+            <div class="fg"><label class="flbl">Answer target</label><input class="finput" id="b-geo" type="text" placeholder="What question should this answer in AI results?"/></div>
+            <div class="fg"><label class="flbl">Key claim</label><input class="finput" id="b-claim" type="text" placeholder="e.g. FXIFY has one of the most flexible drawdown policies"/></div>
+          </div>
+          <div class="tabpanel" id="tab-aeo">
+            <div style="background:var(--purpleL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--purple);">Optimise for featured snippets, People Also Ask, and voice search.</div>
+            <div class="fg"><label class="flbl">Primary question</label><input class="finput" id="b-q" type="text" placeholder="e.g. How do I pass a prop firm evaluation?"/></div>
+            <div class="fg"><label class="flbl">PAA targets</label><input class="finput" id="b-paa" type="text" placeholder="e.g. What happens if I fail? Can I retry?"/></div>
+          </div>
+          <button class="btn btn-p btn-f" style="max-width:200px;" id="gen-btn">Create Draft</button>
+        </div>
+        <div id="gen-banner" style="display:none;">
+          <div class="rbanner"><div class="rbt"><p>Draft created ✓</p><p id="gen-sub">Loading...</p></div><button class="btn btn-p btn-s" id="open-ed-btn">Open in editor →</button></div>
+        </div>
+      </div>
+
+      <!-- REVIEW QUEUE -->
+      <div id="a-review" class="pg">
+        <div class="pgh">Review Queue</div>
+        <p class="pgs">Submitted by writers — your first review before Liam</p>
+        <div id="a-review-list"><p class="pempty" style="padding:40px 0;">No articles in review yet.</p></div>
+      </div>
+
+      <!-- ANALYTICS -->
+      <div id="a-analytics" class="pg">
+        <div class="pgh">Analytics</div>
+        <p class="pgs">Traffic, rankings and revenue attributed to content</p>
+        <div class="agrid">
+          <div class="acard"><p class="albl">Published this month</p><p class="aval">18</p><p class="ach cu">↑ 6 vs last month</p></div>
+          <div class="acard"><p class="albl">Organic sessions</p><p class="aval">24.8K</p><p class="ach cu">↑ 34%</p></div>
+          <div class="acard"><p class="albl">Attributed sign-ups</p><p class="aval">142</p><p class="ach cu">↑ 18%</p></div>
+          <div class="acard"><p class="albl">Avg. edit time</p><p class="aval">74m</p><p class="ach cu">↓ 12m</p></div>
+          <div class="acard"><p class="albl">Attributed revenue</p><p class="aval">£14.2K</p><p class="ach cu">↑ 28%</p></div>
+          <div class="acard"><p class="albl">On-time rate</p><p class="aval">91%</p><p class="ach cd">↓ 3%</p></div>
+        </div>
+        <div class="shead">Top articles</div>
+        <div class="twrap"><table class="dtable"><thead><tr><th>Article</th><th>Sessions</th><th>Position</th><th>Sign-ups</th><th>Revenue</th></tr></thead><tbody><tr><td>How to Pass Your FXIFY Evaluation First Time</td><td>4,820</td><td>3.2</td><td>38</td><td>£3,800</td></tr><tr><td>5 Risk Management Rules for Funded Traders</td><td>3,210</td><td>5.8</td><td>24</td><td>£2,400</td></tr><tr><td>EUR/USD Weekly Outlook</td><td>2,900</td><td>4.1</td><td>18</td><td>£1,800</td></tr></tbody></table></div>
+      </div>
+
+      <!-- WRITERS -->
+      <div id="a-writers" class="pg">
+        <div class="pgh">Writers</div>
+        <p class="pgs">Team roster</p>
+        <div class="wgrid">
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--teal),var(--tealB))">FK</div><div><p class="wname">Fariha Khan</p><p class="wemail">fariha@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--purple),#9333ea)">HH</div><div><p class="wname">Harry Hosking</p><p class="wemail">harry@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--amber),#f59e0b)">IN</div><div><p class="wname">Imran Najib</p><p class="wemail">imran@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#0891b2,#06b6d4)">MA</div><div><p class="wname">Mamnun Ahmed</p><p class="wemail">mamnun@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#dc2626,#ef4444)">RG</div><div><p class="wname">Roshan Ganesh</p><p class="wemail">roshan@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SA</div><div><p class="wname">Shatha Altrad</p><p class="wemail">shatha@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--blue),#2563eb)">SM</div><div><p class="wname">Sheperd Morena</p><p class="wemail">sheperd@fxify.com</p></div></div></div>
+        </div>
+      </div>
+
+      <!-- PROMPTS -->
+      <div id="a-prompts" class="pg">
+        <div class="pgh">Prompt Library</div>
+        <p class="pgs">The master template used when generating every article draft</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:13px;font-weight:500;">FXIFY Blog Draft Prompt</span><span class="badge bt">Active</span></div>
+        <div class="pbox"><pre><span class="pc">FXIFY Blog Draft Prompt</span>
+<span class="pv">Topic:</span> [Insert topic]
+
+<span class="pc">━━ 1. CORE INSTRUCTIONS ━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pc">- FXIFY tone: direct, proof-led, no hype</span>
+<span class="pc">- Short sentences. One idea per sentence.</span>
+<span class="pc">- No filler. Every sentence must be functional.</span>
+
+<span class="pc">━━ 2. SEO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pv">Primary keyword:</span> in H1, first 100 words, at least one H2
+<span class="pv">Secondary keywords:</span> naturally in H2s and body
+
+<span class="pc">━━ 3. STRUCTURE (mandatory) ━━━━━━━━━━━━━━━━━━</span>
+<span class="pc">H1 → Intro (max 120 words) → Summary Table → ToC</span>
+<span class="pc">→ Body H2 sections → Common Mistakes</span>
+<span class="pc">→ How This Applies to Prop Trading</span>
+<span class="pc">→ Key Takeaways (bullets) → FAQ (5-7 questions)</span>
+
+<span class="pc">━━ 4. OUTPUT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
+<span class="pc">Clean draft + meta title + meta description + slug</span></pre></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- WRITER -->
+<div id="writer" class="screen">
+  <div class="topbar">
+    <div class="tbl">
+      <button class="mtoggle" id="writer-menu-btn"><span></span><span></span><span></span></button>
+      <div class="tblogo" id="writer-logo"><div class="tbbars"><span></span><span></span><span></span></div><div class="tbname">FXIFY</div></div>
+      <div class="tbsep"></div><span class="tbctx">Writer Portal</span>
+    </div>
+    <div class="tbr"><span class="tbu">Fariha K.</span><div class="tbav">FK</div></div>
+  </div>
+  <div class="awrap">
+    <div class="sbov" id="writer-ov"></div>
+    <nav class="sb" id="writer-sb">
+      <div class="ngrp">My Work</div>
+      <div class="nlink active" data-pg="w-drafts" data-sc="writer"><span class="nico">✦</span>My Drafts<span class="nbadge" id="nb-wdrafts">0</span></div>
+      <div class="nlink" data-pg="w-submitted" data-sc="writer"><span class="nico">◎</span>Submitted</div>
+      <div class="ndiv"></div>
+      <div class="ngrp">Resources</div>
+      <div class="nlink" data-pg="w-style" data-sc="writer"><span class="nico">≡</span>Style Guide</div>
+    </nav>
+    <div class="ma">
+      <div id="w-drafts" class="pg active">
+        <p style="font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;" id="greet">Good morning</p>
+        <h1 style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:.03em;">Hey Fariha, here's<br>your plate today. 👋</h1>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:20px;">Click any article to open it in the editor.</p>
+        <div class="gbox">
+          <div class="ghdr"><span style="font-size:13px;font-weight:500;">Weekly goal</span><span style="font-size:11px;color:var(--muted);">3 of 4 articles</span></div>
+          <div class="gi"><span class="glbl">Articles done</span><div class="gtrack"><div class="gbar" style="width:75%;background:var(--tealB)"></div></div><span class="gval" style="color:var(--tealB)">3/4</span></div>
+          <div class="gi"><span class="glbl">On-time rate</span><div class="gtrack"><div class="gbar" style="width:90%;background:var(--green)"></div></div><span class="gval" style="color:var(--green)">90%</span></div>
+        </div>
+        <div class="shead">Your drafts</div>
+        <div id="w-drafts-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No drafts assigned yet.</p></div>
+      </div>
+      <div id="w-submitted" class="pg">
+        <div class="pgh">Submitted</div>
+        <p class="pgs">Articles you've submitted — with Sheperd now.</p>
+        <div id="w-sub-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No submitted articles yet.</p></div>
+      </div>
+      <div id="w-style" class="pg">
+        <div class="pgh">Style Guide</div>
+        <p class="pgs">How every FXIFY article should sound.</p>
+        <div style="display:grid;gap:12px;">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
+            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">We sound like</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <div><p style="font-size:14px;font-weight:500;margin-bottom:2px;">Confident</p><p style="font-size:13px;color:var(--muted);">We know trading. No hedging or over-qualifying.</p></div>
+              <div><p style="font-size:14px;font-weight:500;margin-bottom:2px;">Direct</p><p style="font-size:13px;color:var(--muted);">Short sentences. Get to the point fast.</p></div>
+              <div><p style="font-size:14px;font-weight:500;margin-bottom:2px;">Second person</p><p style="font-size:13px;color:var(--muted);">Always "you" — talk to the trader directly.</p></div>
+            </div>
+          </div>
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
+            <p style="font-size:11px;font-weight:600;color:var(--urgent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">Never sound like</p>
+            <div style="display:flex;flex-direction:column;gap:8px;">
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--border);">Academic or overly formal</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--border);">Vague — "some traders may find..."</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--border);">"In this article we will..."</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- LIAM -->
+<div id="liam" class="screen">
+  <div class="topbar">
+    <div class="tbl">
+      <button class="mtoggle" id="liam-menu-btn"><span></span><span></span><span></span></button>
+      <div class="tblogo" id="liam-logo"><div class="tbbars"><span></span><span></span><span></span></div><div class="tbname">FXIFY</div></div>
+      <div class="tbsep"></div><span class="tbctx">SEO Review</span>
+    </div>
+    <div class="tbr"><span class="tbu">Liam</span><div class="tbav b">L</div></div>
+  </div>
+  <div class="awrap">
+    <div class="sbov" id="liam-ov"></div>
+    <nav class="sb" id="liam-sb">
+      <div class="ngrp">My Queue</div>
+      <div class="nlink active" data-pg="l-review" data-sc="liam"><span class="nico">🔍</span>SEO Review<span class="nbadge" id="nb-liam">0</span></div>
+      <div class="nlink" data-pg="l-approved" data-sc="liam"><span class="nico">▲</span>Approved</div>
+    </nav>
+    <div class="ma">
+      <div id="l-review" class="pg active">
+        <div class="pgh">SEO Review Queue</div>
+        <p class="pgs">Cleared by Sheperd — check SEO, GEO and AEO before sending to David</p>
+        <div id="l-review-list"><p class="pempty" style="padding:40px 0;">No articles in your queue.</p></div>
+      </div>
+      <div id="l-approved" class="pg">
+        <div class="pgh">Approved</div>
+        <p class="pgs">Articles you've sent to David.</p>
+        <div id="l-approved-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DAVID -->
+<div id="david" class="screen">
+  <div class="topbar">
+    <div class="tbl">
+      <button class="mtoggle" id="david-menu-btn"><span></span><span></span><span></span></button>
+      <div class="tblogo" id="david-logo"><div class="tbbars"><span></span><span></span><span></span></div><div class="tbname">FXIFY</div></div>
+      <div class="tbsep"></div><span class="tbctx">Manager</span>
+    </div>
+    <div class="tbr"><span class="tbu">David Xavier</span><div class="tbav a">DX</div></div>
+  </div>
+  <div class="awrap">
+    <div class="sbov" id="david-ov"></div>
+    <nav class="sb" id="david-sb">
+      <div class="ngrp">Approvals</div>
+      <div class="nlink active" data-pg="d-approval" data-sc="david"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>
+      <div class="nlink" data-pg="d-log" data-sc="david"><span class="nico">▲</span>Approved Log</div>
+    </nav>
+    <div class="ma">
+      <div id="d-approval" class="pg active">
+        <div class="pgh">Final Approval</div>
+        <p class="pgs">Cleared by Liam's SEO review — your sign-off sends it to publishing</p>
+        <div id="d-approval-list"><p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p></div>
+      </div>
+      <div id="d-log" class="pg">
+        <div class="pgh">Approved Log</div>
+        <p class="pgs">Articles you've approved — with Sheperd for publishing.</p>
+        <div id="d-log-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- EDITOR -->
+<div id="editor" class="screen">
+  <div class="etop">
+    <div class="ebc"><span style="cursor:pointer;color:#475569;flex-shrink:0;" id="ed-back">← Back</span><span style="color:#1e3a5f;flex-shrink:0;">/</span><span class="active" id="ed-title">Draft</span></div>
+    <div class="eacts" id="ed-writer-acts">
+      <span style="font-size:11px;color:#334155;" id="ed-save-txt"></span>
+      <button class="btn" style="border-color:#334155;color:#94a3b8;" id="ed-save-btn">Save</button>
+      <button class="btn btn-p btn-s" id="ed-submit-btn">Submit →</button>
+    </div>
+    <div class="eacts" id="ed-rv-acts" style="display:none;">
+      <button class="btn btn-d btn-s" id="ed-back-btn">Send back</button>
+      <button class="btn btn-p btn-s" id="ed-fwd-btn">Approve</button>
+    </div>
+  </div>
+  <div class="rvbar" id="rv-bar" style="display:none;">
+    <span class="rvlbl" id="rv-lbl">Reviewing</span>
+    <input class="rvnote" id="rv-note" type="text" placeholder="Leave a note for the writer (optional)..."/>
+    <div class="rvacts" id="rv-acts"></div>
+  </div>
+  <div class="rlayout">
+    <div class="esb">
+      <div class="esblk"><p class="eslbl">Priority</p><span class="badge bn" id="ed-pri">Normal</span></div>
+      <div class="esblk"><p class="eslbl">Keyword</p><span class="eschip" id="ed-kw">—</span></div>
+      <div class="esblk"><p class="eslbl">Word count</p><p style="font-size:13px;color:#cbd5e1;" id="ed-wc">0 words</p></div>
+      <div class="esdiv"></div>
+      <div class="esblk" style="width:100%;">
+        <p class="eslbl" style="margin-bottom:8px;">SEO Score</p>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="snum" style="color:var(--blue);" id="ed-seo">—</div><div style="flex:1;"><div class="sbg"><div class="sbf" style="background:var(--blue);width:0%;" id="ed-seo-bar"></div></div><p class="sh" id="ed-seo-h">—</p></div></div>
+      </div>
+      <div class="esblk" style="width:100%;">
+        <p class="eslbl" style="margin-bottom:8px;">GEO Score</p>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="snum" style="color:var(--tealB);" id="ed-geo">—</div><div style="flex:1;"><div class="sbg"><div class="sbf" style="background:var(--tealB);width:0%;" id="ed-geo-bar"></div></div><p class="sh" id="ed-geo-h">—</p></div></div>
+      </div>
+      <div class="esblk" style="width:100%;">
+        <p class="eslbl" style="margin-bottom:8px;">AEO Score</p>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="snum" style="color:var(--purple);" id="ed-aeo">—</div><div style="flex:1;"><div class="sbg"><div class="sbf" style="background:var(--purple);width:0%;" id="ed-aeo-bar"></div></div><p class="sh" id="ed-aeo-h">—</p></div></div>
+      </div>
+      <div class="esdiv"></div>
+      <div class="esblk" style="width:100%;">
+        <p class="eslbl" style="margin-bottom:8px;">Before submitting</p>
+        <div id="checklist">
+          <div class="chk"><div class="chkb"></div><span>Hook is strong</span></div>
+          <div class="chk"><div class="chkb"></div><span>Keyword used naturally</span></div>
+          <div class="chk"><div class="chkb"></div><span>Key terms defined</span></div>
+          <div class="chk"><div class="chkb"></div><span>Facts verified</span></div>
+          <div class="chk"><div class="chkb"></div><span>CTA is clear</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="ecanvas" id="ed-canvas">
+      <div class="afeat"><span>Featured image</span></div>
+      <div class="ambar"><span class="amtag" id="ed-cat">Guides</span><span class="ami">By Fariha Khan</span><span class="ami">·</span><span class="ami" id="ed-date">April 2026</span></div>
+      <div class="abody" id="ed-body"><p style="color:var(--muted);font-style:italic;">Generate a draft to see it here.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- DRAWER -->
+<div class="dov" id="dov"></div>
+<div class="drawer" id="drawer">
+  <div class="dhead"><div class="dtitle" id="d-title">Edit Article</div><button class="dclose" id="d-close">×</button></div>
+  <div class="fg"><label class="flbl">Assign to writer</label><select class="finput" id="d-writer"><option value="">— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
+  <div class="fg"><label class="flbl">Priority</label><select class="finput" id="d-pri"><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent</option><option value="Low">Low</option></select></div>
+  <div class="fg"><label class="flbl">Status</label><select class="finput" id="d-status"><option value="Briefed">Briefed</option><option value="Drafting">Drafting</option><option value="Sheperd Review">Sheperd Review</option><option value="Liam Review">Liam Review</option><option value="David Approval">David Approval</option><option value="Publishing">Publishing</option><option value="Live">Live</option></select></div>
+  <button class="btn btn-p btn-f" id="d-save">Save changes</button>
+</div>
+
+<!-- SENDBACK MODAL -->
+<div class="mov" id="sbmod">
+  <div class="mbox">
+    <p class="mtitle">Send back to writer</p>
+    <p class="msub">Leave a note explaining what needs to change.</p>
+    <textarea class="mta" id="sb-note" placeholder="e.g. The intro needs a direct answer in the first two sentences..."></textarea>
+    <div class="macts"><button class="btn" id="sb-cancel">Cancel</button><button class="btn btn-d" id="sb-confirm">Send back</button></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+(function(){
+'use strict';
+
+// ── SUPABASE ──────────────────────────────────────────────────────────────
+var supa = supabase.createClient(
+  'https://geeihjpvyclvqmrxbjxp.supabase.co',
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM'
+);
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+var activeRole = 'admin';
+var prevScreen = 'admin';
+var currentArt = null;
+var currentRole = 'writer';
+var drawerArt = null;
+var sbCallback = null;
+
+// ── UTILS ─────────────────────────────────────────────────────────────────
+function toast(msg){
+  var t=document.getElementById('toast');
+  t.textContent=msg; t.classList.add('show');
+  setTimeout(function(){t.classList.remove('show');},3000);
+}
+
+function pclass(p){
+  if(p==='Urgent') return 'bu';
+  if(p==='High') return 'bh';
+  if(p==='Low') return 'bl';
+  return 'bn';
+}
+
+function goScreen(id){
+  if(id!=='editor') prevScreen=id;
+  document.querySelectorAll('.screen').forEach(function(s){s.classList.remove('active');});
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  closeSB();
+}
+
+function goPage(sc,pg,navEl){
+  document.querySelectorAll('#'+sc+' .nlink').forEach(function(n){n.classList.remove('active');});
+  if(navEl) navEl.classList.add('active');
+  document.querySelectorAll('#'+sc+' .pg').forEach(function(p){p.classList.remove('active');});
+  document.getElementById(pg).classList.add('active');
+  window.scrollTo(0,0); closeSB();
+  if(pg==='a-pipeline') loadPipeline();
+  if(pg==='a-review') loadReviewQ();
+  if(pg==='w-drafts') loadWriterDrafts();
+  if(pg==='l-review') loadLiamQ();
+  if(pg==='d-approval') loadDavidQ();
+}
+
+function closeSB(){
+  ['admin','writer','liam','david'].forEach(function(r){
+    var sb=document.getElementById(r+'-sb');
+    var ov=document.getElementById(r+'-ov');
+    if(sb) sb.classList.remove('open');
+    if(ov) ov.classList.remove('show');
+  });
+}
+
+// ── DB HELPERS ────────────────────────────────────────────────────────────
+async function dbInsert(data){
+  var status=(data.assignee&&data.assignee!=='— Unassigned —')?'Drafting':'Briefed';
+  var res=await supa.from('articles').insert([{
+    title:data.title, category:data.category||'Guides', status:status,
+    priority:data.priority||'Normal',
+    primary_kw:data.primaryKw||'',
+    assignee:(data.assignee==='— Unassigned —'?'':data.assignee)||'',
+    content:data.content||'', doc_url:data.docUrl||'',
+    word_count:data.content?data.content.split(/\s+/).filter(Boolean).length:0,
+    tone:data.tone||'', length:data.length||''
+  }]).select();
+  if(res.error){console.error('insert:',res.error);return null;}
+  return res.data[0];
+}
+
+async function dbUpdate(id,fields){
+  fields.updated_at=new Date().toISOString();
+  var res=await supa.from('articles').update(fields).eq('id',id);
+  if(res.error) console.error('update:',res.error);
+}
+
+// ── PIPELINE ──────────────────────────────────────────────────────────────
+async function loadPipeline(){
+  var res=await supa.from('articles').select('*').order('created_at',{ascending:false});
+  if(res.error||!res.data) return;
+  var arts=res.data;
+  var groups={'Briefed':[],'Drafting':[],'Sheperd Review':[],'Liam Review':[],'David Approval':[],'Publishing':[],'Live':[]};
+  arts.forEach(function(a){if(groups[a.status]) groups[a.status].push(a);});
+  var cols={Briefed:'briefed',Drafting:'drafting','Sheperd Review':'sr','Liam Review':'lr','David Approval':'da',Publishing:'pub',Live:'live'};
+  Object.keys(cols).forEach(function(st){
+    var col=document.getElementById('col-'+cols[st]);
+    var cnt=document.getElementById('cnt-'+cols[st]);
+    if(!col) return;
+    col.innerHTML='';
+    var list=groups[st]||[];
+    if(cnt) cnt.textContent=list.length;
+    if(!list.length){col.innerHTML='<p class="pempty">Empty</p>';return;}
+    list.forEach(function(art){
+      var c=document.createElement('div');
+      c.className='pcard';
+      if(art.priority==='Urgent') c.style.borderLeft='2px solid var(--urgent)';
+      if(art.priority==='High') c.style.borderLeft='2px solid var(--high)';
+      c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p><div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="pcw">'+(art.assignee||'—')+'</span></div>';
+      c.addEventListener('click',function(){openDrawer(art);});
+      col.appendChild(c);
+    });
+  });
+  // Stats
+  function s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  s('st-overdue',arts.filter(function(a){return a.status!=='Live'&&a.status!=='Publishing';}).length);
+  s('st-drafting',groups['Drafting'].length);
+  s('st-review',(groups['Sheperd Review'].length+groups['Liam Review'].length+groups['David Approval'].length));
+  s('st-live',groups['Live'].length);
+  var nb=document.getElementById('nb-pipeline');
+  if(nb) nb.textContent=arts.filter(function(a){return a.status!=='Live';}).length;
+}
+
+// ── REVIEW CARD BUILDER ───────────────────────────────────────────────────
+function makeReviewCard(art,opts){
+  var c=document.createElement('div');
+  c.className='card'+(art.priority==='Urgent'?' pu':art.priority==='High'?' ph':'');
+  c.innerHTML=
+    '<div class="cbody"><div class="ctop"><p class="ctitle">'+(art.title||'Untitled')+'</p><div style="display:flex;gap:5px;"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span></div></div></div>'+
+    '<div class="cmeta"><span class="mkw">'+(art.primary_kw||'')+'</span><span class="mtime">'+(art.word_count||0)+' words</span><span class="mdue ds">'+(art.assignee||'Unassigned')+'</span></div>'+
+    '<div class="cfoot"><span class="cfi">'+(art.category||'Guides')+'</span><div style="display:flex;gap:6px;"><button class="btn btn-d btn-s" data-a="back">Send back</button><button class="btn btn-p btn-s" data-a="fwd">'+opts.fwdLabel+'</button></div></div>';
+  c.addEventListener('click',function(e){if(e.target.closest('button')) return; openEditor(art,opts.role);});
+  c.querySelector('[data-a="back"]').addEventListener('click',function(e){
+    e.stopPropagation();
+    openSendback(function(){
+      dbUpdate(art.id,{status:'Drafting'}).then(function(){
+        c.remove(); toast('Sent back to writer');
+        loadPipeline(); loadWriterDrafts();
+        checkEmpty(opts.listId);
+      });
+    });
+  });
+  c.querySelector('[data-a="fwd"]').addEventListener('click',function(e){
+    e.stopPropagation();
+    dbUpdate(art.id,{status:opts.nextStatus}).then(function(){
+      c.remove(); toast('Approved → '+opts.nextStatus+' ✓');
+      loadPipeline();
+      if(opts.nextStatus==='Liam Review') loadLiamQ();
+      if(opts.nextStatus==='David Approval') loadDavidQ();
+      checkEmpty(opts.listId);
+    });
+  });
+  return c;
+}
+
+function checkEmpty(listId){
+  var l=document.getElementById(listId);
+  if(l&&!l.querySelector('.card')) l.innerHTML='<p class="pempty" style="padding:40px 0;">Queue is empty.</p>';
+}
+
+async function loadReviewQ(){
+  var res=await supa.from('articles').select('*').eq('status','Sheperd Review').order('created_at',{ascending:false});
+  var l=document.getElementById('a-review-list');
+  if(!l) return;
+  if(res.error||!res.data||!res.data.length){l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles in review.</p>';var nb=document.getElementById('nb-review');if(nb)nb.textContent='';return;}
+  l.innerHTML='';
+  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'sheperd',fwdLabel:'Approve → Liam',nextStatus:'Liam Review',listId:'a-review-list'}));});
+  var nb=document.getElementById('nb-review');if(nb)nb.textContent=res.data.length;
+}
+
+async function loadLiamQ(){
+  var res=await supa.from('articles').select('*').eq('status','Liam Review').order('created_at',{ascending:false});
+  var l=document.getElementById('l-review-list');
+  if(!l) return;
+  if(res.error||!res.data||!res.data.length){l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles in your queue.</p>';var nb=document.getElementById('nb-liam');if(nb)nb.textContent='';return;}
+  l.innerHTML='';
+  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'liam',fwdLabel:'Approve → David',nextStatus:'David Approval',listId:'l-review-list'}));});
+  var nb=document.getElementById('nb-liam');if(nb)nb.textContent=res.data.length;
+}
+
+async function loadDavidQ(){
+  var res=await supa.from('articles').select('*').eq('status','David Approval').order('created_at',{ascending:false});
+  var l=document.getElementById('d-approval-list');
+  if(!l) return;
+  if(res.error||!res.data||!res.data.length){l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p>';var nb=document.getElementById('nb-david');if(nb)nb.textContent='';return;}
+  l.innerHTML='';
+  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'david',fwdLabel:'Final approval ✓',nextStatus:'Publishing',listId:'d-approval-list'}));});
+  var nb=document.getElementById('nb-david');if(nb)nb.textContent=res.data.length;
+}
+
+async function loadWriterDrafts(){
+  var res=await supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
+  var l=document.getElementById('w-drafts-list');
+  if(!l) return;
+  if(res.error||!res.data||!res.data.length){l.innerHTML='<p style="font-size:13px;color:var(--muted);padding:20px 0;">No drafts assigned yet.</p>';var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
+  l.innerHTML='';
+  res.data.forEach(function(art){
+    var c=document.createElement('div');
+    c.className='card'+(art.priority==='Urgent'?' pu':art.priority==='High'?' ph':'');
+    c.style.cursor='pointer';
+    c.innerHTML=
+      '<div class="cbody"><div class="ctop"><p class="ctitle">'+(art.title||'Untitled')+'</p><div style="display:flex;gap:5px;"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span></div></div>'+
+      '<div class="iblock"><p class="itag">Brief</p><p class="itext">Category: '+(art.category||'Guides')+' · Tone: '+(art.tone||'Educational')+' · '+(art.word_count||0)+' words generated</p></div></div>'+
+      '<div class="cmeta"><span class="mkw">'+(art.primary_kw||art.title||'')+'</span><span class="mtime">'+(art.word_count||0)+' words</span></div>'+
+      '<div class="cfoot"><span class="cfi">'+(art.category||'Guides')+'</span><button class="btn btn-p btn-s">Open draft →</button></div>';
+    var fn=function(){openEditor(art,'writer');};
+    c.addEventListener('click',function(e){if(!e.target.closest('button')) fn();});
+    c.querySelector('button').addEventListener('click',function(e){e.stopPropagation();fn();});
+    l.appendChild(c);
+  });
+  var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent=res.data.length;
+}
+
+// ── EDITOR ────────────────────────────────────────────────────────────────
+function openEditor(art,role){
+  currentArt=art; currentRole=role;
+  document.getElementById('ed-title').textContent=art.title||'Draft';
+  document.getElementById('ed-cat').textContent=art.category||'Guides';
+  document.getElementById('ed-kw').textContent=art.primary_kw||'—';
+  document.getElementById('ed-wc').textContent=(art.word_count||0)+' words';
+  setScore('seo',art.seo_score||0);
+  setScore('geo',art.geo_score||0);
+  setScore('aeo',art.aeo_score||0);
+  var priEl=document.getElementById('ed-pri');
+  if(priEl){priEl.textContent=art.priority||'Normal';priEl.className='badge '+pclass(art.priority);}
+  var body=document.getElementById('ed-body');
+  if(body) body.innerHTML=art.content?parseArt(art.content,art.primary_kw):'<p style="color:var(--muted);font-style:italic;">No content yet.</p>';
+  var wa=document.getElementById('ed-writer-acts');
+  var ra=document.getElementById('ed-rv-acts');
+  var rb=document.getElementById('rv-bar');
+  var rl=document.getElementById('rv-lbl');
+  if(role==='writer'){
+    wa.style.display='flex'; ra.style.display='none'; rb.style.display='none';
+  } else {
+    wa.style.display='none'; ra.style.display='flex'; rb.style.display='flex';
+    var labels={sheperd:'Reviewing as Sheperd — 1st review',liam:'SEO Review — Liam',david:'Final Approval — David Xavier'};
+    if(rl) rl.textContent=labels[role]||'Reviewing';
+    var fwd=document.getElementById('ed-fwd-btn');
+    var flabels={sheperd:'Approve → Liam',liam:'Approve → David',david:'Final approval ✓'};
+    if(fwd) fwd.textContent=flabels[role]||'Approve';
+  }
+  goScreen('editor');
+}
+
+function setScore(type,score){
+  var n=document.getElementById('ed-'+type);
+  var b=document.getElementById('ed-'+type+'-bar');
+  var h=document.getElementById('ed-'+type+'-h');
+  if(n) n.textContent=score||'—';
+  if(b) b.style.width=(score||0)+'%';
+  if(h) h.textContent=score>=85?'Good':score>=70?'Needs work':score?'Poor':'—';
+}
+
+// ── ARTICLE PARSER ────────────────────────────────────────────────────────
+function parseArt(text,kw){
+  var mi=text.search(/\n(Meta title|7\. META|━━ 7\.)/i);
+  var body=mi>0?text.substring(0,mi):text;
+  var lines=body.split('\n');
+  var html='',inUl=false,inOl=false,inTable=false;
+  var kre=kw?new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'):null;
+  function ca(){if(inUl){html+='</ul>';inUl=false;}if(inOl){html+='</ol>';inOl=false;}if(inTable){html+='</tbody></table></div>';inTable=false;}}
+  function pr(s){
+    s=s.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    s=s.replace(/\[INTERNAL LINK: ([^\]]+)\]/g,'<a class="int-link">$1 ↗</a>');
+    if(kre) s=s.replace(kre,'<span class="kw-hl">$1</span>');
+    return s;
+  }
+  lines.forEach(function(raw){
+    var l=raw.trim();
+    if(!l){ca();return;}
+    if(l.startsWith('# ')){ca();html+='<h1>'+pr(l.slice(2))+'</h1>';return;}
+    if(l.startsWith('## ')){ca();html+='<h2>'+pr(l.slice(3))+'</h2>';return;}
+    if(l.startsWith('### ')){ca();html+='<h3>'+pr(l.slice(4))+'</h3>';return;}
+    if(l.startsWith('[VISUAL:')){ca();html+='<div class="aimg">📷 '+l.replace('[VISUAL:','').replace(']','').trim()+'</div>';return;}
+    if(l.startsWith('[INTERNAL LINK:')) return;
+    if(l.startsWith('|')){
+      if(l.replace(/[\|:\- ]/g,'')==='') return;
+      if(!inTable){html+='<div style="overflow-x:auto;margin:16px 0;"><table class="dtable"><tbody>';inTable=true;}
+      var cells=l.split('|').filter(function(c){return c.trim();});
+      html+='<tr>'+cells.map(function(c){return '<td>'+c.trim()+'</td>';}).join('')+'</tr>';return;
+    }
+    if(l.match(/^[-*•]\s/)){if(inOl){html+='</ol>';inOl=false;}if(inTable){html+='</tbody></table></div>';inTable=false;}if(!inUl){html+='<ul>';inUl=true;}html+='<li>'+pr(l.replace(/^[-*•]\s/,''))+'</li>';return;}
+    if(l.match(/^\d+\.\s/)){if(inUl){html+='</ul>';inUl=false;}if(inTable){html+='</tbody></table></div>';inTable=false;}if(!inOl){html+='<ol>';inOl=true;}html+='<li>'+pr(l.replace(/^\d+\.\s/,''))+'</li>';return;}
+    ca();html+='<p>'+pr(l)+'</p>';
+  });
+  ca();
+  html+='<div class="acta"><p>Ready to start your funded trading journey? FXIFY offers evaluation programs starting from $25,000 accounts.</p><button class="btn btn-p" style="margin:0 auto;">Get Funded with FXIFY →</button></div>';
+  return html||'<p style="color:var(--muted)">No content.</p>';
+}
+
+// ── DRAWER ────────────────────────────────────────────────────────────────
+function openDrawer(art){
+  drawerArt=art;
+  document.getElementById('d-title').textContent=art.title||'Edit Article';
+  document.getElementById('d-writer').value=art.assignee||'';
+  document.getElementById('d-pri').value=art.priority||'Normal';
+  document.getElementById('d-status').value=art.status||'Briefed';
+  document.getElementById('drawer').classList.add('open');
+  document.getElementById('dov').classList.add('open');
+}
+function closeDrawer(){
+  document.getElementById('drawer').classList.remove('open');
+  document.getElementById('dov').classList.remove('open');
+  drawerArt=null;
+}
+
+// ── SEND BACK MODAL ───────────────────────────────────────────────────────
+function openSendback(cb){
+  sbCallback=cb;
+  document.getElementById('sb-note').value='';
+  document.getElementById('sbmod').classList.add('open');
+}
+
+// ── GENERATE ──────────────────────────────────────────────────────────────
+async function generate(){
+  var title=document.getElementById('b-title').value.trim();
+  if(!title){toast('Add a title first');return;}
+  var cat=document.getElementById('b-cat').value;
+  var len=document.getElementById('b-len').value;
+  var writer=document.getElementById('b-writer').value;
+  var tone=document.querySelector('.topt.active')?document.querySelector('.topt.active').textContent.trim():'Educational';
+  var pkw=document.getElementById('b-pkw').value.trim()||title.toLowerCase();
+  var skw=document.getElementById('b-skw').value.trim();
+  var intent=document.getElementById('b-intent').value;
+  var links=document.getElementById('b-links').value.trim();
+  var geo=document.getElementById('b-geo').value.trim();
+  var q=document.getElementById('b-q').value.trim();
+  var btn=document.getElementById('gen-btn');
+  btn.textContent='Writing...'; btn.disabled=true;
+  var prompt='FXIFY Blog Draft Prompt\n\nTopic: '+title+'\nCategory: '+cat+'\nTarget length: '+len+'\nTone: '+tone+'\n\n'+
+    '1. CORE INSTRUCTIONS\n- Direct, proof-led, no hype. Short sentences.\n- No filler. Every sentence functional.\n\n'+
+    '2. SEO\nPrimary keyword: '+pkw+'\nSecondary keywords: '+(skw||'prop trading, funded trader')+'\nSearch intent: '+intent+'\n'+(links?'Internal links: '+links+'\n':'')+'\n'+
+    '3. STRUCTURE (mandatory)\nH1 → Intro (max 120 words) → Quick Summary Table → Table of Contents\n→ Body H2 sections with [VISUAL: description] placeholders\n→ Common Mistakes → How This Applies to Prop Trading\n→ Key Takeaways (bullet points only) → FAQ (5-7 questions)\nInclude [INTERNAL LINK: topic] placeholders contextually.\n\n'+
+    '4. FXIFY BRAND\n1-2 natural mentions. Proof-led. Use only: starting capital, performance split, evaluation programs.\n\n'+
+    '5. META (after article)\nMeta title (60 chars) · Meta description (160 chars) · URL slug · Schema type\n\n'+
+    (geo?'6. GEO answer target: '+geo+'\n':'')+(q?'7. AEO primary question: '+q+'\n':'')+
+    '\nOutput clean blog draft then meta section. No explanations outside the article.';
+  try{
+    var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:4000})});
+    var data=await r.json();
+    var text='';
+    if(Array.isArray(data)&&data[0]&&data[0].content&&data[0].content[0]) text=data[0].content[0].text;
+    else if(data.content&&data.content[0]) text=data.content[0].text;
+    else if(data.text) text=data.text;
+    if(!text) throw new Error('No content returned from n8n');
+    var wc=text.split(/\s+/).filter(Boolean).length;
+    currentArt={title:title,category:cat,assignee:writer,primaryKw:pkw,content:text,tone:tone,length:len,word_count:wc};
+    var saved=await dbInsert(currentArt);
+    if(saved){currentArt.id=saved.id;toast('Draft saved to pipeline ✓');loadPipeline();loadWriterDrafts();}
+    var banner=document.getElementById('gen-banner');
+    var sub=document.getElementById('gen-sub');
+    if(banner) banner.style.display='block';
+    if(sub) sub.textContent=wc+' words · '+(writer==='— Unassigned —'?'Unassigned':writer);
+    fetch('/.netlify/functions/create-doc',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({title:title,content:text})}).then(function(r2){return r2.json();}).then(function(d){if(d.docUrl&&saved) dbUpdate(saved.id,{doc_url:d.docUrl});}).catch(function(){});
+  }catch(e){console.error(e);toast('Error: '+e.message);}
+  btn.textContent='Create Draft'; btn.disabled=false;
+}
+
+// ── INIT ──────────────────────────────────────────────────────────────────
+function init(){
+  // Greeting
+  var h=new Date().getHours();
+  var g=document.getElementById('greet');
+  if(g) g.textContent=h<12?'Good morning':h<17?'Good afternoon':'Good evening';
+
+  // Load data
+  loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
+
+  // Role btns
+  document.querySelectorAll('.rbtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      document.querySelectorAll('.rbtn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      activeRole=b.getAttribute('data-role');
+    });
+  });
+
+  // Login
+  document.getElementById('login-btn').addEventListener('click',function(){goScreen(activeRole);});
+
+  // Logos → login
+  ['admin','writer','liam','david'].forEach(function(r){
+    var logo=document.getElementById(r+'-logo');
+    if(logo) logo.addEventListener('click',function(){goScreen('login');});
+    var mbtn=document.getElementById(r+'-menu-btn');
+    var sb=document.getElementById(r+'-sb');
+    var ov=document.getElementById(r+'-ov');
+    if(mbtn) mbtn.addEventListener('click',function(){sb.classList.toggle('open');ov.classList.toggle('show');});
+    if(ov) ov.addEventListener('click',closeSB);
+  });
+
+  // Nav links
+  document.querySelectorAll('.nlink[data-pg]').forEach(function(link){
+    link.addEventListener('click',function(){goPage(link.getAttribute('data-sc'),link.getAttribute('data-pg'),link);});
+  });
+
+  // Tone
+  document.querySelectorAll('.topt').forEach(function(o){
+    o.addEventListener('click',function(){
+      o.closest('.topts').querySelectorAll('.topt').forEach(function(x){x.classList.remove('active');});
+      o.classList.add('active');
+    });
+  });
+
+  // Tabs
+  document.querySelectorAll('.tabbtn').forEach(function(b){
+    b.addEventListener('click',function(){
+      var bar=b.closest('.tabbar');
+      bar.querySelectorAll('.tabbtn').forEach(function(x){x.classList.remove('active');});
+      b.classList.add('active');
+      document.querySelectorAll('.tabpanel').forEach(function(p){p.classList.remove('active');});
+      var panel=document.getElementById('tab-'+b.getAttribute('data-tab'));
+      if(panel) panel.classList.add('active');
+    });
+  });
+
+  // Generate
+  document.getElementById('gen-btn').addEventListener('click',generate);
+  document.getElementById('open-ed-btn').addEventListener('click',function(){if(currentArt) openEditor(currentArt,'sheperd');});
+
+  // Editor back
+  document.getElementById('ed-back').addEventListener('click',function(){goScreen(prevScreen);});
+
+  // Editor save
+  document.getElementById('ed-save-btn').addEventListener('click',function(){
+    if(currentArt&&currentArt.id) dbUpdate(currentArt.id,{content:currentArt.content}).then(function(){toast('Saved ✓');});
+    else toast('Saved ✓');
+  });
+
+  // Editor submit (writer)
+  document.getElementById('ed-submit-btn').addEventListener('click',function(){
+    if(!currentArt||!currentArt.id){toast('No draft to submit');return;}
+    dbUpdate(currentArt.id,{status:'Sheperd Review'}).then(function(){
+      toast('Submitted to Sheperd ✓');
+      loadPipeline(); loadReviewQ(); loadWriterDrafts();
+      setTimeout(function(){goScreen(prevScreen);},1800);
+    });
+  });
+
+  // Reviewer forward
+  document.getElementById('ed-fwd-btn').addEventListener('click',function(){
+    if(!currentArt||!currentArt.id) return;
+    var map={sheperd:'Liam Review',liam:'David Approval',david:'Publishing'};
+    var next=map[currentRole];
+    if(!next) return;
+    dbUpdate(currentArt.id,{status:next}).then(function(){
+      toast('Approved → '+next+' ✓');
+      loadPipeline(); loadReviewQ(); loadLiamQ(); loadDavidQ();
+      setTimeout(function(){goScreen(prevScreen);},1800);
+    });
+  });
+
+  // Reviewer send back
+  document.getElementById('ed-back-btn').addEventListener('click',function(){
+    if(!currentArt||!currentArt.id) return;
+    openSendback(function(){
+      dbUpdate(currentArt.id,{status:'Drafting'}).then(function(){
+        toast('Sent back to writer');
+        loadPipeline(); loadWriterDrafts();
+        setTimeout(function(){goScreen(prevScreen);},1800);
+      });
+    });
+  });
+
+  // Drawer
+  document.getElementById('d-close').addEventListener('click',closeDrawer);
+  document.getElementById('dov').addEventListener('click',closeDrawer);
+  document.getElementById('d-save').addEventListener('click',async function(){
+    if(!drawerArt) return;
+    var assignee=document.getElementById('d-writer').value;
+    var priority=document.getElementById('d-pri').value;
+    var status=document.getElementById('d-status').value;
+    await dbUpdate(drawerArt.id,{assignee:assignee,priority:priority,status:status});
+    closeDrawer(); toast('Updated ✓');
+    loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadLiamQ(); loadDavidQ();
+  });
+
+  // Sendback modal
+  document.getElementById('sb-cancel').addEventListener('click',function(){document.getElementById('sbmod').classList.remove('open');sbCallback=null;});
+  document.getElementById('sb-confirm').addEventListener('click',function(){document.getElementById('sbmod').classList.remove('open');if(sbCallback){sbCallback();sbCallback=null;}});
+  document.getElementById('sbmod').addEventListener('click',function(e){if(e.target===this){this.classList.remove('open');sbCallback=null;}});
+
+  // Checklist
+  document.querySelectorAll('#checklist .chk').forEach(function(item){
+    item.addEventListener('click',function(){
+      var cb=item.querySelector('.chkb');
+      cb.classList.toggle('on');
+      cb.textContent=cb.classList.contains('on')?'✓':'';
+    });
+  });
+}
+
+init();
+})();
+</script>
+</body>
+</html>
