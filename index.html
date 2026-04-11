@@ -1793,6 +1793,9 @@ function initInlineComments() {
 function initImageUpload() {
   var input = document.getElementById('img-upload');
   if (!input) return;
+  // Only initialise once
+  if (window._imgUploadInit) return;
+  window._imgUploadInit = true;
   
   // Handle clickable image placeholders via delegation on document
   document.addEventListener('click', function(e) {
@@ -1801,13 +1804,13 @@ function initImageUpload() {
     if (ph) { 
       e.preventDefault();
       e.stopPropagation();
-      window._imgTarget = ph; 
-      input.click(); 
+      window._imgTarget = ph;
+      document.getElementById('img-upload').click(); 
     } else if (ri) { 
       e.preventDefault();
       e.stopPropagation();
-      window._imgTarget = ri; 
-      input.click(); 
+      window._imgTarget = ri;
+      document.getElementById('img-upload').click(); 
     }
   });
 
@@ -1908,17 +1911,34 @@ function wireSuggestionSpans() {
 function makeImgPlaceholders() {
   var edEl = document.getElementById('tiptap-editor');
   if (!edEl) return;
-  // Convert [VISUAL:...] text into clickable placeholders
-  edEl.innerHTML = edEl.innerHTML.replace(
-    /<p><em>📷 ([^<]*)<\/em><\/p>/g,
-    function(match, caption) {
-      var label = caption ? caption.trim() : 'Click to add image';
-      return '<div class="img-placeholder" data-imgplaceholder="true" style="cursor:pointer;">' +
-        '<div class="ip-icon" style="pointer-events:none;">📷</div>' +
-        '<span style="pointer-events:none;">' + label + '</span>' +
+
+  // Match multiple possible formats the parser might produce
+  var patterns = [
+    // <p><em>📷 caption</em></p>
+    { re: /<p><em>📷\s*([^<]*)<\/em><\/p>/g },
+    // <p>📷 caption</p>  
+    { re: /<p>📷\s*([^<]*)<\/p>/g },
+    // plain [VISUAL: caption] that wasn't converted
+    { re: /\[VISUAL:\s*([^\]]*)\]/g }
+  ];
+
+  var content = edEl.innerHTML;
+  var replaced = false;
+
+  patterns.forEach(function(p) {
+    var newContent = content.replace(p.re, function(match, caption) {
+      replaced = true;
+      var label = (caption || '').trim() || 'Click to add image';
+      return '<div class="img-placeholder" data-imgplaceholder="true">' +
+        '<div style="font-size:28px;pointer-events:none;">📷</div>' +
+        '<span style="font-size:12px;color:var(--muted);pointer-events:none;text-align:center;padding:0 16px;">' + label + '</span>' +
+        '<span style="font-size:10px;color:var(--tealB);font-weight:600;pointer-events:none;margin-top:4px;">CLICK TO UPLOAD</span>' +
         '</div>';
-    }
-  );
+    });
+    content = newContent;
+  });
+
+  if (replaced) edEl.innerHTML = content;
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
