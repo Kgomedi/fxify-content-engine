@@ -463,7 +463,7 @@ select.finput{cursor:pointer;}
       <svg width="16" height="16" viewBox="0 0 16 16"><path d="M15.68 8.18c0-.57-.05-1.11-.14-1.64H8v3.1h4.31a3.68 3.68 0 01-1.6 2.42v2h2.58c1.51-1.39 2.38-3.44 2.38-5.88z" fill="#4285F4"/><path d="M8 16c2.16 0 3.97-.72 5.29-1.94l-2.58-2A4.8 4.8 0 018 12.75a4.8 4.8 0 01-4.52-3.32H.83v2.07A8 8 0 008 16z" fill="#34A853"/><path d="M3.48 9.43A4.84 4.84 0 013.23 8c0-.52.09-1.02.25-1.49V4.44H.83A8 8 0 000 8c0 1.29.31 2.51.83 3.56l2.65-2.13z" fill="#FBBC05"/><path d="M8 3.18c1.22 0 2.31.42 3.17 1.24l2.37-2.37A8 8 0 008 0 8 8 0 00.83 4.44l2.65 2.07A4.8 4.8 0 018 3.18z" fill="#EA4335"/></svg>
       Continue with Google
     </button>
-    <p class="lnote">FXIFY crew only. Don't share your code 🤫</p>
+    <p class="lnote">FXIFY crew only — keep your code safe 🤫</p>
   </div>
 </div>
 
@@ -1226,7 +1226,7 @@ async function loadWriterDrafts(){
   var res=await supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
   var l=document.getElementById('w-drafts-list');
   if(!l) return;
-  if(res.error||!res.data||!res.data.length){l.innerHTML='<p style="font-size:13px;color:var(--muted);padding:20px 0;">No drafts yet — sit tight, Sheperd's cooking up briefs </p>';var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
+  if(res.error||!res.data||!res.data.length){l.innerHTML="<p style='font-size:13px;color:var(--muted);padding:20px 0;'>No drafts yet. Briefs coming soon.</p>"var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
   l.innerHTML='';
   res.data.forEach(function(art){
     var c=document.createElement('div');
@@ -1970,7 +1970,7 @@ function wireMeta() {
       'Schema Type: ' + (m.SCHEMA_TYPE||'Article') + '\n' +
       'Reading Time: ' + rt + ' min\n';
     navigator.clipboard.writeText(metaText).then(function() {
-      toast('Meta copied — paste it into Yoast and you're done ");
+      toast('Meta copied — paste into Yoast and done ✓');
     }).catch(function() {
       var ta = document.createElement('textarea');
       ta.value = metaText;
@@ -1978,7 +1978,7 @@ function wireMeta() {
       ta.select();
       document.execCommand('copy');
       document.body.removeChild(ta);
-      toast('Meta copied — paste it into Yoast and you're done ");
+      toast('Meta copied — paste into Yoast and done ✓');
     });
   });
 }
@@ -2698,46 +2698,9 @@ function init(){
   // Load data
   loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
 
-  // Role buttons wired above with login
-
-  // Login with PIN modal
-  var rolePins = { admin: 'fxify2024', writer: 'writer2024', liam: 'seo2024', david: 'manager2024' };
-  var roleIcons = { admin: 'Admin', writer: 'Writer', liam: 'SEO Review', david: 'Manager' };
-  var roleTitles = { admin: 'Admin Access', writer: 'Writer Access', liam: 'SEO Reviewer Access', david: 'Manager Access' };
-
-  function openPinModal() {
-    var icon = document.getElementById('pin-role-icon');
-    var title = document.getElementById('pin-role-title');
-    var input = document.getElementById('pin-input');
-    var error = document.getElementById('pin-error');
-    if (icon) icon.textContent = roleIcons[activeRole] || 'Login';
-    if (title) title.textContent = roleTitles[activeRole] || 'Access';
-    if (input) { input.value = ''; }
-    if (error) error.style.display = 'none';
-    document.getElementById('pin-modal').classList.add('open');
-    setTimeout(function(){ if(input) input.focus(); }, 100);
-  }
-
-  function checkPin() {
-    var input = document.getElementById('pin-input');
-    var error = document.getElementById('pin-error');
-    var val = input ? input.value.trim().toLowerCase() : '';
-    if (val === rolePins[activeRole]) {
-      document.getElementById('pin-modal').classList.remove('open');
-      goScreen(activeRole);
-    } else {
-      if (error) error.style.display = 'block';
-      if (input) { input.value = ''; input.focus(); }
-    }
-  }
-
-  document.getElementById('login-btn').addEventListener('click', openPinModal);
-  document.getElementById('pin-confirm').addEventListener('click', checkPin);
-  document.getElementById('pin-cancel').addEventListener('click', function(){
-    document.getElementById('pin-modal').classList.remove('open');
-  });
-  document.getElementById('pin-input').addEventListener('keydown', function(e){
-    if (e.key === 'Enter') checkPin();
+  // Login - select role and click to enter
+  document.getElementById('login-btn').addEventListener('click', function(){
+    goScreen(activeRole);
   });
 
   // Role buttons
@@ -2748,6 +2711,8 @@ function init(){
       activeRole = b.getAttribute('data-role');
     });
   });
+
+
 
   // Logos → login
   ['admin','writer','liam','david'].forEach(function(r){
