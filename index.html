@@ -5,14 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>FXIFY — Content Engine</title>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://unpkg.com/@tiptap/core@2.1.13/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/pm@2.1.13/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/starter-kit@2.1.13/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-underline@2.1.13/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-placeholder@2.1.13/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-text-align@2.1.13/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-image@2.1.13/dist/index.umd.js"></script>
-<script src="https://unpkg.com/@tiptap/extension-highlight@2.1.13/dist/index.umd.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=IBM+Plex+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;}
@@ -1197,47 +1190,41 @@ var autoSaveTimer = null;
 function initEditor(content) {
   var el = document.getElementById('tiptap-editor');
   if (!el) return;
-
-  // Destroy existing editor
-  if (editor) { editor.destroy(); editor = null; }
-
-  try {
-    editor = new tiptap.Editor({
-      element: el,
-      extensions: [
-        tiptap.StarterKit,
-        tiptap.Underline,
-        tiptap.TextAlign.configure({ types: ['heading', 'paragraph'] }),
-        tiptap.Image,
-        tiptap.Highlight,
-        tiptap.Placeholder.configure({ placeholder: 'Start writing your article...' }),
-      ],
-      content: content || '<p>Generate a draft to start editing.</p>',
-      onUpdate: function({ editor }) {
-        updateWordCount(editor);
-        updateToolbarState(editor);
-        // Autosave
-        clearTimeout(autoSaveTimer);
-        autoSaveTimer = setTimeout(function() {
-          autoSave(editor.getHTML());
-        }, 2000);
-      },
-      onSelectionUpdate: function({ editor }) {
-        updateToolbarState(editor);
-      },
-    });
-    updateWordCount(editor);
-  } catch(e) {
-    console.error('TipTap init error:', e);
-    // Fallback to contenteditable
-    el.contentEditable = 'true';
-    el.innerHTML = content || '<p>Start writing...</p>';
-  }
+  
+  // Simple contenteditable rich editor
+  el.contentEditable = 'true';
+  el.innerHTML = content || '<p>Start writing your article here...</p>';
+  
+  // Track changes for autosave and word count
+  el.addEventListener('input', function() {
+    updateWordCount();
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(function() {
+      autoSave(el.innerHTML);
+    }, 2000);
+    // Update scores
+    if (currentArt && currentArt.primary_kw) {
+      var scores = calculateScores(el.innerHTML, currentArt.primary_kw);
+      updateScoreDisplay(scores);
+    }
+  });
+  
+  updateWordCount();
 }
 
-function updateWordCount(ed) {
-  var text = ed.getText();
-  var words = text.trim() ? text.trim().split(/\s+/).length : 0;
+function getEditorHTML() {
+  var el = document.getElementById('tiptap-editor');
+  return el ? el.innerHTML : '';
+}
+
+function getEditorText() {
+  var el = document.getElementById('tiptap-editor');
+  return el ? el.innerText || el.textContent : '';
+}
+
+function updateWordCount() {
+  var text = getEditorText();
+  var words = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
   var chars = text.length;
   var wcel = document.getElementById('wc-display');
   var ccel = document.getElementById('char-display');
@@ -1247,28 +1234,18 @@ function updateWordCount(ed) {
   if (wcEl) wcEl.textContent = words + ' words';
 }
 
-function updateToolbarState(ed) {
+function updateToolbarState() {
+  // Check document state for formatting
   var boldBtn = document.getElementById('tb-bold');
   var italicBtn = document.getElementById('tb-italic');
-  var ulBtn = document.getElementById('tb-ul');
-  var olBtn = document.getElementById('tb-ol');
-  if (boldBtn) boldBtn.classList.toggle('active', ed.isActive('bold'));
-  if (italicBtn) italicBtn.classList.toggle('active', ed.isActive('italic'));
-  if (ulBtn) ulBtn.classList.toggle('active', ed.isActive('bulletList'));
-  if (olBtn) olBtn.classList.toggle('active', ed.isActive('orderedList'));
-  // Update heading select
-  var hsel = document.getElementById('tb-heading');
-  if (hsel) {
-    if (ed.isActive('heading', { level: 1 })) hsel.value = 'h1';
-    else if (ed.isActive('heading', { level: 2 })) hsel.value = 'h2';
-    else if (ed.isActive('heading', { level: 3 })) hsel.value = 'h3';
-    else hsel.value = 'p';
-  }
+  if (boldBtn) boldBtn.classList.toggle('active', document.queryCommandState('bold'));
+  if (italicBtn) italicBtn.classList.toggle('active', document.queryCommandState('italic'));
 }
 
 function autoSave(htmlContent) {
   if (!currentArt || !currentArt.id) return;
-  var wc = editor ? editor.getText().trim().split(/\s+/).filter(Boolean).length : 0;
+  var text = getEditorText();
+  var wc = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
   dbUpdate(currentArt.id, { content: htmlContent, word_count: wc });
   var saveEl = document.getElementById('ed-save-txt');
   if (saveEl) { saveEl.textContent = '● Saved'; setTimeout(function(){ saveEl.textContent = ''; }, 2000); }
@@ -1308,56 +1285,77 @@ function markdownToHtml(text) {
 }
 
 function wireToolbar() {
+  function cmd(command, value) {
+    var el = document.getElementById('tiptap-editor');
+    if (el) el.focus();
+    document.execCommand(command, false, value || null);
+    updateToolbarState();
+  }
+
   var tb = document.getElementById('tb-bold');
-  if (tb) tb.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleBold().run(); });
+  if (tb) tb.addEventListener('click', function(e){ e.preventDefault(); cmd('bold'); });
   
   var ti = document.getElementById('tb-italic');
-  if (ti) ti.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleItalic().run(); });
+  if (ti) ti.addEventListener('click', function(e){ e.preventDefault(); cmd('italic'); });
   
   var tu = document.getElementById('tb-underline');
-  if (tu) tu.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleUnderline().run(); });
+  if (tu) tu.addEventListener('click', function(e){ e.preventDefault(); cmd('underline'); });
 
   var th = document.getElementById('tb-highlight');
-  if (th) th.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleHighlight().run(); });
+  if (th) th.addEventListener('click', function(e){ 
+    e.preventDefault();
+    cmd('hiliteColor', '#e0faf7');
+  });
   
   var tul = document.getElementById('tb-ul');
-  if (tul) tul.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleBulletList().run(); });
+  if (tul) tul.addEventListener('click', function(e){ e.preventDefault(); cmd('insertUnorderedList'); });
   
   var tol = document.getElementById('tb-ol');
-  if (tol) tol.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleOrderedList().run(); });
+  if (tol) tol.addEventListener('click', function(e){ e.preventDefault(); cmd('insertOrderedList'); });
   
   var tq = document.getElementById('tb-quote');
-  if (tq) tq.addEventListener('click', function(){ if(editor) editor.chain().focus().toggleBlockquote().run(); });
+  if (tq) tq.addEventListener('click', function(e){ 
+    e.preventDefault(); 
+    cmd('formatBlock', 'blockquote');
+  });
   
   var tundo = document.getElementById('tb-undo');
-  if (tundo) tundo.addEventListener('click', function(){ if(editor) editor.chain().focus().undo().run(); });
+  if (tundo) tundo.addEventListener('click', function(e){ e.preventDefault(); cmd('undo'); });
   
   var tredo = document.getElementById('tb-redo');
-  if (tredo) tredo.addEventListener('click', function(){ if(editor) editor.chain().focus().redo().run(); });
+  if (tredo) tredo.addEventListener('click', function(e){ e.preventDefault(); cmd('redo'); });
 
   var timg = document.getElementById('tb-img');
-  if (timg) timg.addEventListener('click', function(){
+  if (timg) timg.addEventListener('click', function(e){
+    e.preventDefault();
     var url = prompt('Image URL:');
-    if (url && editor) editor.chain().focus().setImage({ src: url }).run();
+    if (url) cmd('insertHTML', '<img src="' + url + '" style="max-width:100%;border-radius:8px;margin:12px 0;" />');
   });
 
   var tcom = document.getElementById('tb-comment');
-  if (tcom) tcom.addEventListener('click', function(){
-    document.getElementById('add-comment-form').style.display = 'block';
-    document.getElementById('comment-input').focus();
+  if (tcom) tcom.addEventListener('click', function(e){
+    e.preventDefault();
+    var form = document.getElementById('add-comment-form');
     var cp = document.getElementById('comments-panel');
     if (cp) cp.style.display = 'block';
+    if (form) form.style.display = 'block';
+    var ci = document.getElementById('comment-input');
+    if (ci) ci.focus();
   });
 
   var hsel = document.getElementById('tb-heading');
   if (hsel) hsel.addEventListener('change', function(){
-    if (!editor) return;
     var v = hsel.value;
-    if (v === 'p') editor.chain().focus().setParagraph().run();
-    else if (v === 'h1') editor.chain().focus().setHeading({ level: 1 }).run();
-    else if (v === 'h2') editor.chain().focus().setHeading({ level: 2 }).run();
-    else if (v === 'h3') editor.chain().focus().setHeading({ level: 3 }).run();
+    var tagMap = { p: 'p', h1: 'h1', h2: 'h2', h3: 'h3' };
+    cmd('formatBlock', tagMap[v] || 'p');
   });
+  
+  // Track selection to update toolbar state
+  var edEl = document.getElementById('tiptap-editor');
+  if (edEl) {
+    edEl.addEventListener('keyup', updateToolbarState);
+    edEl.addEventListener('mouseup', updateToolbarState);
+  }
 }
 
 // ── COMMENTS SYSTEM ────────────────────────────────────────────────────────
@@ -1573,8 +1571,8 @@ function init(){
   // Editor save
   document.getElementById('ed-save-btn').addEventListener('click',function(){
     if(currentArt&&currentArt.id) {
-      var content = editor ? editor.getHTML() : '';
-      var wc = editor ? editor.getText().trim().split(/\s+/).filter(Boolean).length : 0;
+      var content = getEditorHTML();
+      var text = getEditorText(); var wc = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
       dbUpdate(currentArt.id,{content:content, word_count:wc}).then(function(){toast('Saved ✓');});
     } else toast('Saved ✓');
   });
@@ -1582,8 +1580,8 @@ function init(){
   // Editor submit (writer)
   document.getElementById('ed-submit-btn').addEventListener('click',function(){
     if(!currentArt||!currentArt.id){toast('No draft to submit');return;}
-    var content = editor ? editor.getHTML() : '';
-    var wc = editor ? editor.getText().trim().split(/\s+/).filter(Boolean).length : 0;
+    var content = getEditorHTML();
+    var text = getEditorText(); var wc = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
     var scores = calculateScores(content, currentArt.primaryKw||'');
     dbUpdate(currentArt.id,{status:'Sheperd Review', content:content, word_count:wc, seo_score:scores.seo, geo_score:scores.geo, aeo_score:scores.aeo}).then(function(){
       toast('Submitted to Sheperd ✓');
