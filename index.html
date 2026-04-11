@@ -803,6 +803,8 @@ select.finput{cursor:pointer;}
         <div class="tb-sep"></div>
         <button class="tb-btn" id="tb-undo" title="Undo">↩</button>
         <button class="tb-btn" id="tb-redo" title="Redo">↪</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="tb-copy-html" title="Copy HTML for WordPress" style="font-size:10px;width:auto;padding:0 8px;color:var(--tealB);font-weight:600;">Copy HTML</button>
       </div>
       <!-- Editor body -->
       <div style="display:flex;flex:1;overflow:hidden;">
@@ -1218,14 +1220,60 @@ async function generate(){
   var q=document.getElementById('b-q').value.trim();
   var btn=document.getElementById('gen-btn');
   btn.textContent='Writing...'; btn.disabled=true;
-  var prompt='FXIFY Blog Draft Prompt\n\nTopic: '+title+'\nCategory: '+cat+'\nTarget length: '+len+'\nTone: '+tone+'\n\n'+
-    '1. CORE INSTRUCTIONS\n- Direct, proof-led, no hype. Short sentences.\n- No filler. Every sentence functional.\n\n'+
-    '2. SEO\nPrimary keyword: '+pkw+'\nSecondary keywords: '+(skw||'prop trading, funded trader')+'\nSearch intent: '+intent+'\n'+(links?'Internal links: '+links+'\n':'')+'\n'+
-    '3. STRUCTURE (mandatory)\nH1 → Intro (max 120 words) → Quick Summary Table → Table of Contents\n→ Body H2 sections with [VISUAL: description] placeholders\n→ Common Mistakes → How This Applies to Prop Trading\n→ Key Takeaways (bullet points only) → FAQ (5-7 questions)\nInclude [INTERNAL LINK: topic] placeholders contextually.\n\n'+
-    '4. FXIFY BRAND\n1-2 natural mentions. Proof-led. Use only: starting capital, performance split, evaluation programs.\n\n'+
-    '5. META (after article)\nMeta title (60 chars) · Meta description (160 chars) · URL slug · Schema type\n\n'+
-    (geo?'6. GEO answer target: '+geo+'\n':'')+(q?'7. AEO primary question: '+q+'\n':'')+
-    '\nOutput clean blog draft then meta section. No explanations outside the article.';
+  var prompt=
+    'You are a senior content writer for FXIFY, a professional prop trading firm. Write a complete blog article.\n\n'+
+    'TOPIC: '+title+'\n'+
+    'CATEGORY: '+cat+'\n'+
+    'TARGET LENGTH: '+len+'\n'+
+    'TONE: '+tone+'\n'+
+    'PRIMARY KEYWORD: '+pkw+'\n'+
+    'SECONDARY KEYWORDS: '+(skw||'prop trading, funded trader, trading account')+'\n'+
+    'SEARCH INTENT: '+intent+'\n'+
+    (links?'INTERNAL LINKS TO INCLUDE: '+links+'\n':'')+
+    (geo?'GEO ANSWER TARGET: '+geo+'\n':'')+
+    (q?'AEO PRIMARY QUESTION: '+q+'\n':'')+
+    '\n'+
+    '━━ TONE & STYLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '- Direct, confident, proof-led. No hype, no fluff.\n'+
+    '- Short sentences. One idea per sentence.\n'+
+    '- Always address the reader as "you".\n'+
+    '- Never start with "In this article we will..."\n'+
+    '- Every sentence must earn its place.\n\n'+
+    '━━ STRUCTURE (FOLLOW EXACTLY) ━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '1. H1: Clear, keyword-led title\n'+
+    '2. Introduction: Max 120 words. Direct answer first, then context.\n'+
+    '3. Quick Summary Table: 4 columns, 4-5 rows of key facts\n'+
+    '4. Table of Contents\n'+
+    '5. Body sections: Each H2 covers one specific topic\n'+
+    '   - For each section: explain → what it means → how trader uses it\n'+
+    '   - Add [VISUAL: specific image description] after each H2\n'+
+    '6. Common Mistakes section\n'+
+    '7. How This Applies to Prop Trading section\n'+
+    '8. Key Takeaways: 5-7 bullet points only\n'+
+    '9. FAQ: 5-7 questions with direct answers\n\n'+
+    '━━ SEO RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '- Primary keyword in H1, first paragraph, at least 2 H2s\n'+
+    '- No keyword stuffing\n'+
+    '- Add [INTERNAL LINK: relevant topic] placeholders contextually\n\n'+
+    '━━ FXIFY BRAND ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '- 1-2 natural FXIFY mentions only\n'+
+    '- Use only these terms: evaluation programs, starting capital, performance split\n'+
+    '- Never invent features or make claims not on fxify.com\n\n'+
+    '━━ OUTPUT FORMAT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    'Write the full article first, then add:\n'+
+    '---META---\n'+
+    'Meta title: (max 60 chars)\n'+
+    'Meta description: (max 160 chars)\n'+
+    'URL slug: (lowercase-hyphenated)\n'+
+    'Schema type: (Article/FAQPage/HowTo)\n\n'+
+    'IMPORTANT: Output plain text with these markers only:\n'+
+    '# for H1, ## for H2, ### for H3\n'+
+    '**bold text** for emphasis\n'+
+    '- for bullet points\n'+
+    '[VISUAL: description] for image placeholders\n'+
+    '[INTERNAL LINK: topic] for internal links\n'+
+    'No HTML tags. No markdown tables with pipes. Use plain text tables.\n'+
+    'No asterisks except for bold. No extra formatting.';
   try{
     var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:4000})});
     var data=await r.json();
@@ -1415,6 +1463,39 @@ function wireToolbar() {
     cmd('formatBlock', tagMap[v] || 'p');
   });
   
+  // Copy HTML button
+  var tcopy = document.getElementById('tb-copy-html');
+  if (tcopy) tcopy.addEventListener('click', function(e) {
+    e.preventDefault();
+    var edEl2 = document.getElementById('tiptap-editor');
+    if (!edEl2) return;
+    // Clean HTML for WordPress
+    var wpHtml = edEl2.innerHTML
+      .replace(/class="[^"]*"/g, '')
+      .replace(/style="[^"]*"/g, '')
+      .replace(/data-[a-z-]+="[^"]*"/g, '')
+      .replace(/\s+>/g, '>')
+      .replace(/<span>/g, '')
+      .replace(/<\/span>/g, '')
+      .replace(/<!--[^>]*-->/g, '')
+      .replace(/\s{2,}/g, ' ')
+      .trim();
+    navigator.clipboard.writeText(wpHtml).then(function() {
+      toast('HTML copied — paste into WordPress code editor ✓');
+      tcopy.textContent = 'Copied ✓';
+      setTimeout(function(){ tcopy.textContent = 'Copy HTML'; }, 2000);
+    }).catch(function() {
+      // Fallback
+      var ta = document.createElement('textarea');
+      ta.value = wpHtml;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast('HTML copied — paste into WordPress code editor ✓');
+    });
+  });
+
   // Track selection to update toolbar state
   var edEl = document.getElementById('tiptap-editor');
   if (edEl) {
