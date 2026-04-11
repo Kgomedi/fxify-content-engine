@@ -1577,29 +1577,43 @@ function initInlineComments() {
   var tooltip = document.getElementById('comment-tooltip');
   if (!edEl || !tooltip) return;
 
-  edEl.addEventListener('mouseup', function(e) {
+  // Listen on document so it works anywhere in the editor
+  document.addEventListener('mouseup', function(e) {
     setTimeout(function() {
       var selection = window.getSelection();
       var text = selection ? selection.toString().trim() : '';
       
-      if (text.length > 2) {
+      // Only show if selection is inside the editor
+      var inEditor = false;
+      try {
+        if (selection && selection.rangeCount > 0) {
+          var range = selection.getRangeAt(0);
+          inEditor = edEl.contains(range.commonAncestorContainer);
+        }
+      } catch(e2) {}
+
+      if (text.length > 2 && inEditor) {
         selectedText = text;
-        try { selectedRange = selection.getRangeAt(0).cloneRange(); } catch(e2) {}
-        // Show tooltip near selection
-        var rect = selection.getRangeAt(0).getBoundingClientRect();
-        tooltip.style.top = (rect.top - 45 + window.scrollY) + 'px';
-        tooltip.style.left = (rect.left + rect.width/2 - 60) + 'px';
-        tooltip.classList.add('show');
-      } else {
+        try { selectedRange = selection.getRangeAt(0).cloneRange(); } catch(e3) {}
+        // Position tooltip near selection
+        try {
+          var rect = selection.getRangeAt(0).getBoundingClientRect();
+          var top = rect.top - 48;
+          if (top < 10) top = rect.bottom + 8;
+          tooltip.style.top = top + 'px';
+          tooltip.style.left = Math.max(10, Math.min(rect.left + rect.width/2 - 70, window.innerWidth - 160)) + 'px';
+          tooltip.classList.add('show');
+        } catch(e4) {}
+      } else if (!tooltip.contains(e.target)) {
         tooltip.classList.remove('show');
         selectedText = '';
       }
-    }, 10);
+    }, 20);
   });
 
   // Hide tooltip on click outside
   document.addEventListener('mousedown', function(e) {
-    if (!tooltip.contains(e.target) && e.target.id !== 'tiptap-editor') {
+    if (!tooltip.contains(e.target)) {
       tooltip.classList.remove('show');
     }
   });
