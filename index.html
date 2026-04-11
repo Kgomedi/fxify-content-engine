@@ -387,6 +387,33 @@ select.finput{cursor:pointer;}
 .score-track{flex:1;height:6px;background:var(--bg2);border-radius:3px;overflow:hidden;}
 .score-fill{height:100%;border-radius:3px;transition:width .4s;}
 .score-num{font-size:11px;font-weight:700;width:28px;text-align:right;flex-shrink:0;}
+
+/* INLINE COMMENT TOOLTIP */
+.comment-tooltip{position:fixed;z-index:500;background:var(--navy);border:1px solid rgba(14,196,173,.3);border-radius:8px;padding:6px 10px;display:none;gap:6px;align-items:center;box-shadow:0 4px 16px rgba(0,0,0,.2);}
+.comment-tooltip.show{display:flex;}
+.ct-btn{padding:4px 10px;border-radius:6px;border:none;font-size:11px;font-weight:500;cursor:pointer;font-family:inherit;}
+.ct-comment{background:var(--tealB);color:#fff;}
+.ct-suggest{background:rgba(255,255,255,.1);color:#cbd5e1;}
+.comment-highlight{background:rgba(14,196,173,.2);border-bottom:2px solid var(--tealB);cursor:pointer;border-radius:2px;}
+.suggestion-highlight{background:rgba(239,68,68,.15);border-bottom:2px solid var(--urgent);cursor:pointer;border-radius:2px;}
+.suggestion-accept{background:rgba(5,150,105,.15);border-bottom:2px solid var(--green);cursor:pointer;border-radius:2px;}
+
+/* SUGGESTION MODAL */
+.suggest-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:450;display:none;align-items:center;justify-content:center;padding:20px;}
+.suggest-modal.open{display:flex;}
+.suggest-box{background:var(--surface);border-radius:var(--rl);padding:24px;width:100%;max-width:480px;}
+.suggest-box h3{font-family:'Barlow Condensed',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;text-transform:uppercase;letter-spacing:.04em;}
+.suggest-box p{font-size:12px;color:var(--muted);margin-bottom:14px;}
+.suggest-orig{background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 12px;font-size:13px;color:var(--urgent);margin-bottom:10px;line-height:1.5;}
+.suggest-new{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:8px;font-size:13px;resize:vertical;min-height:80px;outline:none;font-family:inherit;}
+.suggest-new:focus{border-color:var(--tealB);}
+.suggest-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;}
+
+/* IMAGE PLACEHOLDER */
+.img-placeholder{width:100%;height:140px;background:var(--bg2);border-radius:var(--r);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin:16px 0;transition:.2s;gap:6px;}
+.img-placeholder:hover{border-color:var(--tealB);background:var(--tealL);}
+.img-placeholder span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
+.img-placeholder .ip-icon{font-size:24px;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
@@ -824,6 +851,29 @@ select.finput{cursor:pointer;}
   </div>
 </div>
 
+
+<!-- INLINE COMMENT TOOLTIP -->
+<div class="comment-tooltip" id="comment-tooltip">
+  <button class="ct-btn ct-comment" id="ct-comment-btn">💬 Comment</button>
+  <button class="ct-btn ct-suggest" id="ct-suggest-btn">✏️ Suggest</button>
+</div>
+
+<!-- SUGGESTION MODAL -->
+<div class="suggest-modal" id="suggest-modal">
+  <div class="suggest-box">
+    <h3>Suggest a change</h3>
+    <p>The writer will see your suggestion and can accept or reject it.</p>
+    <div class="suggest-orig" id="suggest-orig"></div>
+    <textarea class="suggest-new" id="suggest-new" placeholder="Type your suggested replacement..."></textarea>
+    <div class="suggest-acts">
+      <button class="btn btn-s" id="suggest-cancel">Cancel</button>
+      <button class="btn btn-p btn-s" id="suggest-submit">Post suggestion</button>
+    </div>
+  </div>
+</div>
+
+<!-- IMAGE UPLOAD INPUT -->
+<input type="file" id="img-upload" accept="image/*" style="display:none;">
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1060,6 +1110,9 @@ function openEditor(art,role){
     if (art.id) loadComments(art.id);
     wireToolbar();
     wireComments();
+    initInlineComments();
+    makeImgPlaceholders();
+    initImageUpload();
   }, 50);
   var wa=document.getElementById('ed-writer-acts');
   var ra=document.getElementById('ed-rv-acts');
@@ -1338,8 +1391,8 @@ function wireToolbar() {
   var timg = document.getElementById('tb-img');
   if (timg) timg.addEventListener('click', function(e){
     e.preventDefault();
-    var url = prompt('Image URL:');
-    if (url) cmd('insertHTML', '<img src="' + url + '" style="max-width:100%;border-radius:8px;margin:12px 0;" />');
+    window._imgTarget = null;
+    document.getElementById('img-upload').click();
   });
 
   var tcom = document.getElementById('tb-comment');
@@ -1511,6 +1564,180 @@ function updateScoreDisplay(scores) {
   setScore('seo', scores.seo);
   setScore('geo', scores.geo);
   setScore('aeo', scores.aeo);
+}
+
+
+// ── INLINE COMMENTS ────────────────────────────────────────────────────────
+var selectedText = '';
+var selectedRange = null;
+
+function initInlineComments() {
+  var edEl = document.getElementById('tiptap-editor');
+  var tooltip = document.getElementById('comment-tooltip');
+  if (!edEl || !tooltip) return;
+
+  edEl.addEventListener('mouseup', function(e) {
+    setTimeout(function() {
+      var selection = window.getSelection();
+      var text = selection ? selection.toString().trim() : '';
+      
+      if (text.length > 2) {
+        selectedText = text;
+        try { selectedRange = selection.getRangeAt(0).cloneRange(); } catch(e2) {}
+        // Show tooltip near selection
+        var rect = selection.getRangeAt(0).getBoundingClientRect();
+        tooltip.style.top = (rect.top - 45 + window.scrollY) + 'px';
+        tooltip.style.left = (rect.left + rect.width/2 - 60) + 'px';
+        tooltip.classList.add('show');
+      } else {
+        tooltip.classList.remove('show');
+        selectedText = '';
+      }
+    }, 10);
+  });
+
+  // Hide tooltip on click outside
+  document.addEventListener('mousedown', function(e) {
+    if (!tooltip.contains(e.target) && e.target.id !== 'tiptap-editor') {
+      tooltip.classList.remove('show');
+    }
+  });
+
+  // Comment button in tooltip
+  var ctComment = document.getElementById('ct-comment-btn');
+  if (ctComment) ctComment.addEventListener('click', function() {
+    tooltip.classList.remove('show');
+    if (!selectedText) return;
+    // Highlight the selected text
+    if (selectedRange) {
+      try {
+        var span = document.createElement('span');
+        span.className = 'comment-highlight';
+        span.title = 'Click to view comment';
+        selectedRange.surroundContents(span);
+      } catch(e) {}
+    }
+    // Open comment form with quote
+    var cp = document.getElementById('comments-panel');
+    var form = document.getElementById('add-comment-form');
+    var input = document.getElementById('comment-input');
+    if (cp) cp.style.display = 'block';
+    if (form) form.style.display = 'block';
+    if (input) {
+      input.focus();
+      input.dataset.quote = selectedText;
+      input.placeholder = 'Comment on: "' + selectedText.substring(0,40) + (selectedText.length > 40 ? '...' : '') + '"';
+    }
+    selectedText = '';
+  });
+
+  // Suggest button in tooltip
+  var ctSuggest = document.getElementById('ct-suggest-btn');
+  if (ctSuggest) ctSuggest.addEventListener('click', function() {
+    tooltip.classList.remove('show');
+    if (!selectedText) return;
+    var origEl = document.getElementById('suggest-orig');
+    var newEl = document.getElementById('suggest-new');
+    if (origEl) origEl.textContent = selectedText;
+    if (newEl) { newEl.value = selectedText; newEl.select(); }
+    document.getElementById('suggest-modal').classList.add('open');
+  });
+
+  // Suggestion modal
+  var suggestCancel = document.getElementById('suggest-cancel');
+  if (suggestCancel) suggestCancel.addEventListener('click', function() {
+    document.getElementById('suggest-modal').classList.remove('open');
+  });
+
+  var suggestSubmit = document.getElementById('suggest-submit');
+  if (suggestSubmit) suggestSubmit.addEventListener('click', function() {
+    var newText = document.getElementById('suggest-new').value.trim();
+    var origText = document.getElementById('suggest-orig').textContent;
+    if (!newText || !origText) return;
+    // Save as comment with suggestion type
+    addComment('SUGGESTION: Replace "' + origText + '" with "' + newText + '"', origText);
+    // Highlight original in editor
+    if (selectedRange) {
+      try {
+        var span = document.createElement('span');
+        span.className = 'suggestion-highlight';
+        span.dataset.suggestion = newText;
+        span.title = 'Suggested: ' + newText;
+        span.addEventListener('click', function() {
+          if (currentRole === 'writer') {
+            if (confirm('Accept suggestion: Replace with "' + newText + '"?')) {
+              span.outerHTML = '<span class="suggestion-accept">' + newText + '</span>';
+              autoSave(document.getElementById('tiptap-editor').innerHTML);
+              toast('Suggestion accepted ✓');
+            }
+          }
+        });
+        selectedRange.surroundContents(span);
+      } catch(e) {}
+    }
+    document.getElementById('suggest-modal').classList.remove('open');
+    selectedText = '';
+    toast('Suggestion posted ✓');
+  });
+}
+
+// ── IMAGE UPLOAD ──────────────────────────────────────────────────────────
+function initImageUpload() {
+  var input = document.getElementById('img-upload');
+  if (!input) return;
+  
+  // Handle clickable image placeholders via delegation
+  var edEl = document.getElementById('tiptap-editor');
+  if (edEl) {
+    edEl.addEventListener('click', function(e) {
+      var ph = e.target.closest('[data-imgplaceholder]');
+      var ri = e.target.closest('[data-replaceable]');
+      if (ph) { window._imgTarget = ph; input.click(); }
+      if (ri) { window._imgTarget = ri; input.click(); }
+    });
+  }
+
+  input.addEventListener('change', function() {
+    var file = input.files[0];
+    if (!file) return;
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      var url = e.target.result;
+      var edEl = document.getElementById('tiptap-editor');
+      if (!edEl) return;
+      // Replace clicked placeholder or insert at cursor
+      if (window._imgTarget) {
+        window._imgTarget.outerHTML = '<img src="' + url + '" style="max-width:100%;border-radius:8px;margin:12px 0;cursor:pointer;" data-replaceable="true" />';
+        window._imgTarget = null;
+      } else {
+        document.execCommand('insertHTML', false, '<img src="' + url + '" style="max-width:100%;border-radius:8px;margin:12px 0;" />');
+      }
+      autoSave(edEl.innerHTML);
+      toast('Image added ✓');
+    };
+    reader.readAsDataURL(file);
+    input.value = '';
+  });
+}
+
+function replaceImage(img) {
+  window._imgTarget = img;
+  document.getElementById('img-upload').click();
+}
+
+function makeImgPlaceholders() {
+  var edEl = document.getElementById('tiptap-editor');
+  if (!edEl) return;
+  // Convert [VISUAL:...] text into clickable placeholders
+  edEl.innerHTML = edEl.innerHTML.replace(
+    /<p><em>📷 ([^<]*)<\/em><\/p>/g,
+    function(match, caption) {
+      return '<div class="img-placeholder" data-imgplaceholder="true">' +
+        '<span class="ip-icon">📷</span>' +
+        '<span>' + (caption || 'Click to add image') + '</span>' +
+        '</div>';
+    }
+  );
 }
 
 // ── INIT ──────────────────────────────────────────────────────────────────
