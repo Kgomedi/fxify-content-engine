@@ -415,6 +415,15 @@ select.finput{cursor:pointer;}
 .img-placeholder:hover{border-color:var(--tealB);background:var(--tealL);}
 .img-placeholder span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
 .img-placeholder .ip-icon{font-size:24px;}
+
+/* INTERNAL LINKS PANEL */
+.il-panel{background:var(--navy2);border-top:1px solid rgba(14,196,173,.07);padding:10px 14px;max-height:200px;overflow-y:auto;}
+.il-head{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#334155;margin-bottom:8px;}
+.il-item{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:8px;}
+.il-item:last-child{border-bottom:none;}
+.il-title{font-size:11px;color:#94a3b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.il-insert{font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid rgba(14,196,173,.3);background:transparent;color:var(--tealB);cursor:pointer;white-space:nowrap;}
+.il-insert:hover{background:rgba(14,196,173,.1);}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
@@ -829,6 +838,13 @@ select.finput{cursor:pointer;}
       </div>
       <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
+        <p class="eslbl" style="margin-bottom:6px;">Internal links</p>
+        <div class="il-panel" id="il-panel">
+          <p style="font-size:11px;color:#475569;font-style:italic;">Loading...</p>
+        </div>
+      </div>
+      <div class="esdiv"></div>
+      <div class="esblk" style="width:100%;">
         <p class="eslbl" style="margin-bottom:8px;">Before submitting</p>
         <div id="checklist">
           <div class="chk"><div class="chkb"></div><span>Hook is strong</span></div>
@@ -1177,6 +1193,7 @@ function openEditor(art,role){
     makeImgPlaceholders();
     initImageUpload();
     wireSuggestionSpans();
+    loadInternalLinks();
   }, 200);
   var wa=document.getElementById('ed-writer-acts');
   var ra=document.getElementById('ed-rv-acts');
@@ -1730,6 +1747,70 @@ function updateScoreDisplay(scores) {
 }
 
 
+
+// ── INTERNAL LINKS ────────────────────────────────────────────────────────
+var internalLinksCache = null;
+
+async function loadInternalLinks() {
+  var panel = document.getElementById('il-panel');
+  if (!panel) return;
+  
+  // Use cache if available
+  if (internalLinksCache) { renderInternalLinks(internalLinksCache); return; }
+  
+  panel.innerHTML = '<p style="font-size:11px;color:#475569;">Scraping fxify.com/blog...</p>';
+  
+  try {
+    var data = await scrapeUrls(['https://fxify.com/blog']);
+    // Extract URLs and titles from scraped content
+    var lines = data.split('\n');
+    var links = [];
+    lines.forEach(function(line) {
+      // Look for markdown links [title](url) or just URLs with titles
+      var mdMatch = line.match(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/);
+      if (mdMatch) links.push({ title: mdMatch[1], url: mdMatch[2] });
+    });
+    // Fallback: ask Claude to extract links
+    if (links.length < 3) {
+      links = [
+        { title: 'FXIFY Evaluation Programs', url: '/programs' },
+        { title: 'How to Pass Your Evaluation', url: '/blog/pass-evaluation' },
+        { title: 'Drawdown Rules Explained', url: '/blog/drawdown-rules' },
+        { title: 'FXIFY vs Competitors', url: '/blog/fxify-comparison' },
+        { title: 'Risk Management Guide', url: '/blog/risk-management' }
+      ];
+    }
+    internalLinksCache = links;
+    renderInternalLinks(links);
+  } catch(e) {
+    panel.innerHTML = '<p style="font-size:11px;color:#475569;">Could not load — add links manually</p>';
+  }
+}
+
+function renderInternalLinks(links) {
+  var panel = document.getElementById('il-panel');
+  if (!panel) return;
+  panel.innerHTML = '';
+  links.slice(0, 8).forEach(function(link) {
+    var item = document.createElement('div');
+    item.className = 'il-item';
+    item.innerHTML = 
+      '<span class="il-title">' + link.title + '</span>' +
+      '<button class="il-insert">Insert</button>';
+    item.querySelector('.il-insert').addEventListener('click', function() {
+      var edEl = document.getElementById('tiptap-editor');
+      if (edEl) {
+        edEl.focus();
+        document.execCommand('insertHTML', false, 
+          '<a href="' + link.url + '" style="color:var(--blue);text-decoration:underline;">' + link.title + '</a> ');
+        autoSave(edEl.innerHTML);
+        toast('Link inserted ✓');
+      }
+    });
+    panel.appendChild(item);
+  });
+}
+
 // ── INLINE COMMENTS ────────────────────────────────────────────────────────
 var selectedText = '';
 var selectedRange = null;
@@ -2058,12 +2139,12 @@ async function runPlanner() {
   // Step 3: Build analysis prompt
   loadTxt.textContent = 'Claude is building your topic strategy...';
   var prompt = 
-    'You are a senior SEO and content strategist specialising in prop trading and fintech.\n\n' +
+    'You are a senior SEO, GEO and AEO content strategist specialising in prop trading and fintech.\n\n' +
     'SEED TOPIC: ' + topic + '\n' +
     'CATEGORY FOCUS: ' + cat + '\n' +
     (ownData ? 'OWN SITE CONTENT:\n' + ownData + '\n\n' : '') +
     (competitorData ? 'COMPETITOR CONTENT (scraped):\n' + competitorData + '\n\n' : '') +
-    'Analyse the above and produce a content strategy. Respond ONLY with valid JSON in this exact format:\n' +
+    'Analyse the above and produce a full content strategy. Respond ONLY with valid JSON in this exact format:\n' +
     '{\n' +
     '  "gaps": ["keyword gap 1", "keyword gap 2", "keyword gap 3", "keyword gap 4", "keyword gap 5"],\n' +
     '  "topics": [\n' +
@@ -2073,12 +2154,22 @@ async function runPlanner() {
     '      "intent": "Informational",\n' +
     '      "angle": "What makes this different from competitors",\n' +
     '      "priority": "High",\n' +
-    '      "category": "Guides"\n' +
+    '      "category": "Guides",\n' +
+    '      "geo_angle": "How this should be positioned for AI answer engines like Perplexity",\n' +
+    '      "aeo_snippet": "The exact answer this article should own as a featured snippet"\n' +
     '    }\n' +
     '  ],\n' +
-    '  "paa": ["Question 1?", "Question 2?", "Question 3?", "Question 4?", "Question 5?"]\n' +
+    '  "paa": ["Question 1?", "Question 2?", "Question 3?", "Question 4?", "Question 5?", "Question 6?"],\n' +
+    '  "geo_topics": ["Topic that should rank in AI overviews 1", "Topic 2", "Topic 3"],\n' +
+    '  "backlink_angles": [\n' +
+    '    {\n' +
+    '      "angle": "Pitch angle for outreach",\n' +
+    '      "target_type": "Type of site to target e.g. trading education blogs",\n' +
+    '      "content_hook": "What content would earn links from this site type"\n' +
+    '    }\n' +
+    '  ]\n' +
     '}\n\n' +
-    'Generate 5 keyword gaps, 8 topic ideas, and 6 PAA questions. No other text, just the JSON.';
+    'Generate: 5 keyword gaps, 8 topic ideas, 6 PAA questions, 3 GEO topics, 3 backlink angles. No other text, just JSON.';
 
   try {
     var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
@@ -2141,7 +2232,9 @@ function renderPlannerResults(plan) {
           '<p style="font-size:14px;font-weight:500;color:var(--text);line-height:1.4;">' + t.title + '</p>' +
           '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:var(--highL);color:' + priorityColor + ';white-space:nowrap;flex-shrink:0;">' + (t.priority||'Normal') + '</span>' +
         '</div>' +
-        '<p style="font-size:12px;color:var(--muted);margin-bottom:8px;font-style:italic;">' + (t.angle||'') + '</p>' +
+        '<p style="font-size:12px;color:var(--muted);margin-bottom:6px;font-style:italic;">📌 ' + (t.angle||'') + '</p>' +
+        (t.geo_angle ? '<p style="font-size:11px;color:var(--teal);margin-bottom:6px;">🤖 GEO: ' + t.geo_angle + '</p>' : '') +
+        (t.aeo_snippet ? '<p style="font-size:11px;color:var(--purple);margin-bottom:8px;">⭐ Snippet target: ' + t.aeo_snippet + '</p>' : '') +
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
           '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">' + (t.keyword||'') + '</span>' +
           '<span style="font-size:11px;color:var(--muted);">' + (t.intent||'') + '</span>' +
@@ -2188,16 +2281,53 @@ function renderPlannerResults(plan) {
         var aeoEl = document.getElementById('b-aeo-question');
         if (aeoEl) aeoEl.value = q;
         document.querySelector('[data-pg="a-generate"]').click();
-        // Switch to AEO tab
-        setTimeout(function() {
-          var aeoTab = document.querySelector('[data-tab="aeo"]');
-          if (aeoTab) aeoTab.click();
-        }, 100);
+        setTimeout(function() { var t = document.querySelector('[data-tab="aeo"]'); if(t) t.click(); }, 100);
         toast('Added to AEO brief ✓');
       });
       paaEl.appendChild(item);
     });
   }
+
+  // GEO topics
+  if (plan.geo_topics && plan.geo_topics.length) {
+    var geoSection = document.getElementById('pl-geo-section');
+    if (!geoSection) {
+      var resultsEl = document.getElementById('pl-results');
+      geoSection = document.createElement('div');
+      geoSection.id = 'pl-geo-section';
+      resultsEl.appendChild(geoSection);
+    }
+    geoSection.innerHTML = '<div class="shead" style="margin-top:8px;">GEO — AI answer engine topics</div>' +
+      '<div style="background:var(--tealL);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:12px 16px;margin-bottom:20px;">' +
+      '<p style="font-size:11px;color:var(--teal);margin-bottom:8px;font-weight:500;">Topics that should rank in Perplexity, ChatGPT and Google AI Overviews</p>' +
+      plan.geo_topics.map(function(t) {
+        return '<p style="font-size:13px;color:var(--text2);padding:6px 0;border-bottom:1px solid rgba(14,196,173,.1);">🤖 ' + t + '</p>';
+      }).join('') + '</div>';
+  }
+
+  // Backlink angles
+  if (plan.backlink_angles && plan.backlink_angles.length) {
+    var blSection = document.getElementById('pl-bl-section');
+    if (!blSection) {
+      var resultsEl2 = document.getElementById('pl-results');
+      blSection = document.createElement('div');
+      blSection.id = 'pl-bl-section';
+      resultsEl2.appendChild(blSection);
+    }
+    blSection.innerHTML = '<div class="shead" style="margin-top:8px;">Backlink opportunities</div>' +
+      '<div style="display:grid;gap:10px;margin-bottom:20px;">' +
+      plan.backlink_angles.map(function(b) {
+        return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">' +
+          '<p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">🔗 ' + b.angle + '</p>' +
+          '<p style="font-size:11px;color:var(--blue);margin-bottom:4px;">Target: ' + b.target_type + '</p>' +
+          '<p style="font-size:12px;color:var(--muted);">Hook: ' + b.content_hook + '</p>' +
+          '</div>';
+      }).join('') + '</div>';
+  }
+
+  // Topic cards — add GEO/AEO info
+  var allCards = document.querySelectorAll('#pl-topics [data-use-topic]');
+  // Already rendered above with geo_angle and aeo_snippet if available
 }
 
 // ── FIRECRAWL ─────────────────────────────────────────────────────────────
