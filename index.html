@@ -424,6 +424,21 @@ select.finput{cursor:pointer;}
 .il-title{font-size:11px;color:#94a3b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .il-insert{font-size:10px;padding:2px 7px;border-radius:4px;border:1px solid rgba(14,196,173,.3);background:transparent;color:var(--tealB);cursor:pointer;white-space:nowrap;}
 .il-insert:hover{background:rgba(14,196,173,.1);}
+
+/* META PANEL */
+.meta-panel{background:var(--navy2);border-top:1px solid rgba(14,196,173,.07);padding:0;}
+.meta-panel-head{padding:10px 14px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;}
+.meta-panel-head span{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#334155;}
+.meta-panel-head .mp-toggle{font-size:10px;color:var(--tealB);}
+.meta-panel-body{padding:0 14px 14px;display:none;}
+.meta-panel-body.open{display:block;}
+.meta-field{margin-bottom:10px;}
+.meta-field-label{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:#334155;margin-bottom:3px;}
+.meta-field-val{font-size:11px;color:#94a3b8;line-height:1.5;background:rgba(255,255,255,.03);border-radius:4px;padding:5px 8px;border:1px solid rgba(255,255,255,.05);}
+.meta-field-val.good{border-color:rgba(5,150,105,.3);color:#6ee7b7;}
+.meta-field-val.warn{border-color:rgba(217,119,6,.3);color:#fcd34d;}
+.meta-copy-all{width:100%;padding:7px;border-radius:6px;border:1px solid rgba(14,196,173,.3);background:transparent;color:var(--tealB);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px;}
+.meta-copy-all:hover{background:rgba(14,196,173,.1);}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
@@ -521,7 +536,15 @@ select.finput{cursor:pointer;}
               <div><label class="flbl">Length</label><select class="finput" id="b-len"><option>~500 words</option><option selected>~900 words</option><option>~1,400 words</option><option>~2,000 words</option></select></div>
             </div>
             <div class="fg"><label class="flbl">Tone</label><div class="topts"><div class="topt active">Educational</div><div class="topt">Analytical</div><div class="topt">Motivational</div><div class="topt">News</div></div></div>
-            <div class="fg"><label class="flbl">Assign to writer</label><select class="finput" id="b-writer"><option>— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
+            <div class="frow fg">
+              <div><label class="flbl">Assign to writer</label><select class="finput" id="b-writer"><option>— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
+              <div><label class="flbl">Author (E-E-A-T)</label><select class="finput" id="b-author">
+                <option value="fariha">Fariha Khan — Senior Writer</option>
+                <option value="harry">Harry Hosking — Markets Analyst</option>
+                <option value="imran">Imran Najib — Trading Educator</option>
+                <option value="sheperd">Sheperd Morena — Content Lead</option>
+              </select></div>
+            </div>
           </div>
           <div class="tabpanel" id="tab-seo">
             <div style="background:var(--blueL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--blue);">Optimise for search engines — keywords, meta, and internal linking.</div>
@@ -844,6 +867,24 @@ select.finput{cursor:pointer;}
         </div>
       </div>
       <div class="esdiv"></div>
+      <div class="meta-panel" id="meta-panel" style="width:100%;margin:0 -14px;width:calc(100% + 28px);">
+        <div class="meta-panel-head" id="meta-panel-head">
+          <span>Yoast Meta</span>
+          <span class="mp-toggle">▼</span>
+        </div>
+        <div class="meta-panel-body" id="meta-panel-body">
+          <div class="meta-field"><p class="meta-field-label">SEO Title</p><p class="meta-field-val" id="m-seo-title">—</p></div>
+          <div class="meta-field"><p class="meta-field-label">Meta Description</p><p class="meta-field-val" id="m-meta-desc">—</p></div>
+          <div class="meta-field"><p class="meta-field-label">Slug</p><p class="meta-field-val" id="m-slug">—</p></div>
+          <div class="meta-field"><p class="meta-field-label">Excerpt</p><p class="meta-field-val" id="m-excerpt">—</p></div>
+          <div class="meta-field"><p class="meta-field-label">OG Title</p><p class="meta-field-val" id="m-og-title">—</p></div>
+          <div class="meta-field"><p class="meta-field-label">OG Description</p><p class="meta-field-val" id="m-og-desc">—</p></div>
+          <div class="meta-field"><p class="meta-field-label">Schema Type</p><p class="meta-field-val" id="m-schema">—</p></div>
+          <div class="meta-field"><p class="meta-field-label">Reading Time</p><p class="meta-field-val" id="m-reading">—</p></div>
+          <button class="meta-copy-all" id="m-copy-all">Copy all meta →</button>
+        </div>
+      </div>
+      <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
         <p class="eslbl" style="margin-bottom:8px;">Before submitting</p>
         <div id="checklist">
@@ -852,6 +893,9 @@ select.finput{cursor:pointer;}
           <div class="chk"><div class="chkb"></div><span>Key terms defined</span></div>
           <div class="chk"><div class="chkb"></div><span>Facts verified</span></div>
           <div class="chk"><div class="chkb"></div><span>CTA is clear</span></div>
+          <div class="chk"><div class="chkb"></div><span>Author experience added</span></div>
+          <div class="chk"><div class="chkb"></div><span>Internal links included</span></div>
+          <div class="chk"><div class="chkb"></div><span>Meta package copied</span></div>
         </div>
       </div>
     </div>
@@ -918,6 +962,7 @@ select.finput{cursor:pointer;}
   <div class="fg"><label class="flbl">Priority</label><select class="finput" id="d-pri"><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent</option><option value="Low">Low</option></select></div>
   <div class="fg"><label class="flbl">Status</label><select class="finput" id="d-status"><option value="Briefed">Briefed</option><option value="Drafting">Drafting</option><option value="Sheperd Review">Sheperd Review</option><option value="Liam Review">Liam Review</option><option value="David Approval">David Approval</option><option value="Publishing">Publishing</option><option value="Live">Live</option></select></div>
   <button class="btn btn-p btn-f" id="d-save">Save changes</button>
+  <button class="btn btn-d btn-f" id="d-delete" style="margin-top:8px;">Delete article</button>
 </div>
 
 <!-- SENDBACK MODAL -->
@@ -1061,7 +1106,9 @@ async function loadPipeline(){
       c.className='pcard';
       if(art.priority==='Urgent') c.style.borderLeft='2px solid var(--urgent)';
       if(art.priority==='High') c.style.borderLeft='2px solid var(--high)';
-      c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p><div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="pcw">'+(art.assignee||'—')+'</span></div>';
+      var daysAgo = art.created_at ? Math.floor((Date.now()-new Date(art.created_at))/(1000*60*60*24)) : null;
+      var dateStr = daysAgo === 0 ? 'Today' : daysAgo === 1 ? '1d ago' : daysAgo ? daysAgo+'d ago' : '';
+      c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p><div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="pcw">'+(art.assignee||'—')+'</span></div>'+(dateStr?'<p style="font-size:9px;color:#475569;margin-top:3px;">'+dateStr+'</p>':'');
       c.addEventListener('click',function(){openDrawer(art);});
       col.appendChild(c);
     });
@@ -1186,6 +1233,13 @@ function openEditor(art,role){
     initEditor(htmlContent);
     var scores = calculateScores(htmlContent, art.primary_kw || '');
     updateScoreDisplay(scores);
+    // Display meta if available
+    if (art.meta) {
+      displayMeta(art.meta, art.word_count);
+    } else if (art.content) {
+      var parsedMeta = parseMeta(art.content);
+      if (parsedMeta.SEO_TITLE) displayMeta(parsedMeta, art.word_count);
+    }
     if (art.id) loadComments(art.id);
     wireToolbar();
     wireComments();
@@ -1199,8 +1253,10 @@ function openEditor(art,role){
   var ra=document.getElementById('ed-rv-acts');
   var rb=document.getElementById('rv-bar');
   var rl=document.getElementById('rv-lbl');
+  var edEl=document.getElementById('tiptap-editor');
   if(role==='writer'){
     wa.style.display='flex'; ra.style.display='none'; rb.style.display='none';
+    if(edEl) edEl.contentEditable='true';
   } else {
     wa.style.display='none'; ra.style.display='flex'; rb.style.display='flex';
     var labels={sheperd:'Reviewing as Sheperd — 1st review',liam:'SEO Review — Liam',david:'Final Approval — David Xavier'};
@@ -1208,6 +1264,12 @@ function openEditor(art,role){
     var fwd=document.getElementById('ed-fwd-btn');
     var flabels={sheperd:'Approve → Liam',liam:'Approve → David',david:'Final approval ✓'};
     if(fwd) fwd.textContent=flabels[role]||'Approve';
+    // Reviewers can comment and suggest but not edit content freely
+    if(role==='david'){
+      if(edEl) edEl.contentEditable='false';
+    } else {
+      if(edEl) edEl.contentEditable='true';
+    }
   }
   goScreen('editor');
 }
@@ -1295,6 +1357,14 @@ async function generate(){
   var links=document.getElementById('b-links').value.trim();
   var geo=document.getElementById('b-geo').value.trim();
   var q=document.getElementById('b-q').value.trim();
+  var authorKey = document.getElementById('b-author') ? document.getElementById('b-author').value : 'sheperd';
+  var authorProfiles = {
+    fariha: {name:'Fariha Khan',title:'Senior Content Writer',bio:'Fariha Khan is a senior content writer at FXIFY with 5 years covering prop trading, risk management and trading psychology.',linkedin:'linkedin.com/in/fariha-khan'},
+    harry: {name:'Harry Hosking',title:'Markets Analyst & Writer',bio:'Harry Hosking is a markets analyst at FXIFY with 6 years of trading experience covering forex, indices and evaluation strategy.',linkedin:'linkedin.com/in/harry-hosking'},
+    imran: {name:'Imran Najib',title:'Trading Educator',bio:'Imran Najib is a trading educator at FXIFY specialising in technical analysis and evaluation programs.',linkedin:'linkedin.com/in/imran-najib'},
+    sheperd: {name:'Sheperd Morena',title:'Content Lead',bio:'Sheperd Morena leads content at FXIFY combining 7+ years of fintech writing with AI-augmented content production.',linkedin:'linkedin.com/in/sheperd-morena'}
+  };
+  var author = authorProfiles[authorKey] || authorProfiles.sheperd;
   var btn=document.getElementById('gen-btn');
   btn.textContent='Writing...'; btn.disabled=true;
   
@@ -1312,7 +1382,7 @@ async function generate(){
     'You are a senior content writer for FXIFY, a professional prop trading firm. Write a complete blog article.\n\n'+
     'TOPIC: '+title+'\n'+
     'CATEGORY: '+cat+'\n'+
-    'TARGET LENGTH: '+len+'\n'+
+    'TARGET LENGTH: '+len+' — THIS IS MANDATORY. Count your words. Do not exceed or fall short by more than 10%.\n'+
     'TONE: '+tone+'\n'+
     'PRIMARY KEYWORD: '+pkw+'\n'+
     'SECONDARY KEYWORDS: '+(skw||'prop trading, funded trader, trading account')+'\n'+
@@ -1343,17 +1413,29 @@ async function generate(){
     '- Primary keyword in H1, first paragraph, at least 2 H2s\n'+
     '- No keyword stuffing\n'+
     '- Add [INTERNAL LINK: relevant topic] placeholders contextually\n\n'+
+    '━━ E-E-A-T REQUIREMENTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    'AUTHOR: '+author.name+' — '+author.title+'\n'+
+    '- Include 2 first-person FXIFY experience signals: "At FXIFY, we have seen..."\n'+
+    '- Reference at least one specific data point or real trading scenario\n'+
+    '- End article with: "Written by '+author.name+', '+author.title+' at FXIFY."\n\n'+
     '━━ FXIFY BRAND ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
     '- 1-2 natural FXIFY mentions only\n'+
     '- Use only these terms: evaluation programs, starting capital, performance split\n'+
     '- Never invent features or make claims not on fxify.com\n\n'+
-    '━━ OUTPUT FORMAT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    'Write the full article first, then add:\n'+
+    '━━ FULL META PACKAGE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    'After the article output exactly this block:\n'+
     '---META---\n'+
-    'Meta title: (max 60 chars)\n'+
-    'Meta description: (max 160 chars)\n'+
-    'URL slug: (lowercase-hyphenated)\n'+
-    'Schema type: (Article/FAQPage/HowTo)\n\n'+
+    'SEO_TITLE: (max 60 chars, includes primary keyword)\n'+
+    'META_DESC: (max 160 chars, compelling, includes keyword)\n'+
+    'SLUG: (lowercase-hyphenated, max 6 words)\n'+
+    'EXCERPT: (55 words max, plain text summary)\n'+
+    'OG_TITLE: (social share title)\n'+
+    'OG_DESC: (social share description, 125 chars)\n'+
+    'TWITTER_TITLE: (Twitter card title)\n'+
+    'TWITTER_DESC: (Twitter card description, 125 chars)\n'+
+    'SCHEMA_TYPE: (Article or FAQPage or HowTo)\n'+
+    'FOCUS_KW: (exact focus keyword for Yoast)\n'+
+    '---END META---\n\n'+
     (researchContext ? '━━ RESEARCH CONTEXT (SCRAPED DATA) ━━━━━━━━━━━━━━━━━━\n' +
     'The following content was scraped live from research URLs provided by the editor.\n' +
     'INSTRUCTIONS FOR RESEARCH CONTEXT:\n' +
@@ -1370,6 +1452,7 @@ async function generate(){
     '[VISUAL: description] for image placeholders\n'+
     '[INTERNAL LINK: topic] for internal links\n'+
     'No HTML tags. No markdown tables with pipes. Use plain text tables.\n'+
+    '⚠ WORD COUNT ENFORCEMENT: Your output MUST be '+len+'. Count your words before finishing. If under, expand sections. If over, cut filler.\n'+
     'No asterisks except for bold. No extra formatting.';
   try{
     var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:4000})});
@@ -1383,6 +1466,9 @@ async function generate(){
     currentArt={title:title,category:cat,assignee:writer,primaryKw:pkw,content:text,tone:tone,length:len,word_count:wc};
     var saved=await dbInsert(currentArt);
     if(saved){currentArt.id=saved.id;toast('Draft saved to pipeline ✓');loadPipeline();loadWriterDrafts();}
+    // Parse and store meta
+    var meta = parseMeta(text);
+    if (currentArt) currentArt.meta = meta;
     var banner=document.getElementById('gen-banner');
     var sub=document.getElementById('gen-sub');
     if(banner) banner.style.display='block';
@@ -1577,6 +1663,13 @@ function wireToolbar() {
       .replace(/<!--[^>]*-->/g, '')
       .replace(/\s{2,}/g, ' ')
       .trim();
+    // Add JSON-LD schema
+    var schemaType = (currentArt && currentArt.meta && currentArt.meta.SCHEMA_TYPE) || 'Article';
+    var schemaTitle = (currentArt && currentArt.meta && currentArt.meta.SEO_TITLE) || (currentArt && currentArt.title) || '';
+    var schemaDesc = (currentArt && currentArt.meta && currentArt.meta.META_DESC) || '';
+    var authorName = 'Sheperd Morena';
+    var jsonLd = '<script type="application/ld+json">{"@context":"https://schema.org","@type":"' + schemaType + '","headline":"' + schemaTitle.replace(/"/g,'\'') + '","description":"' + schemaDesc.replace(/"/g,'\'') + '","author":{"@type":"Person","name":"' + authorName + '","url":"https://fxify.com"},"publisher":{"@type":"Organization","name":"FXIFY","url":"https://fxify.com"},"datePublished":"' + new Date().toISOString().split('T')[0] + '"}<\/script>';
+    wpHtml = jsonLd + '\n\n' + wpHtml;
     navigator.clipboard.writeText(wpHtml).then(function() {
       toast('HTML copied — paste into WordPress code editor ✓');
       tcopy.textContent = 'Copied ✓';
@@ -1747,6 +1840,101 @@ function updateScoreDisplay(scores) {
 }
 
 
+
+
+// ── META PACKAGE ──────────────────────────────────────────────────────────
+function parseMeta(text) {
+  var meta = {};
+  var metaMatch = text.match(/---META---([\s\S]*?)---END META---/);
+  if (!metaMatch) {
+    // Fallback: try to find individual fields
+    metaMatch = [null, text];
+  }
+  var block = metaMatch[1] || '';
+  var fields = ['SEO_TITLE','META_DESC','SLUG','EXCERPT','OG_TITLE','OG_DESC',
+                'TWITTER_TITLE','TWITTER_DESC','SCHEMA_TYPE','FOCUS_KW'];
+  fields.forEach(function(f) {
+    var re = new RegExp(f + ':\s*(.+?)(?=\n[A-Z_]+:|$)', 's');
+    var m = block.match(re);
+    if (m) meta[f] = m[1].trim();
+  });
+  return meta;
+}
+
+function displayMeta(meta, wordCount) {
+  function setField(id, val, checkLen, maxLen) {
+    var el = document.getElementById(id);
+    if (!el || !val) return;
+    el.textContent = val;
+    if (checkLen) {
+      el.className = 'meta-field-val ' + (val.length <= maxLen ? 'good' : 'warn');
+      el.title = val.length + '/' + maxLen + ' chars';
+    }
+  }
+  setField('m-seo-title', meta.SEO_TITLE, true, 60);
+  setField('m-meta-desc', meta.META_DESC, true, 160);
+  setField('m-slug', meta.SLUG);
+  setField('m-excerpt', meta.EXCERPT);
+  setField('m-og-title', meta.OG_TITLE);
+  setField('m-og-desc', meta.OG_DESC);
+  setField('m-schema', meta.SCHEMA_TYPE);
+  // Reading time
+  var rt = Math.ceil((wordCount || 0) / 200);
+  var rtEl = document.getElementById('m-reading');
+  if (rtEl) rtEl.textContent = rt + ' min read';
+  // Store meta on currentArt
+  if (currentArt) currentArt.meta = meta;
+  // Open panel
+  var body = document.getElementById('meta-panel-body');
+  if (body) body.classList.add('open');
+  var toggle = document.querySelector('.mp-toggle');
+  if (toggle) toggle.textContent = '▲';
+}
+
+function wireMeta() {
+  // Toggle panel
+  var head = document.getElementById('meta-panel-head');
+  if (head) head.addEventListener('click', function() {
+    var body = document.getElementById('meta-panel-body');
+    var toggle = document.querySelector('.mp-toggle');
+    if (body) body.classList.toggle('open');
+    if (toggle) toggle.textContent = body.classList.contains('open') ? '▲' : '▼';
+  });
+  // Copy all meta
+  var copyBtn = document.getElementById('m-copy-all');
+  if (copyBtn) copyBtn.addEventListener('click', function() {
+    if (!currentArt || !currentArt.meta) { toast('No meta generated yet'); return; }
+    var m = currentArt.meta;
+    var wc = currentArt.word_count || 0;
+    var rt = Math.ceil(wc / 200);
+    var metaText = 
+      '=== YOAST SEO META ===\n\n' +
+      'SEO Title: ' + (m.SEO_TITLE||'') + '\n' +
+      'Meta Description: ' + (m.META_DESC||'') + '\n' +
+      'Focus Keyword: ' + (m.FOCUS_KW||'') + '\n' +
+      'URL Slug: ' + (m.SLUG||'') + '\n' +
+      'Excerpt: ' + (m.EXCERPT||'') + '\n\n' +
+      '=== SOCIAL ===\n\n' +
+      'OG Title: ' + (m.OG_TITLE||'') + '\n' +
+      'OG Description: ' + (m.OG_DESC||'') + '\n' +
+      'Twitter Title: ' + (m.TWITTER_TITLE||'') + '\n' +
+      'Twitter Description: ' + (m.TWITTER_DESC||'') + '\n\n' +
+      '=== SCHEMA ===\n\n' +
+      'Schema Type: ' + (m.SCHEMA_TYPE||'Article') + '\n' +
+      'Reading Time: ' + rt + ' min\n';
+    navigator.clipboard.writeText(metaText).then(function() {
+      toast('Full Yoast meta copied ✓');
+    }).catch(function() {
+      var ta = document.createElement('textarea');
+      ta.value = metaText;
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      toast('Full Yoast meta copied ✓');
+    });
+  });
+}
 
 // ── INTERNAL LINKS ────────────────────────────────────────────────────────
 var internalLinksCache = null;
@@ -2169,13 +2357,13 @@ async function runPlanner() {
     '    }\n' +
     '  ]\n' +
     '}\n\n' +
-    'Generate: 5 keyword gaps, 8 topic ideas, 6 PAA questions, 3 GEO topics, 3 backlink angles. No other text, just JSON.';
+    'Generate: 5 keyword gaps, 6 topic ideas, 5 PAA questions, 3 GEO topics, 2 backlink angles. Keep all text fields under 15 words. No other text outside the JSON.';
 
   try {
     var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt, max_tokens: 2000 })
+      body: JSON.stringify({ prompt: prompt, max_tokens: 3000 })
     });
     var data = await r.json();
     var text = '';
@@ -2183,10 +2371,49 @@ async function runPlanner() {
     else if (data.content && data.content[0]) text = data.content[0].text;
     else if (data.text) text = data.text;
 
-    // Parse JSON
+    // Parse JSON - handle extra text, markdown fences, truncated responses
     var jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('Invalid response format');
-    var plan = JSON.parse(jsonMatch[0]);
+    if (!jsonMatch) throw new Error('No JSON found in response');
+    var rawJson = jsonMatch[0];
+    // Remove any trailing incomplete entries that cause parse errors
+    var plan;
+    try {
+      plan = JSON.parse(rawJson);
+    } catch(parseErr) {
+      // Try to fix truncated JSON by closing open arrays/objects
+      var fixed = rawJson
+        .replace(/,\s*$/, '')           // trailing comma
+        .replace(/,\s*\}$/, '}')        // trailing comma before }
+        .replace(/,\s*\]$/, ']');       // trailing comma before ]
+      // Count open brackets and close them
+      var opens = (fixed.match(/\{/g)||[]).length - (fixed.match(/\}/g)||[]).length;
+      var openArr = (fixed.match(/\[/g)||[]).length - (fixed.match(/\]/g)||[]).length;
+      // Close any unclosed strings first
+      var lastQuote = fixed.lastIndexOf('"');
+      var quoteCount = (fixed.match(/"/g)||[]).length;
+      if (quoteCount % 2 !== 0) fixed = fixed + '"';
+      for (var x=0; x<openArr; x++) fixed += ']';
+      for (var y=0; y<opens; y++) fixed += '}';
+      try {
+        plan = JSON.parse(fixed);
+      } catch(e2) {
+        // Last resort: build minimal plan from what we have
+        plan = { gaps: [], topics: [], paa: [], geo_topics: [], backlink_angles: [] };
+        // Try to extract gaps array
+        var gapsM = rawJson.match(/"gaps"\s*:\s*\[([^\]]*)/);
+        if (gapsM) {
+          var gapItems = gapsM[1].match(/"([^"]+)"/g);
+          if (gapItems) plan.gaps = gapItems.map(function(g){ return g.replace(/"/g,''); });
+        }
+        // Try to extract paa array
+        var paaM = rawJson.match(/"paa"\s*:\s*\[([^\]]*)/);
+        if (paaM) {
+          var paaItems = paaM[1].match(/"([^"]+)"/g);
+          if (paaItems) plan.paa = paaItems.map(function(p){ return p.replace(/"/g,''); });
+        }
+        if (!plan.gaps.length && !plan.paa.length) throw new Error('Could not parse response. Try again.');
+      }
+    }
 
     // Render results
     renderPlannerResults(plan);
@@ -2384,8 +2611,17 @@ function init(){
     });
   });
 
-  // Login
-  document.getElementById('login-btn').addEventListener('click',function(){goScreen(activeRole);});
+  // Login with simple passwords
+  var rolePins = { admin: 'fxify2024', writer: 'writer2024', liam: 'seo2024', david: 'manager2024' };
+  document.getElementById('login-btn').addEventListener('click', function(){
+    var pin = prompt('Enter your access code:');
+    if (!pin) return;
+    if (pin.toLowerCase() === rolePins[activeRole]) {
+      goScreen(activeRole);
+    } else {
+      alert('Incorrect access code. Contact Sheperd for access.');
+    }
+  });
 
   // Logos → login
   ['admin','writer','liam','david'].forEach(function(r){
@@ -2425,6 +2661,7 @@ function init(){
 
   // Generate
   document.getElementById('gen-btn').addEventListener('click',generate);
+  wireMeta();
   var plBtn = document.getElementById('pl-analyse-btn');
   if (plBtn) plBtn.addEventListener('click', runPlanner);
   document.getElementById('open-ed-btn').addEventListener('click',function(){if(currentArt) openEditor(currentArt,'sheperd');});
@@ -2482,6 +2719,15 @@ function init(){
   // Drawer
   document.getElementById('d-close').addEventListener('click',closeDrawer);
   document.getElementById('dov').addEventListener('click',closeDrawer);
+  document.getElementById('d-delete').addEventListener('click', async function(){
+    if (!drawerArt) return;
+    if (!confirm('Delete "' + (drawerArt.title||'this article') + '"? This cannot be undone.')) return;
+    var res = await supa.from('articles').delete().eq('id', drawerArt.id);
+    if (res.error) { toast('Delete failed'); return; }
+    closeDrawer();
+    toast('Article deleted');
+    loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadLiamQ(); loadDavidQ();
+  });
   document.getElementById('d-save').addEventListener('click',async function(){
     if(!drawerArt) return;
     var assignee=document.getElementById('d-writer').value;
