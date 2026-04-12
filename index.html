@@ -417,8 +417,10 @@ select.finput{cursor:pointer;}
 .img-placeholder .ip-icon{font-size:24px;}
 
 /* INTERNAL LINKS PANEL */
-.il-panel{background:var(--navy2);border-top:1px solid rgba(14,196,173,.07);padding:10px 14px;max-height:200px;overflow-y:auto;}
-.il-head{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#334155;margin-bottom:8px;}
+.il-panel{background:var(--navy2);border-top:1px solid rgba(14,196,173,.07);padding:6px 8px;max-height:260px;overflow-y:auto;}
+.il-head{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:#334155;margin-bottom:6px;}
+.il-section-head{font-size:9px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);padding:6px 0 4px;border-bottom:1px solid rgba(14,196,173,.1);margin-bottom:4px;}
+.il-tab.active{border-color:var(--teal)!important;background:var(--tealL)!important;color:var(--teal)!important;}
 .il-item{display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);gap:8px;}
 .il-item:last-child{border-bottom:none;}
 .il-title{font-size:11px;color:#94a3b8;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
@@ -654,7 +656,19 @@ select.finput{cursor:pointer;}
             <div class="fg"><label class="flbl">Article title</label><input class="finput" id="b-title" type="text" placeholder="e.g. How to Manage Drawdown on a Funded Account"/></div>
             <div class="frow fg">
               <div><label class="flbl">Category</label><select class="finput" id="b-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option><option>Crypto</option></select></div>
-              <div><label class="flbl">Length</label><select class="finput" id="b-len"><option>~500 words</option><option selected>~900 words</option><option>~1,400 words</option><option>~2,000 words</option></select></div>
+              <div><label class="flbl">Length</label><select class="finput" id="b-len"><optgroup label="Short form">
+              <option>News / Update — 600 words</option>
+              <option>Quick guide — 800 words</option>
+            </optgroup>
+            <optgroup label="Standard (recommended)">
+              <option selected>Standard guide — 1,200 words</option>
+              <option>In-depth guide — 1,500 words</option>
+              <option>Comparison article — 1,800 words</option>
+            </optgroup>
+            <optgroup label="Pillar content">
+              <option>Pillar / Long-form — 2,200 words</option>
+              <option>Ultimate guide — 2,800 words</option>
+            </optgroup></select></div>
             </div>
             <div class="frow fg">
               <div><label class="flbl">Due date</label><input class="finput" id="b-due" type="date"/></div>
@@ -1122,7 +1136,15 @@ select.finput{cursor:pointer;}
       </div>
       <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
-        <p class="eslbl" style="margin-bottom:6px;">Internal links</p>
+        <p class="eslbl" style="margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;">
+          Internal links
+          <button id="il-refresh" style="font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;">↻ Refresh</button>
+        </p>
+        <input id="il-search" class="finput" type="text" placeholder="Search links..." style="margin-bottom:6px;padding:5px 8px;font-size:11px;"/>
+        <div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;" id="il-tabs">
+          <button class="il-tab active" data-iltab="core" style="font-size:9px;padding:2px 8px;border-radius:20px;border:1px solid var(--teal);background:var(--tealL);color:var(--teal);cursor:pointer;font-family:inherit;font-weight:600;">Core pages</button>
+          <button class="il-tab" data-iltab="blog" style="font-size:9px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;">Blog posts</button>
+        </div>
         <div class="il-panel" id="il-panel">
           <p style="font-size:11px;color:#475569;font-style:italic;">Loading...</p>
         </div>
@@ -2190,49 +2212,103 @@ var publishedCache = null;
 async function scrapePublishedArticles(listId, countId) {
   var list = document.getElementById(listId);
   if (!list) return;
-  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping fxify.com/blog...</p>';
+  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping fxify.com/blog — this takes ~30 seconds...</p>';
 
   try {
-    // Try multiple pages
     var allLinks = [];
-    var pages = ['https://fxify.com/blog', 'https://fxify.com/blog/page/2', 'https://fxify.com/blog/page/3'];
-    
-    for (var i = 0; i < pages.length; i++) {
-      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
-        body: JSON.stringify({ url: pages[i], formats: ['markdown'], onlyMainContent: true })
-      });
-      var data = await res.json();
-      if (!data.success || !data.data || !data.data.markdown) break;
-      
-      var md = data.data.markdown;
-      var re = /\[([^\]]{10,120})\]\((https?:\/\/fxify\.com\/blog\/[^)]+)\)/g;
-      var match;
-      while ((match = re.exec(md)) !== null) {
-        var title = match[1].trim();
-        var url = match[2].trim();
-        if (!allLinks.find(function(l){ return l.url === url; })) {
-          allLinks.push({ title: title, url: url });
-        }
+    var seen = {};
+    var totalPages = 32;
+    var BATCH = 4; // scrape 4 pages at a time
+
+    for (var page = 1; page <= totalPages; page += BATCH) {
+      // Build batch of page URLs
+      var batch = [];
+      for (var p = page; p < page + BATCH && p <= totalPages; p++) {
+        batch.push(p === 1 ? 'https://fxify.com/blog' : 'https://fxify.com/blog/page/' + p);
       }
-      if (allLinks.length === 0) break; // No more pages
+
+      // Update status
+      if (list) list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping pages ' + page + '–' + Math.min(page+BATCH-1, totalPages) + ' of ' + totalPages + '...</p>';
+
+      // Scrape batch in parallel
+      var batchResults = await Promise.allSettled(batch.map(function(url) {
+        return fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
+          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
+        }).then(function(r){ return r.json(); });
+      }));
+
+      var pageHadLinks = false;
+      batchResults.forEach(function(result) {
+        if (result.status !== 'fulfilled') return;
+        var data = result.value;
+        if (!data.success || !data.data || !data.data.markdown) return;
+        var md = data.data.markdown;
+        // Match [title](https://fxify.com/blog/article-slug/)
+        var re = /\[([^\]]{10,120})\]\((https:\/\/fxify\.com\/blog\/[a-z0-9][a-z0-9\-]+\/)\)/g;
+        var match;
+        while ((match = re.exec(md)) !== null) {
+          var title = match[1].trim();
+          var url = match[2].trim();
+          // Skip category/pagination links
+          if (url.includes('/category/') || url.includes('/page/') || url.includes('/?')) continue;
+          if (title.length < 10 || title.match(/^(Read More|Guides|Updates|Spotlight|Trading)/i)) continue;
+          if (!seen[url]) {
+            seen[url] = true;
+            allLinks.push({ title: title, url: url });
+            pageHadLinks = true;
+          }
+        }
+      });
+
+      // If no links found in this batch and we're past page 8, stop early
+      if (!pageHadLinks && page > 8) break;
     }
 
     publishedCache = allLinks;
+
+    // Render in the dedicated list page
     renderPublishedArticles(allLinks, listId, countId);
 
-    // Also update live column in pipeline with count
-    var liveCol = document.getElementById('col-live');
-    var liveCnt = document.getElementById('cnt-live');
-    if (liveCol && allLinks.length > 0) {
-      // Add scraped articles to live column
-      if (liveCnt) liveCnt.textContent = allLinks.length;
-    }
+    // ── RENDER IN PIPELINE LIVE COLUMN ──────────────────────────────────
+    renderLiveColumnFromPublished(allLinks);
+
+    toast(allLinks.length + ' published articles loaded ✓');
 
   } catch(e) {
-    if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Could not load — check Firecrawl key</p>';
+    if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Error: ' + e.message + '</p>';
+    toast('Scrape failed — check Firecrawl key');
   }
+}
+
+function renderLiveColumnFromPublished(articles) {
+  var col = document.getElementById('col-live');
+  var cnt = document.getElementById('cnt-live');
+  if (!col) return;
+
+  if (cnt) cnt.textContent = articles.length;
+
+  // Clear any existing scraped cards (keep Supabase Live articles at top)
+  var existingScraped = col.querySelectorAll('.pipeline-scraped-card');
+  existingScraped.forEach(function(c){ c.remove(); });
+
+  // Add scraped articles as compact pipeline cards
+  articles.forEach(function(article) {
+    var card = document.createElement('div');
+    card.className = 'pipeline-scraped-card';
+    card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:10px 12px;margin-bottom:6px;cursor:pointer;';
+    card.onmouseenter = function(){ card.style.borderColor='var(--green)'; };
+    card.onmouseleave = function(){ card.style.borderColor='var(--border)'; };
+    card.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+        '<p style="font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">' + article.title + '</p>' +
+        '<div style="display:flex;gap:4px;flex-shrink:0;">' +
+          '<a href="' + article.url + '" target="_blank" style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--tealL);color:var(--teal);text-decoration:none;font-weight:600;">Live ↗</a>' +
+        '</div>' +
+      '</div>';
+    col.appendChild(card);
+  });
 }
 
 function renderPublishedArticles(articles, listId, countId, filter) {
@@ -2716,49 +2792,103 @@ var publishedCache = null;
 async function scrapePublishedArticles(listId, countId) {
   var list = document.getElementById(listId);
   if (!list) return;
-  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping fxify.com/blog...</p>';
+  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping fxify.com/blog — this takes ~30 seconds...</p>';
 
   try {
-    // Try multiple pages
     var allLinks = [];
-    var pages = ['https://fxify.com/blog', 'https://fxify.com/blog/page/2', 'https://fxify.com/blog/page/3'];
-    
-    for (var i = 0; i < pages.length; i++) {
-      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
-        body: JSON.stringify({ url: pages[i], formats: ['markdown'], onlyMainContent: true })
-      });
-      var data = await res.json();
-      if (!data.success || !data.data || !data.data.markdown) break;
-      
-      var md = data.data.markdown;
-      var re = /\[([^\]]{10,120})\]\((https?:\/\/fxify\.com\/blog\/[^)]+)\)/g;
-      var match;
-      while ((match = re.exec(md)) !== null) {
-        var title = match[1].trim();
-        var url = match[2].trim();
-        if (!allLinks.find(function(l){ return l.url === url; })) {
-          allLinks.push({ title: title, url: url });
-        }
+    var seen = {};
+    var totalPages = 32;
+    var BATCH = 4; // scrape 4 pages at a time
+
+    for (var page = 1; page <= totalPages; page += BATCH) {
+      // Build batch of page URLs
+      var batch = [];
+      for (var p = page; p < page + BATCH && p <= totalPages; p++) {
+        batch.push(p === 1 ? 'https://fxify.com/blog' : 'https://fxify.com/blog/page/' + p);
       }
-      if (allLinks.length === 0) break; // No more pages
+
+      // Update status
+      if (list) list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping pages ' + page + '–' + Math.min(page+BATCH-1, totalPages) + ' of ' + totalPages + '...</p>';
+
+      // Scrape batch in parallel
+      var batchResults = await Promise.allSettled(batch.map(function(url) {
+        return fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
+          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
+        }).then(function(r){ return r.json(); });
+      }));
+
+      var pageHadLinks = false;
+      batchResults.forEach(function(result) {
+        if (result.status !== 'fulfilled') return;
+        var data = result.value;
+        if (!data.success || !data.data || !data.data.markdown) return;
+        var md = data.data.markdown;
+        // Match [title](https://fxify.com/blog/article-slug/)
+        var re = /\[([^\]]{10,120})\]\((https:\/\/fxify\.com\/blog\/[a-z0-9][a-z0-9\-]+\/)\)/g;
+        var match;
+        while ((match = re.exec(md)) !== null) {
+          var title = match[1].trim();
+          var url = match[2].trim();
+          // Skip category/pagination links
+          if (url.includes('/category/') || url.includes('/page/') || url.includes('/?')) continue;
+          if (title.length < 10 || title.match(/^(Read More|Guides|Updates|Spotlight|Trading)/i)) continue;
+          if (!seen[url]) {
+            seen[url] = true;
+            allLinks.push({ title: title, url: url });
+            pageHadLinks = true;
+          }
+        }
+      });
+
+      // If no links found in this batch and we're past page 8, stop early
+      if (!pageHadLinks && page > 8) break;
     }
 
     publishedCache = allLinks;
+
+    // Render in the dedicated list page
     renderPublishedArticles(allLinks, listId, countId);
 
-    // Also update live column in pipeline with count
-    var liveCol = document.getElementById('col-live');
-    var liveCnt = document.getElementById('cnt-live');
-    if (liveCol && allLinks.length > 0) {
-      // Add scraped articles to live column
-      if (liveCnt) liveCnt.textContent = allLinks.length;
-    }
+    // ── RENDER IN PIPELINE LIVE COLUMN ──────────────────────────────────
+    renderLiveColumnFromPublished(allLinks);
+
+    toast(allLinks.length + ' published articles loaded ✓');
 
   } catch(e) {
-    if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Could not load — check Firecrawl key</p>';
+    if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Error: ' + e.message + '</p>';
+    toast('Scrape failed — check Firecrawl key');
   }
+}
+
+function renderLiveColumnFromPublished(articles) {
+  var col = document.getElementById('col-live');
+  var cnt = document.getElementById('cnt-live');
+  if (!col) return;
+
+  if (cnt) cnt.textContent = articles.length;
+
+  // Clear any existing scraped cards (keep Supabase Live articles at top)
+  var existingScraped = col.querySelectorAll('.pipeline-scraped-card');
+  existingScraped.forEach(function(c){ c.remove(); });
+
+  // Add scraped articles as compact pipeline cards
+  articles.forEach(function(article) {
+    var card = document.createElement('div');
+    card.className = 'pipeline-scraped-card';
+    card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:10px 12px;margin-bottom:6px;cursor:pointer;';
+    card.onmouseenter = function(){ card.style.borderColor='var(--green)'; };
+    card.onmouseleave = function(){ card.style.borderColor='var(--border)'; };
+    card.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+        '<p style="font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">' + article.title + '</p>' +
+        '<div style="display:flex;gap:4px;flex-shrink:0;">' +
+          '<a href="' + article.url + '" target="_blank" style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--tealL);color:var(--teal);text-decoration:none;font-weight:600;">Live ↗</a>' +
+        '</div>' +
+      '</div>';
+    col.appendChild(card);
+  });
 }
 
 function renderPublishedArticles(articles, listId, countId, filter) {
@@ -3080,121 +3210,180 @@ function wireReadMode() {
 
 // ── INTERNAL LINKS ────────────────────────────────────────────────────────
 var internalLinksCache = null;
+var ilCurrentTab = 'core';
+
+// FXIFY core pages — always show, high conversion value
+var FXIFY_CORE_LINKS = [
+  { title: 'One Phase Challenge', url: 'https://fxify.com/programs/one-phase/', anchor: 'FXIFY One Phase Challenge', tag: 'Programs' },
+  { title: 'Two Phase Challenge', url: 'https://fxify.com/programs/two-phase/', anchor: 'FXIFY Two Phase Challenge', tag: 'Programs' },
+  { title: 'Three Phase Challenge', url: 'https://fxify.com/programs/three-phase-challenge/', anchor: 'FXIFY Three Phase Challenge', tag: 'Programs' },
+  { title: 'Instant Funding', url: 'https://fxify.com/programs/instant-funding/', anchor: 'FXIFY Instant Funding program', tag: 'Programs' },
+  { title: 'Lightning Challenge', url: 'https://fxify.com/programs/lightning-challenge/', anchor: 'FXIFY Lightning Challenge', tag: 'Programs' },
+  { title: 'How It Works', url: 'https://fxify.com/how-it-works/', anchor: 'how FXIFY works', tag: 'Info' },
+  { title: 'FAQs', url: 'https://fxify.com/faqs/', anchor: 'frequently asked questions', tag: 'Info' },
+  { title: 'Fast Payouts', url: 'https://fxify.com/fast-payouts/', anchor: 'FXIFY fast payouts', tag: 'Info' },
+  { title: 'Backed by a Broker', url: 'https://fxify.com/backed-by-a-broker/', anchor: 'backed by a real broker', tag: 'Trust' },
+  { title: 'Start a Challenge', url: 'https://trader.fxify.com/purchasechallenge', anchor: 'start your FXIFY challenge', tag: 'CTA' },
+  { title: 'Free Trading Course', url: 'https://fxify.com/courses', anchor: 'free trading course', tag: 'Education' },
+  { title: 'Become a Partner', url: 'https://fxify.com/become-a-partner/', anchor: 'FXIFY partner program', tag: 'Programs' },
+];
 
 async function loadInternalLinks() {
-  var panel = document.getElementById('il-panel');
-  if (!panel) return;
-  if (internalLinksCache) { renderInternalLinks(internalLinksCache); return; }
-  panel.innerHTML = '<p style="font-size:11px;color:#475569;">Loading FXIFY links...</p>';
-  try {
-    // Scrape the blog index page
-    var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
-      body: JSON.stringify({ url: 'https://fxify.com/blog', formats: ['markdown'], onlyMainContent: true })
-    });
-    var data = await res.json();
-    var links = [];
-    if (data.success && data.data && data.data.markdown) {
-      var md = data.data.markdown;
-      // Extract all markdown links [title](url)
-      var re = /\[([^\]]{5,80})\]\((https?:\/\/[^)]+|\/[^)]+)\)/g;
-      var match;
-      while ((match = re.exec(md)) !== null) {
-        var title = match[1].trim();
-        var url = match[2].trim();
-        // Filter: skip nav/footer links, keep blog post links
-        if (title.length > 10 && !title.match(/^(Home|Blog|About|Contact|Login|Sign)/i)) {
-          // Make relative URLs absolute
-          if (url.startsWith('/')) url = 'https://fxify.com' + url;
-          // Avoid duplicates
-          if (!links.find(function(l){ return l.url === url; })) {
-            links.push({ title: title, url: url });
-          }
-        }
-      }
-    }
-    // Also try to get links relevant to current article topic
-    if (links.length < 3 && currentArt && currentArt.primary_kw) {
-      var searchRes = await fetch('https://api.firecrawl.dev/v1/search', {
+  renderILPanel();
+
+  // Load blog posts from published cache or scrape
+  if (!internalLinksCache && publishedCache && publishedCache.length) {
+    internalLinksCache = publishedCache;
+  } else if (!internalLinksCache) {
+    // Try a quick scrape of the blog index
+    try {
+      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
-        body: JSON.stringify({ query: currentArt.primary_kw + ' site:fxify.com', limit: 5 })
+        body: JSON.stringify({ url: 'https://fxify.com/blog', formats: ['markdown'], onlyMainContent: true })
       });
-      var searchData = await searchRes.json();
-      if (searchData.success && searchData.data) {
-        searchData.data.forEach(function(r) {
-          if (r.url && r.title && !links.find(function(l){ return l.url === r.url; })) {
-            links.push({ title: r.title, url: r.url });
-          }
-        });
+      var data = await res.json();
+      if (data.success && data.data && data.data.markdown) {
+        var links = [];
+        var seen = {};
+        var re = /\[([^\]]{10,100})\]\((https:\/\/fxify\.com\/blog\/[a-z0-9][a-z0-9\-]+\/)\)/g;
+        var match;
+        while ((match = re.exec(data.data.markdown)) !== null) {
+          var title = match[1].trim();
+          var url = match[2].trim();
+          if (url.includes('/category/') || title.match(/^Read More/i)) continue;
+          if (!seen[url]) { seen[url] = true; links.push({ title: title, url: url }); }
+        }
+        internalLinksCache = links;
       }
+    } catch(e) {}
+    if (!internalLinksCache) internalLinksCache = [];
+  }
+  renderILPanel();
+}
+
+function renderILPanel(searchQuery) {
+  var panel = document.getElementById('il-panel');
+  if (!panel) return;
+
+  var kw = (currentArt && currentArt.primary_kw ? currentArt.primary_kw : '').toLowerCase();
+  var search = (searchQuery || '').toLowerCase();
+
+  if (ilCurrentTab === 'core') {
+    var links = FXIFY_CORE_LINKS;
+    if (search) links = links.filter(function(l){ return l.title.toLowerCase().includes(search) || l.tag.toLowerCase().includes(search); });
+
+    // Group by tag
+    var groups = {};
+    links.forEach(function(l) {
+      if (!groups[l.tag]) groups[l.tag] = [];
+      groups[l.tag].push(l);
+    });
+
+    panel.innerHTML = '';
+    Object.keys(groups).forEach(function(tag) {
+      var head = document.createElement('p');
+      head.className = 'il-section-head';
+      head.textContent = tag;
+      panel.appendChild(head);
+      groups[tag].forEach(function(link) {
+        panel.appendChild(makeILItem(link));
+      });
+    });
+
+  } else {
+    // Blog posts tab — sort by keyword relevance
+    var blogLinks = internalLinksCache || [];
+    if (search) {
+      blogLinks = blogLinks.filter(function(l){ return l.title.toLowerCase().includes(search); });
+    } else if (kw) {
+      // Sort by keyword relevance — articles that contain the keyword first
+      var kwWords = kw.split(' ').filter(function(w){ return w.length > 3; });
+      blogLinks = blogLinks.slice().sort(function(a, b) {
+        var aScore = kwWords.filter(function(w){ return a.title.toLowerCase().includes(w); }).length;
+        var bScore = kwWords.filter(function(w){ return b.title.toLowerCase().includes(w); }).length;
+        return bScore - aScore;
+      });
     }
-    // Fallback with real FXIFY URLs if scrape returns nothing
-    if (links.length < 3) {
-      links = [
-        { title: 'FXIFY Evaluation Programs', url: 'https://fxify.com/programs' },
-        { title: 'FXIFY Challenge Rules', url: 'https://fxify.com/rules' },
-        { title: 'Funded Trader Dashboard', url: 'https://fxify.com/dashboard' },
-        { title: 'FXIFY Pricing & Plans', url: 'https://fxify.com/pricing' },
-        { title: 'How to Get Funded', url: 'https://fxify.com/get-funded' }
-      ];
+
+    panel.innerHTML = '';
+    if (!blogLinks.length) {
+      panel.innerHTML = '<p style="font-size:11px;color:var(--muted);padding:8px 0;">No blog posts loaded yet — use Published Articles page to scrape first.</p>';
+      return;
     }
-    internalLinksCache = links;
-    renderInternalLinks(links);
-  } catch(e) {
-    // Fallback silently
-    internalLinksCache = [
-      { title: 'FXIFY Evaluation Programs', url: 'https://fxify.com/programs' },
-      { title: 'FXIFY Challenge Rules', url: 'https://fxify.com/rules' },
-      { title: 'Funded Trader Dashboard', url: 'https://fxify.com/dashboard' }
-    ];
-    renderInternalLinks(internalLinksCache);
+
+    // Show top 20
+    blogLinks.slice(0, 20).forEach(function(link) {
+      panel.appendChild(makeILItem({ title: link.title, url: link.url, anchor: link.title }));
+    });
   }
 }
 
-function renderInternalLinks(links) {
-  var panel = document.getElementById('il-panel');
-  if (!panel) return;
-  panel.innerHTML = '';
-  links.slice(0, 8).forEach(function(link) {
-    var item = document.createElement('div');
-    item.className = 'il-item';
-    item.innerHTML = 
-      '<span class="il-title">' + link.title + '</span>' +
-      '<button class="il-insert">Insert</button>';
-    item.querySelector('.il-insert').addEventListener('mousedown', function(e) {
-      // Save selection BEFORE button click steals focus
-      e.preventDefault();
-      var edEl = document.getElementById('tiptap-editor');
-      if (!edEl) return;
-      // Restore selection and insert at cursor
-      var sel = window.getSelection();
-      if (sel && sel.rangeCount > 0 && edEl.contains(sel.getRangeAt(0).commonAncestorContainer)) {
-        // Cursor is in editor — insert at cursor position
-        var range = sel.getRangeAt(0);
-        range.deleteContents();
-        var a = document.createElement('a');
-        a.href = link.url;
-        a.textContent = link.title;
-        a.style.cssText = 'color:var(--blue);text-decoration:underline;';
-        range.insertNode(a);
-        // Move cursor after the link
-        range.setStartAfter(a);
-        range.collapse(true);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      } else {
-        // No cursor in editor — append to end
-        edEl.focus();
-        document.execCommand('insertHTML', false,
-          '<a href="' + link.url + '" style="color:var(--blue);text-decoration:underline;">' + link.title + '</a> ');
-      }
-      autoSave(edEl.innerHTML);
-      toast('Link in — good for SEO ');
-    });
-    panel.appendChild(item);
+function makeILItem(link) {
+  var item = document.createElement('div');
+  item.className = 'il-item';
+  item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;gap:6px;padding:5px 4px;border-bottom:1px solid rgba(255,255,255,.03);';
+
+  var tagHtml = link.tag ? '<span style="font-size:8px;padding:1px 5px;border-radius:10px;background:var(--tealL);color:var(--teal);font-weight:600;flex-shrink:0;">' + link.tag + '</span>' : '';
+
+  item.innerHTML =
+    '<div style="min-width:0;flex:1;">' +
+      tagHtml +
+      '<p style="font-size:11px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + link.url + '">' + link.title + '</p>' +
+      '<p style="font-size:9px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">anchor: ' + (link.anchor || link.title) + '</p>' +
+    '</div>' +
+    '<button class="il-insert btn btn-s" style="font-size:9px;padding:2px 7px;flex-shrink:0;">Insert</button>';
+
+  item.querySelector('.il-insert').addEventListener('mousedown', function(e) {
+    e.preventDefault();
+    var anchor = link.anchor || link.title;
+    var edEl = document.getElementById('tiptap-editor');
+    if (!edEl) return;
+
+    var sel = window.getSelection();
+    var selectedTxt = sel ? sel.toString().trim() : '';
+
+    if (selectedTxt && sel.rangeCount > 0 && edEl.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      // Wrap selected text as link
+      var range = sel.getRangeAt(0);
+      var a = document.createElement('a');
+      a.href = link.url;
+      a.className = 'int-link';
+      a.style.cssText = 'color:var(--blue);text-decoration:underline;';
+      range.surroundContents(a);
+      sel.removeAllRanges();
+    } else if (sel && sel.rangeCount > 0 && edEl.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+      // Insert at cursor with suggested anchor text
+      var range2 = sel.getRangeAt(0);
+      range2.deleteContents();
+      var a2 = document.createElement('a');
+      a2.href = link.url;
+      a2.className = 'int-link';
+      a2.style.cssText = 'color:var(--blue);text-decoration:underline;';
+      a2.textContent = anchor;
+      range2.insertNode(a2);
+      range2.setStartAfter(a2);
+      range2.collapse(true);
+      sel.removeAllRanges();
+      sel.addRange(range2);
+    } else {
+      // No cursor in editor — append
+      edEl.focus();
+      document.execCommand('insertHTML', false,
+        '<a href="' + link.url + '" class="int-link" style="color:var(--blue);text-decoration:underline;">' + anchor + '</a> ');
+    }
+
+    autoSave(edEl.innerHTML);
+    toast('Link inserted ✓');
   });
+
+  return item;
+}
+
+function renderInternalLinks(links) {
+  // Legacy wrapper — now handled by renderILPanel
+  if (links) internalLinksCache = links;
+  renderILPanel();
 }
 
 // ── INLINE COMMENTS ────────────────────────────────────────────────────────
@@ -4084,6 +4273,36 @@ function init(){
   // Liam planner
   var lplBtn = document.getElementById('lpl-analyse-btn');
   if (lplBtn) lplBtn.addEventListener('click', runLiamPlanner);
+
+  // Internal links tabs
+  document.addEventListener('click', function(e) {
+    var tab = e.target.closest('.il-tab');
+    if (!tab) return;
+    ilCurrentTab = tab.getAttribute('data-iltab');
+    document.querySelectorAll('.il-tab').forEach(function(t){
+      t.classList.remove('active');
+      t.style.borderColor = 'var(--border)';
+      t.style.background = 'transparent';
+      t.style.color = 'var(--muted)';
+    });
+    tab.classList.add('active');
+    tab.style.borderColor = 'var(--teal)';
+    tab.style.background = 'var(--tealL)';
+    tab.style.color = 'var(--teal)';
+    renderILPanel(document.getElementById('il-search') ? document.getElementById('il-search').value : '');
+  });
+
+  // Internal links search
+  var ilSearch = document.getElementById('il-search');
+  if (ilSearch) ilSearch.addEventListener('input', function(){ renderILPanel(ilSearch.value); });
+
+  // Internal links refresh
+  var ilRefresh = document.getElementById('il-refresh');
+  if (ilRefresh) ilRefresh.addEventListener('click', function(){
+    internalLinksCache = publishedCache || null;
+    loadInternalLinks();
+    toast('Links refreshed ✓');
+  });
 
   // goPage triggers
   var origGoPage = goPage;
