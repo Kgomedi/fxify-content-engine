@@ -762,13 +762,13 @@ select.finput{cursor:pointer;}
         <div class="pgh">Writers</div>
         <p class="pgs">Team roster</p>
         <div class="wgrid">
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--teal),var(--tealB))">FK</div><div><p class="wname">Fariha Khan</p><p class="wemail">fariha@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--purple),#9333ea)">HH</div><div><p class="wname">Harry Hosking</p><p class="wemail">harry@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--amber),#f59e0b)">IN</div><div><p class="wname">Imran Najib</p><p class="wemail">imran@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#0891b2,#06b6d4)">MA</div><div><p class="wname">Mamnun Ahmed</p><p class="wemail">mamnun@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#dc2626,#ef4444)">RG</div><div><p class="wname">Roshan Ganesh</p><p class="wemail">roshan@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SA</div><div><p class="wname">Shatha Altrad</p><p class="wemail">shatha@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--blue),#2563eb)">SM</div><div><p class="wname">Sheperd Morena</p><p class="wemail">sheperd@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--teal),var(--tealB))">FK</div><div><p class="wname">Fariha Khan</p><p class="wemail">fariha.khan@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--purple),#9333ea)">HH</div><div><p class="wname">Harry Hosking</p><p class="wemail">harrison.hosking@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--amber),#f59e0b)">IN</div><div><p class="wname">Imran Najib</p><p class="wemail">imran.najib@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#0891b2,#06b6d4)">MA</div><div><p class="wname">Mamnun Ahmed</p><p class="wemail">mamnun.ahmed@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#dc2626,#ef4444)">RG</div><div><p class="wname">Roshan Ganesh</p><p class="wemail">roshan.ganesh@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SA</div><div><p class="wname">Shatha Altrad</p><p class="wemail">shatha.altrad@fxify.com</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--blue),#2563eb)">SM</div><div><p class="wname">Sheperd Morena</p><p class="wemail">sheperd.morena@fxify.com</p></div></div></div>
         </div>
       </div>
 
@@ -1287,16 +1287,23 @@ select.finput{cursor:pointer;}
 <!-- IMPERSONATE MODAL (Admin/Manager view any writer) -->
 <div class="mov" id="imp-modal">
   <div class="mbox" style="max-width:380px;">
-    <p class="mtitle">View as writer</p>
-    <p class="msub">Select a writer to view their dashboard.</p>
+    <p class="mtitle">Switch view</p>
+    <p class="msub">View any role or writer dashboard.</p>
     <select class="finput" id="imp-select" style="margin-bottom:14px;">
-      <option value="">— Select writer —</option>
-      <option value="fariha.khan@fxify.com">Fariha Khan</option>
-      <option value="harrison.hosking@fxify.com">Harry Hosking</option>
-      <option value="imran.najib@fxify.com">Imran Najib</option>
-      <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
-      <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
-      <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
+      <option value="">— Select view —</option>
+      <optgroup label="Other roles">
+        <option value="__admin__">⚡ Admin (Sheperd)</option>
+        <option value="__david__">✅ Manager (David)</option>
+        <option value="__liam__">🔍 SEO Review (Liam)</option>
+      </optgroup>
+      <optgroup label="Writers">
+        <option value="fariha.khan@fxify.com">Fariha Khan</option>
+        <option value="harrison.hosking@fxify.com">Harry Hosking</option>
+        <option value="imran.najib@fxify.com">Imran Najib</option>
+        <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
+        <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
+        <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
+      </optgroup>
     </select>
     <div class="macts">
       <button class="btn" id="imp-cancel">Cancel</button>
@@ -4252,37 +4259,62 @@ function init(){
   document.getElementById('imp-confirm').addEventListener('click', function(){
     var sel = document.getElementById('imp-select').value;
     if (!sel) return;
-    var writerDef = USERS[sel];
-    if (!writerDef) return;
-    impersonating = sel;
-    currentWriterEmail = sel;
-    activeRole = 'writer';
-    updateTopbars({ name: writerDef.name + ' (viewing)', initials: writerDef.initials, av: '' });
     document.getElementById('imp-modal').classList.remove('open');
-    goScreen('writer');
-    loadWriterDrafts();
-    toast('Viewing ' + writerDef.name + '\'s dashboard');
 
-    // Add "Back to my dashboard" banner in writer screen
+    // Remove any existing banner
     var existing = document.getElementById('imp-banner');
     if (existing) existing.remove();
-    var banner = document.createElement('div');
-    banner.id = 'imp-banner';
-    banner.style.cssText = 'background:var(--navy);border-bottom:1px solid rgba(14,196,173,.2);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;';
-    banner.innerHTML = '<span style="font-size:12px;color:var(--tealB);">👁 Viewing ' + writerDef.name + '\'s dashboard</span>' +
-      '<button id="imp-back-btn" class="btn btn-s" style="font-size:11px;">← Back to my dashboard</button>';
-    var writerScreen = document.getElementById('writer');
-    var topbar = writerScreen.querySelector('.topbar');
-    if (topbar) topbar.insertAdjacentElement('afterend', banner);
-    document.getElementById('imp-back-btn').addEventListener('click', function(){
-      impersonating = null;
-      currentWriterEmail = currentUser.email;
-      activeRole = currentUser.role;
-      banner.remove();
-      updateTopbars(currentUser);
-      goScreen(currentUser.screen);
-      loadWriterDrafts();
-    });
+
+    // Handle role views
+    var targetScreen, bannerLabel;
+    if (sel === '__admin__') {
+      targetScreen = 'admin'; bannerLabel = '⚡ Viewing Admin dashboard';
+      impersonating = '__admin__'; activeRole = 'admin';
+      updateTopbars({ name: 'Sheperd M. (viewing)', initials: 'SM', av: 'b' });
+      goScreen('admin'); loadPipeline(); loadReviewQ();
+    } else if (sel === '__david__') {
+      targetScreen = 'david'; bannerLabel = '✅ Viewing Manager dashboard';
+      impersonating = '__david__'; activeRole = 'david';
+      updateTopbars({ name: 'David Xavier (viewing)', initials: 'DX', av: 'a' });
+      goScreen('david'); loadDavidQ();
+    } else if (sel === '__liam__') {
+      targetScreen = 'liam'; bannerLabel = '🔍 Viewing SEO dashboard';
+      impersonating = '__liam__'; activeRole = 'liam';
+      updateTopbars({ name: 'Liam (viewing)', initials: 'L', av: 'b' });
+      goScreen('liam'); loadLiamQ();
+    } else {
+      // Writer view
+      var writerDef = USERS[sel];
+      if (!writerDef) return;
+      targetScreen = 'writer'; bannerLabel = '👁 Viewing ' + writerDef.name + '\'s dashboard';
+      impersonating = sel; currentWriterEmail = sel; activeRole = 'writer';
+      updateTopbars({ name: writerDef.name + ' (viewing)', initials: writerDef.initials, av: '' });
+      goScreen('writer'); loadWriterDrafts();
+    }
+    toast('Switched view');
+
+    // Add back banner to target screen
+    var targetEl = document.getElementById(targetScreen || 'writer');
+    if (targetEl) {
+      var banner = document.createElement('div');
+      banner.id = 'imp-banner';
+      banner.style.cssText = 'background:var(--navy);border-bottom:1px solid rgba(14,196,173,.2);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;position:sticky;top:0;z-index:190;';
+      banner.innerHTML = '<span style="font-size:12px;color:var(--tealB);">' + bannerLabel + '</span>' +
+        '<button id="imp-back-btn" class="btn btn-s" style="font-size:11px;">← Back to my dashboard</button>';
+      var topbarEl = targetEl.querySelector('.topbar');
+      if (topbarEl) topbarEl.insertAdjacentElement('afterend', banner);
+      document.getElementById('imp-back-btn').addEventListener('click', function(){
+        impersonating = null;
+        currentWriterEmail = currentUser.email;
+        activeRole = currentUser.role;
+        banner.remove();
+        updateTopbars(currentUser);
+        goScreen(currentUser.screen);
+        if (currentUser.role === 'admin') { loadPipeline(); loadReviewQ(); }
+        if (currentUser.role === 'david') loadDavidQ();
+        if (currentUser.role === 'liam') loadLiamQ();
+      });
+    }
   });
 
 
