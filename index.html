@@ -1542,10 +1542,15 @@ async function loadDavidQ(){
 }
 
 async function loadWriterDrafts(){
-  // Filter by writer email if viewing a specific writer's dashboard
-  var writerName = currentWriterEmail ? (USERS[currentWriterEmail] ? USERS[currentWriterEmail].name : null) : null;
+  // Filter by writer name when in writer role
+  var writerName = null;
+  if (activeRole === 'writer' && currentUser) {
+    writerName = currentUser.name;
+  } else if (activeRole === 'writer' && currentWriterEmail && USERS[currentWriterEmail]) {
+    writerName = USERS[currentWriterEmail].name;
+  }
   var query = supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
-  if (writerName && activeRole === 'writer') query = query.eq('assignee', writerName);
+  if (writerName) query = query.eq('assignee', writerName);
   var res = await query;
   var l=document.getElementById('w-drafts-list');
   if(!l) return;
@@ -4092,10 +4097,9 @@ function init(){
     // Update all topbars with user name + initials
     updateTopbars(user);
 
-    // Writer: load their specific drafts
-    if (user.role === 'writer') {
-      currentWriterEmail = user.email;
-    }
+    // Writer: always set email so drafts filter correctly
+    currentWriterEmail = user.email;
+    currentRole = user.role;
 
     goScreen(user.screen);
     loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
