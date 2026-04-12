@@ -359,6 +359,10 @@ select.finput{cursor:pointer;}
 .tiptap-editor mark{background:rgba(14,196,173,.2);border-radius:2px;padding:0 2px;}
 .tiptap-editor p.is-editor-empty:first-child::before{content:attr(data-placeholder);float:left;color:var(--muted);pointer-events:none;height:0;font-style:italic;}
 .tiptap-editor a{color:var(--blue);text-decoration:underline;}
+.tiptap-editor table{width:100%;border-collapse:collapse;margin:20px 0;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.tiptap-editor th{background:#0B0C10;color:#1EAA90;padding:10px 14px;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;text-align:left;}
+.tiptap-editor td{padding:10px 14px;border-bottom:1px solid #f1f5f9;color:var(--text2);}
+.tiptap-editor tr:nth-child(even) td{background:#f8fafc;}
 
 /* WORD COUNT BAR */
 .wc-bar{background:var(--bg2);border-top:1px solid var(--border);padding:6px 16px;display:flex;align-items:center;gap:16px;font-size:11px;color:var(--muted);}
@@ -414,10 +418,11 @@ select.finput{cursor:pointer;}
 .suggest-acts{display:flex;gap:8px;justify-content:flex-end;margin-top:12px;}
 
 /* IMAGE PLACEHOLDER */
-.img-placeholder{width:100%;height:140px;background:var(--bg2);border-radius:var(--r);border:2px dashed var(--border);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin:16px 0;transition:.2s;gap:6px;}
-.img-placeholder:hover{border-color:var(--tealB);background:var(--tealL);}
-.img-placeholder span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;}
-.img-placeholder .ip-icon{font-size:24px;}
+.img-placeholder{width:100%;height:180px;background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-radius:12px;border:2px dashed #cbd5e1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin:24px 0;transition:.2s;gap:8px;position:relative;overflow:hidden;}
+.img-placeholder::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(14,196,173,.03) 10px,rgba(14,196,173,.03) 11px);}
+.img-placeholder:hover{border-color:var(--tealB);background:linear-gradient(135deg,#e8f7f4,#d1fae5);}
+.img-placeholder span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;position:relative;}
+.img-placeholder .ip-icon{font-size:28px;position:relative;}
 
 /* INTERNAL LINKS PANEL */
 .il-panel{background:var(--navy2);border-top:1px solid rgba(14,196,173,.07);padding:6px 8px;max-height:260px;overflow-y:auto;}
@@ -484,11 +489,12 @@ select.finput{cursor:pointer;}
 .blog-body a{color:var(--blue);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(26,86,219,.3);transition:text-decoration-color .15s;}
 .blog-body a:hover{text-decoration-color:var(--blue);}
 .blog-body blockquote{border-left:3px solid var(--teal);background:#f8fafc;border-radius:0 8px 8px 0;padding:18px 22px;margin:28px 0;font-size:18px;font-style:italic;color:#475569;line-height:1.6;}
-.blog-body table{width:100%;border-collapse:collapse;margin:28px 0;font-size:15px;}
-.blog-body th{background:#f1f5f9;padding:10px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;border-bottom:2px solid #e2e8f0;}
-.blog-body td{padding:12px 14px;border-bottom:1px solid #f1f5f9;color:#334155;}
+.blog-body table{width:100%;border-collapse:collapse;margin:32px 0;font-size:15px;border-radius:10px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,.06);}
+.blog-body th{background:#0B0C10;padding:12px 16px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#1EAA90;border:none;}
+.blog-body td{padding:13px 16px;border-bottom:1px solid #f1f5f9;color:#334155;vertical-align:top;}
 .blog-body tr:last-child td{border-bottom:none;}
-.blog-body tr:nth-child(even) td{background:#fafafa;}
+.blog-body tr:nth-child(even) td{background:#f8fafc;}
+.blog-body tr:hover td{background:#f0fdf9;}
 .blog-body img{max-width:100%;border-radius:10px;margin:28px 0;}
 .blog-body mark{background:rgba(14,196,173,.18);border-radius:3px;padding:1px 4px;}
 .blog-body hr{border:none;border-top:2px solid #f1f5f9;margin:40px 0;}
@@ -807,6 +813,7 @@ select.finput{cursor:pointer;}
         <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
           <button class="btn btn-p btn-s" id="a-scrape-btn">🔄 Refresh from fxify.com/blog</button>
           <button class="btn btn-s" id="a-test-save" style="font-size:11px;">🧪 Test save</button>
+          <button class="btn btn-s" id="a-seed-btn" style="font-size:11px;border-color:rgba(124,58,237,.3);color:var(--purple);">🌱 Seed samples</button>
           <input class="finput" id="a-live-search" type="text" placeholder="Search articles..." style="max-width:260px;"/>
           <span style="font-size:12px;color:var(--muted);align-self:center;" id="a-live-count"></span>
         </div>
@@ -4306,6 +4313,93 @@ async function scrapeUrls(urls) {
   return results.join('\n\n');
 }
 
+async function seedSampleArticles() {
+  var existing = await supa.from('articles').select('id').like('title','[SAMPLE]%');
+  if (existing.data && existing.data.length >= 3) { toast('Samples already seeded ✓'); return; }
+  await supa.from('articles').insert([{
+    title: '[SAMPLE] How to Pass the FXIFY Two-Phase Challenge',
+    category: 'Guides',
+    status: 'Drafting',
+    priority: 'Normal',
+    primary_kw: 'FXIFY two-phase challenge',
+    assignee: 'Fariha Khan',
+    content: '<h1>How to Pass the FXIFY Two-Phase Challenge</h1><p>The FXIFY Two-Phase Challenge is one of the most popular evaluation programs for traders looking to access funded capital. Here is what you need to know to pass it first time.</p><h2>Phase 1: Hitting Your Profit Target</h2><p>In Phase 1, your goal is to hit a <strong>10% profit target</strong> while staying within the daily and overall drawdown limits. Most traders fail here by overtrading in the first week.</p><table><thead><tr><th>Rule</th><th>Phase 1</th><th>Phase 2</th></tr></thead><tbody><tr><td>Profit Target</td><td>10%</td><td>5%</td></tr><tr><td>Daily Drawdown</td><td>5%</td><td>5%</td></tr><tr><td>Max Drawdown</td><td>10%</td><td>10%</td></tr><tr><td>Minimum Days</td><td>4</td><td>4</td></tr></tbody></table><h2>Phase 2: Proving Consistency</h2><p>Phase 2 requires a <strong>5% profit target</strong> with the same risk rules. The key difference is that evaluators are looking for consistent daily performance, not a single lucky run.</p><p>[VISUAL: Chart showing consistent daily gains vs erratic performance]</p><h2>What This Means For Your Prop Account</h2><p>Traders who pass do so by treating the evaluation like a funded account from day one. Set your position sizes conservatively and protect your drawdown buffer like it is real money — because it will be.</p><h2>Key Takeaways</h2><ul><li>Hit the profit target gradually over the minimum trading days — do not rush</li><li>Your daily drawdown limit is your most important boundary</li><li>Consistency across sessions matters more than single big wins</li><li>Treat Phase 1 and Phase 2 identically — same rules, same mindset</li><li>Review your trades daily and cut underperforming setups early</li></ul><h2>FAQ</h2><h3>How long does the FXIFY Two-Phase Challenge take?</h3><p>There is no maximum time limit. Most traders complete Phase 1 in 2-4 weeks when trading consistently.</p><h3>What happens if I breach the daily drawdown?</h3><p>Your evaluation ends immediately. You can purchase a new challenge to start again.</p><p><em>Written by Fariha Khan, Senior Copywriter at FXIFY.</em></p>',
+    tone: 'Educational',
+    length: 'Standard guide — 1,200 words',
+    word_count: 1200,
+    seo_score: 70,
+    geo_score: 65,
+    aeo_score: 68,
+    doc_url: ''
+  }]);
+  await supa.from('articles').insert([{
+    title: '[SAMPLE] Prop Trading Drawdown Rules Explained',
+    category: 'Guides',
+    status: 'Sheperd Review',
+    priority: 'High',
+    primary_kw: 'prop trading drawdown rules',
+    assignee: 'Harry Hosking',
+    content: '<h1>Prop Trading Drawdown Rules Explained</h1><p>Drawdown rules are the single most important set of boundaries in prop trading. Most traders understand what they are. Fewer understand how to trade around them without limiting their upside.</p><h2>What Is a Drawdown Limit?</h2><p>A drawdown limit is the maximum loss your account can sustain before the evaluation or funded account is terminated. At FXIFY, there are two types: <strong>daily drawdown</strong> and <strong>maximum drawdown</strong>.</p><table><thead><tr><th>Type</th><th>What It Measures</th><th>When It Resets</th></tr></thead><tbody><tr><td>Daily Drawdown</td><td>Loss from the day\'s high balance</td><td>Every day at midnight</td></tr><tr><td>Max Drawdown</td><td>Loss from the initial balance</td><td>Never — fixed limit</td></tr></tbody></table><h2>Why Prop Firms Use Trailing Drawdown</h2><p>Some prop firms use a <strong>trailing drawdown</strong> model where the maximum drawdown level moves up as your account grows. This is designed to lock in gains and protect the firm from large reversals after a strong run.</p><p>[VISUAL: Diagram comparing static vs trailing drawdown on a growing account]</p><h2>What This Means For Your Prop Account</h2><p>Understanding whether your firm uses static or trailing drawdown changes how you size positions. At FXIFY, you can verify the exact mechanics at fxify.com/rules before placing a single trade.</p><h2>Key Takeaways</h2><ul><li>Always know your current drawdown exposure before opening a trade</li><li>Daily drawdown resets — max drawdown does not</li><li>Trailing drawdown means your buffer shrinks as your account grows</li><li>Never risk more than 1-2% per trade when your drawdown buffer is thin</li><li>Check fxify.com/rules for the exact figures on your account type</li></ul><p><em>Written by Harry Hosking, Senior Copywriter at FXIFY.</em></p>',
+    tone: 'Educational',
+    length: 'In-depth guide — 1,500 words',
+    word_count: 1500,
+    seo_score: 73,
+    geo_score: 69,
+    aeo_score: 70,
+    doc_url: ''
+  }]);
+  await supa.from('articles').insert([{
+    title: '[SAMPLE] Best Forex Pairs for Prop Trading in 2026',
+    category: 'Trading Strategy',
+    status: 'Liam Review',
+    priority: 'Normal',
+    primary_kw: 'best forex pairs prop trading',
+    assignee: 'Imran Najib',
+    content: '<h1>Best Forex Pairs for Prop Trading in 2026</h1><p>Not every forex pair is suited to prop trading evaluations. Tight spreads, predictable liquidity windows, and clear technical structure matter more than volatility alone.</p><h2>Why Pair Selection Matters for Funded Traders</h2><p>When you are trading a prop account, spread costs compound quickly. A pair with a <strong>2-pip average spread</strong> versus a 0.5-pip major can cost you several percentage points of your profit target over a month of active trading.</p><table><thead><tr><th>Pair</th><th>Avg Spread</th><th>Best Session</th><th>Volatility</th></tr></thead><tbody><tr><td>EUR/USD</td><td>0.1-0.3 pips</td><td>London/NY overlap</td><td>Medium</td></tr><tr><td>GBP/USD</td><td>0.3-0.8 pips</td><td>London</td><td>High</td></tr><tr><td>USD/JPY</td><td>0.2-0.5 pips</td><td>Asian/London</td><td>Medium</td></tr><tr><td>XAU/USD</td><td>0.1-0.3 pips</td><td>NY open</td><td>Very High</td></tr></tbody></table><h2>EUR/USD: The Default Choice</h2><p>EUR/USD remains the most liquid pair in the world. Spreads tighten to near zero during peak hours and the pair respects technical levels better than most. For new funded traders, starting here reduces spread-related friction significantly.</p><p>[VISUAL: EUR/USD spread chart across different trading sessions]</p><h2>What This Means For Your Prop Account</h2><p>Pair selection is a risk management decision as much as a strategy one. Trading pairs with wide spreads increases the breakeven point on every trade and eats into your daily drawdown buffer before you have even had a loss.</p><h2>Key Takeaways</h2><ul><li>Prioritise pairs with tight spreads — every pip counts on a prop account</li><li>Trade during peak liquidity windows for the best execution</li><li>EUR/USD and USD/JPY suit most prop trading strategies</li><li>Avoid exotic pairs during evaluations — the spread costs are too high</li><li>Check execution quality on your specific prop firm before committing to a pair</li></ul><p><em>Written by Imran Najib, Senior Copywriter at FXIFY.</em></p>',
+    tone: 'Analytical',
+    length: 'Standard guide — 1,200 words',
+    word_count: 1200,
+    seo_score: 76,
+    geo_score: 73,
+    aeo_score: 72,
+    doc_url: ''
+  }]);
+  await supa.from('articles').insert([{
+    title: '[SAMPLE] Risk Management for Funded Traders',
+    category: 'Trading Psychology',
+    status: 'David Approval',
+    priority: 'Urgent',
+    primary_kw: 'risk management funded traders',
+    assignee: 'Sheperd Morena',
+    content: '<h1>Risk Management for Funded Traders</h1><p>Getting funded is the easy part. Most traders who lose a prop account do so not because of bad setups — but because of poor risk management on good ones.</p><h2>Position Sizing on a Prop Account</h2><p>The standard rule in prop trading is to risk <strong>no more than 1% per trade</strong>. On a $100,000 funded account, that is $1,000 maximum risk per position. When your daily drawdown limit is 5%, you have room for five losing trades before the day is over.</p><table><thead><tr><th>Account Size</th><th>1% Risk</th><th>Daily Limit (5%)</th><th>Trades Before Limit</th></tr></thead><tbody><tr><td>$25,000</td><td>$250</td><td>$1,250</td><td>5</td></tr><tr><td>$50,000</td><td>$500</td><td>$2,500</td><td>5</td></tr><tr><td>$100,000</td><td>$1,000</td><td>$5,000</td><td>5</td></tr><tr><td>$200,000</td><td>$2,000</td><td>$10,000</td><td>5</td></tr></tbody></table><h2>The Psychological Cost of Oversizing</h2><p>At FXIFY, we have seen traders breach their daily drawdown limit on a single trade that went wrong. The common factor is always the same: they sized too large because the setup looked perfect. <strong>No setup is worth more than 1-2% of your account.</strong></p><p>[VISUAL: Position size calculator showing risk amounts at different account levels]</p><h2>What This Means For Your Prop Account</h2><p>Risk management is not about limiting your wins. It is about ensuring you are still trading tomorrow. A trader who loses 1% five times still has 95% of their account. A trader who loses 5% in one trade has hit their daily limit and is done for the day.</p><h2>Key Takeaways</h2><ul><li>Risk 1% maximum per trade — non-negotiable on a prop account</li><li>Calculate your stop loss distance before entering, not after</li><li>Never move a stop loss further away to avoid a loss</li><li>Take a break after two consecutive losing trades</li><li>Track your daily P&amp;L in real time — know your drawdown exposure at all times</li></ul><p><em>Written by Sheperd Morena, Senior Copywriter at FXIFY.</em></p>',
+    tone: 'Educational',
+    length: 'In-depth guide — 1,500 words',
+    word_count: 1500,
+    seo_score: 79,
+    geo_score: 77,
+    aeo_score: 74,
+    doc_url: ''
+  }]);
+  await supa.from('articles').insert([{
+    title: '[SAMPLE] FXIFY vs FTMO: Which Prop Firm Should You Choose?',
+    category: 'Guides',
+    status: 'Publishing',
+    priority: 'High',
+    primary_kw: 'FXIFY vs FTMO',
+    assignee: 'Fariha Khan',
+    content: '<h1>FXIFY vs FTMO: Which Prop Firm Should You Choose?</h1><p>Both FXIFY and FTMO are established prop firms with strong track records. The right choice depends on your trading style, target account size, and how you prefer to approach evaluations.</p><h2>Evaluation Structure Compared</h2><table><thead><tr><th>Feature</th><th>FXIFY</th><th>FTMO</th></tr></thead><tbody><tr><td>Evaluation Phases</td><td>1, 2, or 3 Phase options</td><td>2 Phase (FTMO Challenge)</td></tr><tr><td>Profit Target Phase 1</td><td>8-10% (varies by program)</td><td>10%</td></tr><tr><td>Daily Drawdown</td><td>5%</td><td>5%</td></tr><tr><td>Max Drawdown</td><td>10%</td><td>10%</td></tr><tr><td>Performance Split</td><td>Up to 90%</td><td>Up to 90%</td></tr><tr><td>Instant Funding</td><td>Yes</td><td>No</td></tr></tbody></table><h2>Where FXIFY Has the Edge</h2><p>FXIFY offers a <strong>One Phase Challenge</strong> — the fastest route to a funded account in the industry. For traders who are confident in their consistency, skipping a second evaluation phase can save weeks. FXIFY is also <strong>backed by a real broker</strong>, which gives the trading conditions authenticity that many prop firms cannot match.</p><p>[VISUAL: Side-by-side comparison of FXIFY and FTMO evaluation timelines]</p><h2>Where FTMO Has the Edge</h2><p>FTMO has been operating since 2015 and has a larger community. For traders who value brand recognition and a large pool of educational resources, FTMO\'s ecosystem is well developed.</p><h2>What This Means For Your Prop Account</h2><p>If you want the fastest path to funded capital and prefer flexible evaluation options, FXIFY\'s program range gives you more entry points. If you value a longer-established brand and a large trader community, FTMO is a legitimate alternative.</p><h2>Key Takeaways</h2><ul><li>FXIFY offers One Phase evaluations — FTMO does not</li><li>Both firms use the same 5% daily and 10% max drawdown rules</li><li>FXIFY is backed by a real broker — execution quality reflects this</li><li>FTMO has a larger community and more years of operation</li><li>Your choice should depend on which evaluation structure suits your trading pace</li></ul><p><em>Written by Fariha Khan, Senior Copywriter at FXIFY.</em></p>',
+    tone: 'Analytical',
+    length: 'Comparison article — 1,800 words',
+    word_count: 1800,
+    seo_score: 82,
+    geo_score: 81,
+    aeo_score: 76,
+    doc_url: ''
+  }]);
+  toast('Sample articles seeded ✓ — visible across all role dashboards');
+  loadPipeline(); loadReviewQ(); loadLiamQ(); loadDavidQ(); loadWriterDrafts();
+}
+
 // ── PUBLISHING BADGE ─────────────────────────────────────────────────────
 async function loadPublishingBadge() {
   // Only relevant for admin
@@ -4762,6 +4856,8 @@ function init(){
   if (aScrapeBtn) aScrapeBtn.addEventListener('click', function(){
     scrapePublishedArticles('a-live-list', 'a-live-count');
   });
+  var aSeedBtn = document.getElementById('a-seed-btn');
+  if (aSeedBtn) aSeedBtn.addEventListener('click', seedSampleArticles);
 
   // Test save button — saves 1 row and reports exact result
   var aTestSave = document.getElementById('a-test-save');
