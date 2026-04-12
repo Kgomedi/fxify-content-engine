@@ -182,6 +182,8 @@ input,select,textarea,button{font-family:inherit;}
 .flbl{display:block;font-size:11px;font-weight:500;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:5px;}
 .finput{width:100%;padding:9px 11px;border:1px solid var(--border);border-radius:var(--r);font-size:13px;color:var(--text);background:var(--surface);outline:none;transition:border-color .15s;}
 .finput:focus{border-color:var(--tealB);}
+#login .finput::placeholder{color:#334155;}
+#login .finput:focus{border-color:rgba(14,196,173,.5);background:rgba(255,255,255,.08);}
 select.finput{cursor:pointer;}
 .frow{display:grid;grid-template-columns:1fr;gap:12px;}
 @media(min-width:480px){.frow{grid-template-columns:1fr 1fr;}}
@@ -573,19 +575,14 @@ select.finput{cursor:pointer;}
   <div class="lg lg1"></div><div class="lg lg2"></div>
   <div class="lcard">
     <div class="llogo" style="margin-bottom:6px;"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjM0IiB2aWV3Qm94PSIwIDAgMTgyIDM0IiB3aWR0aD0iMTgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGl0bGU+RlhJRlkgUHJvcCBUcmFkaW5nIEZpcm08L3RpdGxlPgo8cGF0aCBkPSJNMjcuOTU2OSAwLjVIMC45MDM2ODJDMC40MDQ1OTIgMC41IDAgMC44ODYzOTkgMCAxLjM2MzA1VjUuNjc4MjhDMCA2LjE1NDkzIDAuNDA0NTkyIDYuNTQxMzMgMC45MDM2ODIgNi41NDEzM0gyNy45NTY5QzI4LjQ1NTkgNi41NDEzMyAyOC44NjA1IDYuMTU0OTMgMjguODYwNSA1LjY3ODI4VjEuMzYzMDVDMjguODYwNSAwLjg4NjM5OSAyOC40NTU5IDAuNSAyNy45NTY5IDAuNVoiIGZpbGw9IndoaXRlIiBpZD0icGF0aC0xLWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTI3Ljk2MzEgOC40NzQxMkg1LjQxNTY0QzQuOTE2NTUgOC40NzQxMiA0LjUxMTk2IDguODYwNTIgNC41MTE5NiA5LjMzNzE3VjEzLjY1MjRDNC41MTE5NiAxNC4xMjkxIDQuOTE2NTUgMTQuNTE1NCA1LjQxNTY0IDE0LjUxNTRIMjcuOTYzMUMyOC40NjIyIDE0LjUxNTQgMjguODY2OCAxNC4xMjkxIDI4Ljg2NjggMTMuNjUyNFY5LjMzNzE3QzI4Ljg2NjggOC44NjA1MiAyOC40NjIyIDguNDc0MTIgMjcuOTYzMSA4LjQ3NDEyWiIgZmlsbD0id2hpdGUiIGlkPSJwYXRoLTItbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMjcuOTU2OCAxNi40NDE5SDkuOTIxMzhDOS40MjIyOSAxNi40NDE5IDkuMDE3NyAxNi44MjgzIDkuMDE3NyAxNy4zMDQ5VjIxLjYyMDJDOS4wMTc3IDIyLjA5NjggOS40MjIyOSAyMi40ODMyIDkuOTIxMzggMjIuNDgzMkgyNy45NTY4QzI4LjQ1NTkgMjIuNDgzMiAyOC44NjA1IDIyLjA5NjggMjguODYwNSAyMS42MjAyVjE3LjMwNDlDMjguODYwNSAxNi44MjgzIDI4LjQ1NTkgMTYuNDQxOSAyNy45NTY4IDE2LjQ0MTlaIiBmaWxsPSJ3aGl0ZSIgaWQ9InBhdGgtMy1sb2dvIj48L3BhdGg+CjxwYXRoIGQ9Ik0yNy45NTY5IDI0LjQxNkgxNC40MzM1QzEzLjkzNDQgMjQuNDE2IDEzLjUyOTggMjQuODAyNCAxMy41Mjk4IDI1LjI3OTFWMjkuNTk0M0MxMy41Mjk4IDMwLjA3MDkgMTMuOTM0NCAzMC40NTczIDE0LjQzMzUgMzAuNDU3M0gyNy45NTY5QzI4LjQ1NiAzMC40NTczIDI4Ljg2MDYgMzAuMDcwOSAyOC44NjA2IDI5LjU5NDNWMjUuMjc5MUMyOC44NjA2IDI0LjgwMjQgMjguNDU2IDI0LjQxNiAyNy45NTY5IDI0LjQxNloiIGZpbGw9IndoaXRlIiBpZD0icGF0aC00LWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTM2Ljk4MSAzMC41VjAuNUg1OC44NzkzVjcuNDcxMjNINDUuMzE3N1YxMy4yNzU1SDU1LjgxODNWMTkuODM5NUg0NS4zMTc3VjMwLjVIMzYuOTgxVjMwLjVaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNNjAuMTAxMiAzMC41TDcwLjc5MjcgMTUuMTY1N0w2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OEw4MC42MzEzIDAuNUg4OS45MUw4MC4xNjA0IDE0LjM5OTlMOTEuOTc4MyAzMC41SDgxLjU3MzJMNzUuMzExMSAyMS4yOEw2OS4yMzM1IDMwLjVINjAuMDk0OEg2MC4xMDEyWiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTk1LjA5MDIgMzAuNVYwLjVIMTAzLjQyN1YzMC41SDk1LjA5MDJaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNMTA5LjA3OCAzMC41VjAuNUgxMzAuOTc2VjcuNDcxMjNIMTE3LjQxNVYxMy4yNzU1SDEyNy45MTVWMTkuODM5NUgxMTcuNDE1VjMwLjVIMTA5LjA3OFoiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xNDMuNDU2IDMwLjVWMTguNTMyOEwxMzIuMjk0IDAuNUgxNDEuODUzTDE0Ny45NzUgMTEuMjAzTDE1My43MjEgMC41SDE2M0wxNTEuNzkzIDE4LjQ5MDNWMzAuNUgxNDMuNDU2WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTcwLjc5MjYgMTUuMTU5Nkw2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OE04MC4xNjA0IDE0LjM5MzhMOTEuOTc4MiAzMC40OTM5SDgxLjU3MzJMNzUuMzExIDIxLjI3MzkiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xNzIuNTg3IDAuNDU0NTlIMTc0LjAzOEwxNzUuOTgxIDUuMTk3NDlIMTc2LjA1OEwxNzguMDAxIDAuNDU0NTlIMTc5LjQ1MlY3LjAwMDA0SDE3OC4zMTRWMi41MDMyNEgxNzguMjUzTDE3Ni40NDUgNi45ODA4N0gxNzUuNTk0TDE3My43ODUgMi40OTM2NUgxNzMuNzI1VjcuMDAwMDRIMTcyLjU4N1YwLjQ1NDU5WiIgZmlsbD0id2hpdGUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8cGF0aCBkPSJNMTY2LjM1OCAxLjQ0ODU1VjAuNDU0NTlIMTcxLjU4VjEuNDQ4NTVIMTY5LjU1N1Y3LjAwMDA0SDE2OC4zODFWMS40NDg1NUgxNjYuMzU4WiIgZmlsbD0id2hpdGUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8L3N2Zz4=" height="26" style="display:block;"></div>
-    <p class="lsub">Content Engine — Let's get it 🔥</p>
-    <p class="lrlbl">Who are you today?</p>
-    <div class="rgrid">
-      <div class="rbtn active" data-role="admin"><span class="ri">⚡</span>Admin</div>
-      <div class="rbtn" data-role="writer"><span class="ri">✍️</span>Writer</div>
-      <div class="rbtn" data-role="liam"><span class="ri">🔍</span>SEO Review</div>
-      <div class="rbtn" data-role="david"><span class="ri">✅</span>Manager</div>
-    </div>
-    <button class="gbtn" id="login-btn">
-      <svg width="16" height="16" viewBox="0 0 16 16"><path d="M15.68 8.18c0-.57-.05-1.11-.14-1.64H8v3.1h4.31a3.68 3.68 0 01-1.6 2.42v2h2.58c1.51-1.39 2.38-3.44 2.38-5.88z" fill="#4285F4"/><path d="M8 16c2.16 0 3.97-.72 5.29-1.94l-2.58-2A4.8 4.8 0 018 12.75a4.8 4.8 0 01-4.52-3.32H.83v2.07A8 8 0 008 16z" fill="#34A853"/><path d="M3.48 9.43A4.84 4.84 0 013.23 8c0-.52.09-1.02.25-1.49V4.44H.83A8 8 0 000 8c0 1.29.31 2.51.83 3.56l2.65-2.13z" fill="#FBBC05"/><path d="M8 3.18c1.22 0 2.31.42 3.17 1.24l2.37-2.37A8 8 0 008 0 8 8 0 00.83 4.44l2.65 2.07A4.8 4.8 0 018 3.18z" fill="#EA4335"/></svg>
+    <p class="lsub">Content Engine</p>
+    <p style="font-size:12px;color:#475569;margin-bottom:24px;">Sign in with your Google account</p>
+    <button class="gbtn" id="login-btn" style="margin-bottom:10px;">
+      <svg width="18" height="18" viewBox="0 0 16 16"><path d="M15.68 8.18c0-.57-.05-1.11-.14-1.64H8v3.1h4.31a3.68 3.68 0 01-1.6 2.42v2h2.58c1.51-1.39 2.38-3.44 2.38-5.88z" fill="#4285F4"/><path d="M8 16c2.16 0 3.97-.72 5.29-1.94l-2.58-2A4.8 4.8 0 018 12.75a4.8 4.8 0 01-4.52-3.32H.83v2.07A8 8 0 008 16z" fill="#34A853"/><path d="M3.48 9.43A4.84 4.84 0 013.23 8c0-.52.09-1.02.25-1.49V4.44H.83A8 8 0 000 8c0 1.29.31 2.51.83 3.56l2.65-2.13z" fill="#FBBC05"/><path d="M8 3.18c1.22 0 2.31.42 3.17 1.24l2.37-2.37A8 8 0 008 0 8 8 0 00.83 4.44l2.65 2.07A4.8 4.8 0 018 3.18z" fill="#EA4335"/></svg>
       Continue with Google
     </button>
-    <p class="lnote">FXIFY crew only — keep your code safe 🤫</p>
+    <p style="font-size:11px;color:var(--urgent);display:none;margin-bottom:10px;text-align:center;" id="login-error">Access denied — FXIFY or approved emails only.</p>
+    <p class="lnote">FXIFY crew only · <span style="color:var(--tealB);">@fxify.com</span> or approved accounts</p>
   </div>
 </div>
 
@@ -1287,17 +1284,23 @@ select.finput{cursor:pointer;}
 <!-- IMAGE UPLOAD INPUT -->
 <input type="file" id="img-upload" accept="image/*" style="display:none;">
 
-<!-- PIN MODAL -->
-<div class="mov" id="pin-modal">
-  <div class="mbox" style="max-width:360px;text-align:center;">
-    <p style="font-size:14px;font-weight:700;color:var(--tealB);margin-bottom:8px;letter-spacing:.1em;text-transform:uppercase;" id="pin-role-icon">FXIFY</p>
-    <p class="mtitle" id="pin-role-title">Admin Access</p>
-    <p class="msub">Enter your access code to continue</p>
-    <input type="password" class="finput" id="pin-input" placeholder="Access code..." style="text-align:center;letter-spacing:.2em;font-size:18px;margin-bottom:4px;"/>
-    <p style="font-size:11px;color:var(--urgent);display:none;margin-bottom:8px;" id="pin-error">Wrong code. Try again.</p>
-    <div class="macts" style="justify-content:center;">
-      <button class="btn" id="pin-cancel">Cancel</button>
-      <button class="btn btn-p" id="pin-confirm">Enter →</button>
+<!-- IMPERSONATE MODAL (Admin/Manager view any writer) -->
+<div class="mov" id="imp-modal">
+  <div class="mbox" style="max-width:380px;">
+    <p class="mtitle">View as writer</p>
+    <p class="msub">Select a writer to view their dashboard.</p>
+    <select class="finput" id="imp-select" style="margin-bottom:14px;">
+      <option value="">— Select writer —</option>
+      <option value="fariha.khan@fxify.com">Fariha Khan</option>
+      <option value="harrison.hosking@fxify.com">Harry Hosking</option>
+      <option value="imran.najib@fxify.com">Imran Najib</option>
+      <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
+      <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
+      <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
+    </select>
+    <div class="macts">
+      <button class="btn" id="imp-cancel">Cancel</button>
+      <button class="btn btn-p" id="imp-confirm">View dashboard →</button>
     </div>
   </div>
 </div>
@@ -1334,6 +1337,7 @@ var currentArt = null;
 var currentRole = 'writer';
 var drawerArt = null;
 var sbCallback = null;
+var currentWriterEmail = null; // set on login for writer role
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
 function toast(msg){
@@ -1538,7 +1542,11 @@ async function loadDavidQ(){
 }
 
 async function loadWriterDrafts(){
-  var res=await supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
+  // Filter by writer email if viewing a specific writer's dashboard
+  var writerName = currentWriterEmail ? (USERS[currentWriterEmail] ? USERS[currentWriterEmail].name : null) : null;
+  var query = supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
+  if (writerName && activeRole === 'writer') query = query.eq('assignee', writerName);
+  var res = await query;
   var l=document.getElementById('w-drafts-list');
   if(!l) return;
   if(res.error||!res.data||!res.data.length){l.innerHTML="<p style='font-size:13px;color:var(--muted);padding:20px 0;'>No drafts yet. Briefs coming soon.</p>";var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
@@ -4047,54 +4055,225 @@ function init(){
   if(greetingEl) greetingEl.textContent=greetings[gi].msg;
   if(sublineEl) sublineEl.textContent=greetings[gi].sub;
 
-  // Load data
-  loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
-  // Load published last so it appends to Live column after pipeline renders
-  setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
+  // Data loads happen in bootUser() after login — skip here unless session restored above
 
-  // Login with PIN modal
-  var rolePins = { admin: 'fxify2024', writer: 'writer2024', liam: 'seo2024', david: 'manager2024' };
-  var roleTitles = { admin: 'Admin Access', writer: 'Writer Access', liam: 'SEO Reviewer Access', david: 'Manager Access' };
+  // ── EMAIL AUTH ──────────────────────────────────────────────────────────
+  // Role map — email → { role, name, screen }
+  var USERS = {
+    'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd M.',    screen:'admin',  initials:'SM', av:'b' },
+    'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',  screen:'david',  initials:'DX', av:'a' },
+    'liam@quirkydigital.com':      { role:'liam',   name:'Liam',          screen:'liam',   initials:'L',  av:'b' },
+    'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',   screen:'writer', initials:'FK', av:''  },
+    'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking', screen:'writer', initials:'HH', av:''  },
+    'imran.najib@fxify.com':       { role:'writer', name:'Imran Najib',   screen:'writer', initials:'IN', av:''  },
+    'mamnun.ahmed@fxify.com':      { role:'writer', name:'Mamnun Ahmed',  screen:'writer', initials:'MA', av:''  },
+    'roshan.ganesh@fxify.com':     { role:'writer', name:'Roshan Ganesh', screen:'writer', initials:'RG', av:''  },
+    'shatha.altrad@fxify.com':     { role:'writer', name:'Shatha Altrad', screen:'writer', initials:'SA', av:''  },
+  };
 
-  function openPinModal() {
-    var title = document.getElementById('pin-role-title');
-    var input = document.getElementById('pin-input');
-    var error = document.getElementById('pin-error');
-    if (title) title.textContent = roleTitles[activeRole] || 'Access';
-    if (input) input.value = '';
-    if (error) error.style.display = 'none';
-    document.getElementById('pin-modal').classList.add('open');
-    setTimeout(function(){ if(input) input.focus(); }, 100);
-  }
+  // Passwords handled by Google OAuth via Supabase
 
-  function checkPin() {
-    var input = document.getElementById('pin-input');
-    var error = document.getElementById('pin-error');
-    var val = input ? input.value.trim().toLowerCase() : '';
-    if (val === rolePins[activeRole]) {
-      document.getElementById('pin-modal').classList.remove('open');
-      goScreen(activeRole);
-    } else {
-      if (error) error.style.display = 'block';
-      if (input) { input.value = ''; input.focus(); }
+  var currentUser = null;
+  var impersonating = null;
+
+  // Check session
+  try {
+    var savedUser = sessionStorage.getItem('fxify_user');
+    if (savedUser) {
+      currentUser = JSON.parse(savedUser);
+      bootUser(currentUser);
+    }
+  } catch(e) {}
+
+  function bootUser(user) {
+    currentUser = user;
+    activeRole = user.role;
+
+    // Update all topbars with user name + initials
+    updateTopbars(user);
+
+    // Writer: load their specific drafts
+    if (user.role === 'writer') {
+      currentWriterEmail = user.email;
+    }
+
+    goScreen(user.screen);
+    loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
+    setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
+
+    // Add sign out button to topbar
+    ['admin','writer','liam','david'].forEach(function(sc) {
+      var tbr = document.querySelector('#' + sc + ' .tbr');
+      if (tbr && !tbr.querySelector('.signout-btn')) {
+        var sob = document.createElement('button');
+        sob.className = 'btn btn-s signout-btn';
+        sob.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.08);color:#475569;background:transparent;';
+        sob.textContent = 'Sign out';
+        sob.addEventListener('click', function(){
+          if(confirm('Sign out?')){
+            sessionStorage.removeItem('fxify_user');
+            currentUser = null; impersonating = null; currentWriterEmail = null;
+            supa.auth.signOut();
+            goScreen('login');
+          }
+        });
+        tbr.insertBefore(sob, tbr.firstChild);
+      }
+    });
+
+    // Show impersonate button for admin and david
+    if (user.role === 'admin' || user.role === 'david') {
+      showImpersonateBtn();
     }
   }
 
-  document.getElementById('login-btn').addEventListener('click', openPinModal);
-  document.getElementById('pin-confirm').addEventListener('click', checkPin);
-  document.getElementById('pin-cancel').addEventListener('click', function(){
-    document.getElementById('pin-modal').classList.remove('open');
-  });
-  document.getElementById('pin-input').addEventListener('keydown', function(e){
-    if (e.key === 'Enter') checkPin();
+  function updateTopbars(user) {
+    // Update each screen's topbar
+    var screens = ['admin','writer','liam','david'];
+    screens.forEach(function(sc) {
+      var nameEl = document.querySelector('#' + sc + ' .tbu');
+      var avEl = document.querySelector('#' + sc + ' .tbav');
+      var ctxEl = document.querySelector('#' + sc + ' .tbctx');
+      if (nameEl) nameEl.textContent = user.name;
+      if (avEl) {
+        avEl.textContent = user.initials;
+        avEl.className = 'tbav' + (user.av ? ' ' + user.av : '');
+      }
+    });
+    // Update writer greeting
+    var greetEl = document.getElementById('writer-greeting');
+    if (greetEl && user.role === 'writer') {
+      var firstName = user.name.split(' ')[0];
+      var hr = new Date().getHours();
+      var greetWord = hr < 12 ? 'Morning' : hr < 17 ? 'Afternoon' : 'Evening';
+      greetEl.textContent = greetWord + ', ' + firstName + '. Here\'s your plate. 👊';
+    }
+  }
+
+  function showImpersonateBtn() {
+    // Add "View as writer" button to admin topbar
+    var tbr = document.querySelector('#admin .tbr');
+    if (tbr && !document.getElementById('imp-btn')) {
+      var btn = document.createElement('button');
+      btn.id = 'imp-btn';
+      btn.className = 'btn btn-s';
+      btn.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#64748b;';
+      btn.textContent = '👁 View as writer';
+      btn.addEventListener('click', function(){ document.getElementById('imp-modal').classList.add('open'); });
+      tbr.insertBefore(btn, tbr.firstChild);
+    }
+    // Also for david
+    var tbrD = document.querySelector('#david .tbr');
+    if (tbrD && !document.getElementById('imp-btn-d')) {
+      var btnD = document.createElement('button');
+      btnD.id = 'imp-btn-d';
+      btnD.className = 'btn btn-s';
+      btnD.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#64748b;';
+      btnD.textContent = '👁 View as writer';
+      btnD.addEventListener('click', function(){ document.getElementById('imp-modal').classList.add('open'); });
+      tbrD.insertBefore(btnD, tbrD.firstChild);
+    }
+  }
+
+  // ── GOOGLE OAUTH via Supabase ──────────────────────────────────────────
+  async function doGoogleLogin() {
+    var btn = document.getElementById('login-btn');
+    btn.textContent = 'Redirecting...';
+    btn.disabled = true;
+    var res = await supa.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: window.location.href.split('?')[0].split('#')[0]
+      }
+    });
+    if (res.error) {
+      btn.textContent = 'Continue with Google';
+      btn.disabled = false;
+      var errEl = document.getElementById('login-error');
+      if (errEl) { errEl.textContent = res.error.message; errEl.style.display = 'block'; }
+    }
+  }
+
+  document.getElementById('login-btn').addEventListener('click', doGoogleLogin);
+
+  // Handle OAuth callback — Supabase puts session in URL hash on return
+  async function handleAuthCallback() {
+    var res = await supa.auth.getSession();
+    if (res.data && res.data.session) {
+      var email = res.data.session.user.email.toLowerCase();
+      resolveUserFromEmail(email);
+    }
+  }
+
+  function resolveUserFromEmail(email) {
+    var errEl = document.getElementById('login-error');
+    var isApproved = email.endsWith('@fxify.com') || email === 'liam@quirkydigital.com';
+    if (!isApproved) {
+      if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
+      supa.auth.signOut();
+      return;
+    }
+    var userDef = USERS[email];
+    // Unknown @fxify.com → new writer
+    if (!userDef && email.endsWith('@fxify.com')) {
+      var nameParts = email.split('@')[0].split('.');
+      var name = nameParts.map(function(p){ return p.charAt(0).toUpperCase() + p.slice(1); }).join(' ');
+      userDef = { role:'writer', name: name, screen:'writer', initials: nameParts.map(function(p){ return p[0].toUpperCase(); }).join(''), av:'' };
+    }
+    if (!userDef) { if (errEl) { errEl.textContent = 'Access denied.'; errEl.style.display = 'block'; } return; }
+    var user = { email: email, role: userDef.role, name: userDef.name, screen: userDef.screen, initials: userDef.initials, av: userDef.av };
+    sessionStorage.setItem('fxify_user', JSON.stringify(user));
+    bootUser(user);
+  }
+
+  // Listen for auth state changes (handles redirect callback automatically)
+  supa.auth.onAuthStateChange(function(event, session) {
+    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+      var email = session.user.email.toLowerCase();
+      // Only boot if not already logged in
+      if (!currentUser) resolveUserFromEmail(email);
+    }
+    if (event === 'SIGNED_OUT') {
+      currentUser = null;
+      sessionStorage.removeItem('fxify_user');
+    }
   });
 
-  // Role buttons
-  document.querySelectorAll('.rbtn').forEach(function(b){
-    b.addEventListener('click', function(){
-      document.querySelectorAll('.rbtn').forEach(function(x){x.classList.remove('active');});
-      b.classList.add('active');
-      activeRole = b.getAttribute('data-role');
+  // Impersonate modal
+  document.getElementById('imp-cancel').addEventListener('click', function(){ document.getElementById('imp-modal').classList.remove('open'); });
+  document.getElementById('imp-confirm').addEventListener('click', function(){
+    var sel = document.getElementById('imp-select').value;
+    if (!sel) return;
+    var writerDef = USERS[sel];
+    if (!writerDef) return;
+    impersonating = sel;
+    currentWriterEmail = sel;
+    activeRole = 'writer';
+    updateTopbars({ name: writerDef.name + ' (viewing)', initials: writerDef.initials, av: '' });
+    document.getElementById('imp-modal').classList.remove('open');
+    goScreen('writer');
+    loadWriterDrafts();
+    toast('Viewing ' + writerDef.name + '\'s dashboard');
+
+    // Add "Back to my dashboard" banner in writer screen
+    var existing = document.getElementById('imp-banner');
+    if (existing) existing.remove();
+    var banner = document.createElement('div');
+    banner.id = 'imp-banner';
+    banner.style.cssText = 'background:var(--navy);border-bottom:1px solid rgba(14,196,173,.2);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;gap:12px;';
+    banner.innerHTML = '<span style="font-size:12px;color:var(--tealB);">👁 Viewing ' + writerDef.name + '\'s dashboard</span>' +
+      '<button id="imp-back-btn" class="btn btn-s" style="font-size:11px;">← Back to my dashboard</button>';
+    var writerScreen = document.getElementById('writer');
+    var topbar = writerScreen.querySelector('.topbar');
+    if (topbar) topbar.insertAdjacentElement('afterend', banner);
+    document.getElementById('imp-back-btn').addEventListener('click', function(){
+      impersonating = null;
+      currentWriterEmail = currentUser.email;
+      activeRole = currentUser.role;
+      banner.remove();
+      updateTopbars(currentUser);
+      goScreen(currentUser.screen);
+      loadWriterDrafts();
     });
   });
 
@@ -4103,7 +4282,14 @@ function init(){
   // Logos → login
   ['admin','writer','liam','david'].forEach(function(r){
     var logo=document.getElementById(r+'-logo');
-    if(logo) logo.addEventListener('click',function(){goScreen('login');});
+    if(logo) logo.addEventListener('click',function(){
+      if(confirm('Sign out?')){
+        sessionStorage.removeItem('fxify_user');
+        currentUser = null; impersonating = null; currentWriterEmail = null;
+        supa.auth.signOut();
+        goScreen('login');
+      }
+    });
     var mbtn=document.getElementById(r+'-menu-btn');
     var sb=document.getElementById(r+'-sb');
     var ov=document.getElementById(r+'-ov');
