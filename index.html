@@ -2278,17 +2278,23 @@ async function scrapePublishedArticles(listId, countId) {
         var id = a.url.replace(/https?:\/\/fxify\.com\/blog\//, '').replace(/\/$/, '');
         return { id: id, title: a.title, url: a.url, scraped_at: new Date().toISOString() };
       });
-      // Upsert in batches of 50
+      // Upsert in batches of 50 — await each batch
+      var upsertErrors = [];
       for (var b = 0; b < rows.length; b += 50) {
         var batch = rows.slice(b, b + 50);
-        supa.from('published_articles').upsert(batch, { onConflict: 'url' });
+        var upsertRes = await supa.from('published_articles').upsert(batch, { onConflict: 'url' });
+        if (upsertRes.error) upsertErrors.push(upsertRes.error.message);
+      }
+      if (upsertErrors.length) {
+        console.error('Upsert error:', upsertErrors[0]);
+        toast('Scrape done but Supabase save failed: ' + upsertErrors[0]);
+      } else {
+        toast(allLinks.length + ' articles saved to Supabase ✓ — will load permanently on startup');
       }
     }
 
     // ── RENDER IN PIPELINE LIVE COLUMN ──────────────────────────────────
     renderLiveColumnFromPublished(allLinks);
-
-    toast(allLinks.length + ' published articles saved to Supabase ✓');
 
   } catch(e) {
     if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Error: ' + e.message + '</p>';
@@ -2894,17 +2900,23 @@ async function scrapePublishedArticles(listId, countId) {
         var id = a.url.replace(/https?:\/\/fxify\.com\/blog\//, '').replace(/\/$/, '');
         return { id: id, title: a.title, url: a.url, scraped_at: new Date().toISOString() };
       });
-      // Upsert in batches of 50
+      // Upsert in batches of 50 — await each batch
+      var upsertErrors = [];
       for (var b = 0; b < rows.length; b += 50) {
         var batch = rows.slice(b, b + 50);
-        supa.from('published_articles').upsert(batch, { onConflict: 'url' });
+        var upsertRes = await supa.from('published_articles').upsert(batch, { onConflict: 'url' });
+        if (upsertRes.error) upsertErrors.push(upsertRes.error.message);
+      }
+      if (upsertErrors.length) {
+        console.error('Upsert error:', upsertErrors[0]);
+        toast('Scrape done but Supabase save failed: ' + upsertErrors[0]);
+      } else {
+        toast(allLinks.length + ' articles saved to Supabase ✓ — will load permanently on startup');
       }
     }
 
     // ── RENDER IN PIPELINE LIVE COLUMN ──────────────────────────────────
     renderLiveColumnFromPublished(allLinks);
-
-    toast(allLinks.length + ' published articles saved to Supabase ✓');
 
   } catch(e) {
     if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Error: ' + e.message + '</p>';
