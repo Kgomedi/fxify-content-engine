@@ -808,6 +808,7 @@ select.finput{cursor:pointer;}
         <p class="pgs">Everything live on the FXIFY blog. Brief before generating to avoid duplicates. 🌐</p>
         <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
           <button class="btn btn-p btn-s" id="a-scrape-btn">🔄 Refresh from fxify.com/blog</button>
+          <button class="btn btn-s" id="a-test-save" style="font-size:11px;">🧪 Test save</button>
           <input class="finput" id="a-live-search" type="text" placeholder="Search articles..." style="max-width:260px;"/>
           <span style="font-size:12px;color:var(--muted);align-self:center;" id="a-live-count"></span>
         </div>
@@ -2274,22 +2275,26 @@ async function scrapePublishedArticles(listId, countId) {
     // ── SAVE TO SUPABASE published_articles table ───────────────────────
     if (allLinks.length > 0) {
       var rows = allLinks.map(function(a) {
-        // Use URL as unique ID (slugified)
-        var id = a.url.replace(/https?:\/\/fxify\.com\/blog\//, '').replace(/\/$/, '');
-        return { id: id, title: a.title, url: a.url, scraped_at: new Date().toISOString() };
+        return { title: a.title, url: a.url, scraped_at: new Date().toISOString() };
       });
-      // Upsert in batches of 50 — await each batch
-      var upsertErrors = [];
-      for (var b = 0; b < rows.length; b += 50) {
-        var batch = rows.slice(b, b + 50);
-        var upsertRes = await supa.from('published_articles').upsert(batch, { onConflict: 'url' });
-        if (upsertRes.error) upsertErrors.push(upsertRes.error.message);
-      }
-      if (upsertErrors.length) {
-        console.error('Upsert error:', upsertErrors[0]);
-        toast('Scrape done but Supabase save failed: ' + upsertErrors[0]);
+      // Clear old records then insert fresh batch
+      var deleteRes = await supa.from('published_articles').delete().neq('url', '');
+      if (deleteRes.error) {
+        console.error('Delete error:', deleteRes.error);
+        toast('Save failed (delete): ' + deleteRes.error.message);
       } else {
-        toast(allLinks.length + ' articles saved to Supabase ✓ — will load permanently on startup');
+        // Insert in batches of 50
+        var insertErrors = [];
+        for (var b = 0; b < rows.length; b += 50) {
+          var batch = rows.slice(b, b + 50);
+          var insertRes = await supa.from('published_articles').insert(batch);
+          if (insertRes.error) { insertErrors.push(insertRes.error.message); console.error('Insert error:', insertRes.error); }
+        }
+        if (insertErrors.length) {
+          toast('Save failed: ' + insertErrors[0]);
+        } else {
+          toast(rows.length + ' articles saved to Supabase ✓ — permanent from now on');
+        }
       }
     }
 
@@ -2896,22 +2901,26 @@ async function scrapePublishedArticles(listId, countId) {
     // ── SAVE TO SUPABASE published_articles table ───────────────────────
     if (allLinks.length > 0) {
       var rows = allLinks.map(function(a) {
-        // Use URL as unique ID (slugified)
-        var id = a.url.replace(/https?:\/\/fxify\.com\/blog\//, '').replace(/\/$/, '');
-        return { id: id, title: a.title, url: a.url, scraped_at: new Date().toISOString() };
+        return { title: a.title, url: a.url, scraped_at: new Date().toISOString() };
       });
-      // Upsert in batches of 50 — await each batch
-      var upsertErrors = [];
-      for (var b = 0; b < rows.length; b += 50) {
-        var batch = rows.slice(b, b + 50);
-        var upsertRes = await supa.from('published_articles').upsert(batch, { onConflict: 'url' });
-        if (upsertRes.error) upsertErrors.push(upsertRes.error.message);
-      }
-      if (upsertErrors.length) {
-        console.error('Upsert error:', upsertErrors[0]);
-        toast('Scrape done but Supabase save failed: ' + upsertErrors[0]);
+      // Clear old records then insert fresh batch
+      var deleteRes = await supa.from('published_articles').delete().neq('url', '');
+      if (deleteRes.error) {
+        console.error('Delete error:', deleteRes.error);
+        toast('Save failed (delete): ' + deleteRes.error.message);
       } else {
-        toast(allLinks.length + ' articles saved to Supabase ✓ — will load permanently on startup');
+        // Insert in batches of 50
+        var insertErrors = [];
+        for (var b = 0; b < rows.length; b += 50) {
+          var batch = rows.slice(b, b + 50);
+          var insertRes = await supa.from('published_articles').insert(batch);
+          if (insertRes.error) { insertErrors.push(insertRes.error.message); console.error('Insert error:', insertRes.error); }
+        }
+        if (insertErrors.length) {
+          toast('Save failed: ' + insertErrors[0]);
+        } else {
+          toast(rows.length + ' articles saved to Supabase ✓ — permanent from now on');
+        }
       }
     }
 
@@ -4334,6 +4343,22 @@ function init(){
   var aScrapeBtn = document.getElementById('a-scrape-btn');
   if (aScrapeBtn) aScrapeBtn.addEventListener('click', function(){
     scrapePublishedArticles('a-live-list', 'a-live-count');
+  });
+
+  // Test save button — saves 1 row and reports exact result
+  var aTestSave = document.getElementById('a-test-save');
+  if (aTestSave) aTestSave.addEventListener('click', async function(){
+    aTestSave.textContent = 'Testing...';
+    aTestSave.disabled = true;
+    var testRow = { title: 'TEST - ' + new Date().toISOString(), url: 'https://fxify.com/blog/test-' + Date.now() + '/', scraped_at: new Date().toISOString() };
+    var res = await supa.from('published_articles').insert([testRow]);
+    aTestSave.textContent = '🧪 Test save';
+    aTestSave.disabled = false;
+    if (res.error) {
+      alert('SAVE FAILED:\n\nCode: ' + res.error.code + '\nMessage: ' + res.error.message + '\nDetails: ' + JSON.stringify(res.error.details));
+    } else {
+      alert('SAVE WORKED ✓\n\nRow saved to Supabase successfully.\nNow hit Refresh to scrape and save all articles.');
+    }
   });
   var aSearch = document.getElementById('a-live-search');
   if (aSearch) aSearch.addEventListener('input', function(){
