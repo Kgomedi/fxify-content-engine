@@ -1063,12 +1063,57 @@ select.finput{cursor:pointer;}
   <div class="awrap">
     <div class="sbov" id="david-ov"></div>
     <nav class="sb" id="david-sb">
+      <div class="ngrp">Pipeline</div>
+      <div class="nlink active" data-pg="d-pipeline" data-sc="david"><span class="nico">◈</span>Pipeline<span class="nbadge" id="nb-dpipeline">0</span></div>
+      <div class="nlink" data-pg="d-analytics" data-sc="david"><span class="nico">▲</span>Analytics</div>
+      <div class="ndiv"></div>
       <div class="ngrp">Approvals</div>
-      <div class="nlink active" data-pg="d-approval" data-sc="david"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>
+      <div class="nlink" data-pg="d-approval" data-sc="david"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>
       <div class="nlink" data-pg="d-log" data-sc="david"><span class="nico">▲</span>Approved Log</div>
     </nav>
     <div class="ma">
-      <div id="d-approval" class="pg active">
+      <!-- DAVID PIPELINE -->
+      <div id="d-pipeline" class="pg active">
+        <div class="pgh">Content Pipeline</div>
+        <p class="pgs">Full picture across the team. 🚀</p>
+        <div class="srow">
+          <div class="sc sc-r"><p class="slbl">Needs attention</p><p class="sval" style="color:var(--urgent)" id="dst-overdue">—</p><p class="shin">overdue</p></div>
+          <div class="sc sc-b"><p class="slbl">In progress</p><p class="sval" id="dst-drafting">—</p><p class="shin">drafting</p></div>
+          <div class="sc sc-t"><p class="slbl">In review</p><p class="sval" id="dst-review">—</p><p class="shin">with reviewers</p></div>
+          <div class="sc sc-g"><p class="slbl">Published</p><p class="sval" id="dst-live">—</p><p class="shin">articles live</p></div>
+        </div>
+        <div class="shead">Board</div>
+        <div class="pboard">
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--muted)">Briefed</span><span class="pcnt" id="dcnt-briefed">0</span></div><div class="pbody" id="dcol-briefed"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--blue)">Drafting</span><span class="pcnt" id="dcnt-drafting">0</span></div><div class="pbody" id="dcol-drafting"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--purple)">Sheperd Review</span><span class="pcnt" id="dcnt-sr">0</span></div><div class="pbody" id="dcol-sr"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--blue)">Liam Review</span><span class="pcnt" id="dcnt-lr">0</span></div><div class="pbody" id="dcol-lr"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--amber)">My Approval</span><span class="pcnt" id="dcnt-da">0</span></div><div class="pbody" id="dcol-da"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--tealB)">Publishing</span><span class="pcnt" id="dcnt-pub">0</span></div><div class="pbody" id="dcol-pub"></div></div>
+          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--green)">Live</span><span class="pcnt" id="dcnt-live">0</span></div><div class="pbody" id="dcol-live"></div></div>
+        </div>
+      </div>
+
+      <!-- DAVID ANALYTICS -->
+      <div id="d-analytics" class="pg">
+        <div class="pgh">Team Analytics</div>
+        <p class="pgs">Writer output and pipeline health 📊</p>
+        <div class="agrid">
+          <div class="acard"><p class="albl">Total articles</p><p class="aval" id="dan-total">—</p></div>
+          <div class="acard"><p class="albl">Live & published</p><p class="aval cu" id="dan-live">—</p></div>
+          <div class="acard"><p class="albl">In pipeline</p><p class="aval" id="dan-pipeline">—</p></div>
+          <div class="acard"><p class="albl">In review</p><p class="aval" id="dan-review">—</p></div>
+          <div class="acard"><p class="albl">Avg. word count</p><p class="aval" id="dan-wc">—</p></div>
+          <div class="acard"><p class="albl">Avg. SEO score</p><p class="aval" id="dan-seo">—</p></div>
+        </div>
+        <div class="shead">Articles by writer</div>
+        <div class="twrap"><table class="dtable" id="dan-by-writer">
+          <thead><tr><th>Writer</th><th>Total</th><th>Live</th><th>In Progress</th><th>In Review</th><th>Avg. Words</th></tr></thead>
+          <tbody><tr><td colspan="6" style="text-align:center;color:var(--muted);padding:20px;">Loading...</td></tr></tbody>
+        </table></div>
+      </div>
+
+      <div id="d-approval" class="pg">
         <div class="pgh">Final Approval</div>
         <p class="pgs">Liam checked the SEO. One tap from you and it's heading to publish. 💪</p>
         <div id="d-approval-list"><p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p></div>
@@ -1387,6 +1432,8 @@ function goPage(sc,pg,navEl){
   if(pg==='l-topics') loadLiamTopics();
   if(pg==='d-approval') loadDavidQ();
   if(pg==='d-log') loadDavidLog();
+  if(pg==='d-pipeline') loadDavidPipeline();
+  if(pg==='d-analytics') loadDavidAnalytics();
   if(pg==='a-analytics') loadAnalytics();
 }
 
@@ -1471,7 +1518,14 @@ async function loadPipeline(){
       }
       c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p><div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="pcw">'+(art.assignee||'—')+'</span></div>'+
         (dueStr?'<p style="font-size:9px;font-weight:500;margin-top:3px;color:'+dueColor+';">'+dueStr+'</p>':'')+(dateStr?'<p style="font-size:9px;color:#475569;margin-top:1px;">Created '+dateStr+'</p>':'');
-      c.addEventListener('click',function(){openDrawer(art);});
+      // Publishing articles — open editor to grab HTML
+      if(art.status === 'Publishing') {
+        c.style.borderLeft='2px solid var(--tealB)';
+        c.title='Click to open and copy HTML';
+        c.addEventListener('click',function(){ openEditor(art,'sheperd'); });
+      } else {
+        c.addEventListener('click',function(){openDrawer(art);});
+      }
       col.appendChild(c);
     });
   });
@@ -1568,6 +1622,91 @@ async function loadLiamQ(){
   l.innerHTML='';
   res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'liam',fwdLabel:'Approve → David',nextStatus:'David Approval',listId:'l-review-list'}));});
   var nb=document.getElementById('nb-liam');if(nb)nb.textContent=res.data.length;
+}
+
+async function loadDavidPipeline(){
+  var res = await supa.from('articles').select('*').order('created_at',{ascending:false});
+  if(res.error||!res.data) return;
+  var arts = res.data;
+  var groups={'Briefed':[],'Drafting':[],'Sheperd Review':[],'Liam Review':[],'David Approval':[],'Publishing':[],'Live':[]};
+  arts.forEach(function(a){if(groups[a.status]) groups[a.status].push(a);});
+  var cols={Briefed:'briefed',Drafting:'drafting','Sheperd Review':'sr','Liam Review':'lr','David Approval':'da',Publishing:'pub',Live:'live'};
+  Object.keys(cols).forEach(function(st){
+    var col=document.getElementById('dcol-'+cols[st]);
+    var cnt=document.getElementById('dcnt-'+cols[st]);
+    if(!col) return;
+    col.innerHTML='';
+    var list=groups[st]||[];
+    if(cnt) cnt.textContent=list.length;
+    if(!list.length){col.innerHTML='<p class="pempty">Nothing here yet</p>';return;}
+    list.forEach(function(art){
+      var c=document.createElement('div');
+      c.className='pcard';
+      if(art.priority==='Urgent') c.style.borderLeft='2px solid var(--urgent)';
+      if(art.priority==='High') c.style.borderLeft='2px solid var(--high)';
+      c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p>' +
+        '<div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span>' +
+        '<span class="pcw">'+(art.assignee||'—')+'</span></div>';
+      // Publishing articles — clickable to open editor
+      if(art.status === 'Publishing') {
+        c.style.borderLeft='2px solid var(--tealB)';
+        c.title='Click to open and copy HTML';
+        c.addEventListener('click',function(){ openEditor(art,'david'); });
+      }
+      col.appendChild(c);
+    });
+  });
+  // Stats
+  function s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
+  s('dst-overdue',arts.filter(function(a){return a.status!=='Live'&&a.status!=='Publishing';}).length);
+  s('dst-drafting',groups['Drafting'].length);
+  s('dst-review',(groups['Sheperd Review'].length+groups['Liam Review'].length+groups['David Approval'].length));
+  var scrapedCount=(publishedCache&&publishedCache.length)?publishedCache.length:0;
+  s('dst-live',groups['Live'].length+scrapedCount);
+  var nb=document.getElementById('nb-dpipeline');
+  if(nb) nb.textContent=groups['David Approval'].length||'';
+}
+
+async function loadDavidAnalytics(){
+  var res = await supa.from('articles').select('*').order('created_at',{ascending:false});
+  if(res.error||!res.data) return;
+  var arts = res.data;
+  var total=arts.length;
+  var live=arts.filter(function(a){return a.status==='Live'||a.status==='Publishing';}).length;
+  var pipeline=arts.filter(function(a){return a.status==='Briefed'||a.status==='Drafting';}).length;
+  var inReview=arts.filter(function(a){return ['Sheperd Review','Liam Review','David Approval'].includes(a.status);}).length;
+  var totalWc=arts.reduce(function(s,a){return s+(a.word_count||0);},0);
+  var avgWc=total?Math.round(totalWc/total):0;
+  var seoArts=arts.filter(function(a){return a.seo_score;});
+  var avgSeo=seoArts.length?Math.round(seoArts.reduce(function(s,a){return s+(a.seo_score||0);},0)/seoArts.length):0;
+  function set(id,val){var e=document.getElementById(id);if(e)e.textContent=val;}
+  set('dan-total',total); set('dan-live',live); set('dan-pipeline',pipeline);
+  set('dan-review',inReview); set('dan-wc',avgWc?avgWc.toLocaleString():'—');
+  set('dan-seo',avgSeo?avgSeo+'/100':'—');
+  // By writer
+  var byWriter={};
+  arts.forEach(function(a){
+    var w=a.assignee||'Unassigned';
+    if(!byWriter[w]) byWriter[w]={total:0,live:0,inProgress:0,inReview:0,wc:0};
+    byWriter[w].total++;
+    if(a.status==='Live'||a.status==='Publishing') byWriter[w].live++;
+    if(a.status==='Briefed'||a.status==='Drafting') byWriter[w].inProgress++;
+    if(['Sheperd Review','Liam Review','David Approval'].includes(a.status)) byWriter[w].inReview++;
+    byWriter[w].wc+=(a.word_count||0);
+  });
+  var tbody=document.querySelector('#dan-by-writer tbody');
+  if(tbody){
+    tbody.innerHTML='';
+    Object.keys(byWriter).sort().forEach(function(w){
+      var d=byWriter[w];
+      var tr=document.createElement('tr');
+      tr.innerHTML='<td style="font-weight:500;">'+w+'</td><td>'+d.total+'</td>' +
+        '<td style="color:var(--green);">'+d.live+'</td>' +
+        '<td>'+d.inProgress+'</td><td>'+d.inReview+'</td>' +
+        '<td>'+(d.total?Math.round(d.wc/d.total).toLocaleString():'—')+'</td>';
+      tbody.appendChild(tr);
+    });
+  }
 }
 
 async function loadDavidLog(){
@@ -4208,7 +4347,7 @@ function init(){
   // Role map — email → { role, name, screen }
   var USERS = {
     'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
-    'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'david',  initials:'DX', av:'a' },
+    'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'david',  initials:'DX', av:'a', defaultPage:'d-pipeline' },
     'liam@quirkydigital.com':      { role:'liam',   name:'Liam',            screen:'liam',   initials:'L',  av:'b' },
     'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
     'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
