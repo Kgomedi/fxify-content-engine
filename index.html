@@ -676,10 +676,10 @@ select.finput{cursor:pointer;}
             <div class="frow fg">
               <div><label class="flbl">Assign to writer</label><select class="finput" id="b-writer"><option>— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
               <div><label class="flbl">Author (E-E-A-T)</label><select class="finput" id="b-author">
-                <option value="fariha">Fariha Khan — Senior Writer</option>
-                <option value="harry">Harry Hosking — Markets Analyst</option>
-                <option value="imran">Imran Najib — Trading Educator</option>
-                <option value="sheperd">Sheperd Morena — Content Lead</option>
+                <option value="fariha">Fariha Khan — Senior Copywriter</option>
+                <option value="harry">Harry Hosking — Senior Copywriter</option>
+                <option value="imran">Imran Najib — Senior Copywriter</option>
+                <option value="sheperd">Sheperd Morena — Senior Copywriter</option>
               </select></div>
             </div>
           </div>
@@ -1115,7 +1115,7 @@ select.finput{cursor:pointer;}
 
       <div id="d-approval" class="pg">
         <div class="pgh">Final Approval</div>
-        <p class="pgs">Liam checked the SEO. One tap from you and it's heading to publish. 💪</p>
+        <p class="pgs" id="david-greeting"></p>
         <div id="d-approval-list"><p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p></div>
       </div>
       <div id="d-log" class="pg">
@@ -1985,10 +1985,10 @@ async function generate(){
   var q=document.getElementById('b-q').value.trim();
   var authorKey = document.getElementById('b-author') ? document.getElementById('b-author').value : 'sheperd';
   var authorProfiles = {
-    fariha: {name:'Fariha Khan',title:'Senior Content Writer',bio:'Fariha Khan is a senior content writer at FXIFY with 5 years covering prop trading, risk management and trading psychology.',linkedin:'linkedin.com/in/fariha-khan'},
-    harry: {name:'Harry Hosking',title:'Markets Analyst & Writer',bio:'Harry Hosking is a markets analyst at FXIFY with 6 years of trading experience covering forex, indices and evaluation strategy.',linkedin:'linkedin.com/in/harry-hosking'},
-    imran: {name:'Imran Najib',title:'Trading Educator',bio:'Imran Najib is a trading educator at FXIFY specialising in technical analysis and evaluation programs.',linkedin:'linkedin.com/in/imran-najib'},
-    sheperd: {name:'Sheperd Morena',title:'Content Lead',bio:'Sheperd Morena leads content at FXIFY combining 7+ years of fintech writing with AI-augmented content production.',linkedin:'linkedin.com/in/sheperd-morena'}
+    fariha: {name:'Fariha Khan',title:'Senior Copywriter',bio:'Fariha Khan is a Senior Copywriter at FXIFY specialising in prop trading, risk management and trading psychology.',linkedin:'linkedin.com/in/fariha-khan'},
+    harry: {name:'Harry Hosking',title:'Senior Copywriter',bio:'Harry Hosking is a Senior Copywriter at FXIFY covering forex markets, indices and prop trading evaluation strategy.',linkedin:'linkedin.com/in/harry-hosking'},
+    imran: {name:'Imran Najib',title:'Senior Copywriter',bio:'Imran Najib is a Senior Copywriter at FXIFY specialising in technical analysis and prop trading education.',linkedin:'linkedin.com/in/imran-najib'},
+    sheperd: {name:'Sheperd Morena',title:'Senior Copywriter',bio:'Sheperd Morena is a Senior Copywriter and AI Prompt Engineer at FXIFY with 7+ years across fintech, prop trading and brokerage.',linkedin:'linkedin.com/in/sheperd-morena'}
   };
   var author = authorProfiles[authorKey] || authorProfiles.sheperd;
   var btn=document.getElementById('gen-btn');
@@ -2005,95 +2005,100 @@ async function generate(){
     btn.textContent = 'Writing...';
   }
   var prompt=
-    'You are a senior content writer for FXIFY, a professional prop trading firm. Write a complete blog article.\n\n'+
-    'TOPIC: '+title+'\n'+
-    'CATEGORY: '+cat+'\n'+
-    'TARGET LENGTH: '+len+' — THIS IS MANDATORY. Count your words. Do not exceed or fall short by more than 10%.\n'+
-    'TONE: '+tone+'\n'+
-    'PRIMARY KEYWORD: '+pkw+'\n'+
-    'SECONDARY KEYWORDS: '+(skw||'prop trading, funded trader, trading account')+'\n'+
-    'SEARCH INTENT: '+intent+'\n'+
-    (links?'INTERNAL LINKS TO INCLUDE: '+links+'\n':'')+
-    (geo?'GEO ANSWER TARGET: '+geo+'\n':'')+
-    (q?'AEO PRIMARY QUESTION: '+q+'\n':'')+
-    '\n'+
-    '━━ TONE & STYLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    '- Direct, confident, proof-led. No hype, no fluff.\n'+
-    '- Short sentences. One idea per sentence. Max 20 words per sentence.\n'+
-    '- Short paragraphs. Max 3 sentences per paragraph.\n'+
-    '- Always address the reader as "you".\n'+
-    '- Never start with "In this article we will..."\n'+
-    '- Every sentence must earn its place. Cut anything that does not add value.\n\n'+
-    '━━ SCANNABILITY (MANDATORY) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    '- BOLD key terms, statistics and important points throughout. At least 8-10 bold phrases per article.\n'+
-    '- Every H2 section must have at least one bolded phrase or stat.\n'+
-    '- Use bullet points and numbered lists wherever possible — not walls of text.\n'+
-    '- Break up long sections with subheadings (H3) if needed.\n\n'+
-    '━━ REQUIRED ELEMENTS (NON-NEGOTIABLE) ━━━━━━━━━━━━━━━━━\n'+
-    '- Summary table at the top for articles over 800 words (4 cols, 4-5 rows of key facts)\n'+
-    '- Table of Contents with anchor links for articles over 800 words\n'+
-    '- FAQ section: minimum 5 questions with direct, concise answers\n'+
-    '- Key Takeaways block: 5-7 bullet points at the end\n'+
-    '- At least 2-3 internal links to relevant FXIFY pages\n'+
-    '- Primary keyword in H1 and at least 2 H2 headings\n'+
-    '- Secondary keywords naturally in H2s and body copy\n\n'+
-    '━━ STRUCTURE (FOLLOW EXACTLY) ━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    '1. H1: Clear, keyword-led title\n'+
-    '2. Introduction: Max 120 words. Direct answer first, then context.\n'+
-    '3. Quick Summary Table: 4 columns, 4-5 rows of key facts\n'+
-    '4. Table of Contents\n'+
-    '5. Body sections: Each H2 covers one specific topic\n'+
-    '   - For each section: explain → what it means → how trader uses it\n'+
-    '   - Add [VISUAL: specific image description] after each H2\n'+
-    '6. Common Mistakes section\n'+
-    '7. How This Applies to Prop Trading section\n'+
-    '8. Key Takeaways: 5-7 bullet points only\n'+
-    '9. FAQ: 5-7 questions with direct answers\n\n'+
-    '━━ SEO RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    '- Primary keyword in H1, first paragraph, at least 2 H2s\n'+
-    '- No keyword stuffing\n'+
-    '- Add [INTERNAL LINK: relevant topic] placeholders contextually\n'+    '- Use these real FXIFY URLs where relevant: /programs, /rules, /pricing, /get-funded, /blog\n\n'+
-    '━━ E-E-A-T REQUIREMENTS ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    'AUTHOR: '+author.name+' — '+author.title+'\n'+
-    '- Include 2 first-person FXIFY experience signals: "At FXIFY, we have seen..."\n'+
-    '- Reference at least one specific data point or real trading scenario\n'+
-    '- End article with: "Written by '+author.name+', '+author.title+' at FXIFY."\n\n'+
-    '━━ FXIFY BRAND ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    '- 1-2 natural FXIFY mentions only\n'+
-    '- Use only these terms: evaluation programs, starting capital, performance split\n'+
-    '- Never invent features or make claims not on fxify.com\n\n'+
-    '━━ FULL META PACKAGE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    'After the article output exactly this block:\n'+
+    'You are a Senior Copywriter at FXIFY, a funded prop trading firm. Your job is to write blog articles that rank on Google, pass Liam\'s SEO review, and sound like they were written by a real trader — not an AI.\n\n'+
+    'ARTICLE BRIEF:\n'+
+    'Topic: '+title+'\n'+
+    'Category: '+cat+'\n'+
+    'Target length: '+len+' — HIT THIS. Count your words.\n'+
+    'Tone: '+tone+'\n'+
+    'Primary keyword: '+pkw+'\n'+
+    'Secondary keywords: '+(skw||'prop trading, funded trader, trading account')+'\n'+
+    'Search intent: '+intent+'\n'+
+    (links?'Internal links to include: '+links+'\n':'')+
+    (geo?'GEO target (answer engines): '+geo+'\n':'')+
+    (q?'AEO primary question: '+q+'\n':'')+
+    'Author: '+author.name+' — '+author.title+' at FXIFY\n\n'+
+
+    '━━ THE FXIFY VOICE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    'Study this real FXIFY article opening and match the voice:\n'+
+    '\"There is a common assumption in trading that if you are not in a trade, you are missing out. For prop traders, that thinking can be costly.\"\n'+
+    'Notice: No fluff opener. No \"In this article we will\". Straight to the point. Talks TO the trader. Uses \"you\" and \"your\".\n\n'+
+    'FXIFY writes like a knowledgeable colleague, not a textbook. Rules:\n'+
+    '- Every sentence must carry information. Cut anything decorative.\n'+
+    '- One idea per sentence. Max 20 words.\n'+
+    '- Max 3 sentences per paragraph. Then break.\n'+
+    '- Never use: \"In this article\", \"It is worth noting\", \"It is important to\", \"As we can see\", \"In conclusion\"\n'+
+    '- Never use passive voice if active works.\n'+
+    '- Always \"you\" — address the trader directly.\n'+
+    '- Confident, not hedged. We know this stuff.\n\n'+
+
+    '━━ STRUCTURE (MANDATORY — FOLLOW EXACTLY) ━━━━━━━━━━━━━━━━━━━━\n'+
+    '1. H1 — keyword-led, direct, under 65 characters\n'+
+    '2. Intro paragraph — max 80 words. Lead with the most important point. No build-up.\n'+
+    '3. Summary table — 2 columns (Term / What it means). 4-6 rows. Only for articles 800+ words.\n'+
+    '4. Table of Contents — anchor links to each H2. Only for articles 800+ words.\n'+
+    '5. Body — H2 sections. Each H2 = one clear topic. Under each H2:\n'+
+    '   - What it is (1-2 sentences)\n'+
+    '   - Why it matters to a prop trader specifically\n'+
+    '   - What to actually do with this information\n'+
+    '   - Add [VISUAL: specific description] placeholder after each H2\n'+
+    '6. H2: What This Means For Your Prop Account — always include this\n'+
+    '7. Key Takeaways — 5-7 bullet points. Each one actionable. Not summaries — conclusions.\n'+
+    '8. FAQ — minimum 5 questions. Questions traders actually Google. Direct answers, 2-4 sentences each.\n\n'+
+
+    '━━ SEO (NON-NEGOTIABLE) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '- Primary keyword in: H1, first 100 words, at least 2 H2 headings\n'+
+    '- Secondary keywords: naturally in H2s and body. Never stuffed.\n'+
+    '- Bold 8-10 key terms throughout. Every H2 section must have at least one bold.\n'+
+    '- Internal links: add [INTERNAL LINK: topic] contextually — minimum 2-3 per article\n'+
+    '- Use these real FXIFY URLs where relevant: /programs, /rules, /blog, /faqs, /how-it-works\n\n'+
+
+    '━━ E-E-A-T (GOOGLE NEEDS THIS) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '- Include at least 2 experience signals: \"At FXIFY, we\'ve seen traders...\" or \"In our experience...\".\n'+
+    '- Reference one real-world scenario a prop trader would recognise.\n'+
+    '- End with: Written by '+author.name+', '+author.title+' at FXIFY.\n\n'+
+
+    '━━ WHAT A GOOD FXIFY ARTICLE LOOKS LIKE ━━━━━━━━━━━━━━━━━━━━━\n'+
+    'Good opening: \"Most traders don\'t realise travel is hurting their performance until it shows up in their results.\"\n'+
+    'Bad opening: \"In this comprehensive guide, we will explore the various ways that trading while travelling can impact your results.\"\n'+
+    'Good H2: \"What Slippage Actually Costs You\"\n'+
+    'Bad H2: \"Understanding the Concept of Slippage and Its Implications\"\n'+
+    'Good sentence: \"A stop that fills 20 pips worse than expected can end your trading day early.\"\n'+
+    'Bad sentence: \"It is worth noting that slippage can have a significant impact on your trading performance.\"\n\n'+
+
+    '━━ FXIFY BRAND RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '- 1-2 natural FXIFY mentions only. Never promotional.\n'+
+    '- Correct terms: \"funded account\", \"evaluation program\", \"performance split\", \"drawdown limit\"\n'+
+    '- Never invent features. Never claim anything not on fxify.com.\n'+
+    '- Drawdown rules: always verify against fxify.com/rules before writing specific figures.\n\n'+
+
+    (researchContext ? '━━ RESEARCH CONTEXT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    'Use the data below. Do not invent figures. Do not hallucinate.\n\n'+
+    researchContext + '\n\n' : '')+
+
+    '━━ META PACKAGE (OUTPUT AFTER ARTICLE) ━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    'After the full article, output exactly:\n'+
     '---META---\n'+
     'SEO_TITLE: (max 60 chars, includes primary keyword)\n'+
-    'META_DESC: (max 160 chars, compelling, includes keyword)\n'+
+    'META_DESC: (max 160 chars, compelling, includes keyword, no clickbait)\n'+
     'SLUG: (lowercase-hyphenated, max 6 words)\n'+
-    'EXCERPT: (55 words max, plain text summary)\n'+
-    'OG_TITLE: (social share title)\n'+
-    'OG_DESC: (social share description, 125 chars)\n'+
+    'EXCERPT: (55 words max, plain text, reads like a teaser)\n'+
+    'OG_TITLE: (social share title — punchy)\n'+
+    'OG_DESC: (125 chars max)\n'+
     'TWITTER_TITLE: (Twitter card title)\n'+
-    'TWITTER_DESC: (Twitter card description, 125 chars)\n'+
+    'TWITTER_DESC: (125 chars max)\n'+
     'SCHEMA_TYPE: (Article or FAQPage or HowTo)\n'+
     'FOCUS_KW: (exact focus keyword for Yoast)\n'+
     '---END META---\n\n'+
-    (researchContext ? '━━ RESEARCH CONTEXT (SCRAPED DATA) ━━━━━━━━━━━━━━━━━━\n' +
-    'The following content was scraped live from research URLs provided by the editor.\n' +
-    'INSTRUCTIONS FOR RESEARCH CONTEXT:\n' +
-    '- Use specific facts, figures, rules and data from this content\n' +
-    '- Fact-check any claims against this data\n' +
-    '- For comparison articles: use the actual rules, prices and conditions shown\n' +
-    '- Cite sources naturally in the article where relevant\n' +
-    '- Do not invent or hallucinate data — only use what is in the research\n\n' +
-    researchContext + '\n\n' : '')+
-    'IMPORTANT: Output plain text with these markers only:\n'+
+
+    'OUTPUT FORMAT:\n'+
     '# for H1, ## for H2, ### for H3\n'+
-    '**bold text** for emphasis\n'+
-    '- for bullet points\n'+
+    '**text** for bold\n'+
+    '- for bullets\n'+
     '[VISUAL: description] for image placeholders\n'+
     '[INTERNAL LINK: topic] for internal links\n'+
-    'No HTML tags. No markdown tables with pipes. Use plain text tables.\n'+
-    'Warning WORD COUNT ENFORCEMENT: Your output MUST be '+len+'. Count your words before finishing. If under, expand sections. If over, cut filler.\n'+
-    'No asterisks except for bold. No extra formatting.';
+    'Plain text only. No HTML. No markdown tables with pipes.\n'+
+    'WORD COUNT: Your output must hit '+len+'. Count before finishing. Expand thin sections if short. Cut filler if over.';
   try{
     var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:4000})});
     var data=await r.json();
@@ -4386,6 +4391,20 @@ function init(){
     loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
+
+    // David greeting
+    if (user.role === 'david') {
+      var davidGreetings = [
+        "The boss is in. Liam did his part — now it\'s your call. 👔",
+        "Morning, David. The pipeline awaits your signature. ✍️",
+        "Articles are queued up. One tap from you and they\'re off to publish. 💼",
+        "The SEO is clean, the copy is tight. Just need the big boss stamp. 🏆",
+        "Good to see you, David. Liam says these are ready. He\'s usually right. 👀",
+        "The team delivered. Now the final word is yours, as always. 🎯",
+      ];
+      var dg = document.getElementById('david-greeting');
+      if (dg) dg.textContent = davidGreetings[Math.floor(Math.random() * davidGreetings.length)];
+    }
 
     // Add sign out button to topbar
     ['admin','writer','liam','david'].forEach(function(sc) {
