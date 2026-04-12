@@ -1345,7 +1345,9 @@ var currentArt = null;
 var currentRole = 'writer';
 var drawerArt = null;
 var sbCallback = null;
-var currentWriterEmail = null; // set on login for writer role
+var currentWriterEmail = null;
+var currentUser = null;
+var impersonating = null;
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
 function toast(msg){
@@ -1552,10 +1554,16 @@ async function loadDavidQ(){
 async function loadWriterDrafts(){
   // Filter by writer name when in writer role
   var writerName = null;
-  if (activeRole === 'writer' && currentUser) {
-    writerName = currentUser.name;
-  } else if (activeRole === 'writer' && currentWriterEmail && USERS[currentWriterEmail]) {
-    writerName = USERS[currentWriterEmail].name;
+  if (activeRole === 'writer') {
+    // Try email lookup first (most reliable)
+    if (currentWriterEmail && USERS[currentWriterEmail]) {
+      writerName = USERS[currentWriterEmail].name;
+    } else if (currentUser && currentUser.email && USERS[currentUser.email]) {
+      writerName = USERS[currentUser.email].name;
+    } else if (currentUser) {
+      writerName = currentUser.name;
+    }
+    console.log('Writer filter — email:', currentWriterEmail || (currentUser && currentUser.email), '| resolved name:', writerName);
   }
   var query = supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
   if (writerName) {
@@ -4089,9 +4097,6 @@ function init(){
 
   // Passwords handled by Google OAuth via Supabase
 
-  var currentUser = null;
-  var impersonating = null;
-
   // Check session
   try {
     var savedUser = sessionStorage.getItem('fxify_user');
@@ -4108,9 +4113,12 @@ function init(){
     // Update all topbars with user name + initials
     updateTopbars(user);
 
-    // Writer: always set email so drafts filter correctly
-    currentWriterEmail = user.email;
+    // Always set these for filter to work
     currentRole = user.role;
+    activeRole = user.role;
+    if (user.role === 'writer') {
+      currentWriterEmail = user.email;
+    }
 
     goScreen(user.screen);
     loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
