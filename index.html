@@ -1428,6 +1428,7 @@ async function loadPipeline(){
     var pipelineCount = list.length;
     if(cnt && st !== 'Live') cnt.textContent=pipelineCount;
     if(st === 'Live') {
+      // Count scraped cards that were preserved
       var scrapedCount = col.querySelectorAll('.pipeline-scraped-card').length;
       if(cnt) cnt.textContent = pipelineCount + scrapedCount;
     }
@@ -2337,9 +2338,13 @@ async function loadPublishedFromSupabase() {
     // Populate Live column permanently
     renderLiveColumnFromPublished(articles);
 
-    // Update count
+    // Update count: combine with any pipeline Live cards
+    var col = document.getElementById('col-live');
     var cnt = document.getElementById('cnt-live');
-    if (cnt) cnt.textContent = articles.length;
+    if (cnt && col) {
+      var pipelineCards = col.querySelectorAll('.pcard').length;
+      cnt.textContent = pipelineCards + articles.length;
+    }
 
     console.log('Loaded ' + articles.length + ' published articles from Supabase');
   } catch(e) {
@@ -2351,8 +2356,6 @@ function renderLiveColumnFromPublished(articles) {
   var col = document.getElementById('col-live');
   var cnt = document.getElementById('cnt-live');
   if (!col) return;
-
-  if (cnt) cnt.textContent = articles.length;
 
   // Clear any existing scraped cards (keep Supabase Live articles at top)
   var existingScraped = col.querySelectorAll('.pipeline-scraped-card');
@@ -2374,6 +2377,13 @@ function renderLiveColumnFromPublished(articles) {
       '</div>';
     col.appendChild(card);
   });
+
+  // Update count: pipeline Live articles + scraped published articles
+  if (cnt) {
+    var pipelineCards = col.querySelectorAll('.pcard').length;
+    var scrapedCards = col.querySelectorAll('.pipeline-scraped-card').length;
+    cnt.textContent = pipelineCards + scrapedCards;
+  }
 }
 
 function renderPublishedArticles(articles, listId, countId, filter) {
