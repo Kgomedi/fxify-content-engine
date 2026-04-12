@@ -4180,10 +4180,14 @@ function init(){
     var btn = document.getElementById('login-btn');
     btn.textContent = 'Redirecting...';
     btn.disabled = true;
+    // Always redirect to production URL after Google auth
+    var redirectUrl = window.location.hostname === 'localhost'
+      ? 'https://fxify-content-engine.vercel.app'
+      : window.location.origin;
     var res = await supa.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: window.location.href.split('?')[0].split('#')[0]
+        redirectTo: redirectUrl
       }
     });
     if (res.error) {
