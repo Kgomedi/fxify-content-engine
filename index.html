@@ -1416,10 +1416,23 @@ async function loadPipeline(){
     var col=document.getElementById('col-'+cols[st]);
     var cnt=document.getElementById('cnt-'+cols[st]);
     if(!col) return;
-    col.innerHTML='';
+    // For Live column: preserve scraped cards, only clear pipeline cards
+    if(st === 'Live') {
+      var scrapedCards = col.querySelectorAll('.pipeline-scraped-card');
+      col.innerHTML='';
+      scrapedCards.forEach(function(c){ col.appendChild(c); });
+    } else {
+      col.innerHTML='';
+    }
     var list=groups[st]||[];
-    if(cnt) cnt.textContent=list.length;
-    if(!list.length){col.innerHTML='<p class="pempty">Nothing here yet </p>';return;}
+    var pipelineCount = list.length;
+    if(cnt && st !== 'Live') cnt.textContent=pipelineCount;
+    if(st === 'Live') {
+      var scrapedCount = col.querySelectorAll('.pipeline-scraped-card').length;
+      if(cnt) cnt.textContent = pipelineCount + scrapedCount;
+    }
+    if(!list.length && st !== 'Live'){col.innerHTML='<p class="pempty">Nothing here yet </p>'; return;}
+    if(!list.length) return;
     list.forEach(function(art){
       var c=document.createElement('div');
       c.className='pcard';
@@ -4010,7 +4023,8 @@ function init(){
 
   // Load data
   loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
-  loadPublishedFromSupabase();
+  // Load published last so it appends to Live column after pipeline renders
+  setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
   // Login with PIN modal
   var rolePins = { admin: 'fxify2024', writer: 'writer2024', liam: 'seo2024', david: 'manager2024' };
