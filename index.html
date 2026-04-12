@@ -1462,7 +1462,10 @@ async function loadPipeline(){
   s('st-overdue',arts.filter(function(a){return a.status!=='Live'&&a.status!=='Publishing';}).length);
   s('st-drafting',groups['Drafting'].length);
   s('st-review',(groups['Sheperd Review'].length+groups['Liam Review'].length+groups['David Approval'].length));
-  s('st-live',groups['Live'].length);
+  // Published stat = pipeline Live articles + scraped published articles
+  var scrapedLiveCount = (publishedCache && publishedCache.length) ? publishedCache.length : 
+    document.querySelectorAll('.pipeline-scraped-card').length;
+  s('st-live', groups['Live'].length + scrapedLiveCount);
   var nb=document.getElementById('nb-pipeline');
   if(nb) nb.textContent=arts.filter(function(a){return a.status!=='Live';}).length;
 }
@@ -2338,12 +2341,19 @@ async function loadPublishedFromSupabase() {
     // Populate Live column permanently
     renderLiveColumnFromPublished(articles);
 
-    // Update count: combine with any pipeline Live cards
+    // Update Live column count
     var col = document.getElementById('col-live');
     var cnt = document.getElementById('cnt-live');
     if (cnt && col) {
       var pipelineCards = col.querySelectorAll('.pcard').length;
       cnt.textContent = pipelineCards + articles.length;
+    }
+    // Update Published stat card
+    var stLive = document.getElementById('st-live');
+    if (stLive) {
+      var pipelineLive = parseInt(stLive.textContent) || 0;
+      // If pipeline hasn't loaded yet it shows 0, just show scraped count
+      stLive.textContent = articles.length;
     }
 
     console.log('Loaded ' + articles.length + ' published articles from Supabase');
