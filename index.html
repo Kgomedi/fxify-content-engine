@@ -329,6 +329,7 @@ select.finput{cursor:pointer;}
 .cd{color:var(--urgent);}
 
 /* TOAST */
+@keyframes pulse{0%,100%{opacity:1;}50%{opacity:.5;}}
 .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--navy);color:var(--tealB);border:1px solid rgba(14,196,173,.22);border-radius:var(--r);padding:10px 18px;font-size:13px;font-weight:500;opacity:0;transition:.3s;z-index:500;white-space:nowrap;max-width:90vw;text-align:center;}
 .toast.show{transform:translateX(-50%) translateY(0);opacity:1;}
 
@@ -1380,9 +1381,12 @@ function goPage(sc,pg,navEl){
   if(pg==='a-pipeline') loadPipeline();
   if(pg==='a-review') loadReviewQ();
   if(pg==='w-drafts') loadWriterDrafts();
+  if(pg==='w-submitted') loadWriterSubmitted();
   if(pg==='l-review') loadLiamQ();
+  if(pg==='l-approved') loadLiamApproved();
   if(pg==='l-topics') loadLiamTopics();
   if(pg==='d-approval') loadDavidQ();
+  if(pg==='d-log') loadDavidLog();
   if(pg==='a-analytics') loadAnalytics();
 }
 
@@ -1531,6 +1535,31 @@ async function loadReviewQ(){
   var nb=document.getElementById('nb-review');if(nb)nb.textContent=res.data.length;
 }
 
+async function loadLiamApproved(){
+  var l = document.getElementById('l-approved-list');
+  if (!l) return;
+  var res = await supa.from('articles').select('*')
+    .in('status',['David Approval','Publishing','Live'])
+    .order('updated_at',{ascending:false});
+  if (res.error || !res.data || !res.data.length) {
+    l.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p>';
+    return;
+  }
+  l.innerHTML = '';
+  var statusColor = {'David Approval':'var(--amber)','Publishing':'var(--tealB)','Live':'var(--green)'};
+  res.data.forEach(function(a){
+    var c = document.createElement('div');
+    c.className = 'card'; c.style.cursor = 'default';
+    var color = statusColor[a.status] || 'var(--muted)';
+    c.innerHTML =
+      '<div class="cbody"><div class="ctop"><p class="ctitle">'+(a.title||'Untitled')+'</p>' +
+      '<span class="badge" style="background:rgba(0,0,0,.05);color:'+color+';">'+a.status+'</span></div></div>' +
+      '<div class="cmeta"><span class="mkw">'+(a.primary_kw||'')+'</span><span class="mtime">'+(a.word_count||0)+' words</span></div>' +
+      '<div class="cfoot"><span class="cfi">'+(a.category||'')+'</span><span style="font-size:11px;color:var(--muted);">Approved by Liam ✓</span></div>';
+    l.appendChild(c);
+  });
+}
+
 async function loadLiamQ(){
   var res=await supa.from('articles').select('*').eq('status','Liam Review').order('created_at',{ascending:false});
   var l=document.getElementById('l-review-list');
@@ -1541,6 +1570,30 @@ async function loadLiamQ(){
   var nb=document.getElementById('nb-liam');if(nb)nb.textContent=res.data.length;
 }
 
+async function loadDavidLog(){
+  var l = document.getElementById('d-log-list');
+  if (!l) return;
+  var res = await supa.from('articles').select('*')
+    .in('status',['Publishing','Live'])
+    .order('updated_at',{ascending:false});
+  if (res.error || !res.data || !res.data.length) {
+    l.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p>';
+    return;
+  }
+  l.innerHTML = '';
+  res.data.forEach(function(a){
+    var c = document.createElement('div');
+    c.className = 'card'; c.style.cursor = 'default';
+    var color = a.status === 'Live' ? 'var(--green)' : 'var(--tealB)';
+    c.innerHTML =
+      '<div class="cbody"><div class="ctop"><p class="ctitle">'+(a.title||'Untitled')+'</p>' +
+      '<span class="badge" style="background:rgba(0,0,0,.05);color:'+color+';">'+a.status+'</span></div></div>' +
+      '<div class="cmeta"><span class="mkw">'+(a.primary_kw||'')+'</span><span class="mtime">'+(a.word_count||0)+' words</span></div>' +
+      '<div class="cfoot"><span class="cfi">'+(a.category||'')+'</span><span style="font-size:11px;color:var(--muted);">Approved by David ✓</span></div>';
+    l.appendChild(c);
+  });
+}
+
 async function loadDavidQ(){
   var res=await supa.from('articles').select('*').eq('status','David Approval').order('created_at',{ascending:false});
   var l=document.getElementById('d-approval-list');
@@ -1549,6 +1602,53 @@ async function loadDavidQ(){
   l.innerHTML='';
   res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'david',fwdLabel:'Final approval done',nextStatus:'Publishing',listId:'d-approval-list'}));});
   var nb=document.getElementById('nb-david');if(nb)nb.textContent=res.data.length;
+}
+
+async function loadWriterSubmitted(){
+  var l = document.getElementById('w-sub-list');
+  if (!l) return;
+
+  // Get writer name same way as drafts
+  var writerName = null;
+  if (currentWriterEmail && USERS[currentWriterEmail]) {
+    writerName = USERS[currentWriterEmail].name;
+  } else if (currentUser && currentUser.email && USERS[currentUser.email]) {
+    writerName = USERS[currentUser.email].name;
+  } else if (currentUser) {
+    writerName = currentUser.name;
+  }
+
+  var query = supa.from('articles').select('*')
+    .in('status', ['Sheperd Review','Liam Review','David Approval','Publishing','Live'])
+    .order('updated_at', {ascending: false});
+  if (writerName) query = query.eq('assignee', writerName);
+  var res = await query;
+
+  if (res.error || !res.data || !res.data.length) {
+    l.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:20px 0;">No submitted articles yet.</p>';
+    return;
+  }
+
+  var statusColor = { 'Sheperd Review':'var(--purple)', 'Liam Review':'var(--blue)', 'David Approval':'var(--amber)', 'Publishing':'var(--tealB)', 'Live':'var(--green)' };
+  l.innerHTML = '';
+  res.data.forEach(function(art) {
+    var c = document.createElement('div');
+    c.className = 'card';
+    c.style.cursor = 'default';
+    var color = statusColor[art.status] || 'var(--muted)';
+    c.innerHTML =
+      '<div class="cbody"><div class="ctop">' +
+        '<p class="ctitle">' + (art.title||'Untitled') + '</p>' +
+        '<span class="badge" style="background:rgba(0,0,0,.05);color:' + color + ';">' + art.status + '</span>' +
+      '</div></div>' +
+      '<div class="cmeta"><span class="mkw">' + (art.primary_kw||'') + '</span>' +
+        '<span class="mtime">' + (art.word_count||0) + ' words</span>' +
+      '</div>' +
+      '<div class="cfoot"><span class="cfi">' + (art.category||'') + '</span>' +
+        '<span style="font-size:11px;color:var(--muted);">Submitted ✓</span>' +
+      '</div>';
+    l.appendChild(c);
+  });
 }
 
 async function loadWriterDrafts(){
@@ -4062,6 +4162,29 @@ async function scrapeUrls(urls) {
   return results.join('\n\n');
 }
 
+// ── PUBLISHING BADGE ─────────────────────────────────────────────────────
+async function loadPublishingBadge() {
+  // Only relevant for admin
+  if (activeRole !== 'admin') return;
+  var res = await supa.from('articles').select('id').eq('status','Publishing');
+  if (res.error || !res.data) return;
+  var count = res.data.length;
+  // Show badge on Pipeline nav link
+  var nb = document.getElementById('nb-pipeline');
+  if (nb && count > 0) {
+    nb.textContent = count + ' to publish';
+    nb.style.background = 'var(--urgent)';
+    nb.style.animation = 'pulse 1.5s infinite';
+  }
+  // Also show in stat card
+  var pubCol = document.getElementById('cnt-pub');
+  if (pubCol && count > 0) pubCol.style.color = 'var(--urgent)';
+  // Toast notification if Publishing articles exist
+  if (count > 0) {
+    toast('📢 ' + count + ' article' + (count > 1 ? 's' : '') + ' ready to publish — David approved!');
+  }
+}
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init(){
   // Dynamic friendly greeting
@@ -4122,6 +4245,7 @@ function init(){
 
     goScreen(user.screen);
     loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
+  loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
     // Add sign out button to topbar
