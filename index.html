@@ -2271,14 +2271,50 @@ async function scrapePublishedArticles(listId, countId) {
     // Render in the dedicated list page
     renderPublishedArticles(allLinks, listId, countId);
 
+    // ── SAVE TO SUPABASE published_articles table ───────────────────────
+    if (allLinks.length > 0) {
+      var rows = allLinks.map(function(a) {
+        // Use URL as unique ID (slugified)
+        var id = a.url.replace(/https?:\/\/fxify\.com\/blog\//, '').replace(/\/$/, '');
+        return { id: id, title: a.title, url: a.url, scraped_at: new Date().toISOString() };
+      });
+      // Upsert in batches of 50
+      for (var b = 0; b < rows.length; b += 50) {
+        var batch = rows.slice(b, b + 50);
+        supa.from('published_articles').upsert(batch, { onConflict: 'url' });
+      }
+    }
+
     // ── RENDER IN PIPELINE LIVE COLUMN ──────────────────────────────────
     renderLiveColumnFromPublished(allLinks);
 
-    toast(allLinks.length + ' published articles loaded ✓');
+    toast(allLinks.length + ' published articles saved to Supabase ✓');
 
   } catch(e) {
     if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Error: ' + e.message + '</p>';
     toast('Scrape failed — check Firecrawl key');
+  }
+}
+
+async function loadPublishedFromSupabase() {
+  try {
+    // Load all published articles from Supabase on startup
+    var res = await supa.from('published_articles').select('*').order('scraped_at', { ascending: false });
+    if (res.error || !res.data || !res.data.length) return;
+
+    var articles = res.data.map(function(r) { return { title: r.title, url: r.url }; });
+    publishedCache = articles;
+
+    // Populate Live column permanently
+    renderLiveColumnFromPublished(articles);
+
+    // Update count
+    var cnt = document.getElementById('cnt-live');
+    if (cnt) cnt.textContent = articles.length;
+
+    console.log('Loaded ' + articles.length + ' published articles from Supabase');
+  } catch(e) {
+    console.warn('Could not load published articles:', e);
   }
 }
 
@@ -2851,14 +2887,50 @@ async function scrapePublishedArticles(listId, countId) {
     // Render in the dedicated list page
     renderPublishedArticles(allLinks, listId, countId);
 
+    // ── SAVE TO SUPABASE published_articles table ───────────────────────
+    if (allLinks.length > 0) {
+      var rows = allLinks.map(function(a) {
+        // Use URL as unique ID (slugified)
+        var id = a.url.replace(/https?:\/\/fxify\.com\/blog\//, '').replace(/\/$/, '');
+        return { id: id, title: a.title, url: a.url, scraped_at: new Date().toISOString() };
+      });
+      // Upsert in batches of 50
+      for (var b = 0; b < rows.length; b += 50) {
+        var batch = rows.slice(b, b + 50);
+        supa.from('published_articles').upsert(batch, { onConflict: 'url' });
+      }
+    }
+
     // ── RENDER IN PIPELINE LIVE COLUMN ──────────────────────────────────
     renderLiveColumnFromPublished(allLinks);
 
-    toast(allLinks.length + ' published articles loaded ✓');
+    toast(allLinks.length + ' published articles saved to Supabase ✓');
 
   } catch(e) {
     if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Error: ' + e.message + '</p>';
     toast('Scrape failed — check Firecrawl key');
+  }
+}
+
+async function loadPublishedFromSupabase() {
+  try {
+    // Load all published articles from Supabase on startup
+    var res = await supa.from('published_articles').select('*').order('scraped_at', { ascending: false });
+    if (res.error || !res.data || !res.data.length) return;
+
+    var articles = res.data.map(function(r) { return { title: r.title, url: r.url }; });
+    publishedCache = articles;
+
+    // Populate Live column permanently
+    renderLiveColumnFromPublished(articles);
+
+    // Update count
+    var cnt = document.getElementById('cnt-live');
+    if (cnt) cnt.textContent = articles.length;
+
+    console.log('Loaded ' + articles.length + ' published articles from Supabase');
+  } catch(e) {
+    console.warn('Could not load published articles:', e);
   }
 }
 
@@ -4059,6 +4131,7 @@ function init(){
 
   // Load data
   loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
+  loadPublishedFromSupabase();
 
   // Login with PIN modal
   var rolePins = { admin: 'fxify2024', writer: 'writer2024', liam: 'seo2024', david: 'manager2024' };
