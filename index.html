@@ -439,6 +439,126 @@ select.finput{cursor:pointer;}
 .meta-field-val.warn{border-color:rgba(217,119,6,.3);color:#fcd34d;}
 .meta-copy-all{width:100%;padding:7px;border-radius:6px;border:1px solid rgba(14,196,173,.3);background:transparent;color:var(--tealB);font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;margin-top:6px;}
 .meta-copy-all:hover{background:rgba(14,196,173,.1);}
+
+/* READ MODE */
+/* READ MODE */
+.read-mode-overlay{position:fixed;inset:0;z-index:800;background:#f9f6f1;overflow-y:auto;display:none;}
+.read-mode-overlay.active{display:block;}
+.read-mode-bar{position:sticky;top:0;background:var(--navy);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;z-index:801;border-bottom:1px solid rgba(14,196,173,.12);}
+.read-mode-bar-title{font-size:13px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%;}
+.read-mode-close{padding:6px 14px;border-radius:var(--r);border:1px solid rgba(255,255,255,.1);background:rgba(255,255,255,.06);color:#fff;font-size:12px;cursor:pointer;font-family:inherit;}
+.read-mode-close:hover{background:rgba(255,255,255,.12);}
+.rm-bar-actions{display:flex;gap:8px;align-items:center;}
+.rm-link-status{font-size:11px;color:#64748b;padding:4px 10px;border-radius:20px;background:rgba(255,255,255,.06);}
+
+/* BLOG ARTICLE LAYOUT */
+.blog-article{max-width:740px;margin:0 auto;padding:48px 24px 100px;}
+.blog-header{margin-bottom:40px;}
+.blog-category-tag{display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);background:var(--tealL);padding:4px 12px;border-radius:20px;margin-bottom:16px;}
+.blog-h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(32px,5vw,52px);font-weight:800;color:#0f172a;line-height:1.1;letter-spacing:-.01em;margin-bottom:18px;}
+.blog-deck{font-size:19px;color:#475569;line-height:1.65;font-weight:300;margin-bottom:24px;border-left:3px solid var(--teal);padding-left:18px;}
+.blog-meta{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding:16px 0;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;margin-bottom:32px;}
+.blog-author-av{width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#0d9488);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.blog-author-name{font-size:13px;font-weight:600;color:#0f172a;}
+.blog-author-role{font-size:11px;color:#64748b;}
+.blog-meta-sep{width:1px;height:28px;background:#e2e8f0;}
+.blog-meta-item{font-size:12px;color:#64748b;}
+.blog-meta-item strong{color:#0f172a;font-weight:600;}
+.blog-feat-img{width:100%;height:360px;background:linear-gradient(135deg,#0B0C10,#1a1c22);border-radius:12px;margin-bottom:40px;display:flex;align-items:center;justify-content:center;color:#334155;font-size:12px;letter-spacing:.08em;text-transform:uppercase;}
+
+/* BLOG BODY TYPOGRAPHY */
+.blog-body{font-family:'IBM Plex Sans',sans-serif;font-size:17px;line-height:1.9;color:#334155;font-weight:300;}
+.blog-body h2{font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:#0f172a;margin:52px 0 16px;letter-spacing:.02em;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid var(--tealL);}
+.blog-body h3{font-family:'IBM Plex Sans',sans-serif;font-size:19px;font-weight:600;color:#0f172a;margin:36px 0 12px;}
+.blog-body p{margin-bottom:20px;}
+.blog-body p:last-child{margin-bottom:0;}
+.blog-body ul,.blog-body ol{padding-left:24px;margin-bottom:20px;}
+.blog-body li{margin-bottom:10px;line-height:1.75;}
+.blog-body strong{font-weight:600;color:#0f172a;}
+.blog-body em{font-style:italic;}
+.blog-body a{color:var(--blue);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(26,86,219,.3);transition:text-decoration-color .15s;}
+.blog-body a:hover{text-decoration-color:var(--blue);}
+.blog-body blockquote{border-left:3px solid var(--teal);background:#f8fafc;border-radius:0 8px 8px 0;padding:18px 22px;margin:28px 0;font-size:18px;font-style:italic;color:#475569;line-height:1.6;}
+.blog-body table{width:100%;border-collapse:collapse;margin:28px 0;font-size:15px;}
+.blog-body th{background:#f1f5f9;padding:10px 14px;text-align:left;font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#64748b;border-bottom:2px solid #e2e8f0;}
+.blog-body td{padding:12px 14px;border-bottom:1px solid #f1f5f9;color:#334155;}
+.blog-body tr:last-child td{border-bottom:none;}
+.blog-body tr:nth-child(even) td{background:#fafafa;}
+.blog-body img{max-width:100%;border-radius:10px;margin:28px 0;}
+.blog-body mark{background:rgba(14,196,173,.18);border-radius:3px;padding:1px 4px;}
+.blog-body hr{border:none;border-top:2px solid #f1f5f9;margin:40px 0;}
+
+/* BLOG SPECIAL BLOCKS */
+.blog-callout{background:var(--tealL);border:1px solid rgba(14,196,173,.25);border-radius:10px;padding:18px 22px;margin:28px 0;}
+.blog-callout-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--teal);margin-bottom:8px;}
+.blog-callout p{margin:0;color:#0f4f45;font-size:15px;}
+.blog-key-takeaways{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:22px 26px;margin:36px 0;}
+.blog-key-takeaways h4{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--green);margin-bottom:14px;}
+.blog-key-takeaways li{color:#334155;font-size:15px;}
+.blog-toc{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:20px 24px;margin:32px 0;}
+.blog-toc h4{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#64748b;margin-bottom:12px;}
+.blog-toc ol{padding-left:18px;margin:0;}
+.blog-toc li{margin-bottom:8px;}
+.blog-toc a{color:var(--blue);font-size:14px;text-decoration:none;font-weight:400;}
+.blog-toc a:hover{text-decoration:underline;}
+
+/* AUTHOR BLOCK */
+.blog-author-block{background:#f8fafc;border:1px solid #e2e8f0;border-radius:12px;padding:24px;margin-top:56px;display:flex;gap:18px;align-items:flex-start;}
+.blog-author-block-av{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#0d9488);display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:#fff;flex-shrink:0;}
+.blog-author-block-name{font-size:15px;font-weight:600;color:#0f172a;margin-bottom:3px;}
+.blog-author-block-title{font-size:12px;color:#64748b;margin-bottom:10px;}
+.blog-author-block-bio{font-size:13px;color:#475569;line-height:1.6;margin:0;}
+
+/* CTA BLOCK */
+.blog-cta{background:linear-gradient(135deg,#0B0C10,#1a1c22);border:1px solid rgba(14,196,173,.2);border-radius:12px;padding:32px;margin:48px 0;text-align:center;}
+.blog-cta h3{font-family:'Barlow Condensed',sans-serif;font-size:26px;font-weight:800;color:#fff;margin-bottom:10px;letter-spacing:.03em;}
+.blog-cta p{font-size:15px;color:#94a3b8;margin-bottom:20px;font-weight:300;}
+.blog-cta-btn{display:inline-block;background:var(--teal);color:#fff;padding:13px 28px;border-radius:var(--r);font-size:14px;font-weight:600;text-decoration:none;border:none;cursor:pointer;font-family:inherit;}
+.blog-cta-btn:hover{background:#189b82;}
+
+/* LINK CHECKER */
+.link-ok{color:var(--green)!important;text-decoration-color:var(--green)!important;}
+.link-broken{color:var(--urgent)!important;text-decoration-color:var(--urgent)!important;background:var(--urgentL);border-radius:2px;padding:0 2px;}
+.link-checking{opacity:.6;}
+.read-mode-close:hover{background:rgba(255,255,255,.12);}
+.read-mode-body{max-width:740px;margin:0 auto;padding:48px 24px 80px;}
+.read-mode-body h1{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:#0f172a;line-height:1.15;margin-bottom:16px;letter-spacing:.02em;}
+.read-mode-body h2{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#0f172a;margin:36px 0 12px;letter-spacing:.03em;text-transform:uppercase;border-bottom:2px solid #1EAA90;padding-bottom:6px;}
+.read-mode-body h3{font-size:17px;font-weight:600;color:#0f172a;margin:24px 0 10px;}
+.read-mode-body p{font-size:16px;line-height:1.9;color:#334155;margin-bottom:18px;font-weight:300;}
+.read-mode-body ul,.read-mode-body ol{padding-left:22px;margin-bottom:18px;}
+.read-mode-body li{font-size:16px;line-height:1.75;color:#334155;margin-bottom:7px;font-weight:300;}
+.read-mode-body strong{font-weight:600;color:#0f172a;}
+.read-mode-body a{color:#1a56db;text-decoration:underline;}
+.read-mode-body a:hover{color:#1EAA90;}
+.read-mode-body blockquote{border-left:4px solid #1EAA90;margin:24px 0;padding:16px 20px;background:#f0fdf9;border-radius:0 8px 8px 0;font-style:italic;color:#334155;font-size:15px;}
+.read-mode-body table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
+.read-mode-body th{padding:10px 14px;background:#0B0C10;color:#1EAA90;text-align:left;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
+.read-mode-body td{padding:10px 14px;border-bottom:1px solid #EAEAEA;color:#334155;}
+.read-mode-body tr:nth-child(even) td{background:#f8fafc;}
+.read-mode-body .img-placeholder{display:none;}
+.read-mode-meta{display:flex;align-items:center;gap:12px;margin-bottom:28px;flex-wrap:wrap;}
+.read-mode-tag{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:#e8f7f4;color:#1EAA90;}
+.read-mode-byline{font-size:13px;color:#64748b;}
+.read-mode-readtime{font-size:13px;color:#64748b;}
+.read-mode-acta{background:linear-gradient(135deg,#0B0C10,#1a1c22);border:1px solid rgba(30,170,144,.2);border-radius:14px;padding:24px 28px;margin:32px 0;text-align:center;}
+.read-mode-acta p{font-size:15px;color:#94a3b8;margin-bottom:14px;font-weight:300;}
+.read-mode-acta button{padding:11px 24px;border-radius:10px;border:none;background:#1EAA90;color:#fff;font-size:14px;font-weight:600;cursor:pointer;font-family:inherit;}
+.read-mode-link-check{font-size:11px;padding:2px 7px;border-radius:4px;border:none;cursor:pointer;font-family:inherit;margin-left:6px;vertical-align:middle;}
+.link-ok{background:#ecfdf5;color:#059669;}
+.link-bad{background:#fef2f2;color:#ef4444;}
+.link-checking{background:#f1f5f9;color:#64748b;}
+
+/* WRITER INSTRUCTION CARD */
+.writer-card{background:linear-gradient(135deg,#0B0C10,#111318);border:1px solid rgba(14,196,173,.2);border-radius:12px;padding:20px 24px;margin-bottom:20px;position:relative;}
+.writer-card-dismiss{position:absolute;top:12px;right:14px;background:none;border:none;color:#475569;font-size:18px;cursor:pointer;line-height:1;padding:2px 6px;}
+.writer-card-dismiss:hover{color:#94a3b8;}
+.writer-card-title{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--tealB);margin-bottom:14px;}
+.writer-task{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);}
+.writer-task:last-child{border-bottom:none;}
+.writer-task-num{width:20px;height:20px;border-radius:50%;background:rgba(14,196,173,.15);color:var(--tealB);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+.writer-task-title{font-size:13px;font-weight:600;color:#cbd5e1;margin-bottom:2px;}
+.writer-task-desc{font-size:11px;color:#475569;line-height:1.5;}
 ::-webkit-scrollbar{width:4px;height:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#334155;border-radius:2px;}
@@ -492,6 +612,7 @@ select.finput{cursor:pointer;}
       <div class="ngrp">Settings</div>
       <div class="nlink" data-pg="a-writers" data-sc="admin"><span class="nico">≡</span>Writers</div>
       <div class="nlink" data-pg="a-prompts" data-sc="admin"><span class="nico">⚙</span>Prompts</div>
+      <div class="nlink" data-pg="a-live" data-sc="admin"><span class="nico">🌐</span>Published</div>
     </nav>
     <div class="ma">
 
@@ -606,17 +727,23 @@ select.finput{cursor:pointer;}
       <!-- ANALYTICS -->
       <div id="a-analytics" class="pg">
         <div class="pgh">Analytics</div>
-        <p class="pgs">Traffic, rankings and revenue attributed to content</p>
+        <p class="pgs">Real pipeline data — connect GA4 or Search Console for traffic metrics 📊</p>
         <div class="agrid">
-          <div class="acard"><p class="albl">Published this month</p><p class="aval">18</p><p class="ach cu">↑ 6 vs last month</p></div>
-          <div class="acard"><p class="albl">Organic sessions</p><p class="aval">24.8K</p><p class="ach cu">↑ 34%</p></div>
-          <div class="acard"><p class="albl">Attributed sign-ups</p><p class="aval">142</p><p class="ach cu">↑ 18%</p></div>
-          <div class="acard"><p class="albl">Avg. edit time</p><p class="aval">74m</p><p class="ach cu">↓ 12m</p></div>
-          <div class="acard"><p class="albl">Attributed revenue</p><p class="aval">£14.2K</p><p class="ach cu">↑ 28%</p></div>
-          <div class="acard"><p class="albl">On-time rate</p><p class="aval">91%</p><p class="ach cd">↓ 3%</p></div>
+          <div class="acard"><p class="albl">Total articles</p><p class="aval" id="an-total">—</p><p class="ach" id="an-total-sub">Loading...</p></div>
+          <div class="acard"><p class="albl">Live & published</p><p class="aval cu" id="an-live">—</p><p class="ach" id="an-live-sub">articles published</p></div>
+          <div class="acard"><p class="albl">In pipeline</p><p class="aval" id="an-pipeline">—</p><p class="ach" id="an-pipeline-sub">being worked on</p></div>
+          <div class="acard"><p class="albl">In review</p><p class="aval" id="an-review">—</p><p class="ach" id="an-review-sub">awaiting approval</p></div>
+          <div class="acard"><p class="albl">Avg. word count</p><p class="aval" id="an-wc">—</p><p class="ach" id="an-wc-sub">words per article</p></div>
+          <div class="acard"><p class="albl">Avg. SEO score</p><p class="aval" id="an-seo">—</p><p class="ach" id="an-seo-sub">across all articles</p></div>
         </div>
-        <div class="shead">Top articles</div>
-        <div class="twrap"><table class="dtable"><thead><tr><th>Article</th><th>Sessions</th><th>Position</th><th>Sign-ups</th><th>Revenue</th></tr></thead><tbody><tr><td>How to Pass Your FXIFY Evaluation First Time</td><td>4,820</td><td>3.2</td><td>38</td><td>£3,800</td></tr><tr><td>5 Risk Management Rules for Funded Traders</td><td>3,210</td><td>5.8</td><td>24</td><td>£2,400</td></tr><tr><td>EUR/USD Weekly Outlook</td><td>2,900</td><td>4.1</td><td>18</td><td>£1,800</td></tr></tbody></table></div>
+        <div class="shead">Articles by writer</div>
+        <div class="twrap" style="margin-bottom:20px;"><table class="dtable" id="an-by-writer"><thead><tr><th>Writer</th><th>Total</th><th>Live</th><th>In Progress</th><th>Avg. Words</th></tr></thead><tbody><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">Loading...</td></tr></tbody></table></div>
+        <div class="shead">Recent articles</div>
+        <div class="twrap"><table class="dtable" id="an-recent"><thead><tr><th>Article</th><th>Writer</th><th>Status</th><th>Words</th><th>SEO</th></tr></thead><tbody><tr><td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">Loading...</td></tr></tbody></table></div>
+        <div style="margin-top:20px;padding:16px;background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);">
+          <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">Connect traffic data</p>
+          <p style="font-size:12px;color:var(--muted);line-height:1.6;">For sessions, rankings and conversion data, connect Google Analytics 4 or Google Search Console via their APIs. Shoperd can set this up — it'll pull real organic traffic per article automatically.</p>
+        </div>
       </div>
 
       <!-- WRITERS -->
@@ -659,6 +786,18 @@ select.finput{cursor:pointer;}
 
 <span class="pc">━━ 4. OUTPUT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
 <span class="pc">Clean draft + meta title + meta description + slug</span></pre></div>
+      </div>
+
+      <!-- PUBLISHED ARTICLES (ADMIN) -->
+      <div id="a-live" class="pg">
+        <div class="pgh">Published Articles</div>
+        <p class="pgs">Everything live on the FXIFY blog. Brief before generating to avoid duplicates. 🌐</p>
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+          <button class="btn btn-p btn-s" id="a-scrape-btn">🔄 Refresh from fxify.com/blog</button>
+          <input class="finput" id="a-live-search" type="text" placeholder="Search articles..." style="max-width:260px;"/>
+          <span style="font-size:12px;color:var(--muted);align-self:center;" id="a-live-count"></span>
+        </div>
+        <div id="a-live-list"><p class="pempty" style="padding:40px 0;">Click refresh to load published articles from fxify.com/blog.</p></div>
       </div>
 
       <!-- TOPIC & SEO PLANNER -->
@@ -737,25 +876,64 @@ select.finput{cursor:pointer;}
         <div id="w-sub-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No submitted articles yet.</p></div>
       </div>
       <div id="w-style" class="pg">
-        <div class="pgh">Style Guide</div>
-        <p class="pgs">The FXIFY voice. Read it. Live it. Don't sound like a robot. 🤖❌</p>
+        <div class="pgh">Blog Playbook</div>
+        <p class="pgs">The FXIFY standard. Every article ships with this. No exceptions. 📋</p>
         <div style="display:grid;gap:12px;">
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">We sound like</p>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
+            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">✦ Required in every article</p>
+            <div style="display:flex;flex-direction:column;gap:12px;">
+              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Summary table</p><p style="font-size:12px;color:var(--muted);">For articles over 800 words. 4 columns, 4-5 rows of key facts at the top.</p></div></div>
+              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Table of contents</p><p style="font-size:12px;color:var(--muted);">For articles over 800 words. Anchor links to each H2 section.</p></div></div>
+              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">FAQ section</p><p style="font-size:12px;color:var(--muted);">Minimum 5 questions. Direct, concise answers. Major SEO opportunity.</p></div></div>
+              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Key Takeaways block</p><p style="font-size:12px;color:var(--muted);">5-7 bullets at the end. Readers who skim get the full value.</p></div></div>
+              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Internal links</p><p style="font-size:12px;color:var(--muted);">Minimum 2-3 links to relevant FXIFY pages. Don't leave link equity on the table.</p></div></div>
+              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Author byline</p><p style="font-size:12px;color:var(--muted);">Every article gets a real author name. No ghost writing. Select your name in the brief.</p></div></div>
+            </div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
+            <p style="font-size:11px;font-weight:600;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">◈ Keywords &amp; SEO</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
-              <div><p style="font-size:14px;font-weight:500;margin-bottom:2px;">Confident</p><p style="font-size:13px;color:var(--muted);">We know trading. No hedging or over-qualifying.</p></div>
-              <div><p style="font-size:14px;font-weight:500;margin-bottom:2px;">Direct</p><p style="font-size:13px;color:var(--muted);">Short sentences. Get to the point fast.</p></div>
-              <div><p style="font-size:14px;font-weight:500;margin-bottom:2px;">Second person</p><p style="font-size:13px;color:var(--muted);">Always "you" — talk to the trader directly.</p></div>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--blueL);">Primary keyword in <strong style="color:var(--text);">H1 and at least 2 H2 headings</strong></p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--blueL);">Secondary keywords in H2s and body — <strong style="color:var(--text);">naturally, never stuffed</strong></p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--blueL);">Bold <strong style="color:var(--text);">8-10 key terms and stats</strong> throughout the article</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--blueL);">Every H2 must have at least one bolded phrase or statistic</p>
             </div>
           </div>
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-            <p style="font-size:11px;font-weight:600;color:var(--urgent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:12px;">Never sound like</p>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
+            <p style="font-size:11px;font-weight:600;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">≡ Scannability rules</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--purpleL);"><strong style="color:var(--text);">Max 20 words</strong> per sentence</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--purpleL);"><strong style="color:var(--text);">Max 3 sentences</strong> per paragraph</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--purpleL);">Use bullet points and numbered lists — not walls of text</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--purpleL);">Break long sections with H3 subheadings</p>
+            </div>
+          </div>
+
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
+            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">⚡ FXIFY voice</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--tealL);"><strong style="color:var(--text);">Confident.</strong> We know trading. No hedging or over-qualifying.</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--tealL);"><strong style="color:var(--text);">Direct.</strong> Short sentences. Get to the point fast.</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--tealL);"><strong style="color:var(--text);">Second person.</strong> Always "you" — talk to the trader directly.</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--tealL);">Accurate on drawdown. When in doubt, check fxify.com/rules before writing.</p>
+            </div>
+          </div>
+
+          <div style="background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:var(--rl);padding:18px;">
+            <p style="font-size:11px;font-weight:600;color:var(--urgent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">✗ Never do this</p>
             <div style="display:flex;flex-direction:column;gap:8px;">
-              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--border);">Academic or overly formal</p>
-              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--border);">Vague — "some traders may find..."</p>
-              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid var(--border);">"In this article we will..."</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Start with "In this article we will..."</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Vague language — "some traders may find..." or "it is possible that..."</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Long paragraphs with no bolding or structure</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Skip the FAQ or internal links to save time</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Make claims about FXIFY that are not on fxify.com</p>
+              <p style="font-size:13px;color:var(--muted);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Submit without checking keyword placement in headings</p>
             </div>
           </div>
+
         </div>
       </div>
     </div>
@@ -778,6 +956,11 @@ select.finput{cursor:pointer;}
       <div class="ngrp">My Queue</div>
       <div class="nlink active" data-pg="l-review" data-sc="liam"><span class="nico">🔍</span>SEO Review<span class="nbadge" id="nb-liam">0</span></div>
       <div class="nlink" data-pg="l-approved" data-sc="liam"><span class="nico">▲</span>Approved</div>
+      <div class="ndiv"></div>
+      <div class="ngrp">SEO Strategy</div>
+      <div class="nlink" data-pg="l-topics" data-sc="liam"><span class="nico">◈</span>Submit Topics<span class="nbadge" id="nb-ltopics">0</span></div>
+      <div class="nlink" data-pg="l-planner" data-sc="liam"><span class="nico">⚡</span>Topic Planner</div>
+      <div class="nlink" data-pg="l-live" data-sc="liam"><span class="nico">🌐</span>Published Articles</div>
     </nav>
     <div class="ma">
       <div id="l-review" class="pg active">
@@ -789,6 +972,66 @@ select.finput{cursor:pointer;}
         <div class="pgh">Approved</div>
         <p class="pgs">Articles you've sent to David.</p>
         <div id="l-approved-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p></div>
+      </div>
+
+      <!-- LIAM TOPIC SUBMISSION -->
+      <div id="l-topics" class="pg">
+        <div class="pgh">Submit Topics</div>
+        <p class="pgs">Found a keyword gap? Submit it here and Sheperd will generate a brief. 🎯</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;margin-bottom:20px;">
+          <div class="fg"><label class="flbl">Article title / topic idea</label><input class="finput" id="lt-title" type="text" placeholder="e.g. How to Trade the FXIFY Two-Step Challenge"/></div>
+          <div class="frow fg">
+            <div><label class="flbl">Primary keyword</label><input class="finput" id="lt-kw" type="text" placeholder="e.g. FXIFY two-step evaluation"/></div>
+            <div><label class="flbl">Search intent</label><select class="finput" id="lt-intent"><option>Informational</option><option>Commercial</option><option>Navigational</option><option>Transactional</option></select></div>
+          </div>
+          <div class="frow fg">
+            <div><label class="flbl">Category</label><select class="finput" id="lt-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option></select></div>
+            <div><label class="flbl">Priority</label><select class="finput" id="lt-pri"><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent</option></select></div>
+          </div>
+          <div class="fg"><label class="flbl">SEO notes for Sheperd <span style="color:var(--muted);font-weight:300;">(optional)</span></label><textarea class="finput" id="lt-notes" rows="3" placeholder="e.g. Competitors rank for this with 1,200 word guides. We should target the featured snippet with a clear definition in the first paragraph." style="resize:vertical;"></textarea></div>
+          <button class="btn btn-p" id="lt-submit">Submit topic →</button>
+        </div>
+        <div class="shead">Topics you've submitted</div>
+        <div id="l-topics-list"><p class="pempty" style="padding:20px 0;">No topics submitted yet.</p></div>
+      </div>
+
+      <!-- LIAM TOPIC PLANNER (same as admin) -->
+      <div id="l-planner" class="pg">
+        <div class="pgh">Topic Planner</div>
+        <p class="pgs">Analyse competitors, find keyword gaps, build the content strategy. 🔍</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:16px;">
+          <div class="fg"><label class="flbl">Seed topic or keyword</label><input class="finput" id="lpl-topic" type="text" placeholder="e.g. prop trading drawdown rules"/></div>
+          <div class="frow fg">
+            <div><label class="flbl">Your site</label><input class="finput" id="lpl-own" type="text" placeholder="https://fxify.com/blog"/></div>
+            <div><label class="flbl">Category</label><select class="finput" id="lpl-cat"><option>All categories</option><option>Guides</option><option>Trading Strategy</option><option>Platform &amp; Programs</option><option>Market Analysis</option></select></div>
+          </div>
+          <div class="fg"><label class="flbl">Competitor URLs <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label><textarea class="finput" id="lpl-competitors" rows="3" placeholder="https://ftmo.com/en/blog&#10;https://myfundedfx.tech/blog" style="resize:vertical;min-height:80px;"></textarea></div>
+          <button class="btn btn-p" style="min-width:180px;" id="lpl-analyse-btn">Analyse &amp; Generate Topics</button>
+        </div>
+        <div id="lpl-loading" style="display:none;text-align:center;padding:40px 20px;">
+          <div style="font-size:24px;margin-bottom:12px;">⚡</div>
+          <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="lpl-loading-txt">Scraping competitors...</p>
+          <p style="font-size:12px;color:var(--muted);">This takes 15-30 seconds</p>
+        </div>
+        <div id="lpl-results" style="display:none;">
+          <div class="shead">Keyword gaps</div>
+          <div id="lpl-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
+          <div class="shead">Topic ideas</div>
+          <div id="lpl-topics" style="display:grid;gap:10px;margin-bottom:20px;"></div>
+          <div class="shead">People Also Ask</div>
+          <div id="lpl-paa" style="display:grid;gap:8px;margin-bottom:20px;"></div>
+        </div>
+      </div>
+
+      <!-- PUBLISHED ARTICLES -->
+      <div id="l-live" class="pg">
+        <div class="pgh">Published Articles</div>
+        <p class="pgs">Everything live on the FXIFY blog. Check before briefing to avoid duplicates. 🌐</p>
+        <div style="display:flex;gap:8px;margin-bottom:16px;">
+          <button class="btn btn-p btn-s" id="l-scrape-btn">🔄 Refresh from fxify.com/blog</button>
+          <input class="finput" id="l-search" type="text" placeholder="Search articles..." style="max-width:260px;"/>
+        </div>
+        <div id="l-live-list"><p class="pempty" style="padding:40px 0;">Click refresh to load published articles.</p></div>
       </div>
     </div>
   </div>
@@ -844,6 +1087,20 @@ select.finput{cursor:pointer;}
     <span class="rvlbl" id="rv-lbl">Reviewing</span>
     <input class="rvnote" id="rv-note" type="text" placeholder="Leave a note for the writer (optional)..."/>
     <div class="rvacts" id="rv-acts"></div>
+  </div>
+  <div id="writer-instruction-card" style="display:none;padding:16px 20px 0;background:#fff;">
+    <div class="writer-card">
+      <button class="writer-card-dismiss" id="wic-dismiss">×</button>
+      <p class="writer-card-title">✍️ Your job on this draft</p>
+      <div class="writer-task"><div class="writer-task-num">1</div><div><p class="writer-task-title">Fact-check everything</p><p class="writer-task-desc">Verify all stats, rules and claims against fxify.com. Flag or fix anything that looks invented. Drawdown rules especially.</p></div></div>
+      <div class="writer-task"><div class="writer-task-num">2</div><div><p class="writer-task-title">Humanise the intro &amp; conclusion</p><p class="writer-task-desc">Rewrite the opening paragraph in your own voice. Add a real trading observation or hook. The AI draft is a skeleton — make it sound like a person.</p></div></div>
+      <div class="writer-task"><div class="writer-task-num">3</div><div><p class="writer-task-title">Add experience signals</p><p class="writer-task-desc">Insert at least one "At FXIFY, we've seen..." or a real trader scenario. This is what makes us credible to Google and readers.</p></div></div>
+      <div class="writer-task"><div class="writer-task-num">4</div><div><p class="writer-task-title">Bold key points &amp; stats</p><p class="writer-task-desc">Go through the whole article and bold important phrases, statistics and key terms. Aim for 8-10 bolded items minimum.</p></div></div>
+      <div class="writer-task"><div class="writer-task-num">5</div><div><p class="writer-task-title">Replace internal link placeholders</p><p class="writer-task-desc">Find every [INTERNAL LINK] placeholder and replace with a real FXIFY URL. Use the links panel on the left. Minimum 2-3 per article.</p></div></div>
+      <div class="writer-task"><div class="writer-task-num">6</div><div><p class="writer-task-title">Upload images</p><p class="writer-task-desc">Click each image placeholder and upload a relevant visual. Don't submit with empty placeholders.</p></div></div>
+      <div class="writer-task"><div class="writer-task-num">7</div><div><p class="writer-task-title">Read it aloud</p><p class="writer-task-desc">If it sounds robotic, fix it. Short sentences. Cut anything that doesn't add value. Max 20 words per sentence.</p></div></div>
+      <div class="writer-task"><div class="writer-task-num">8</div><div><p class="writer-task-title">Tick the checklist before submitting</p><p class="writer-task-desc">Every item on the left sidebar checklist should be ticked. If it isn't, the article isn't ready.</p></div></div>
+    </div>
   </div>
   <div class="rlayout">
     <div class="esb">
@@ -929,6 +1186,9 @@ select.finput{cursor:pointer;}
         <button class="tb-btn" id="tb-redo" title="Redo">↪</button>
         <div class="tb-sep"></div>
         <button class="tb-btn" id="tb-copy-html" title="Copy HTML for WordPress" style="font-size:10px;width:auto;padding:0 8px;color:var(--tealB);font-weight:600;">Copy HTML</button>
+        <button class="tb-btn" id="tb-preview" title="Preview article (Cmd+Shift+P)" style="font-size:10px;width:auto;padding:0 8px;color:#94a3b8;font-weight:600;">Preview</button>
+        <div class="tb-sep"></div>
+        <button class="tb-btn" id="tb-read-mode" title="Read Mode" style="font-size:10px;width:auto;padding:0 8px;color:#94a3b8;font-weight:600;">👁 Read</button>
       </div>
       <!-- Editor body -->
       <div style="display:flex;flex:1;overflow:hidden;">
@@ -1018,6 +1278,19 @@ select.finput{cursor:pointer;}
     </div>
   </div>
 </div>
+
+<!-- READ MODE -->
+<div class="read-mode-overlay" id="read-mode">
+  <div class="read-mode-bar">
+    <span class="read-mode-bar-title" id="rm-title">Preview</span>
+    <div class="rm-bar-actions">
+      <span class="rm-link-status" id="rm-link-status" style="display:none;"></span>
+      <button class="read-mode-close" id="rm-check-links">🔗 Check links</button>
+      <button class="read-mode-close" id="rm-close">✕ Exit preview</button>
+    </div>
+  </div>
+  <div id="rm-body"></div>
+</div>
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
@@ -1071,7 +1344,9 @@ function goPage(sc,pg,navEl){
   if(pg==='a-review') loadReviewQ();
   if(pg==='w-drafts') loadWriterDrafts();
   if(pg==='l-review') loadLiamQ();
+  if(pg==='l-topics') loadLiamTopics();
   if(pg==='d-approval') loadDavidQ();
+  if(pg==='a-analytics') loadAnalytics();
 }
 
 function closeSB(){
@@ -1274,6 +1549,7 @@ function openEditor(art,role){
     }
     if (art.id) loadComments(art.id);
     wireToolbar();
+    wireReadMode();
     wireComments();
     initInlineComments();
     makeImgPlaceholders();
@@ -1286,11 +1562,14 @@ function openEditor(art,role){
   var rb=document.getElementById('rv-bar');
   var rl=document.getElementById('rv-lbl');
   var edEl=document.getElementById('tiptap-editor');
+  var wic = document.getElementById('writer-instruction-card');
   if(role==='writer'){
     wa.style.display='flex'; ra.style.display='none'; rb.style.display='none';
     if(edEl) edEl.contentEditable='true';
+    if(wic) wic.style.display='block';
   } else {
     wa.style.display='none'; ra.style.display='flex'; rb.style.display='flex';
+    if(wic) wic.style.display='none';
     var labels={sheperd:'Reviewing as Sheperd — 1st review',liam:'SEO Review — Liam',david:'Final Approval — David Xavier'};
     if(rl) rl.textContent=labels[role]||'Reviewing';
     var fwd=document.getElementById('ed-fwd-btn');
@@ -1429,10 +1708,24 @@ async function generate(){
     '\n'+
     '━━ TONE & STYLE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
     '- Direct, confident, proof-led. No hype, no fluff.\n'+
-    '- Short sentences. One idea per sentence.\n'+
+    '- Short sentences. One idea per sentence. Max 20 words per sentence.\n'+
+    '- Short paragraphs. Max 3 sentences per paragraph.\n'+
     '- Always address the reader as "you".\n'+
     '- Never start with "In this article we will..."\n'+
-    '- Every sentence must earn its place.\n\n'+
+    '- Every sentence must earn its place. Cut anything that does not add value.\n\n'+
+    '━━ SCANNABILITY (MANDATORY) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '- BOLD key terms, statistics and important points throughout. At least 8-10 bold phrases per article.\n'+
+    '- Every H2 section must have at least one bolded phrase or stat.\n'+
+    '- Use bullet points and numbered lists wherever possible — not walls of text.\n'+
+    '- Break up long sections with subheadings (H3) if needed.\n\n'+
+    '━━ REQUIRED ELEMENTS (NON-NEGOTIABLE) ━━━━━━━━━━━━━━━━━\n'+
+    '- Summary table at the top for articles over 800 words (4 cols, 4-5 rows of key facts)\n'+
+    '- Table of Contents with anchor links for articles over 800 words\n'+
+    '- FAQ section: minimum 5 questions with direct, concise answers\n'+
+    '- Key Takeaways block: 5-7 bullet points at the end\n'+
+    '- At least 2-3 internal links to relevant FXIFY pages\n'+
+    '- Primary keyword in H1 and at least 2 H2 headings\n'+
+    '- Secondary keywords naturally in H2s and body copy\n\n'+
     '━━ STRUCTURE (FOLLOW EXACTLY) ━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
     '1. H1: Clear, keyword-led title\n'+
     '2. Introduction: Max 120 words. Direct answer first, then context.\n'+
@@ -1889,6 +2182,438 @@ function updateScoreDisplay(scores) {
 
 
 
+
+
+// ── PUBLISHED ARTICLES ────────────────────────────────────────────────────
+var publishedCache = null;
+
+async function scrapePublishedArticles(listId, countId) {
+  var list = document.getElementById(listId);
+  if (!list) return;
+  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping fxify.com/blog...</p>';
+
+  try {
+    // Try multiple pages
+    var allLinks = [];
+    var pages = ['https://fxify.com/blog', 'https://fxify.com/blog/page/2', 'https://fxify.com/blog/page/3'];
+    
+    for (var i = 0; i < pages.length; i++) {
+      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
+        body: JSON.stringify({ url: pages[i], formats: ['markdown'], onlyMainContent: true })
+      });
+      var data = await res.json();
+      if (!data.success || !data.data || !data.data.markdown) break;
+      
+      var md = data.data.markdown;
+      var re = /\[([^\]]{10,120})\]\((https?:\/\/fxify\.com\/blog\/[^)]+)\)/g;
+      var match;
+      while ((match = re.exec(md)) !== null) {
+        var title = match[1].trim();
+        var url = match[2].trim();
+        if (!allLinks.find(function(l){ return l.url === url; })) {
+          allLinks.push({ title: title, url: url });
+        }
+      }
+      if (allLinks.length === 0) break; // No more pages
+    }
+
+    publishedCache = allLinks;
+    renderPublishedArticles(allLinks, listId, countId);
+
+    // Also update live column in pipeline with count
+    var liveCol = document.getElementById('col-live');
+    var liveCnt = document.getElementById('cnt-live');
+    if (liveCol && allLinks.length > 0) {
+      // Add scraped articles to live column
+      if (liveCnt) liveCnt.textContent = allLinks.length;
+    }
+
+  } catch(e) {
+    if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Could not load — check Firecrawl key</p>';
+  }
+}
+
+function renderPublishedArticles(articles, listId, countId, filter) {
+  var list = document.getElementById(listId);
+  if (!list) return;
+  var filtered = filter ? articles.filter(function(a){ return a.title.toLowerCase().includes(filter.toLowerCase()); }) : articles;
+  
+  if (countId) {
+    var countEl = document.getElementById(countId);
+    if (countEl) countEl.textContent = filtered.length + ' articles';
+  }
+
+  if (!filtered.length) {
+    list.innerHTML = filter 
+      ? '<p class="pempty" style="padding:20px 0;">No articles match "' + filter + '"</p>'
+      : '<p class="pempty" style="padding:40px 0;">No published articles found.</p>';
+    return;
+  }
+
+  list.innerHTML = '';
+  filtered.forEach(function(article, idx) {
+    var item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;gap:12px;';
+    item.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px;min-width:0;">' +
+        '<span style="font-size:10px;font-weight:600;color:var(--muted);width:24px;flex-shrink:0;">' + (idx+1) + '</span>' +
+        '<p style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + article.title + '</p>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+        '<a href="' + article.url + '" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">View ↗</a>' +
+        '<button class="btn btn-s" style="font-size:11px;" onclick="prefillBrief(' + JSON.stringify(article.title).replace(/"/g,"'") + ')">Use as inspo</button>' +
+      '</div>';
+    list.appendChild(item);
+  });
+}
+
+function prefillBrief(title) {
+  var titleEl = document.getElementById('b-title');
+  if (titleEl) titleEl.value = 'Related: ' + title;
+  // Navigate to generate
+  var genLink = document.querySelector('[data-pg="a-generate"]');
+  if (genLink) genLink.click();
+  toast('Title pre-filled — customise before generating');
+}
+
+// ── LIAM TOPIC SUBMISSION ─────────────────────────────────────────────────
+async function submitLiamTopic() {
+  var title = document.getElementById('lt-title').value.trim();
+  var kw = document.getElementById('lt-kw').value.trim();
+  var intent = document.getElementById('lt-intent').value;
+  var cat = document.getElementById('lt-cat').value;
+  var pri = document.getElementById('lt-pri').value;
+  var notes = document.getElementById('lt-notes').value.trim();
+
+  if (!title) { toast('Add a topic title first'); return; }
+
+  var btn = document.getElementById('lt-submit');
+  btn.textContent = 'Submitting...'; btn.disabled = true;
+
+  // Insert as a Briefed article with no content — Sheperd generates it
+  var res = await supa.from('articles').insert([{
+    title: title,
+    category: cat,
+    status: 'Briefed',
+    priority: pri,
+    primary_kw: kw || title.toLowerCase(),
+    assignee: '',
+    content: notes ? 'SEO BRIEF FROM LIAM:\n\n' + notes : '',
+    tone: 'Educational',
+    length: '~900 words',
+    word_count: 0,
+    doc_url: ''
+  }]).select();
+
+  btn.textContent = 'Submit topic →'; btn.disabled = false;
+
+  if (res.error) { toast('Error: ' + res.error.message); return; }
+
+  // Clear form
+  document.getElementById('lt-title').value = '';
+  document.getElementById('lt-kw').value = '';
+  document.getElementById('lt-notes').value = '';
+
+  toast('Topic submitted — Sheperd will see it in the pipeline ✓');
+  loadLiamTopics();
+  loadPipeline();
+
+  var nb = document.getElementById('nb-ltopics');
+  if (nb) nb.textContent = parseInt(nb.textContent || '0') + 1;
+}
+
+async function loadLiamTopics() {
+  var list = document.getElementById('l-topics-list');
+  if (!list) return;
+  var res = await supa.from('articles').select('*')
+    .like('content', 'SEO BRIEF FROM LIAM%')
+    .order('created_at', { ascending: false });
+  
+  if (res.error || !res.data || !res.data.length) {
+    list.innerHTML = '<p class="pempty" style="padding:20px 0;">No topics submitted yet.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  res.data.forEach(function(a) {
+    var item = document.createElement('div');
+    item.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;';
+    var statusColor = a.status === 'Briefed' ? 'var(--amber)' : a.status === 'Live' ? 'var(--green)' : 'var(--blue)';
+    item.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
+        '<p style="font-size:13px;font-weight:500;color:var(--text);">' + (a.title||'Untitled') + '</p>' +
+        '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(0,0,0,.05);color:' + statusColor + ';">' + (a.status||'Briefed') + '</span>' +
+      '</div>' +
+      '<p style="font-size:11px;color:var(--muted);margin-top:4px;">' + (a.primary_kw ? '🔑 ' + a.primary_kw : '') + '</p>';
+    list.appendChild(item);
+  });
+  var nb = document.getElementById('nb-ltopics');
+  if (nb) nb.textContent = res.data.filter(function(a){ return a.status === 'Briefed'; }).length || '';
+}
+
+// ── LIAM PLANNER (mirrors admin planner) ─────────────────────────────────
+async function runLiamPlanner() {
+  var topic = document.getElementById('lpl-topic').value.trim();
+  if (!topic) { toast('Add a topic first'); return; }
+  var competitors = document.getElementById('lpl-competitors').value.trim().split('\n').filter(Boolean);
+  var ownSite = document.getElementById('lpl-own').value.trim();
+  var cat = document.getElementById('lpl-cat').value;
+  var btn = document.getElementById('lpl-analyse-btn');
+  var loading = document.getElementById('lpl-loading');
+  var results = document.getElementById('lpl-results');
+
+  btn.disabled = true; btn.textContent = 'Analysing...';
+  loading.style.display = 'block'; results.style.display = 'none';
+
+  var competitorData = competitors.length ? await scrapeUrls(competitors) : '';
+  var ownData = ownSite ? await scrapeUrls([ownSite]) : '';
+
+  var prompt = 'You are a senior SEO strategist for prop trading / fintech.\n\n' +
+    'SEED TOPIC: ' + topic + '\nCATEGORY: ' + cat + '\n' +
+    (ownData ? 'OWN SITE:\n' + ownData + '\n\n' : '') +
+    (competitorData ? 'COMPETITORS:\n' + competitorData + '\n\n' : '') +
+    'Respond ONLY with valid JSON: {"gaps":[],"topics":[{"title":"","keyword":"","intent":"","angle":"","priority":"","category":"","geo_angle":"","aeo_snippet":""}],"paa":[],"geo_topics":[],"backlink_angles":[{"angle":"","target_type":"","content_hook":""}]}\n' +
+    'Generate 5 gaps, 6 topics, 5 PAA, 3 GEO topics, 2 backlink angles. No other text.';
+
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 3000 })
+    });
+    var data = await r.json();
+    var text = '';
+    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
+    else if (data.content && data.content[0]) text = data.content[0].text;
+    else if (data.text) text = data.text;
+    var jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON');
+    var plan = JSON.parse(jsonMatch[0]);
+
+    // Render into liam planner result divs
+    var gapsEl = document.getElementById('lpl-gaps');
+    if (gapsEl && plan.gaps) {
+      gapsEl.innerHTML = '';
+      plan.gaps.forEach(function(g) {
+        var chip = document.createElement('div');
+        chip.style.cssText = 'background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--urgent);font-weight:500;';
+        chip.textContent = g;
+        gapsEl.appendChild(chip);
+      });
+    }
+    var topicsEl = document.getElementById('lpl-topics');
+    if (topicsEl && plan.topics) {
+      topicsEl.innerHTML = '';
+      plan.topics.forEach(function(t) {
+        var card = document.createElement('div');
+        card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;';
+        card.innerHTML =
+          '<p style="font-size:13px;font-weight:500;margin-bottom:6px;">' + t.title + '</p>' +
+          '<p style="font-size:11px;color:var(--muted);margin-bottom:8px;">' + (t.angle||'') + '</p>' +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">' + (t.keyword||'') + '</span>' +
+            '<button class="btn btn-p btn-s" style="margin-left:auto;font-size:11px;">Submit this topic</button>' +
+          '</div>';
+        card.querySelector('button').addEventListener('click', function() {
+          document.getElementById('lt-title').value = t.title;
+          document.getElementById('lt-kw').value = t.keyword || '';
+          document.getElementById('lt-cat').value = t.category || 'Guides';
+          var topicsNav = document.querySelector('[data-pg="l-topics"]');
+          if (topicsNav) topicsNav.click();
+          toast('Topic pre-filled — add notes and submit');
+        });
+        topicsEl.appendChild(card);
+      });
+    }
+    var paaEl = document.getElementById('lpl-paa');
+    if (paaEl && plan.paa) {
+      paaEl.innerHTML = plan.paa.map(function(q) {
+        return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--text);">❓ ' + q + '</div>';
+      }).join('');
+    }
+
+    loading.style.display = 'none'; results.style.display = 'block';
+    toast('Analysis done ✓');
+  } catch(e) {
+    loading.style.display = 'none';
+    toast('Error: ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = 'Analyse & Generate Topics';
+}
+
+// ── READ MODE ─────────────────────────────────────────────────────────────
+function openReadMode() {
+  if (!currentArt) return;
+  var art = currentArt;
+  var edEl = document.getElementById('tiptap-editor');
+  var rawContent = edEl ? edEl.innerHTML : (art.content || '');
+
+  // Build author info
+  var authorKey = art.authorKey || 'sheperd';
+  var authorMap = {
+    fariha: {name:'Fariha Khan', title:'Senior Content Writer', initials:'FK'},
+    harry:  {name:'Harry Hosking', title:'Markets Analyst', initials:'HH'},
+    imran:  {name:'Imran Najib', title:'Trading Educator', initials:'IN'},
+    sheperd:{name:'Sheperd Morena', title:'Content Lead', initials:'SM'}
+  };
+  var author = authorMap[authorKey] || authorMap.sheperd;
+
+  // Word count & reading time
+  var text = rawContent.replace(/<[^>]+>/g, ' ');
+  var wc = text.trim().split(/\s+/).filter(Boolean).length;
+  var readTime = Math.max(1, Math.ceil(wc / 200));
+
+  // Date
+  var now = new Date();
+  var dateStr = now.toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+
+  // Clean content for blog view — make links real and clickable
+  var blogContent = rawContent
+    .replace(/<a class="int-link"([^>]*)>/g, '<a$1 target="_blank" rel="noopener">')
+    .replace(/class="kw-hl"/g, '')
+    .replace(/class="img-placeholder"[^>]*>/g, 'class="blog-img-ph">');
+
+  // Build the article HTML
+  var meta = art.meta || {};
+  var category = art.category || 'Guides';
+  var title = art.title || 'Draft';
+  var deck = meta.EXCERPT || '';
+
+  var articleHtml = 
+    '<div class="blog-article">' +
+    
+    // Header
+    '<div class="blog-header">' +
+      '<span class="blog-category-tag">' + category + '</span>' +
+      '<h1 class="blog-h1">' + title + '</h1>' +
+      (deck ? '<p class="blog-deck">' + deck + '</p>' : '') +
+      '<div class="blog-meta">' +
+        '<div class="blog-author-av">' + author.initials + '</div>' +
+        '<div><p class="blog-author-name">' + author.name + '</p><p class="blog-author-role">' + author.title + ' · FXIFY</p></div>' +
+        '<div class="blog-meta-sep"></div>' +
+        '<div class="blog-meta-item">' + dateStr + '</div>' +
+        '<div class="blog-meta-sep"></div>' +
+        '<div class="blog-meta-item"><strong>' + readTime + ' min</strong> read</div>' +
+        '<div class="blog-meta-sep"></div>' +
+        '<div class="blog-meta-item"><strong>' + wc.toLocaleString() + '</strong> words</div>' +
+      '</div>' +
+    '</div>' +
+
+    // Featured image
+    '<div class="blog-feat-img">Featured image</div>' +
+
+    // Body
+    '<div class="blog-body" id="rm-blog-body">' + blogContent + '</div>' +
+
+    // Author block
+    '<div class="blog-author-block">' +
+      '<div class="blog-author-block-av">' + author.initials + '</div>' +
+      '<div>' +
+        '<p class="blog-author-block-name">' + author.name + '</p>' +
+        '<p class="blog-author-block-title">' + author.title + ' at FXIFY</p>' +
+        '<p class="blog-author-block-bio">This article was written by ' + author.name + ', ' + author.title.toLowerCase() + ' at FXIFY. Our content team specialises in prop trading education, funded account strategies and market analysis.</p>' +
+      '</div>' +
+    '</div>' +
+
+    // No CTA block — FXIFY blog already has a global CTA
+
+    '</div>';
+
+  // Set title and body
+  var rmTitle = document.getElementById('rm-title');
+  var rmBody = document.getElementById('rm-body');
+  if (rmTitle) rmTitle.textContent = title;
+  if (rmBody) rmBody.innerHTML = articleHtml;
+
+  // Show overlay
+  document.getElementById('read-mode').classList.add('active');
+  document.getElementById('read-mode').scrollTop = 0;
+}
+
+function closeReadMode() {
+  document.getElementById('read-mode').classList.remove('active');
+}
+
+async function checkLinks() {
+  var body = document.getElementById('rm-blog-body');
+  if (!body) return;
+  var links = body.querySelectorAll('a[href]');
+  if (!links.length) { toast('No links found in article'); return; }
+
+  var status = document.getElementById('rm-link-status');
+  if (status) { status.style.display = 'block'; status.textContent = 'Checking ' + links.length + ' links...'; }
+
+  var ok = 0, broken = 0;
+  var checks = Array.from(links).map(async function(link) {
+    var href = link.getAttribute('href');
+    if (!href || href.startsWith('#') || href.startsWith('mailto:')) return;
+    link.classList.add('link-checking');
+    try {
+      // Use fetch with no-cors to check — will succeed for valid URLs
+      var res = await fetch(href, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
+      link.classList.remove('link-checking');
+      link.classList.add('link-ok');
+      link.title = '✓ Link OK: ' + href;
+      ok++;
+    } catch(e) {
+      link.classList.remove('link-checking');
+      // no-cors fetch always "succeeds" — check if it's a relative link
+      if (href.startsWith('/') || href.startsWith('http')) {
+        link.classList.add('link-ok');
+        link.title = '✓ ' + href;
+        ok++;
+      } else {
+        link.classList.add('link-broken');
+        link.title = '✗ Check this link: ' + href;
+        broken++;
+      }
+    }
+  });
+
+  await Promise.allSettled(checks);
+  if (status) {
+    status.textContent = ok + ' OK' + (broken ? ' · ' + broken + ' to check' : ' · all good ✓');
+    status.style.background = broken ? 'rgba(239,68,68,.15)' : 'rgba(5,150,105,.15)';
+    status.style.color = broken ? 'var(--urgent)' : 'var(--green)';
+  }
+  toast(ok + ' links checked' + (broken ? ' — ' + broken + ' need attention' : ' — all good ✓'));
+}
+
+function wireReadMode() {
+  // Preview button in toolbar
+  var previewBtn = document.getElementById('tb-preview');
+  if (previewBtn) previewBtn.addEventListener('click', function(e) {
+    e.preventDefault();
+    openReadMode();
+  });
+
+  // Close button
+  var closeBtn = document.getElementById('rm-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeReadMode);
+
+  // Check links button
+  var checkBtn = document.getElementById('rm-check-links');
+  if (checkBtn) checkBtn.addEventListener('click', checkLinks);
+
+  // Keyboard shortcut Cmd+Shift+P
+  document.addEventListener('keydown', function(e) {
+    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'p') {
+      e.preventDefault();
+      var rm = document.getElementById('read-mode');
+      if (rm.classList.contains('active')) {
+        closeReadMode();
+      } else if (currentArt) {
+        openReadMode();
+      }
+    }
+    // Escape to close
+    if (e.key === 'Escape') {
+      var rm = document.getElementById('read-mode');
+      if (rm.classList.contains('active')) closeReadMode();
+    }
+  });
+}
+
 // ── META PACKAGE ──────────────────────────────────────────────────────────
 function parseMeta(text) {
   var meta = {};
@@ -1983,6 +2708,376 @@ function wireMeta() {
   });
 }
 
+
+
+// ── PUBLISHED ARTICLES ────────────────────────────────────────────────────
+var publishedCache = null;
+
+async function scrapePublishedArticles(listId, countId) {
+  var list = document.getElementById(listId);
+  if (!list) return;
+  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping fxify.com/blog...</p>';
+
+  try {
+    // Try multiple pages
+    var allLinks = [];
+    var pages = ['https://fxify.com/blog', 'https://fxify.com/blog/page/2', 'https://fxify.com/blog/page/3'];
+    
+    for (var i = 0; i < pages.length; i++) {
+      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
+        body: JSON.stringify({ url: pages[i], formats: ['markdown'], onlyMainContent: true })
+      });
+      var data = await res.json();
+      if (!data.success || !data.data || !data.data.markdown) break;
+      
+      var md = data.data.markdown;
+      var re = /\[([^\]]{10,120})\]\((https?:\/\/fxify\.com\/blog\/[^)]+)\)/g;
+      var match;
+      while ((match = re.exec(md)) !== null) {
+        var title = match[1].trim();
+        var url = match[2].trim();
+        if (!allLinks.find(function(l){ return l.url === url; })) {
+          allLinks.push({ title: title, url: url });
+        }
+      }
+      if (allLinks.length === 0) break; // No more pages
+    }
+
+    publishedCache = allLinks;
+    renderPublishedArticles(allLinks, listId, countId);
+
+    // Also update live column in pipeline with count
+    var liveCol = document.getElementById('col-live');
+    var liveCnt = document.getElementById('cnt-live');
+    if (liveCol && allLinks.length > 0) {
+      // Add scraped articles to live column
+      if (liveCnt) liveCnt.textContent = allLinks.length;
+    }
+
+  } catch(e) {
+    if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Could not load — check Firecrawl key</p>';
+  }
+}
+
+function renderPublishedArticles(articles, listId, countId, filter) {
+  var list = document.getElementById(listId);
+  if (!list) return;
+  var filtered = filter ? articles.filter(function(a){ return a.title.toLowerCase().includes(filter.toLowerCase()); }) : articles;
+  
+  if (countId) {
+    var countEl = document.getElementById(countId);
+    if (countEl) countEl.textContent = filtered.length + ' articles';
+  }
+
+  if (!filtered.length) {
+    list.innerHTML = filter 
+      ? '<p class="pempty" style="padding:20px 0;">No articles match "' + filter + '"</p>'
+      : '<p class="pempty" style="padding:40px 0;">No published articles found.</p>';
+    return;
+  }
+
+  list.innerHTML = '';
+  filtered.forEach(function(article, idx) {
+    var item = document.createElement('div');
+    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;gap:12px;';
+    item.innerHTML =
+      '<div style="display:flex;align-items:center;gap:10px;min-width:0;">' +
+        '<span style="font-size:10px;font-weight:600;color:var(--muted);width:24px;flex-shrink:0;">' + (idx+1) + '</span>' +
+        '<p style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + article.title + '</p>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+        '<a href="' + article.url + '" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">View ↗</a>' +
+        '<button class="btn btn-s" style="font-size:11px;" onclick="prefillBrief(' + JSON.stringify(article.title).replace(/"/g,"'") + ')">Use as inspo</button>' +
+      '</div>';
+    list.appendChild(item);
+  });
+}
+
+function prefillBrief(title) {
+  var titleEl = document.getElementById('b-title');
+  if (titleEl) titleEl.value = 'Related: ' + title;
+  // Navigate to generate
+  var genLink = document.querySelector('[data-pg="a-generate"]');
+  if (genLink) genLink.click();
+  toast('Title pre-filled — customise before generating');
+}
+
+// ── LIAM TOPIC SUBMISSION ─────────────────────────────────────────────────
+async function submitLiamTopic() {
+  var title = document.getElementById('lt-title').value.trim();
+  var kw = document.getElementById('lt-kw').value.trim();
+  var intent = document.getElementById('lt-intent').value;
+  var cat = document.getElementById('lt-cat').value;
+  var pri = document.getElementById('lt-pri').value;
+  var notes = document.getElementById('lt-notes').value.trim();
+
+  if (!title) { toast('Add a topic title first'); return; }
+
+  var btn = document.getElementById('lt-submit');
+  btn.textContent = 'Submitting...'; btn.disabled = true;
+
+  // Insert as a Briefed article with no content — Sheperd generates it
+  var res = await supa.from('articles').insert([{
+    title: title,
+    category: cat,
+    status: 'Briefed',
+    priority: pri,
+    primary_kw: kw || title.toLowerCase(),
+    assignee: '',
+    content: notes ? 'SEO BRIEF FROM LIAM:\n\n' + notes : '',
+    tone: 'Educational',
+    length: '~900 words',
+    word_count: 0,
+    doc_url: ''
+  }]).select();
+
+  btn.textContent = 'Submit topic →'; btn.disabled = false;
+
+  if (res.error) { toast('Error: ' + res.error.message); return; }
+
+  // Clear form
+  document.getElementById('lt-title').value = '';
+  document.getElementById('lt-kw').value = '';
+  document.getElementById('lt-notes').value = '';
+
+  toast('Topic submitted — Sheperd will see it in the pipeline ✓');
+  loadLiamTopics();
+  loadPipeline();
+
+  var nb = document.getElementById('nb-ltopics');
+  if (nb) nb.textContent = parseInt(nb.textContent || '0') + 1;
+}
+
+async function loadLiamTopics() {
+  var list = document.getElementById('l-topics-list');
+  if (!list) return;
+  var res = await supa.from('articles').select('*')
+    .like('content', 'SEO BRIEF FROM LIAM%')
+    .order('created_at', { ascending: false });
+  
+  if (res.error || !res.data || !res.data.length) {
+    list.innerHTML = '<p class="pempty" style="padding:20px 0;">No topics submitted yet.</p>';
+    return;
+  }
+  list.innerHTML = '';
+  res.data.forEach(function(a) {
+    var item = document.createElement('div');
+    item.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;';
+    var statusColor = a.status === 'Briefed' ? 'var(--amber)' : a.status === 'Live' ? 'var(--green)' : 'var(--blue)';
+    item.innerHTML =
+      '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
+        '<p style="font-size:13px;font-weight:500;color:var(--text);">' + (a.title||'Untitled') + '</p>' +
+        '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(0,0,0,.05);color:' + statusColor + ';">' + (a.status||'Briefed') + '</span>' +
+      '</div>' +
+      '<p style="font-size:11px;color:var(--muted);margin-top:4px;">' + (a.primary_kw ? '🔑 ' + a.primary_kw : '') + '</p>';
+    list.appendChild(item);
+  });
+  var nb = document.getElementById('nb-ltopics');
+  if (nb) nb.textContent = res.data.filter(function(a){ return a.status === 'Briefed'; }).length || '';
+}
+
+// ── LIAM PLANNER (mirrors admin planner) ─────────────────────────────────
+async function runLiamPlanner() {
+  var topic = document.getElementById('lpl-topic').value.trim();
+  if (!topic) { toast('Add a topic first'); return; }
+  var competitors = document.getElementById('lpl-competitors').value.trim().split('\n').filter(Boolean);
+  var ownSite = document.getElementById('lpl-own').value.trim();
+  var cat = document.getElementById('lpl-cat').value;
+  var btn = document.getElementById('lpl-analyse-btn');
+  var loading = document.getElementById('lpl-loading');
+  var results = document.getElementById('lpl-results');
+
+  btn.disabled = true; btn.textContent = 'Analysing...';
+  loading.style.display = 'block'; results.style.display = 'none';
+
+  var competitorData = competitors.length ? await scrapeUrls(competitors) : '';
+  var ownData = ownSite ? await scrapeUrls([ownSite]) : '';
+
+  var prompt = 'You are a senior SEO strategist for prop trading / fintech.\n\n' +
+    'SEED TOPIC: ' + topic + '\nCATEGORY: ' + cat + '\n' +
+    (ownData ? 'OWN SITE:\n' + ownData + '\n\n' : '') +
+    (competitorData ? 'COMPETITORS:\n' + competitorData + '\n\n' : '') +
+    'Respond ONLY with valid JSON: {"gaps":[],"topics":[{"title":"","keyword":"","intent":"","angle":"","priority":"","category":"","geo_angle":"","aeo_snippet":""}],"paa":[],"geo_topics":[],"backlink_angles":[{"angle":"","target_type":"","content_hook":""}]}\n' +
+    'Generate 5 gaps, 6 topics, 5 PAA, 3 GEO topics, 2 backlink angles. No other text.';
+
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 3000 })
+    });
+    var data = await r.json();
+    var text = '';
+    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
+    else if (data.content && data.content[0]) text = data.content[0].text;
+    else if (data.text) text = data.text;
+    var jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON');
+    var plan = JSON.parse(jsonMatch[0]);
+
+    // Render into liam planner result divs
+    var gapsEl = document.getElementById('lpl-gaps');
+    if (gapsEl && plan.gaps) {
+      gapsEl.innerHTML = '';
+      plan.gaps.forEach(function(g) {
+        var chip = document.createElement('div');
+        chip.style.cssText = 'background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--urgent);font-weight:500;';
+        chip.textContent = g;
+        gapsEl.appendChild(chip);
+      });
+    }
+    var topicsEl = document.getElementById('lpl-topics');
+    if (topicsEl && plan.topics) {
+      topicsEl.innerHTML = '';
+      plan.topics.forEach(function(t) {
+        var card = document.createElement('div');
+        card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;';
+        card.innerHTML =
+          '<p style="font-size:13px;font-weight:500;margin-bottom:6px;">' + t.title + '</p>' +
+          '<p style="font-size:11px;color:var(--muted);margin-bottom:8px;">' + (t.angle||'') + '</p>' +
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">' + (t.keyword||'') + '</span>' +
+            '<button class="btn btn-p btn-s" style="margin-left:auto;font-size:11px;">Submit this topic</button>' +
+          '</div>';
+        card.querySelector('button').addEventListener('click', function() {
+          document.getElementById('lt-title').value = t.title;
+          document.getElementById('lt-kw').value = t.keyword || '';
+          document.getElementById('lt-cat').value = t.category || 'Guides';
+          var topicsNav = document.querySelector('[data-pg="l-topics"]');
+          if (topicsNav) topicsNav.click();
+          toast('Topic pre-filled — add notes and submit');
+        });
+        topicsEl.appendChild(card);
+      });
+    }
+    var paaEl = document.getElementById('lpl-paa');
+    if (paaEl && plan.paa) {
+      paaEl.innerHTML = plan.paa.map(function(q) {
+        return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--text);">❓ ' + q + '</div>';
+      }).join('');
+    }
+
+    loading.style.display = 'none'; results.style.display = 'block';
+    toast('Analysis done ✓');
+  } catch(e) {
+    loading.style.display = 'none';
+    toast('Error: ' + e.message);
+  }
+  btn.disabled = false; btn.textContent = 'Analyse & Generate Topics';
+}
+
+// ── READ MODE ─────────────────────────────────────────────────────────────
+function openReadMode() {
+  if (!currentArt) return;
+  var overlay = document.getElementById('read-mode');
+  var body = document.getElementById('rm-body');
+  var titleEl = document.getElementById('rm-title');
+  if (!overlay || !body) return;
+
+  // Get current editor content
+  var edEl = document.getElementById('tiptap-editor');
+  var content = edEl ? edEl.innerHTML : (currentArt.content || '');
+  
+  // Build rich read mode HTML
+  var wc = edEl ? (edEl.innerText||'').trim().split(/\s+/).filter(Boolean).length : (currentArt.word_count||0);
+  var rt = Math.ceil(wc / 200);
+  var cat = currentArt.category || 'Guides';
+  var authorName = currentArt.assignee || 'FXIFY Editorial';
+  var date = new Date().toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+
+  // Clean content for read mode
+  var cleanHtml = content
+    .replace(/class="kw-hl"/g, '')
+    .replace(/class="int-link"/g, 'style="color:#1a56db;text-decoration:underline;"')
+    .replace(/class="img-placeholder[^"]*"/g, 'style="display:none;"')
+    .replace(/<div class="acta"[^>]*>.*?<\/div>/gs, function(m) {
+      return m.replace('class="acta"', 'class="read-mode-acta"');
+    });
+
+  // Make links clickable and trackable
+  cleanHtml = cleanHtml.replace(/<a([^>]*href="([^"]*)"[^>]*)>/g, function(match, attrs, href) {
+    if (href.startsWith('http') || href.startsWith('/')) {
+      return '<a' + attrs + ' target="_blank" rel="noopener">';
+    }
+    return match;
+  });
+
+  body.innerHTML = 
+    '<div class="read-mode-meta">' +
+      '<span class="read-mode-tag">' + cat + '</span>' +
+      '<span class="read-mode-byline">By ' + authorName + '</span>' +
+      '<span class="read-mode-byline">·</span>' +
+      '<span class="read-mode-byline">' + date + '</span>' +
+      '<span class="read-mode-byline">·</span>' +
+      '<span class="read-mode-readtime">⏱ ' + rt + ' min read · ' + wc.toLocaleString() + ' words</span>' +
+    '</div>' +
+    cleanHtml;
+
+  if (titleEl) titleEl.textContent = currentArt.title || 'Preview';
+  overlay.classList.add('active');
+  overlay.scrollTop = 0;
+}
+
+function closeReadMode() {
+  var overlay = document.getElementById('read-mode');
+  if (overlay) overlay.classList.remove('active');
+}
+
+async function checkLinks() {
+  var body = document.getElementById('rm-body');
+  if (!body) return;
+  var links = body.querySelectorAll('a[href]');
+  if (!links.length) { toast('No links found in article'); return; }
+  toast('Checking ' + links.length + ' links...');
+  
+  links.forEach(function(link) {
+    var href = link.getAttribute('href');
+    if (!href || href === '#') return;
+    
+    // Add status badge
+    var existing = link.querySelector('.read-mode-link-check');
+    if (existing) existing.remove();
+    var badge = document.createElement('span');
+    badge.className = 'read-mode-link-check link-checking';
+    badge.textContent = '...';
+    link.appendChild(badge);
+
+    // Try to fetch via a no-cors request to check if reachable
+    fetch(href, { method: 'HEAD', mode: 'no-cors' })
+      .then(function() {
+        badge.className = 'read-mode-link-check link-ok';
+        badge.textContent = '✓';
+      })
+      .catch(function() {
+        badge.className = 'read-mode-link-check link-bad';
+        badge.textContent = '✗';
+      });
+  });
+}
+
+function wireReadMode() {
+  var btn = document.getElementById('tb-read-mode');
+  if (btn) btn.addEventListener('click', function(e) {
+    e.preventDefault();
+    openReadMode();
+  });
+  
+  var closeBtn = document.getElementById('rm-close');
+  if (closeBtn) closeBtn.addEventListener('click', closeReadMode);
+  
+  var checkBtn = document.getElementById('rm-check-links');
+  if (checkBtn) checkBtn.addEventListener('click', checkLinks);
+  
+  // ESC key to close
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Escape') {
+      var overlay = document.getElementById('read-mode');
+      if (overlay && overlay.classList.contains('active')) closeReadMode();
+    }
+  });
+}
+
 // ── INTERNAL LINKS ────────────────────────────────────────────────────────
 var internalLinksCache = null;
 
@@ -2068,15 +3163,35 @@ function renderInternalLinks(links) {
     item.innerHTML = 
       '<span class="il-title">' + link.title + '</span>' +
       '<button class="il-insert">Insert</button>';
-    item.querySelector('.il-insert').addEventListener('click', function() {
+    item.querySelector('.il-insert').addEventListener('mousedown', function(e) {
+      // Save selection BEFORE button click steals focus
+      e.preventDefault();
       var edEl = document.getElementById('tiptap-editor');
-      if (edEl) {
+      if (!edEl) return;
+      // Restore selection and insert at cursor
+      var sel = window.getSelection();
+      if (sel && sel.rangeCount > 0 && edEl.contains(sel.getRangeAt(0).commonAncestorContainer)) {
+        // Cursor is in editor — insert at cursor position
+        var range = sel.getRangeAt(0);
+        range.deleteContents();
+        var a = document.createElement('a');
+        a.href = link.url;
+        a.textContent = link.title;
+        a.style.cssText = 'color:var(--blue);text-decoration:underline;';
+        range.insertNode(a);
+        // Move cursor after the link
+        range.setStartAfter(a);
+        range.collapse(true);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      } else {
+        // No cursor in editor — append to end
         edEl.focus();
-        document.execCommand('insertHTML', false, 
+        document.execCommand('insertHTML', false,
           '<a href="' + link.url + '" style="color:var(--blue);text-decoration:underline;">' + link.title + '</a> ');
-        autoSave(edEl.innerHTML);
-        toast('Link in — good for SEO ');
       }
+      autoSave(edEl.innerHTML);
+      toast('Link in — good for SEO ');
     });
     panel.appendChild(item);
   });
@@ -2374,6 +3489,64 @@ function makeImgPlaceholders() {
 }
 
 
+
+
+// ── ANALYTICS ─────────────────────────────────────────────────────────────
+async function loadAnalytics() {
+  var res = await supa.from('articles').select('*').order('created_at', {ascending: false});
+  if (res.error || !res.data) return;
+  var arts = res.data;
+  var total = arts.length;
+  var live = arts.filter(function(a){ return a.status === 'Live' || a.status === 'Publishing'; }).length;
+  var pipeline = arts.filter(function(a){ return a.status === 'Briefed' || a.status === 'Drafting'; }).length;
+  var inReview = arts.filter(function(a){ return ['Sheperd Review','Liam Review','David Approval'].includes(a.status); }).length;
+  var totalWc = arts.reduce(function(s,a){ return s + (a.word_count||0); }, 0);
+  var avgWc = total ? Math.round(totalWc / total) : 0;
+  var seoArts = arts.filter(function(a){ return a.seo_score; });
+  var avgSeo = seoArts.length ? Math.round(seoArts.reduce(function(s,a){ return s+(a.seo_score||0);},0)/seoArts.length) : 0;
+
+  function set(id, val) { var e = document.getElementById(id); if(e) e.textContent = val; }
+  set('an-total', total);
+  set('an-total-sub', total + ' articles created');
+  set('an-live', live);
+  set('an-pipeline', pipeline);
+  set('an-review', inReview);
+  set('an-wc', avgWc ? avgWc.toLocaleString() : '—');
+  set('an-seo', avgSeo ? avgSeo + '/100' : '—');
+
+  // By writer table
+  var byWriter = {};
+  arts.forEach(function(a) {
+    var w = a.assignee || 'Unassigned';
+    if (!byWriter[w]) byWriter[w] = { total:0, live:0, inProgress:0, wc:0 };
+    byWriter[w].total++;
+    if (a.status === 'Live' || a.status === 'Publishing') byWriter[w].live++;
+    if (a.status === 'Briefed' || a.status === 'Drafting') byWriter[w].inProgress++;
+    byWriter[w].wc += (a.word_count||0);
+  });
+  var writerTable = document.querySelector('#an-by-writer tbody');
+  if (writerTable) {
+    writerTable.innerHTML = '';
+    Object.keys(byWriter).sort().forEach(function(w) {
+      var d = byWriter[w];
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td style="font-weight:500;">' + w + '</td><td>' + d.total + '</td><td style="color:var(--green);">' + d.live + '</td><td>' + d.inProgress + '</td><td>' + (d.total ? Math.round(d.wc/d.total).toLocaleString() : '—') + '</td>';
+      writerTable.appendChild(tr);
+    });
+  }
+
+  // Recent articles
+  var recentTable = document.querySelector('#an-recent tbody');
+  if (recentTable) {
+    recentTable.innerHTML = '';
+    arts.slice(0, 10).forEach(function(a) {
+      var statusColor = a.status==='Live'?'var(--green)':a.status==='Drafting'?'var(--blue)':'var(--muted)';
+      var tr = document.createElement('tr');
+      tr.innerHTML = '<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(a.title||'Untitled')+'</td><td>'+(a.assignee||'—')+'</td><td><span style="font-size:11px;font-weight:600;color:'+statusColor+';">'+(a.status||'—')+'</span></td><td>'+((a.word_count||0).toLocaleString())+'</td><td>'+(a.seo_score?a.seo_score+'/100':'—')+'</td>';
+      recentTable.appendChild(tr);
+    });
+  }
+}
 
 // ── TOPIC PLANNER ─────────────────────────────────────────────────────────
 async function runPlanner() {
@@ -2784,7 +3957,14 @@ function init(){
 
   // Generate
   document.getElementById('gen-btn').addEventListener('click',generate);
+  wireReadMode();
   wireMeta();
+  // Writer instruction card dismiss
+  var wicDismiss = document.getElementById('wic-dismiss');
+  if(wicDismiss) wicDismiss.addEventListener('click', function(){
+    var wic = document.getElementById('writer-instruction-card');
+    if(wic) wic.style.display='none';
+  });
   var plBtn = document.getElementById('pl-analyse-btn');
   if (plBtn) plBtn.addEventListener('click', runPlanner);
   document.getElementById('open-ed-btn').addEventListener('click',function(){if(currentArt) openEditor(currentArt,'sheperd');});
@@ -2875,6 +4055,38 @@ function init(){
       cb.textContent=cb.classList.contains('on')?'done':'';
     });
   });
+
+  // Published articles — admin
+  var aScrapeBtn = document.getElementById('a-scrape-btn');
+  if (aScrapeBtn) aScrapeBtn.addEventListener('click', function(){
+    scrapePublishedArticles('a-live-list', 'a-live-count');
+  });
+  var aSearch = document.getElementById('a-live-search');
+  if (aSearch) aSearch.addEventListener('input', function(){
+    if (publishedCache) renderPublishedArticles(publishedCache, 'a-live-list', 'a-live-count', aSearch.value);
+  });
+
+  // Published articles — liam
+  var lScrapeBtn = document.getElementById('l-scrape-btn');
+  if (lScrapeBtn) lScrapeBtn.addEventListener('click', function(){
+    scrapePublishedArticles('l-live-list', null);
+  });
+  var lSearch = document.getElementById('l-search');
+  if (lSearch) lSearch.addEventListener('input', function(){
+    if (publishedCache) renderPublishedArticles(publishedCache, 'l-live-list', null, lSearch.value);
+  });
+
+  // Liam topic submission
+  var ltSubmit = document.getElementById('lt-submit');
+  if (ltSubmit) ltSubmit.addEventListener('click', submitLiamTopic);
+  loadLiamTopics();
+
+  // Liam planner
+  var lplBtn = document.getElementById('lpl-analyse-btn');
+  if (lplBtn) lplBtn.addEventListener('click', runLiamPlanner);
+
+  // goPage triggers
+  var origGoPage = goPage;
 }
 
 init();
