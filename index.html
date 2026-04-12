@@ -1293,6 +1293,7 @@ select.finput{cursor:pointer;}
       <option value="">— Select view —</option>
       <optgroup label="Other roles">
         <option value="__admin__">⚡ Admin (Sheperd)</option>
+        <option value="__writer_self__">✍️ My Writer dashboard</option>
         <option value="__david__">✅ Manager (David)</option>
         <option value="__liam__">🔍 SEO Review (Liam)</option>
       </optgroup>
@@ -1557,8 +1558,11 @@ async function loadWriterDrafts(){
     writerName = USERS[currentWriterEmail].name;
   }
   var query = supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
-  if (writerName) query = query.eq('assignee', writerName);
+  if (writerName) {
+    query = query.eq('assignee', writerName);
+  }
   var res = await query;
+  console.log('Writer filter — activeRole:', activeRole, '| name:', writerName, '| currentUser:', currentUser ? currentUser.name : 'null', '| results:', res.data ? res.data.length : 0);
   var l=document.getElementById('w-drafts-list');
   if(!l) return;
   if(res.error||!res.data||!res.data.length){l.innerHTML="<p style='font-size:13px;color:var(--muted);padding:20px 0;'>No drafts yet. Briefs coming soon.</p>";var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
@@ -4072,15 +4076,15 @@ function init(){
   // ── EMAIL AUTH ──────────────────────────────────────────────────────────
   // Role map — email → { role, name, screen }
   var USERS = {
-    'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd M.',    screen:'admin',  initials:'SM', av:'b' },
-    'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',  screen:'david',  initials:'DX', av:'a' },
-    'liam@quirkydigital.com':      { role:'liam',   name:'Liam',          screen:'liam',   initials:'L',  av:'b' },
-    'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',   screen:'writer', initials:'FK', av:''  },
-    'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking', screen:'writer', initials:'HH', av:''  },
-    'imran.najib@fxify.com':       { role:'writer', name:'Imran Najib',   screen:'writer', initials:'IN', av:''  },
-    'mamnun.ahmed@fxify.com':      { role:'writer', name:'Mamnun Ahmed',  screen:'writer', initials:'MA', av:''  },
-    'roshan.ganesh@fxify.com':     { role:'writer', name:'Roshan Ganesh', screen:'writer', initials:'RG', av:''  },
-    'shatha.altrad@fxify.com':     { role:'writer', name:'Shatha Altrad', screen:'writer', initials:'SA', av:''  },
+    'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
+    'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'david',  initials:'DX', av:'a' },
+    'liam@quirkydigital.com':      { role:'liam',   name:'Liam',            screen:'liam',   initials:'L',  av:'b' },
+    'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
+    'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
+    'imran.najib@fxify.com':       { role:'writer', name:'Imran Najib',     screen:'writer', initials:'IN', av:''  },
+    'mamnun.ahmed@fxify.com':      { role:'writer', name:'Mamnun Ahmed',    screen:'writer', initials:'MA', av:''  },
+    'roshan.ganesh@fxify.com':     { role:'writer', name:'Roshan Ganesh',   screen:'writer', initials:'RG', av:''  },
+    'shatha.altrad@fxify.com':     { role:'writer', name:'Shatha Altrad',   screen:'writer', initials:'SA', av:''  },
   };
 
   // Passwords handled by Google OAuth via Supabase
@@ -4162,28 +4166,20 @@ function init(){
   }
 
   function showImpersonateBtn() {
-    // Add "View as writer" button to admin topbar
-    var tbr = document.querySelector('#admin .tbr');
-    if (tbr && !document.getElementById('imp-btn')) {
-      var btn = document.createElement('button');
-      btn.id = 'imp-btn';
-      btn.className = 'btn btn-s';
-      btn.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#64748b;';
-      btn.textContent = '👁 View as writer';
-      btn.addEventListener('click', function(){ document.getElementById('imp-modal').classList.add('open'); });
-      tbr.insertBefore(btn, tbr.firstChild);
-    }
-    // Also for david
-    var tbrD = document.querySelector('#david .tbr');
-    if (tbrD && !document.getElementById('imp-btn-d')) {
-      var btnD = document.createElement('button');
-      btnD.id = 'imp-btn-d';
-      btnD.className = 'btn btn-s';
-      btnD.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#64748b;';
-      btnD.textContent = '👁 View as writer';
-      btnD.addEventListener('click', function(){ document.getElementById('imp-modal').classList.add('open'); });
-      tbrD.insertBefore(btnD, tbrD.firstChild);
-    }
+    // Add "Switch view" button to both admin and david topbars
+    [['admin','imp-btn'],['david','imp-btn-d']].forEach(function(pair) {
+      var sc = pair[0], btnId = pair[1];
+      var tbr = document.querySelector('#' + sc + ' .tbr');
+      if (tbr && !document.getElementById(btnId)) {
+        var btn = document.createElement('button');
+        btn.id = btnId;
+        btn.className = 'btn btn-s';
+        btn.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#94a3b8;background:transparent;';
+        btn.textContent = '👁 Switch view';
+        btn.addEventListener('click', function(){ document.getElementById('imp-modal').classList.add('open'); });
+        tbr.insertBefore(btn, tbr.firstChild);
+      }
+    });
   }
 
   // ── GOOGLE OAUTH via Supabase ──────────────────────────────────────────
@@ -4267,10 +4263,18 @@ function init(){
 
     // Handle role views
     var targetScreen, bannerLabel;
-    if (sel === '__admin__') {
+    if (sel === '__writer_self__') {
+      // Admin viewing their own writer dashboard
+      targetScreen = 'writer'; bannerLabel = '✍️ Viewing as writer (Sheperd Morena)';
+      impersonating = '__writer_self__';
+      currentWriterEmail = currentUser.email;
+      activeRole = 'writer';
+      updateTopbars({ name: 'Sheperd Morena (writer)', initials: 'SM', av: '' });
+      goScreen('writer'); loadWriterDrafts();
+    } else if (sel === '__admin__') {
       targetScreen = 'admin'; bannerLabel = '⚡ Viewing Admin dashboard';
       impersonating = '__admin__'; activeRole = 'admin';
-      updateTopbars({ name: 'Sheperd M. (viewing)', initials: 'SM', av: 'b' });
+      updateTopbars({ name: 'Sheperd Morena (viewing)', initials: 'SM', av: 'b' });
       goScreen('admin'); loadPipeline(); loadReviewQ();
     } else if (sel === '__david__') {
       targetScreen = 'david'; bannerLabel = '✅ Viewing Manager dashboard';
