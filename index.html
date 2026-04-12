@@ -2229,7 +2229,8 @@ async function scrapePublishedArticles(listId, countId) {
       }
 
       // Update status
-      if (list) list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping pages ' + page + '–' + Math.min(page+BATCH-1, totalPages) + ' of ' + totalPages + '...</p>';
+      if (list) list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping pages ' + page + '–' + Math.min(page+BATCH-1, totalPages) + ' of ' + totalPages + '... (' + allLinks.length + ' found so far)</p>';
+      console.log('Scraping batch starting page', page, '— links so far:', allLinks.length);
 
       // Scrape batch in parallel
       var batchResults = await Promise.allSettled(batch.map(function(url) {
@@ -2247,14 +2248,17 @@ async function scrapePublishedArticles(listId, countId) {
         if (!data.success || !data.data || !data.data.markdown) return;
         var md = data.data.markdown;
         // Match [title](https://fxify.com/blog/article-slug/)
-        var re = /\[([^\]]{10,120})\]\((https:\/\/fxify\.com\/blog\/[a-z0-9][a-z0-9\-]+\/)\)/g;
+        // Extract all fxify.com/blog/ links from markdown
+        var re = /\[([^\]]{5,150})\]\((https?:\/\/fxify\.com\/blog\/[^)\s]+)\)/g;
         var match;
         while ((match = re.exec(md)) !== null) {
           var title = match[1].trim();
-          var url = match[2].trim();
-          // Skip category/pagination links
-          if (url.includes('/category/') || url.includes('/page/') || url.includes('/?')) continue;
-          if (title.length < 10 || title.match(/^(Read More|Guides|Updates|Spotlight|Trading)/i)) continue;
+          var url = match[2].trim().replace(/\/$/, '') + '/';
+          // Skip category/pagination/tag links
+          if (url.includes('/category/') || url.includes('/page/') || url.includes('/tag/') || url.includes('/?')) continue;
+          // Skip nav/footer text
+          if (title.match(/^(Read More|Guides|Updates|Spotlight|Trading Culture|Prop Trading|General|Programs|Support|Blog$)/i)) continue;
+          if (title.length < 8) continue;
           if (!seen[url]) {
             seen[url] = true;
             allLinks.push({ title: title, url: url });
@@ -2293,7 +2297,8 @@ async function scrapePublishedArticles(listId, countId) {
         if (insertErrors.length) {
           toast('Save failed: ' + insertErrors[0]);
         } else {
-          toast(rows.length + ' articles saved to Supabase ✓ — permanent from now on');
+          console.log('Saved', rows.length, 'articles to Supabase');
+    toast(rows.length + ' articles saved to Supabase ✓ — permanent from now on');
         }
       }
     }
@@ -2836,153 +2841,6 @@ function wireMeta() {
 // ── PUBLISHED ARTICLES ────────────────────────────────────────────────────
 var publishedCache = null;
 
-async function scrapePublishedArticles(listId, countId) {
-  var list = document.getElementById(listId);
-  if (!list) return;
-  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping fxify.com/blog — this takes ~30 seconds...</p>';
-
-  try {
-    var allLinks = [];
-    var seen = {};
-    var totalPages = 32;
-    var BATCH = 4; // scrape 4 pages at a time
-
-    for (var page = 1; page <= totalPages; page += BATCH) {
-      // Build batch of page URLs
-      var batch = [];
-      for (var p = page; p < page + BATCH && p <= totalPages; p++) {
-        batch.push(p === 1 ? 'https://fxify.com/blog' : 'https://fxify.com/blog/page/' + p);
-      }
-
-      // Update status
-      if (list) list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping pages ' + page + '–' + Math.min(page+BATCH-1, totalPages) + ' of ' + totalPages + '...</p>';
-
-      // Scrape batch in parallel
-      var batchResults = await Promise.allSettled(batch.map(function(url) {
-        return fetch('https://api.firecrawl.dev/v1/scrape', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
-          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
-        }).then(function(r){ return r.json(); });
-      }));
-
-      var pageHadLinks = false;
-      batchResults.forEach(function(result) {
-        if (result.status !== 'fulfilled') return;
-        var data = result.value;
-        if (!data.success || !data.data || !data.data.markdown) return;
-        var md = data.data.markdown;
-        // Match [title](https://fxify.com/blog/article-slug/)
-        var re = /\[([^\]]{10,120})\]\((https:\/\/fxify\.com\/blog\/[a-z0-9][a-z0-9\-]+\/)\)/g;
-        var match;
-        while ((match = re.exec(md)) !== null) {
-          var title = match[1].trim();
-          var url = match[2].trim();
-          // Skip category/pagination links
-          if (url.includes('/category/') || url.includes('/page/') || url.includes('/?')) continue;
-          if (title.length < 10 || title.match(/^(Read More|Guides|Updates|Spotlight|Trading)/i)) continue;
-          if (!seen[url]) {
-            seen[url] = true;
-            allLinks.push({ title: title, url: url });
-            pageHadLinks = true;
-          }
-        }
-      });
-
-      // If no links found in this batch and we're past page 8, stop early
-      if (!pageHadLinks && page > 8) break;
-    }
-
-    publishedCache = allLinks;
-
-    // Render in the dedicated list page
-    renderPublishedArticles(allLinks, listId, countId);
-
-    // ── SAVE TO SUPABASE published_articles table ───────────────────────
-    if (allLinks.length > 0) {
-      var rows = allLinks.map(function(a) {
-        return { title: a.title, url: a.url, scraped_at: new Date().toISOString() };
-      });
-      // Clear old records then insert fresh batch
-      var deleteRes = await supa.from('published_articles').delete().neq('url', '');
-      if (deleteRes.error) {
-        console.error('Delete error:', deleteRes.error);
-        toast('Save failed (delete): ' + deleteRes.error.message);
-      } else {
-        // Insert in batches of 50
-        var insertErrors = [];
-        for (var b = 0; b < rows.length; b += 50) {
-          var batch = rows.slice(b, b + 50);
-          var insertRes = await supa.from('published_articles').insert(batch);
-          if (insertRes.error) { insertErrors.push(insertRes.error.message); console.error('Insert error:', insertRes.error); }
-        }
-        if (insertErrors.length) {
-          toast('Save failed: ' + insertErrors[0]);
-        } else {
-          toast(rows.length + ' articles saved to Supabase ✓ — permanent from now on');
-        }
-      }
-    }
-
-    // ── RENDER IN PIPELINE LIVE COLUMN ──────────────────────────────────
-    renderLiveColumnFromPublished(allLinks);
-
-  } catch(e) {
-    if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Error: ' + e.message + '</p>';
-    toast('Scrape failed — check Firecrawl key');
-  }
-}
-
-async function loadPublishedFromSupabase() {
-  try {
-    // Load all published articles from Supabase on startup
-    var res = await supa.from('published_articles').select('*').order('scraped_at', { ascending: false });
-    if (res.error || !res.data || !res.data.length) return;
-
-    var articles = res.data.map(function(r) { return { title: r.title, url: r.url }; });
-    publishedCache = articles;
-
-    // Populate Live column permanently
-    renderLiveColumnFromPublished(articles);
-
-    // Update count
-    var cnt = document.getElementById('cnt-live');
-    if (cnt) cnt.textContent = articles.length;
-
-    console.log('Loaded ' + articles.length + ' published articles from Supabase');
-  } catch(e) {
-    console.warn('Could not load published articles:', e);
-  }
-}
-
-function renderLiveColumnFromPublished(articles) {
-  var col = document.getElementById('col-live');
-  var cnt = document.getElementById('cnt-live');
-  if (!col) return;
-
-  if (cnt) cnt.textContent = articles.length;
-
-  // Clear any existing scraped cards (keep Supabase Live articles at top)
-  var existingScraped = col.querySelectorAll('.pipeline-scraped-card');
-  existingScraped.forEach(function(c){ c.remove(); });
-
-  // Add scraped articles as compact pipeline cards
-  articles.forEach(function(article) {
-    var card = document.createElement('div');
-    card.className = 'pipeline-scraped-card';
-    card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:10px 12px;margin-bottom:6px;cursor:pointer;';
-    card.onmouseenter = function(){ card.style.borderColor='var(--green)'; };
-    card.onmouseleave = function(){ card.style.borderColor='var(--border)'; };
-    card.innerHTML =
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
-        '<p style="font-size:12px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">' + article.title + '</p>' +
-        '<div style="display:flex;gap:4px;flex-shrink:0;">' +
-          '<a href="' + article.url + '" target="_blank" style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--tealL);color:var(--teal);text-decoration:none;font-weight:600;">Live ↗</a>' +
-        '</div>' +
-      '</div>';
-    col.appendChild(card);
-  });
-}
 
 function renderPublishedArticles(articles, listId, countId, filter) {
   var list = document.getElementById(listId);
