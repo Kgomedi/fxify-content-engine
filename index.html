@@ -2305,9 +2305,9 @@ function initEditor(content) {
     }
     // Live keyword count in sidebar
     if (currentArt && currentArt.primary_kw) {
-      var txt = el.innerText || el.textContent || '';
+      var txt = (el.innerText || el.textContent || '').toLowerCase();
       var kw = currentArt.primary_kw.toLowerCase();
-      var count = (txt.toLowerCase().match(new RegExp(kw.replace(/[.*+?^${}()|[\]\]/g,'\$&'), 'g')) || []).length;
+      var count = txt.split(kw).length - 1;
       var kwEl = document.getElementById('ed-kw');
       if (kwEl) kwEl.textContent = currentArt.primary_kw + ' (' + count + 'x)';
     }
