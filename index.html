@@ -421,7 +421,7 @@ select.finput{cursor:pointer;}
 .img-placeholder{width:100%;height:180px;background:linear-gradient(135deg,#f8fafc,#f1f5f9);border-radius:12px;border:2px dashed #cbd5e1;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;margin:24px 0;transition:.2s;gap:8px;position:relative;overflow:hidden;}
 .img-placeholder::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(45deg,transparent,transparent 10px,rgba(14,196,173,.03) 10px,rgba(14,196,173,.03) 11px);}
 .img-placeholder:hover{border-color:var(--tealB);background:linear-gradient(135deg,#e8f7f4,#d1fae5);}
-.img-placeholder span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;font-weight:500;position:relative;}
+.img-placeholder span{font-size:12px;color:var(--muted);letter-spacing:.02em;font-weight:400;position:relative;text-align:center;}
 .img-placeholder .ip-icon{font-size:28px;position:relative;}
 
 /* INTERNAL LINKS PANEL */
@@ -2175,6 +2175,11 @@ function parseArt(text,kw){
 
   function pr(s){
     s=s.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
+    // Handle unclosed bold — ** at start or end without closing
+    s=s.replace(/\*\*([^*]+)$/,'<strong>$1</strong>');
+    s=s.replace(/^\*\*(.+)/,'<strong>$1</strong>');
+    // Strip any remaining raw **
+    s=s.replace(/\*\*/g,'');
     s=s.replace(/\[INTERNAL LINK: ([^\]]+)\]/g,'<a class="int-link" href="#">$1 ↗</a>');
     s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a class="int-link" href="$2" target="_blank">$1 ↗</a>');
     if(kre) s=s.replace(kre,'<span class="kw-hl">$1</span>');
@@ -2197,13 +2202,20 @@ function parseArt(text,kw){
     if(/^---+$/.test(l) && !inTable){ flush(); out+='<hr style="border:none;border-top:1px solid var(--border);margin:24px 0;">'; return; }
 
     // Image placeholder
-    if(l.startsWith('[VISUAL:') || l.startsWith('[IMAGE')){
+    if(l.startsWith('[VISUAL:') || l.startsWith('[IMAGE') || l.startsWith('[Visual:')){
       flush();
-      var cap=l.replace(/^\[VISUAL:/,'').replace(/^\[IMAGE[^\]]*\]/,'').replace(/\]$/,'').trim();
+      // Extract caption cleanly
+      var cap = l
+        .replace(/^\[VISUAL:\s*/i,'')
+        .replace(/^\[IMAGE[^\]]*\]\s*/,'')
+        .replace(/\]\s*$/,'')
+        .trim();
+      // Clean up any markdown artifacts
+      cap = cap.replace(/\*\*/g,'').replace(/^[A-Z\s]+$/g, function(s){ return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase(); });
       out+='<div class="img-placeholder" data-imgplaceholder="true">' +
-        '<div style="font-size:28px;pointer-events:none;">[IMAGE]</div>' +
-        '<span style="font-size:12px;color:var(--muted);pointer-events:none;text-align:center;padding:0 16px;">'+cap+'</span>' +
-        '<span style="font-size:10px;color:var(--tealB);font-weight:600;pointer-events:none;margin-top:4px;">Click to upload</span>' +
+        '<div style="font-size:24px;pointer-events:none;color:#94a3b8;">[IMAGE]</div>' +
+        '<span style="font-size:12px;color:var(--muted);pointer-events:none;text-align:center;padding:0 20px;line-height:1.5;">'+cap+'</span>' +
+        '<span style="font-size:10px;color:var(--tealB);font-weight:500;pointer-events:none;margin-top:6px;letter-spacing:.04em;">Click to upload</span>' +
         '</div>';
       return;
     }
@@ -5192,7 +5204,15 @@ var currentOutline = '';
 var currentBriefData = null;
 
 async function generateOutline() {
-  if (!currentBriefData) { toast('Fill in the brief first'); return; }
+  // Always read fresh from form
+  currentBriefData = {
+    title: (document.getElementById('b-title') ? document.getElementById('b-title').value.trim() : '') || (currentBriefData ? currentBriefData.title : ''),
+    cat: document.getElementById('b-cat') ? document.getElementById('b-cat').value : 'Guides',
+    len: document.getElementById('b-len') ? document.getElementById('b-len').value : 'Standard guide — 800 words',
+    tone: document.querySelector('.topt.active') ? document.querySelector('.topt.active').textContent.trim() : 'Educational',
+    pkw: (document.getElementById('b-pkw') ? document.getElementById('b-pkw').value.trim() : '') || (currentBriefData ? currentBriefData.pkw : ''),
+  };
+  if (!currentBriefData.title) { toast('Add a title to the brief first'); return; }
   var btn = document.getElementById('outline-btn');
   var loading = document.getElementById('outline-loading');
   var result = document.getElementById('outline-result');
@@ -5680,16 +5700,32 @@ function init(){
   });
 
   // Generate
+  // Update brief data whenever title changes
+  var bTitle = document.getElementById('b-title');
+  if (bTitle) bTitle.addEventListener('input', function() {
+    var title = bTitle.value.trim();
+    if (title) {
+      currentBriefData = {
+        title: title,
+        cat: document.getElementById('b-cat').value,
+        len: document.getElementById('b-len').value,
+        tone: document.querySelector('.topt.active') ? document.querySelector('.topt.active').textContent.trim() : 'Educational',
+        pkw: (document.getElementById('b-pkw').value || '').trim() || title.toLowerCase(),
+      };
+      var outlineSection = document.getElementById('outline-section');
+      if (outlineSection) outlineSection.style.display = 'block';
+    }
+  });
+
   document.getElementById('gen-btn').addEventListener('click', function() {
-    // Store brief data for outline generator
+    // Always refresh brief data on generate
     currentBriefData = {
       title: document.getElementById('b-title').value.trim(),
       cat: document.getElementById('b-cat').value,
       len: document.getElementById('b-len').value,
       tone: document.querySelector('.topt.active') ? document.querySelector('.topt.active').textContent.trim() : 'Educational',
-      pkw: document.getElementById('b-pkw').value.trim(),
+      pkw: (document.getElementById('b-pkw').value || '').trim() || document.getElementById('b-title').value.trim().toLowerCase(),
     };
-    // Show outline section
     var outlineSection = document.getElementById('outline-section');
     if (outlineSection && currentBriefData.title) outlineSection.style.display = 'block';
     generate();
