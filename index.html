@@ -614,6 +614,7 @@ select.finput{cursor:pointer;}
       <div class="ndiv"></div>
       <div class="ngrp">Content</div>
       <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico">▲</span>Analytics</div>
+      <div class="nlink" data-pg="a-youtube" data-sc="admin"><span class="nico">▶</span>YouTube SEO</div>
       <div class="ndiv"></div>
       <div class="ngrp">Settings</div>
       <div class="nlink" data-pg="a-writers" data-sc="admin"><span class="nico">≡</span>Writers</div>
@@ -733,6 +734,29 @@ select.finput{cursor:pointer;}
         <div id="gen-banner" style="display:none;">
           <div class="rbanner"><div class="rbt"><p>Draft created ✓</p><p id="gen-sub">Loading...</p></div><button class="btn btn-p btn-s" id="open-ed-btn">Open in editor →</button></div>
         </div>
+
+        <!-- OUTLINE GENERATOR -->
+        <div id="outline-section" style="margin-top:16px;display:none;">
+          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
+            <div style="background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <p style="font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;">Step 1 — Generate outline first</p>
+                <p style="font-size:11px;color:#475569;">Claude writes the structure. You approve it. Then it generates the full draft in sections — no more cutoffs.</p>
+              </div>
+              <button class="btn btn-p btn-s" id="outline-btn">Generate outline →</button>
+            </div>
+            <div id="outline-loading" style="display:none;padding:20px;text-align:center;">
+              <p style="font-size:13px;color:var(--muted);">Building outline...</p>
+            </div>
+            <div id="outline-result" style="display:none;padding:16px 20px;">
+              <div id="outline-content" style="background:var(--bg2);border-radius:var(--r);padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:12px;white-space:pre-wrap;"></div>
+              <div style="display:flex;gap:8px;">
+                <button class="btn btn-p" id="outline-approve-btn">Approve & generate full draft →</button>
+                <button class="btn btn-s" id="outline-regenerate-btn">Regenerate outline</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
 
       <!-- REVIEW QUEUE -->
@@ -783,6 +807,23 @@ select.finput{cursor:pointer;}
       <div id="a-prompts" class="pg">
         <div class="pgh">Prompt Library</div>
         <p class="pgs">The master template used when generating every article draft</p>
+        <div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:16px 20px;margin-bottom:20px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
+            <div>
+              <p style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;">AI Feedback Loop</p>
+              <p style="font-size:12px;color:#475569;line-height:1.5;">Claude reads all Send Back notes, inline comments and suggestions from Liam and David — extracts recurring patterns — and injects them into every new generation automatically.</p>
+              <p style="font-size:11px;color:var(--tealB);margin-top:6px;" id="feedback-count">Loading feedback data...</p>
+            </div>
+            <button class="btn btn-p" id="train-ai-btn" style="white-space:nowrap;flex-shrink:0;">Train AI on feedback →</button>
+          </div>
+          <div id="train-loading" style="display:none;margin-top:12px;padding:10px;background:rgba(255,255,255,.04);border-radius:var(--r);">
+            <p style="font-size:12px;color:#94a3b8;">Claude is reading all reviewer feedback...</p>
+          </div>
+          <div id="train-result" style="display:none;margin-top:12px;">
+            <p style="font-size:11px;font-weight:600;color:var(--tealB);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Active prompt rules (learned from feedback)</p>
+            <div id="train-rules" style="background:rgba(255,255,255,.04);border-radius:var(--r);padding:12px 14px;font-size:12px;color:#94a3b8;line-height:1.8;"></div>
+          </div>
+        </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:13px;font-weight:500;">FXIFY Blog Draft Prompt</span><span class="badge bt">Active</span></div>
         <div class="pbox"><pre><span class="pc">FXIFY Blog Draft Prompt</span>
 <span class="pv">Topic:</span> [Insert topic]
@@ -854,6 +895,40 @@ select.finput{cursor:pointer;}
         </div>
       </div>
 
+      <!-- YOUTUBE SEO (admin) -->
+      <div id="a-youtube" class="pg">
+        <div class="pgh">YouTube SEO</div>
+        <p class="pgs">Research topics, generate titles, descriptions and tags — powered by Firecrawl + Claude ▶</p>
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:16px;">
+          <div class="fg">
+            <label class="flbl">Video topic or keyword</label>
+            <input class="finput" id="ayt-topic" type="text" placeholder="e.g. prop trading drawdown, how to pass FXIFY challenge"/>
+          </div>
+          <div class="frow fg">
+            <div><label class="flbl">Video type</label><select class="finput" id="ayt-type"><option>Tutorial / How-to</option><option>Market analysis</option><option>Prop firm explainer</option><option>Trader psychology</option><option>News / Update</option><option>Challenge walkthrough</option></select></div>
+            <div><label class="flbl">Target audience</label><select class="finput" id="ayt-audience"><option>Aspiring funded traders</option><option>Active prop traders</option><option>Forex beginners</option><option>Experienced traders</option></select></div>
+          </div>
+          <div class="fg">
+            <label class="flbl">Competitor YouTube channels <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label>
+            <textarea class="finput" id="ayt-competitors" rows="3" placeholder="https://www.youtube.com/@FTMO&#10;https://www.youtube.com/@TopstepTrader" style="resize:vertical;min-height:80px;"></textarea>
+          </div>
+          <button class="btn btn-p" style="min-width:200px;" id="ayt-research-btn">▶ Research &amp; Generate</button>
+        </div>
+        <div id="ayt-loading" style="display:none;text-align:center;padding:40px 20px;">
+          <div style="font-size:28px;margin-bottom:12px;">▶</div>
+          <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="ayt-loading-txt">Scraping competitor channels...</p>
+          <p style="font-size:12px;color:var(--muted);">15-30 seconds</p>
+        </div>
+        <div id="ayt-results" style="display:none;">
+          <div class="shead">Keyword & topic gaps</div>
+          <div id="ayt-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
+          <div class="shead">Video ideas — with full SEO</div>
+          <div id="ayt-videos" style="display:grid;gap:12px;margin-bottom:20px;"></div>
+          <div class="shead">Questions people search on YouTube</div>
+          <div id="ayt-questions" style="display:grid;gap:8px;margin-bottom:20px;"></div>
+        </div>
+      </div>
+
       <!-- DAVID APPROVAL (accessible when David uses admin screen) -->
       <div id="da-approval" class="pg">
         <div class="pgh">Final Approval</div>
@@ -889,6 +964,7 @@ select.finput{cursor:pointer;}
       <div class="ndiv"></div>
       <div class="ngrp">Resources</div>
       <div class="nlink" data-pg="w-style" data-sc="writer"><span class="nico">≡</span>Style Guide</div>
+      <div class="nlink" data-pg="w-youtube" data-sc="writer"><span class="nico">▶</span>YouTube SEO</div>
     </nav>
     <div class="ma">
       <div id="w-drafts" class="pg active">
@@ -908,6 +984,76 @@ select.finput{cursor:pointer;}
         <p class="pgs">Articles you've submitted — with Sheperd now.</p>
         <div id="w-sub-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No submitted articles yet.</p></div>
       </div>
+      <div id="w-youtube" class="pg">
+        <div class="pgh">YouTube SEO</div>
+        <p class="pgs">Research topics, generate titles, descriptions and tags — powered by Firecrawl + Claude ▶</p>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:16px;">
+
+          <!-- Step 1: Seed topic -->
+          <div class="fg">
+            <label class="flbl">Video topic or keyword</label>
+            <input class="finput" id="yt-topic" type="text" placeholder="e.g. prop trading drawdown, how to pass FXIFY challenge, forex risk management"/>
+          </div>
+
+          <div class="frow fg">
+            <div>
+              <label class="flbl">Video type</label>
+              <select class="finput" id="yt-type">
+                <option>Tutorial / How-to</option>
+                <option>Market analysis</option>
+                <option>Prop firm explainer</option>
+                <option>Trader psychology</option>
+                <option>News / Update</option>
+                <option>Challenge walkthrough</option>
+              </select>
+            </div>
+            <div>
+              <label class="flbl">Target audience</label>
+              <select class="finput" id="yt-audience">
+                <option>Aspiring funded traders</option>
+                <option>Active prop traders</option>
+                <option>Forex beginners</option>
+                <option>Experienced traders</option>
+              </select>
+            </div>
+          </div>
+
+          <!-- Step 2: Competitor channels -->
+          <div class="fg">
+            <label class="flbl">Competitor YouTube channels <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label>
+            <textarea class="finput" id="yt-competitors" rows="3" placeholder="https://www.youtube.com/@FTMO&#10;https://www.youtube.com/@MyForexFunds&#10;https://www.youtube.com/@TopstepTrader" style="resize:vertical;min-height:80px;"></textarea>
+            <p style="font-size:11px;color:var(--muted);margin-top:4px;">Paste YouTube channel URLs — we'll scrape their video titles to find gaps</p>
+          </div>
+
+          <button class="btn btn-p" style="min-width:200px;" id="yt-research-btn">▶ Research &amp; Generate</button>
+        </div>
+
+        <!-- Loading state -->
+        <div id="yt-loading" style="display:none;text-align:center;padding:40px 20px;">
+          <div style="font-size:28px;margin-bottom:12px;">▶</div>
+          <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="yt-loading-txt">Scraping competitor channels...</p>
+          <p style="font-size:12px;color:var(--muted);">This takes 15-30 seconds</p>
+        </div>
+
+        <!-- Results -->
+        <div id="yt-results" style="display:none;">
+
+          <!-- Keyword gaps -->
+          <div class="shead">Keyword & topic gaps</div>
+          <div id="yt-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
+
+          <!-- Video ideas with full SEO package -->
+          <div class="shead">Video ideas — with full SEO</div>
+          <div id="yt-videos" style="display:grid;gap:12px;margin-bottom:20px;"></div>
+
+          <!-- PAA / search questions -->
+          <div class="shead">Questions people search on YouTube</div>
+          <div id="yt-questions" style="display:grid;gap:8px;margin-bottom:20px;"></div>
+
+        </div>
+      </div>
+
       <div id="w-style" class="pg">
         <div class="pgh">Blog Playbook</div>
         <p class="pgs">The FXIFY standard. Every article ships with this. No exceptions. 📋</p>
@@ -1469,6 +1615,8 @@ function goPage(sc,pg,navEl){
   if(pg==='d-pipeline') loadDavidPipeline();
   if(pg==='d-analytics') loadDavidAnalytics();
   if(pg==='a-analytics') loadAnalytics();
+  if(pg==='w-youtube') initYouTubePage('yt');
+  if(pg==='a-youtube') initYouTubePage('ayt');
 }
 
 function closeSB(){
@@ -2572,6 +2720,17 @@ async function addComment(content, quote) {
   if (res.error) { toast('Failed to post comment'); return; }
   loadComments(currentArt.id);
   toast('Comment dropped ');
+  // Save to feedback loop if reviewer role
+  if (currentRole && currentRole !== 'writer' && currentArt) {
+    saveFeedback({
+      article_id: currentArt.id,
+      article_title: currentArt.title || '',
+      reviewer: currentUser ? currentUser.name : 'Reviewer',
+      reviewer_role: currentRole,
+      type: 'comment',
+      note: content + (quote ? ' [on: "' + quote.substring(0, 80) + '"]' : '')
+    });
+  }
 }
 
 function wireComments() {
@@ -4397,23 +4556,8 @@ function renderPlannerResults(plan) {
       // Click to use topic
       card.querySelector('[data-use-topic]').addEventListener('click', function(e) {
         e.stopPropagation();
-        // Pre-fill generate form
-        var titleEl = document.getElementById('b-title');
-        var kwEl = document.getElementById('b-pkw');
-        var catEl = document.getElementById('b-cat');
-        if (titleEl) titleEl.value = t.title;
-        if (kwEl) kwEl.value = t.keyword || '';
-        if (catEl) {
-          var opts = catEl.options;
-          for (var i = 0; i < opts.length; i++) {
-            if (opts[i].value === t.category) { catEl.selectedIndex = i; break; }
-          }
-        }
-        // Switch to generate page
-        document.querySelector('[data-pg="a-generate"]').click();
-        toast('Brief pre-filled — add details and generate done');
+        prefillBriefFromPlanner(t);
       });
-
       topicsEl.appendChild(card);
     });
   }
@@ -4695,6 +4839,431 @@ async function loadPublishingBadge() {
   if (count > 0) {
     toast('📢 ' + count + ' article' + (count > 1 ? 's' : '') + ' ready to publish — David approved!');
   }
+}
+
+// ── YOUTUBE SEO ENGINE ───────────────────────────────────────────────────
+function initYouTubePage(prefix) {
+  var btn = document.getElementById(prefix + '-research-btn');
+  if (!btn || btn._ytWired) return;
+  btn._ytWired = true;
+  btn.addEventListener('click', function(){ runYouTubeResearch(prefix); });
+}
+
+async function runYouTubeResearch(prefix) {
+  var topic = (document.getElementById(prefix + '-topic').value || '').trim();
+  if (!topic) { toast('Add a video topic first'); return; }
+
+  var type = document.getElementById(prefix + '-type').value;
+  var audience = document.getElementById(prefix + '-audience').value;
+  var competitorRaw = (document.getElementById(prefix + '-competitors').value || '').trim();
+  var competitorUrls = competitorRaw ? competitorRaw.split('\n').filter(Boolean) : [];
+
+  var btn = document.getElementById(prefix + '-research-btn');
+  var loading = document.getElementById(prefix + '-loading');
+  var loadTxt = document.getElementById(prefix + '-loading-txt');
+  var results = document.getElementById(prefix + '-results');
+
+  btn.disabled = true; btn.textContent = 'Researching...';
+  loading.style.display = 'block'; results.style.display = 'none';
+
+  // Scrape competitor channels
+  var competitorData = '';
+  if (competitorUrls.length) {
+    if (loadTxt) loadTxt.textContent = 'Scraping ' + competitorUrls.length + ' competitor channel(s)...';
+    competitorData = await scrapeUrls(competitorUrls);
+  }
+
+  if (loadTxt) loadTxt.textContent = 'Claude is building your YouTube strategy...';
+
+  var prompt =
+    'You are a YouTube SEO strategist specialising in prop trading and forex content. FXIFY YouTube Channel covers trading education, market analysis, prop firm explainers, trader psychology and challenge walkthroughs.\n\n' +
+    'RESEARCH REQUEST:\n' +
+    'Topic/keyword: ' + topic + '\n' +
+    'Video type: ' + type + '\n' +
+    'Target audience: ' + audience + '\n' +
+    (competitorData ? 'COMPETITOR CHANNEL DATA (scraped):\n' + competitorData + '\n\n' : '') +
+    'Respond ONLY with valid JSON:\n' +
+    '{\n' +
+    '  "gaps": ["topic gap 1","gap 2","gap 3","gap 4","gap 5"],\n' +
+    '  "videos": [{\n' +
+    '    "title": "Exact YouTube title under 60 chars keyword-first",\n' +
+    '    "hook": "First 2 sentences to hook the viewer",\n' +
+    '    "description": "Full YouTube description 150 words keyword in first 2 sentences",\n' +
+    '    "tags": ["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8"],\n' +
+    '    "thumbnail_concept": "Ideal thumbnail description",\n' +
+    '    "chapters": ["0:00 Intro","1:30 Section"],\n' +
+    '    "keyword": "primary keyword",\n' +
+    '    "search_volume": "High or Medium or Low",\n' +
+    '    "competition": "High or Medium or Low",\n' +
+    '    "angle": "What makes this different from competitors"\n' +
+    '  }],\n' +
+    '  "questions": ["YouTube search question 1?","Q2?","Q3?","Q4?","Q5?"]\n' +
+    '}\n\n' +
+    'Generate 5 gaps, 5 video ideas with full SEO, 5 search questions. No text outside JSON.';
+
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 4000 })
+    });
+    var data = await r.json();
+    var text = '';
+    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
+    else if (data.content && data.content[0]) text = data.content[0].text;
+    else if (data.text) text = data.text;
+
+    var jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON in response');
+    var plan = JSON.parse(jsonMatch[0]);
+
+    renderYouTubeResults(plan, prefix);
+    loading.style.display = 'none';
+    results.style.display = 'block';
+    toast('YouTube strategy ready ▶');
+
+  } catch(e) {
+    loading.style.display = 'none';
+    toast('Error: ' + e.message);
+    console.error(e);
+  }
+
+  btn.disabled = false; btn.textContent = '▶ Research & Generate';
+}
+
+function renderYouTubeResults(plan, prefix) {
+  var gapsEl = document.getElementById(prefix + '-gaps');
+  if (gapsEl && plan.gaps) {
+    gapsEl.innerHTML = '';
+    plan.gaps.forEach(function(g) {
+      var chip = document.createElement('div');
+      chip.style.cssText = 'background:#fef2f2;border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--urgent);font-weight:500;';
+      chip.textContent = g;
+      gapsEl.appendChild(chip);
+    });
+  }
+  var videosEl = document.getElementById(prefix + '-videos');
+  if (videosEl && plan.videos) {
+    videosEl.innerHTML = '';
+    plan.videos.forEach(function(v) {
+      var desc = v.description || '';
+      var tags = v.tags || [];
+      var tagsStr = tags.join(', ');
+      var volColor = v.search_volume === 'High' ? 'var(--green)' : v.search_volume === 'Medium' ? 'var(--amber)' : 'var(--muted)';
+      var compColor = v.competition === 'High' ? 'var(--urgent)' : v.competition === 'Medium' ? 'var(--amber)' : 'var(--green)';
+
+      var card = document.createElement('div');
+      card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:4px;';
+
+      // Header
+      var hdr = document.createElement('div');
+      hdr.style.cssText = 'background:var(--navy);padding:14px 16px;';
+      var title = document.createElement('p');
+      title.style.cssText = 'font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3;';
+      title.textContent = v.title || '';
+      var meta = document.createElement('div');
+      meta.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
+      [[v.keyword||'','var(--blueL)','var(--blue)'],['Volume: '+(v.search_volume||'--'),'var(--greenL)',volColor],['Competition: '+(v.competition||'--'),'var(--urgentL)',compColor]].forEach(function(s){
+        var sp = document.createElement('span');
+        sp.style.cssText = 'font-size:10px;padding:2px 8px;border-radius:20px;background:'+s[1]+';color:'+s[2]+';';
+        sp.textContent = s[0]; meta.appendChild(sp);
+      });
+      hdr.appendChild(title); hdr.appendChild(meta); card.appendChild(hdr);
+
+      // Hook
+      var hookDiv = document.createElement('div');
+      hookDiv.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);background:var(--tealL);';
+      var hookLbl = document.createElement('p');
+      hookLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
+      hookLbl.textContent = 'Opening hook';
+      var hookTxt = document.createElement('p');
+      hookTxt.style.cssText = 'font-size:13px;color:#0f172a;font-style:italic;line-height:1.5;';
+      hookTxt.textContent = v.hook || '';
+      hookDiv.appendChild(hookLbl); hookDiv.appendChild(hookTxt); card.appendChild(hookDiv);
+
+      // Angle
+      var angleDiv = document.createElement('div');
+      angleDiv.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
+      var angleLbl = document.createElement('p');
+      angleLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
+      angleLbl.textContent = 'Angle vs competitors';
+      var angleTxt = document.createElement('p');
+      angleTxt.style.cssText = 'font-size:13px;color:var(--text2);';
+      angleTxt.textContent = v.angle || '';
+      angleDiv.appendChild(angleLbl); angleDiv.appendChild(angleTxt); card.appendChild(angleDiv);
+
+      // Thumbnail
+      var thumbDiv = document.createElement('div');
+      thumbDiv.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
+      var thumbLbl = document.createElement('p');
+      thumbLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
+      thumbLbl.textContent = 'Thumbnail concept';
+      var thumbTxt = document.createElement('p');
+      thumbTxt.style.cssText = 'font-size:13px;color:var(--text2);';
+      thumbTxt.textContent = v.thumbnail_concept || '';
+      thumbDiv.appendChild(thumbLbl); thumbDiv.appendChild(thumbTxt); card.appendChild(thumbDiv);
+
+      // Description
+      var descDiv = document.createElement('div');
+      descDiv.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
+      var descLbl = document.createElement('p');
+      descLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;';
+      descLbl.textContent = 'Description';
+      var descBox = document.createElement('div');
+      descBox.style.cssText = 'background:var(--bg2);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;';
+      descBox.textContent = desc;
+      var copyDescBtn = document.createElement('button');
+      copyDescBtn.className = 'btn btn-s';
+      copyDescBtn.style.marginTop = '8px';
+      copyDescBtn.textContent = 'Copy description';
+      copyDescBtn.addEventListener('click', function(){ navigator.clipboard.writeText(desc).then(function(){ toast('Copied'); }); });
+      descDiv.appendChild(descLbl); descDiv.appendChild(descBox); descDiv.appendChild(copyDescBtn);
+      card.appendChild(descDiv);
+
+      // Tags
+      var tagsDiv = document.createElement('div');
+      tagsDiv.style.cssText = 'padding:12px 16px;';
+      var tagsLbl = document.createElement('p');
+      tagsLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;';
+      tagsLbl.textContent = 'Tags';
+      var tagsRow = document.createElement('div');
+      tagsRow.style.cssText = 'display:flex;gap:5px;flex-wrap:wrap;';
+      tags.forEach(function(t){
+        var chip = document.createElement('span');
+        chip.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg2);color:var(--text2);border:1px solid var(--border);';
+        chip.textContent = t; tagsRow.appendChild(chip);
+      });
+      var copyTagsBtn = document.createElement('button');
+      copyTagsBtn.className = 'btn btn-s';
+      copyTagsBtn.style.cssText = 'margin-top:8px;display:block;';
+      copyTagsBtn.textContent = 'Copy all tags';
+      copyTagsBtn.addEventListener('click', function(){ navigator.clipboard.writeText(tagsStr).then(function(){ toast('Tags copied'); }); });
+      tagsDiv.appendChild(tagsLbl); tagsDiv.appendChild(tagsRow); tagsDiv.appendChild(copyTagsBtn);
+      card.appendChild(tagsDiv);
+
+      videosEl.appendChild(card);
+    });
+  }
+  var qEl = document.getElementById(prefix + '-questions');
+  if (qEl && plan.questions) {
+    qEl.innerHTML = '';
+    plan.questions.forEach(function(q) {
+      var item = document.createElement('div');
+      item.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--text);margin-bottom:6px;';
+      item.textContent = q;
+      qEl.appendChild(item);
+    });
+  }
+}
+
+// ── FEEDBACK LOOP ────────────────────────────────────────────────────────
+var feedbackRules = ''; // active learned rules injected into prompts
+
+async function saveFeedback(data) {
+  try {
+    await supa.from('feedback').insert([{
+      article_id: data.article_id || null,
+      article_title: data.article_title || '',
+      reviewer: data.reviewer || '',
+      reviewer_role: data.reviewer_role || '',
+      type: data.type || 'comment',
+      note: data.note || '',
+      created_at: new Date().toISOString()
+    }]);
+    console.log('Feedback saved:', data.type, data.note.substring(0, 50));
+  } catch(e) {
+    console.warn('Could not save feedback:', e);
+  }
+}
+
+async function loadFeedbackCount() {
+  try {
+    var res = await supa.from('feedback').select('id', { count: 'exact' });
+    var countEl = document.getElementById('feedback-count');
+    if (countEl) {
+      var count = res.count || 0;
+      countEl.textContent = count + ' feedback item' + (count !== 1 ? 's' : '') + ' collected — ' + (count >= 10 ? 'ready to train' : 'need ' + (10 - count) + ' more to train');
+      countEl.style.color = count >= 10 ? 'var(--green)' : 'var(--tealB)';
+    }
+    // Load existing rules
+    var rulesRes = await supa.from('ai_rules').select('*').eq('active', true).order('created_at', { ascending: false }).limit(1);
+    if (rulesRes.data && rulesRes.data.length) {
+      feedbackRules = rulesRes.data[0].rules;
+      var rulesEl = document.getElementById('train-rules');
+      var resultEl = document.getElementById('train-result');
+      if (rulesEl) rulesEl.textContent = feedbackRules;
+      if (resultEl) resultEl.style.display = 'block';
+    }
+  } catch(e) {
+    console.warn('Could not load feedback count:', e);
+  }
+}
+
+async function trainAI() {
+  var btn = document.getElementById('train-ai-btn');
+  var loading = document.getElementById('train-loading');
+  var result = document.getElementById('train-result');
+  var rulesEl = document.getElementById('train-rules');
+
+  btn.disabled = true; btn.textContent = 'Training...';
+  loading.style.display = 'block';
+
+  try {
+    // Load all feedback
+    var res = await supa.from('feedback').select('*').order('created_at', { ascending: false }).limit(100);
+    if (!res.data || res.data.length < 3) {
+      toast('Need at least 3 feedback items to train — keep reviewing articles');
+      loading.style.display = 'none';
+      btn.disabled = false; btn.textContent = 'Train AI on feedback →';
+      return;
+    }
+
+    var feedbackText = res.data.map(function(f) {
+      return '[' + f.reviewer_role.toUpperCase() + ' - ' + f.type + '] ' + f.note;
+    }).join('\n');
+
+    var prompt = 'You are analysing editorial feedback from reviewers of a prop trading blog (FXIFY).\n\n' +
+      'FEEDBACK FROM REVIEWERS:\n' + feedbackText + '\n\n' +
+      'Extract the top 8-10 recurring issues and patterns from this feedback as concrete writing rules.\n' +
+      'Format as a numbered list. Each rule should be specific and actionable — something Claude can follow when generating an article.\n' +
+      'Example: "1. Always connect the topic back to FXIFY\'s specific programs by name (not just \'prop firms\' generally)"\n' +
+      'Only output the numbered list. No preamble. No explanation.';
+
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 1000 })
+    });
+    var data = await r.json();
+    var rules = '';
+    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) rules = data[0].content[0].text;
+    else if (data.content && data.content[0]) rules = data.content[0].text;
+    else if (data.text) rules = data.text;
+
+    if (!rules) throw new Error('No rules generated');
+
+    // Save rules to Supabase
+    await supa.from('ai_rules').insert([{
+      rules: rules,
+      active: true,
+      feedback_count: res.data.length,
+      created_at: new Date().toISOString()
+    }]);
+
+    feedbackRules = rules;
+    if (rulesEl) rulesEl.textContent = rules;
+    if (result) result.style.display = 'block';
+    loading.style.display = 'none';
+    toast('AI trained on ' + res.data.length + ' feedback items — rules active on next generation');
+
+  } catch(e) {
+    loading.style.display = 'none';
+    toast('Error: ' + e.message);
+    console.error(e);
+  }
+
+  btn.disabled = false; btn.textContent = 'Train AI on feedback →';
+}
+
+// ── OUTLINE GENERATOR ─────────────────────────────────────────────────────
+var currentOutline = '';
+var currentBriefData = null;
+
+async function generateOutline() {
+  if (!currentBriefData) { toast('Fill in the brief first'); return; }
+  var btn = document.getElementById('outline-btn');
+  var loading = document.getElementById('outline-loading');
+  var result = document.getElementById('outline-result');
+  var content = document.getElementById('outline-content');
+
+  btn.disabled = true; btn.textContent = 'Building...';
+  loading.style.display = 'block';
+  result.style.display = 'none';
+
+  var b = currentBriefData;
+  var prompt = 'You are a Senior Copywriter at FXIFY. Generate a detailed article outline only — no prose, no full sentences except where indicated.\n\n' +
+    'BRIEF:\n' +
+    'Title: ' + b.title + '\n' +
+    'Category: ' + b.cat + '\n' +
+    'Target length: ' + b.len + '\n' +
+    'Primary keyword: ' + b.pkw + '\n' +
+    'Tone: ' + b.tone + '\n\n' +
+    'OUTPUT FORMAT — follow exactly:\n' +
+    'H1: [final article title]\n\n' +
+    'INTRO (~80 words)\n' +
+    '- Key point 1 to make\n' +
+    '- Key point 2 to make\n\n' +
+    'SUMMARY TABLE\n' +
+    '- Column 1: Term | Column 2: What it means\n' +
+    '- List 4-5 rows\n\n' +
+    'TABLE OF CONTENTS\n' +
+    '- List each H2 as a bullet\n\n' +
+    '[H2: Section name] (~X words)\n' +
+    '- Key point to cover\n' +
+    '- Key point to cover\n' +
+    '- Prop account angle\n\n' +
+    '(repeat for each H2 section)\n\n' +
+    'KEY TAKEAWAYS\n' +
+    '- 5-7 actionable bullets\n\n' +
+    'FAQ\n' +
+    '- List 5 questions only (no answers in outline)\n\n' +
+    'Keep the total outline under 400 words. This is a skeleton only.';
+
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 1000 })
+    });
+    var data = await r.json();
+    var text = '';
+    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
+    else if (data.content && data.content[0]) text = data.content[0].text;
+    else if (data.text) text = data.text;
+
+    currentOutline = text;
+    if (content) content.textContent = text;
+    loading.style.display = 'none';
+    result.style.display = 'block';
+    toast('Outline ready — review and approve');
+
+  } catch(e) {
+    loading.style.display = 'none';
+    toast('Error: ' + e.message);
+  }
+
+  btn.disabled = false; btn.textContent = 'Generate outline →';
+}
+
+// ── CONTEXT CARRY-THROUGH from planner to brief ───────────────────────────
+function prefillBriefFromPlanner(topic) {
+  var titleEl = document.getElementById('b-title');
+  var kwEl = document.getElementById('b-pkw');
+  var geoEl = document.getElementById('b-geo');
+  var qEl = document.getElementById('b-q');
+  var intentEl = document.getElementById('b-intent');
+  var catEl = document.getElementById('b-cat');
+
+  if (titleEl) titleEl.value = topic.title || '';
+  if (kwEl) kwEl.value = topic.keyword || '';
+  if (geoEl) geoEl.value = topic.geo_angle || '';
+  if (qEl) qEl.value = topic.aeo_snippet || '';
+  if (intentEl && topic.intent) {
+    var opts = intentEl.options;
+    for (var i = 0; i < opts.length; i++) {
+      if (opts[i].value === topic.intent || opts[i].text === topic.intent) { intentEl.selectedIndex = i; break; }
+    }
+  }
+  if (catEl && topic.category) {
+    var copts = catEl.options;
+    for (var j = 0; j < copts.length; j++) {
+      if (copts[j].value === topic.category || copts[j].text === topic.category) { catEl.selectedIndex = j; break; }
+    }
+  }
+  // Show the outline section
+  var outlineSection = document.getElementById('outline-section');
+  if (outlineSection) outlineSection.style.display = 'block';
+  // Navigate to generate
+  var genLink = document.querySelector('[data-pg="a-generate"]');
+  if (genLink) genLink.click();
+  toast('Brief pre-filled with all context — review and generate outline first');
 }
 
 // ── GOOGLE LOGIN (top-level so it's always accessible) ───────────────────
@@ -5087,7 +5656,38 @@ function init(){
   });
 
   // Generate
-  document.getElementById('gen-btn').addEventListener('click',generate);
+  document.getElementById('gen-btn').addEventListener('click', function() {
+    // Store brief data for outline generator
+    currentBriefData = {
+      title: document.getElementById('b-title').value.trim(),
+      cat: document.getElementById('b-cat').value,
+      len: document.getElementById('b-len').value,
+      tone: document.querySelector('.topt.active') ? document.querySelector('.topt.active').textContent.trim() : 'Educational',
+      pkw: document.getElementById('b-pkw').value.trim(),
+    };
+    // Show outline section
+    var outlineSection = document.getElementById('outline-section');
+    if (outlineSection && currentBriefData.title) outlineSection.style.display = 'block';
+    generate();
+  });
+
+  // Outline buttons
+  var outlineBtn = document.getElementById('outline-btn');
+  if (outlineBtn) outlineBtn.addEventListener('click', generateOutline);
+
+  var outlineApproveBtn = document.getElementById('outline-approve-btn');
+  if (outlineApproveBtn) outlineApproveBtn.addEventListener('click', function() {
+    if (!currentOutline) { toast('Generate outline first'); return; }
+    toast('Outline approved — generating full draft in sections...');
+    generate(true); // pass true to use outline
+  });
+
+  var outlineRegenBtn = document.getElementById('outline-regenerate-btn');
+  if (outlineRegenBtn) outlineRegenBtn.addEventListener('click', generateOutline);
+
+  // Train AI button
+  var trainBtn = document.getElementById('train-ai-btn');
+  if (trainBtn) trainBtn.addEventListener('click', trainAI);
   wireReadMode();
   wireMeta();
   // Writer instruction card dismiss
@@ -5175,7 +5775,22 @@ function init(){
 
   // Sendback modal
   document.getElementById('sb-cancel').addEventListener('click',function(){document.getElementById('sbmod').classList.remove('open');sbCallback=null;});
-  document.getElementById('sb-confirm').addEventListener('click',function(){document.getElementById('sbmod').classList.remove('open');if(sbCallback){sbCallback();sbCallback=null;}});
+  document.getElementById('sb-confirm').addEventListener('click',function(){
+    // Save feedback to Supabase before executing callback
+    var note = document.getElementById('sb-note').value.trim();
+    if (note && currentArt && currentArt.id) {
+      saveFeedback({
+        article_id: currentArt.id,
+        article_title: currentArt.title || '',
+        reviewer: currentUser ? currentUser.name : 'Unknown',
+        reviewer_role: currentUser ? currentUser.role : 'unknown',
+        type: 'sendback',
+        note: note
+      });
+    }
+    document.getElementById('sbmod').classList.remove('open');
+    if(sbCallback){sbCallback();sbCallback=null;}
+  });
   document.getElementById('sbmod').addEventListener('click',function(e){if(e.target===this){this.classList.remove('open');sbCallback=null;}});
 
   // Checklist
