@@ -452,7 +452,7 @@ select.finput{cursor:pointer;}
 
 /* READ MODE */
 /* READ MODE */
-.read-mode-overlay{position:fixed;inset:0;z-index:800;background:#f9f6f1;overflow-y:auto;display:none;}
+.read-mode-overlay{position:fixed;inset:0;z-index:800;background:#ffffff;overflow-y:auto;display:none;}
 .read-mode-overlay.active{display:block;}
 .read-mode-bar{position:sticky;top:0;background:var(--navy);padding:10px 20px;display:flex;align-items:center;justify-content:space-between;z-index:801;border-bottom:1px solid rgba(14,196,173,.12);}
 .read-mode-bar-title{font-size:13px;color:#94a3b8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:50%;}
@@ -532,22 +532,29 @@ select.finput{cursor:pointer;}
 .link-broken{color:var(--urgent)!important;text-decoration-color:var(--urgent)!important;background:var(--urgentL);border-radius:2px;padding:0 2px;}
 .link-checking{opacity:.6;}
 .read-mode-close:hover{background:rgba(255,255,255,.12);}
-.read-mode-body{max-width:740px;margin:0 auto;padding:48px 24px 80px;}
-.read-mode-body h1{font-family:'Barlow Condensed',sans-serif;font-size:36px;font-weight:800;color:#0f172a;line-height:1.15;margin-bottom:16px;letter-spacing:.02em;}
-.read-mode-body h2{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:700;color:#0f172a;margin:36px 0 12px;letter-spacing:.03em;text-transform:uppercase;border-bottom:2px solid #1EAA90;padding-bottom:6px;}
-.read-mode-body h3{font-size:17px;font-weight:600;color:#0f172a;margin:24px 0 10px;}
+.read-mode-body{max-width:680px;margin:0 auto;padding:40px 24px 80px;background:#fff;}
+.read-mode-body h1{font-family:'Barlow Condensed',sans-serif;font-size:clamp(28px,4vw,42px);font-weight:800;color:#0f172a;line-height:1.1;margin-bottom:20px;letter-spacing:-.01em;}
+.read-mode-body h2{font-family:'Barlow Condensed',sans-serif;font-size:22px;font-weight:800;color:#0f172a;margin:44px 0 14px;letter-spacing:.04em;text-transform:uppercase;padding-bottom:8px;border-bottom:2px solid #e8f7f4;}
+.read-mode-body h3{font-family:'IBM Plex Sans',sans-serif;font-size:17px;font-weight:600;color:#0f172a;margin:28px 0 10px;}
 .read-mode-body p{font-size:16px;line-height:1.9;color:#334155;margin-bottom:18px;font-weight:300;}
 .read-mode-body ul,.read-mode-body ol{padding-left:22px;margin-bottom:18px;}
-.read-mode-body li{font-size:16px;line-height:1.75;color:#334155;margin-bottom:7px;font-weight:300;}
+.read-mode-body li{font-size:16px;line-height:1.75;color:#334155;margin-bottom:8px;font-weight:300;}
 .read-mode-body strong{font-weight:600;color:#0f172a;}
-.read-mode-body a{color:#1a56db;text-decoration:underline;}
+.read-mode-body em{font-style:italic;color:#475569;}
+.read-mode-body a{color:#1a56db;text-decoration:underline;text-underline-offset:3px;}
 .read-mode-body a:hover{color:#1EAA90;}
-.read-mode-body blockquote{border-left:4px solid #1EAA90;margin:24px 0;padding:16px 20px;background:#f0fdf9;border-radius:0 8px 8px 0;font-style:italic;color:#334155;font-size:15px;}
-.read-mode-body table{width:100%;border-collapse:collapse;margin:20px 0;font-size:14px;}
-.read-mode-body th{padding:10px 14px;background:#0B0C10;color:#1EAA90;text-align:left;font-size:11px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;}
-.read-mode-body td{padding:10px 14px;border-bottom:1px solid #EAEAEA;color:#334155;}
+.read-mode-body blockquote{border-left:3px solid #1EAA90;margin:28px 0;padding:14px 20px;background:#f8fafc;border-radius:0 8px 8px 0;font-style:italic;color:#475569;font-size:16px;line-height:1.7;}
+.read-mode-body hr{border:none;border-top:1px solid #f1f5f9;margin:36px 0;}
+.read-mode-body table{width:100%;border-collapse:collapse;margin:28px 0;font-size:15px;border-radius:10px;overflow:hidden;box-shadow:0 1px 4px rgba(0,0,0,.08);}
+.read-mode-body th{padding:11px 16px;background:#0B0C10;color:#1EAA90;text-align:left;font-size:11px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;border:none;}
+.read-mode-body td{padding:12px 16px;border-bottom:1px solid #f1f5f9;color:#334155;vertical-align:top;}
+.read-mode-body tr:last-child td{border-bottom:none;}
 .read-mode-body tr:nth-child(even) td{background:#f8fafc;}
+.read-mode-body tr:hover td{background:#f0fdf9;transition:background .15s;}
 .read-mode-body .img-placeholder{display:none;}
+.read-mode-summary{background:#f8fafc;border:1px solid #e2e8f0;border-radius:10px;padding:18px 22px;margin:24px 0 32px;}
+.read-mode-summary .summary-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1EAA90;margin-bottom:10px;}
+.read-mode-summary p{font-size:14px;color:#334155;margin:0;line-height:1.7;}
 .read-mode-meta{display:flex;align-items:center;gap:12px;margin-bottom:28px;flex-wrap:wrap;}
 .read-mode-tag{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;background:#e8f7f4;color:#1EAA90;}
 .read-mode-byline{font-size:13px;color:#64748b;}
@@ -661,19 +668,12 @@ select.finput{cursor:pointer;}
             <div class="fg"><label class="flbl">Article title</label><input class="finput" id="b-title" type="text" placeholder="e.g. How to Manage Drawdown on a Funded Account"/></div>
             <div class="frow fg">
               <div><label class="flbl">Category</label><select class="finput" id="b-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option><option>Crypto</option></select></div>
-              <div><label class="flbl">Length</label><select class="finput" id="b-len"><optgroup label="Short form">
-              <option>News / Update — 600 words</option>
-              <option>Quick guide — 800 words</option>
-            </optgroup>
-            <optgroup label="Standard (recommended)">
-              <option selected>Standard guide — 1,200 words</option>
-              <option>In-depth guide — 1,500 words</option>
-              <option>Comparison article — 1,800 words</option>
-            </optgroup>
-            <optgroup label="Pillar content">
-              <option>Pillar / Long-form — 2,200 words</option>
-              <option>Ultimate guide — 2,800 words</option>
-            </optgroup></select></div>
+              <div><label class="flbl">Length</label><select class="finput" id="b-len">
+              <option>Quick answer — 600 words</option>
+              <option selected>Standard guide — 800 words</option>
+              <option>In-depth guide — 1,000 words</option>
+              <option>Comparison — 1,200 words</option>
+            </select></div>
             </div>
             <div class="frow fg">
               <div><label class="flbl">Due date</label><input class="finput" id="b-due" type="date"/></div>
@@ -2356,18 +2356,11 @@ async function generate(){
     '- Internal links: add [INTERNAL LINK: topic] contextually — minimum 2-3 per article\n'+
     '- Use these real FXIFY URLs where relevant: /programs, /rules, /blog, /faqs, /how-it-works\n\n'+
 
-    '━━ E-E-A-T (GOOGLE NEEDS THIS) ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
-    '- Include at least 2 experience signals: \"At FXIFY, we\'ve seen traders...\" or \"In our experience...\".\n'+
-    '- Reference one real-world scenario a prop trader would recognise.\n'+
-    '- End with: Written by '+author.name+', '+author.title+' at FXIFY.\n\n'+
+    '━━ E-E-A-T ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    '- Add 2x experience signals: At FXIFY we have seen traders... End with: Written by '+author.name+', '+author.title+' at FXIFY.\n\n'+
 
-    '━━ WHAT A GOOD FXIFY ARTICLE LOOKS LIKE ━━━━━━━━━━━━━━━━━━━━━\n'+
-    'Good opening: \"Most traders don\'t realise travel is hurting their performance until it shows up in their results.\"\n'+
-    'Bad opening: \"In this comprehensive guide, we will explore the various ways that trading while travelling can impact your results.\"\n'+
-    'Good H2: \"What Slippage Actually Costs You\"\n'+
-    'Bad H2: \"Understanding the Concept of Slippage and Its Implications\"\n'+
-    'Good sentence: \"A stop that fills 20 pips worse than expected can end your trading day early.\"\n'+
-    'Bad sentence: \"It is worth noting that slippage can have a significant impact on your trading performance.\"\n\n'+
+    '━━ VOICE RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
+    'Direct, confident, second person. Lead with the most important point. Max 20 words per sentence. Max 3 sentences per paragraph.\n\n'+
 
     '━━ FXIFY BRAND RULES ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n'+
     '- 1-2 natural FXIFY mentions only. Never promotional.\n'+
@@ -2401,9 +2394,9 @@ async function generate(){
     '[VISUAL: description] for image placeholders\n'+
     '[INTERNAL LINK: topic] for internal links\n'+
     'Plain text only. No HTML. No markdown tables with pipes.\n'+
-    'WORD COUNT: Your output must hit '+len+'. Count before finishing. Expand thin sections if short. Cut filler if over.';
+    'WORD COUNT: You MUST hit '+len+'. This is mandatory. If you are running short, expand each H2 section with more specific detail, trader examples, and prop account context. Do NOT stop early. Do NOT truncate. Write the complete article including all FAQs and the full meta package before stopping.';
   try{
-    var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:4000})});
+    var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:8000})});
     var data=await r.json();
     var text='';
     if(Array.isArray(data)&&data[0]&&data[0].content&&data[0].content[0]) text=data[0].content[0].text;
@@ -3772,13 +3765,20 @@ function openReadMode() {
   });
 
   body.innerHTML = 
-    '<div class="read-mode-meta">' +
-      '<span class="read-mode-tag">' + cat + '</span>' +
-      '<span class="read-mode-byline">By ' + authorName + '</span>' +
-      '<span class="read-mode-byline">·</span>' +
-      '<span class="read-mode-byline">' + date + '</span>' +
-      '<span class="read-mode-byline">·</span>' +
-      '<span class="read-mode-readtime">⏱ ' + rt + ' min read · ' + wc.toLocaleString() + ' words</span>' +
+    '<div style="margin-bottom:28px;">' +
+      '<span style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1EAA90;background:#e8f7f4;padding:4px 12px;border-radius:20px;margin-bottom:16px;">' + cat + '</span>' +
+      '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;flex-wrap:wrap;">' +
+        '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1EAA90,#0d9488);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">' + (authorName.split(' ').map(function(n){return n[0];}).join('').toUpperCase()) + '</div>' +
+        '<div>' +
+          '<p style="font-size:13px;font-weight:600;color:#0f172a;margin:0;">' + authorName + '</p>' +
+          '<p style="font-size:11px;color:#64748b;margin:0;">Senior Copywriter · FXIFY</p>' +
+        '</div>' +
+        '<div style="width:1px;height:28px;background:#e2e8f0;margin:0 4px;"></div>' +
+        '<span style="font-size:12px;color:#64748b;">' + date + '</span>' +
+        '<div style="width:1px;height:28px;background:#e2e8f0;margin:0 4px;"></div>' +
+        '<span style="font-size:12px;color:#64748b;">' + rt + ' min read</span>' +
+        '<span style="font-size:12px;color:#64748b;">· ' + wc.toLocaleString() + ' words</span>' +
+      '</div>' +
     '</div>' +
     cleanHtml;
 
@@ -4904,7 +4904,7 @@ async function runYouTubeResearch(prefix) {
   try {
     var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt, max_tokens: 4000 })
+      body: JSON.stringify({ prompt: prompt, max_tokens: 6000 })
     });
     var data = await r.json();
     var text = '';
@@ -4912,9 +4912,33 @@ async function runYouTubeResearch(prefix) {
     else if (data.content && data.content[0]) text = data.content[0].text;
     else if (data.text) text = data.text;
 
+    // Robust JSON extraction
     var jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('No JSON in response');
-    var plan = JSON.parse(jsonMatch[0]);
+    if (!jsonMatch) throw new Error('No JSON in response — try again');
+    var rawJson = jsonMatch[0];
+    var plan;
+    try {
+      plan = JSON.parse(rawJson);
+    } catch(e) {
+      // Try to fix truncated JSON
+      var fixed = rawJson.replace(/,\s*$/, '').replace(/,\s*\}$/, '}').replace(/,\s*\]$/, ']');
+      var opens = (fixed.match(/\{/g)||[]).length - (fixed.match(/\}/g)||[]).length;
+      var openArr = (fixed.match(/\[/g)||[]).length - (fixed.match(/\]/g)||[]).length;
+      var qCount = (fixed.match(/"/g)||[]).length;
+      if (qCount % 2 !== 0) fixed = fixed + '"';
+      for (var x=0; x<openArr; x++) fixed += ']';
+      for (var y=0; y<opens; y++) fixed += '}';
+      try { plan = JSON.parse(fixed); }
+      catch(e2) {
+        plan = { gaps: [], videos: [], questions: [] };
+        var gm = rawJson.match(/"gaps"\s*:\s*\[([^\]]*)/);
+        if (gm) { var gi = gm[1].match(/"([^"]+)"/g); if (gi) plan.gaps = gi.map(function(g){ return g.replace(/"/g,''); }); }
+        toast('Partial results — Claude response was cut short. Try again.');
+      }
+    }
+    if (!plan.videos) plan.videos = [];
+    if (!plan.gaps) plan.gaps = [];
+    if (!plan.questions) plan.questions = [];
 
     renderYouTubeResults(plan, prefix);
     loading.style.display = 'none';
