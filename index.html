@@ -4697,6 +4697,39 @@ async function loadPublishingBadge() {
   }
 }
 
+// ── GOOGLE LOGIN (top-level so it's always accessible) ───────────────────
+async function doGoogleLogin() {
+  var btn = document.getElementById('login-btn');
+  if (!btn) return;
+  btn.textContent = 'Redirecting...';
+  btn.disabled = true;
+  var redirectUrl = window.location.hostname === 'localhost'
+    ? 'https://fxify-content-engine.vercel.app'
+    : window.location.origin;
+  try {
+    var res = await supa.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: redirectUrl }
+    });
+    if (res.error) {
+      btn.textContent = 'Continue with Google';
+      btn.disabled = false;
+      var errEl = document.getElementById('login-error');
+      if (errEl) { errEl.textContent = res.error.message; errEl.style.display = 'block'; }
+    }
+  } catch(e) {
+    btn.textContent = 'Continue with Google';
+    btn.disabled = false;
+    console.error('Login error:', e);
+  }
+}
+
+// Wire login button immediately — don't wait for init()
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('login-btn');
+  if (btn) btn.addEventListener('click', doGoogleLogin);
+});
+
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init(){
   // Dynamic friendly greeting
@@ -4873,29 +4906,9 @@ function init(){
   }
 
   // ── GOOGLE OAUTH via Supabase ──────────────────────────────────────────
-  async function doGoogleLogin() {
-    var btn = document.getElementById('login-btn');
-    btn.textContent = 'Redirecting...';
-    btn.disabled = true;
-    // Always redirect to production URL after Google auth
-    var redirectUrl = window.location.hostname === 'localhost'
-      ? 'https://fxify-content-engine.vercel.app'
-      : window.location.origin;
-    var res = await supa.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: redirectUrl
-      }
-    });
-    if (res.error) {
-      btn.textContent = 'Continue with Google';
-      btn.disabled = false;
-      var errEl = document.getElementById('login-error');
-      if (errEl) { errEl.textContent = res.error.message; errEl.style.display = 'block'; }
-    }
-  }
-
-  document.getElementById('login-btn').addEventListener('click', doGoogleLogin);
+  // Login button wired inside init — backup wiring below too
+  var loginBtn = document.getElementById('login-btn');
+  if (loginBtn) loginBtn.addEventListener('click', doGoogleLogin);
 
   // Handle OAuth callback — Supabase puts session in URL hash on return
   async function handleAuthCallback() {
