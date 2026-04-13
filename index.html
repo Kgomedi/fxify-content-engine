@@ -4812,10 +4812,27 @@ function init(){
       updateTopbars({ name: 'Sheperd Morena (viewing)', initials: 'SM', av: 'b' });
       goScreen('admin'); loadPipeline(); loadReviewQ();
     } else if (sel === '__david__') {
-      targetScreen = 'david'; bannerLabel = '✅ Viewing Manager dashboard';
+      targetScreen = 'admin'; bannerLabel = '✅ Viewing Manager (David) dashboard';
       impersonating = '__david__'; activeRole = 'david';
       updateTopbars({ name: 'David Xavier (viewing)', initials: 'DX', av: 'a' });
-      goScreen('david'); loadDavidQ();
+      // Inject David nav if not already there
+      var adminSbImp = document.getElementById('admin-sb');
+      if (adminSbImp && !document.getElementById('david-nav-items')) {
+        var davidNavImp = document.createElement('div');
+        davidNavImp.id = 'david-nav-items';
+        davidNavImp.innerHTML =
+          '<div class="ndiv"></div>' +
+          '<div class="ngrp">My Approvals</div>' +
+          '<div class="nlink" data-pg="da-approval" data-sc="admin"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>' +
+          '<div class="nlink" data-pg="da-log" data-sc="admin"><span class="nico">▲</span>Approved Log</div>';
+        adminSbImp.appendChild(davidNavImp);
+        davidNavImp.querySelectorAll('.nlink[data-pg]').forEach(function(lnk){
+          lnk.addEventListener('click', function(){
+            goPage('admin', lnk.getAttribute('data-pg'), lnk);
+          });
+        });
+      }
+      goScreen('admin'); loadPipeline(); loadDavidApprovalAdmin();
     } else if (sel === '__liam__') {
       targetScreen = 'liam'; bannerLabel = '🔍 Viewing SEO dashboard';
       impersonating = '__liam__'; activeRole = 'liam';
