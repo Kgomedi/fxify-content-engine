@@ -895,10 +895,10 @@ select.finput{cursor:pointer;}
         <p style="font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:3px;" id="greet">Good morning</p>
         <h1 style="font-family:'Barlow Condensed',sans-serif;font-size:28px;font-weight:800;color:var(--text);margin-bottom:4px;letter-spacing:.03em;" id="writer-greeting">What's good? Here's your plate. 👊</h1>
         <p style="font-size:13px;color:var(--muted);margin-bottom:20px;" id="writer-subline">Let's get these drafts done — you've got this.</p>
-        <div class="gbox">
-          <div class="ghdr"><span style="font-size:13px;font-weight:500;">Weekly goal</span><span style="font-size:11px;color:var(--muted);">3 of 4 articles</span></div>
-          <div class="gi"><span class="glbl">Articles done</span><div class="gtrack"><div class="gbar" style="width:75%;background:var(--tealB)"></div></div><span class="gval" style="color:var(--tealB)">3/4</span></div>
-          <div class="gi"><span class="glbl">On-time rate</span><div class="gtrack"><div class="gbar" style="width:90%;background:var(--green)"></div></div><span class="gval" style="color:var(--green)">90%</span></div>
+        <div class="gbox" id="writer-goal-box">
+          <div class="ghdr"><span style="font-size:13px;font-weight:500;">This week</span><span style="font-size:11px;color:var(--muted);" id="writer-goal-label">Loading...</span></div>
+          <div class="gi"><span class="glbl">Drafts assigned</span><div class="gtrack"><div class="gbar" id="writer-goal-bar" style="width:0%;background:var(--tealB)"></div></div><span class="gval" style="color:var(--tealB)" id="writer-goal-val">—</span></div>
+          <div class="gi"><span class="glbl">In review</span><div class="gtrack"><div class="gbar" id="writer-review-bar" style="width:0%;background:var(--green)"></div></div><span class="gval" style="color:var(--green)" id="writer-review-val">—</span></div>
         </div>
         <div class="shead">Your drafts</div>
         <div id="w-drafts-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No drafts assigned yet.</p></div>
@@ -1187,16 +1187,17 @@ select.finput{cursor:pointer;}
       <div class="esblk"><p class="eslbl">Word count</p><p style="font-size:13px;color:#cbd5e1;" id="ed-wc">0 words</p></div>
       <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
-        <p class="eslbl" style="margin-bottom:8px;">SEO Score</p>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="snum" style="color:var(--blue);" id="ed-seo">—</div><div style="flex:1;"><div class="sbg"><div class="sbf" style="background:var(--blue);width:0%;" id="ed-seo-bar"></div></div><p class="sh" id="ed-seo-h">—</p></div></div>
+        <p class="eslbl" style="margin-bottom:8px;">SEO Score <span class="snum" style="color:var(--blue);font-size:18px;" id="ed-seo">—</span></p>
+        <div style="background:var(--bg2);border-radius:4px;height:4px;margin-bottom:8px;overflow:hidden;"><div id="ed-seo-bar" style="height:100%;border-radius:4px;background:var(--blue);width:0%;transition:width .4s;"></div></div>
+        <div id="seo-checklist" style="display:flex;flex-direction:column;gap:4px;"></div>
       </div>
-      <div class="esblk" style="width:100%;">
-        <p class="eslbl" style="margin-bottom:8px;">GEO Score</p>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="snum" style="color:var(--tealB);" id="ed-geo">—</div><div style="flex:1;"><div class="sbg"><div class="sbf" style="background:var(--tealB);width:0%;" id="ed-geo-bar"></div></div><p class="sh" id="ed-geo-h">—</p></div></div>
+      <div class="esblk" style="width:100%;margin-top:8px;">
+        <p class="eslbl" style="margin-bottom:8px;">GEO Score <span class="snum" style="color:var(--tealB);font-size:18px;" id="ed-geo">—</span></p>
+        <div style="background:var(--bg2);border-radius:4px;height:4px;margin-bottom:8px;overflow:hidden;"><div id="ed-geo-bar" style="height:100%;border-radius:4px;background:var(--tealB);width:0%;transition:width .4s;"></div></div>
       </div>
-      <div class="esblk" style="width:100%;">
-        <p class="eslbl" style="margin-bottom:8px;">AEO Score</p>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;"><div class="snum" style="color:var(--purple);" id="ed-aeo">—</div><div style="flex:1;"><div class="sbg"><div class="sbf" style="background:var(--purple);width:0%;" id="ed-aeo-bar"></div></div><p class="sh" id="ed-aeo-h">—</p></div></div>
+      <div class="esblk" style="width:100%;margin-top:8px;">
+        <p class="eslbl" style="margin-bottom:8px;">AEO Score <span class="snum" style="color:var(--purple);font-size:18px;" id="ed-aeo">—</span></p>
+        <div style="background:var(--bg2);border-radius:4px;height:4px;margin-bottom:8px;overflow:hidden;"><div id="ed-aeo-bar" style="height:100%;border-radius:4px;background:var(--purple);width:0%;transition:width .4s;"></div></div>
       </div>
       <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
@@ -1414,6 +1415,17 @@ var sbCallback = null;
 var currentWriterEmail = null;
 var currentUser = null;
 var impersonating = null;
+
+// ── CENTRALISED AUTHOR PROFILES ──────────────────────────────────────────
+var AUTHOR_PROFILES = {
+  fariha:  { name:'Fariha Khan',    title:'Senior Copywriter', bio:'Fariha Khan is a Senior Copywriter at FXIFY specialising in prop trading, risk management and trading psychology.', linkedin:'linkedin.com/in/fariha-khan' },
+  harry:   { name:'Harry Hosking',  title:'Senior Copywriter', bio:'Harry Hosking is a Senior Copywriter at FXIFY covering forex markets, indices and prop trading evaluation strategy.', linkedin:'linkedin.com/in/harry-hosking' },
+  imran:   { name:'Imran Najib',    title:'Senior Copywriter', bio:'Imran Najib is a Senior Copywriter at FXIFY specialising in technical analysis and prop trading education.', linkedin:'linkedin.com/in/imran-najib' },
+  mamnun:  { name:'Mamnun Ahmed',   title:'Senior Copywriter', bio:'Mamnun Ahmed is a Senior Copywriter at FXIFY covering trading strategy and prop firm evaluation programs.', linkedin:'linkedin.com/in/mamnun-ahmed' },
+  roshan:  { name:'Roshan Ganesh',  title:'Senior Copywriter', bio:'Roshan Ganesh is a Senior Copywriter at FXIFY specialising in market analysis and trading education.', linkedin:'linkedin.com/in/roshan-ganesh' },
+  shatha:  { name:'Shatha Altrad',  title:'Senior Copywriter', bio:'Shatha Altrad is a Senior Copywriter at FXIFY covering prop trading strategy and funded account management.', linkedin:'linkedin.com/in/shatha-altrad' },
+  sheperd: { name:'Sheperd Morena', title:'Senior Copywriter', bio:'Sheperd Morena is a Senior Copywriter and AI Prompt Engineer at FXIFY with 7+ years across fintech, prop trading and brokerage.', linkedin:'linkedin.com/in/sheperd-morena' },
+};
 
 // ── UTILS ─────────────────────────────────────────────────────────────────
 function toast(msg){
@@ -1888,6 +1900,29 @@ async function loadWriterDrafts(){
     l.appendChild(c);
   });
   var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent=res.data.length;
+
+  // Update writer goal box with real data
+  var total = res.data.length;
+  var drafting = res.data.filter(function(a){ return a.status === 'Drafting'; }).length;
+  var goalLabel = document.getElementById('writer-goal-label');
+  var goalBar = document.getElementById('writer-goal-bar');
+  var goalVal = document.getElementById('writer-goal-val');
+  if (goalLabel) goalLabel.textContent = total + ' article' + (total !== 1 ? 's' : '') + ' assigned';
+  if (goalBar) goalBar.style.width = Math.min(100, total * 20) + '%';
+  if (goalVal) goalVal.textContent = total;
+
+  // Also load in-review count for this writer
+  if (writerName) {
+    supa.from('articles').select('id').eq('assignee', writerName)
+      .in('status', ['Sheperd Review','Liam Review','David Approval','Publishing','Live'])
+      .then(function(rev) {
+        var revCount = rev.data ? rev.data.length : 0;
+        var revBar = document.getElementById('writer-review-bar');
+        var revVal = document.getElementById('writer-review-val');
+        if (revBar) revBar.style.width = Math.min(100, revCount * 25) + '%';
+        if (revVal) revVal.textContent = revCount + ' in review';
+      });
+  }
 }
 
 // ── EDITOR ────────────────────────────────────────────────────────────────
@@ -1968,39 +2003,104 @@ function setScore(type,score){
 
 // ── ARTICLE PARSER ────────────────────────────────────────────────────────
 function parseArt(text,kw){
-  var mi=text.search(/\n(Meta title|7\. META|━━ 7\.)/i);
+  var mi=text.search(/\n(Meta title|7\. META|━━ 7\.|---META---)/i);
   var body=mi>0?text.substring(0,mi):text;
   var lines=body.split('\n');
-  var html='',inUl=false,inOl=false,inTable=false;
+  var out='',inUl=false,inOl=false,inTable=false,tableRows=[];
   var kre=kw?new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'):null;
-  function ca(){if(inUl){html+='</ul>';inUl=false;}if(inOl){html+='</ol>';inOl=false;}if(inTable){html+='</tbody></table></div>';inTable=false;}}
+
+  function flushList(){
+    if(inUl){out+='</ul>';inUl=false;}
+    if(inOl){out+='</ol>';inOl=false;}
+  }
+  function flushTable(){
+    if(!inTable) return;
+    // First row = header, rest = body
+    var thead='<thead><tr>'+tableRows[0].map(function(c){return '<th>'+c+'</th>';}).join('')+'</tr></thead>';
+    var tbody='<tbody>'+tableRows.slice(1).map(function(row){
+      return '<tr>'+row.map(function(c){return '<td>'+c+'</td>';}).join('')+'</tr>';
+    }).join('')+'</tbody>';
+    out+='<div style="overflow-x:auto;margin:24px 0;"><table class="dtable">'+thead+tbody+'</table></div>';
+    inTable=false; tableRows=[];
+  }
+  function flush(){flushList();flushTable();}
+
   function pr(s){
     s=s.replace(/\*\*(.+?)\*\*/g,'<strong>$1</strong>');
-    s=s.replace(/\[INTERNAL LINK: ([^\]]+)\]/g,'<a class="int-link">$1 ↗</a>');
+    s=s.replace(/\[INTERNAL LINK: ([^\]]+)\]/g,'<a class="int-link" href="#">$1 ↗</a>');
+    s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^)]+)\)/g,'<a class="int-link" href="$2" target="_blank">$1 ↗</a>');
     if(kre) s=s.replace(kre,'<span class="kw-hl">$1</span>');
     return s;
   }
+
+  // Check if a line is a table separator (--- | --- | ---)
+  function isTableSep(l){ return /^\|?[\s\-:]+(\|[\s\-:]+)+\|?$/.test(l); }
+
   lines.forEach(function(raw){
     var l=raw.trim();
-    if(!l){ca();return;}
-    if(l.startsWith('# ')){ca();html+='<h1>'+pr(l.slice(2))+'</h1>';return;}
-    if(l.startsWith('## ')){ca();html+='<h2>'+pr(l.slice(3))+'</h2>';return;}
-    if(l.startsWith('### ')){ca();html+='<h3>'+pr(l.slice(4))+'</h3>';return;}
-    if(l.startsWith('[VISUAL:')){ca();var vc=l.replace('[VISUAL:','').replace(']','').trim();html+='<div class="img-placeholder" data-imgplaceholder="true" style="cursor:pointer;"><div style="font-size:28px;pointer-events:none;">[IMAGE]</div><span style="font-size:12px;color:#64748b;pointer-events:none;text-align:center;padding:0 16px;">'+vc+'</span><span style="font-size:10px;color:#0ec4ad;font-weight:600;pointer-events:none;margin-top:4px;">CLICK TO UPLOAD</span></div>';return;}
-    if(l.startsWith('[INTERNAL LINK:')) return;
-    if(l.startsWith('|')){
-      if(l.replace(/[\|:\- ]/g,'')==='') return;
-      if(!inTable){html+='<div style="overflow-x:auto;margin:16px 0;"><table class="dtable"><tbody>';inTable=true;}
-      var cells=l.split('|').filter(function(c){return c.trim();});
-      html+='<tr>'+cells.map(function(c){return '<td>'+c.trim()+'</td>';}).join('')+'</tr>';return;
+    if(!l){ flush(); return; }
+
+    // Headings
+    if(l.startsWith('# ')){ flush(); out+='<h1>'+pr(l.slice(2))+'</h1>'; return; }
+    if(l.startsWith('## ')){ flush(); out+='<h2>'+pr(l.slice(3))+'</h2>'; return; }
+    if(l.startsWith('### ')){ flush(); out+='<h3>'+pr(l.slice(4))+'</h3>'; return; }
+
+    // Horizontal rule --- (but not table separator)
+    if(/^---+$/.test(l) && !inTable){ flush(); out+='<hr style="border:none;border-top:1px solid var(--border);margin:24px 0;">'; return; }
+
+    // Image placeholder
+    if(l.startsWith('[VISUAL:') || l.startsWith('[IMAGE')){
+      flush();
+      var cap=l.replace(/^\[VISUAL:/,'').replace(/^\[IMAGE[^\]]*\]/,'').replace(/\]$/,'').trim();
+      out+='<div class="img-placeholder" data-imgplaceholder="true">' +
+        '<div style="font-size:28px;pointer-events:none;">[IMAGE]</div>' +
+        '<span style="font-size:12px;color:var(--muted);pointer-events:none;text-align:center;padding:0 16px;">'+cap+'</span>' +
+        '<span style="font-size:10px;color:var(--tealB);font-weight:600;pointer-events:none;margin-top:4px;">Click to upload</span>' +
+        '</div>';
+      return;
     }
-    if(l.match(/^[-*•]\s/)){if(inOl){html+='</ol>';inOl=false;}if(inTable){html+='</tbody></table></div>';inTable=false;}if(!inUl){html+='<ul>';inUl=true;}html+='<li>'+pr(l.replace(/^[-*•]\s/,''))+'</li>';return;}
-    if(l.match(/^\d+\.\s/)){if(inUl){html+='</ul>';inUl=false;}if(inTable){html+='</tbody></table></div>';inTable=false;}if(!inOl){html+='<ol>';inOl=true;}html+='<li>'+pr(l.replace(/^\d+\.\s/,''))+'</li>';return;}
-    ca();html+='<p>'+pr(l)+'</p>';
+
+    // Skip internal link placeholders
+    if(l.startsWith('[INTERNAL LINK:')) return;
+
+    // Pipe tables
+    if(l.startsWith('|') || (inTable && l.includes('|'))){
+      if(isTableSep(l)) return; // skip separator row
+      var cells = l.split('|').map(function(c){return pr(c.trim());}).filter(function(c,i,a){ return i>0&&i<a.length-1||a.length<=2; });
+      if(!cells.length) cells = l.split('|').map(function(c){return pr(c.trim());}).filter(Boolean);
+      if(cells.length){ inTable=true; tableRows.push(cells); }
+      return;
+    } else if(inTable){ flushTable(); }
+
+    // Plain text table (Term | Definition without leading pipe)
+    if(!inTable && /^[^\|]+\|[^\|]/.test(l) && !l.startsWith('#') && !l.startsWith('-')){
+      var parts = l.split('|').map(function(c){ return pr(c.trim()); });
+      if(parts.length >= 2 && parts[0].length < 60){
+        inTable=true; tableRows.push(parts); return;
+      }
+    } else if(inTable && !/^[^\|]+\|[^\|]/.test(l) && !l.startsWith('|')){ flushTable(); }
+
+    // Lists
+    if(l.match(/^[-*•]\s/)){
+      flushTable();
+      if(inOl){out+='</ol>';inOl=false;}
+      if(!inUl){out+='<ul>';inUl=true;}
+      out+='<li>'+pr(l.replace(/^[-*•]\s/,''))+'</li>'; return;
+    }
+    if(l.match(/^\d+\.\s/)){
+      flushTable();
+      if(inUl){out+='</ul>';inUl=false;}
+      if(!inOl){out+='<ol>';inOl=true;}
+      out+='<li>'+pr(l.replace(/^\d+\.\s/,''))+'</li>'; return;
+    }
+
+    // Paragraph
+    flush();
+    out+='<p>'+pr(l)+'</p>';
   });
-  ca();
-  html+='<div class="acta"><p>Ready to start your funded trading journey? FXIFY offers evaluation programs starting from $25,000 accounts.</p><button class="btn btn-p" style="margin:0 auto;">Get Funded with FXIFY →</button></div>';
-  return html||'<p style="color:var(--muted)">No content.</p>';
+
+  flush();
+  return out||'<p style="color:var(--muted)">No content.</p>';
 }
 
 // ── DRAWER ────────────────────────────────────────────────────────────────
@@ -2045,13 +2145,7 @@ async function generate(){
   var geo=document.getElementById('b-geo').value.trim();
   var q=document.getElementById('b-q').value.trim();
   var authorKey = document.getElementById('b-author') ? document.getElementById('b-author').value : 'sheperd';
-  var authorProfiles = {
-    fariha: {name:'Fariha Khan',title:'Senior Copywriter',bio:'Fariha Khan is a Senior Copywriter at FXIFY specialising in prop trading, risk management and trading psychology.',linkedin:'linkedin.com/in/fariha-khan'},
-    harry: {name:'Harry Hosking',title:'Senior Copywriter',bio:'Harry Hosking is a Senior Copywriter at FXIFY covering forex markets, indices and prop trading evaluation strategy.',linkedin:'linkedin.com/in/harry-hosking'},
-    imran: {name:'Imran Najib',title:'Senior Copywriter',bio:'Imran Najib is a Senior Copywriter at FXIFY specialising in technical analysis and prop trading education.',linkedin:'linkedin.com/in/imran-najib'},
-    sheperd: {name:'Sheperd Morena',title:'Senior Copywriter',bio:'Sheperd Morena is a Senior Copywriter and AI Prompt Engineer at FXIFY with 7+ years across fintech, prop trading and brokerage.',linkedin:'linkedin.com/in/sheperd-morena'}
-  };
-  var author = authorProfiles[authorKey] || authorProfiles.sheperd;
+  var author = AUTHOR_PROFILES[authorKey] || AUTHOR_PROFILES.sheperd;
   var btn=document.getElementById('gen-btn');
   btn.textContent='Writing...'; btn.disabled=true;
   
@@ -2208,6 +2302,14 @@ function initEditor(content) {
     if (currentArt && currentArt.primary_kw) {
       var scores = calculateScores(el.innerHTML, currentArt.primary_kw);
       updateScoreDisplay(scores);
+    }
+    // Live keyword count in sidebar
+    if (currentArt && currentArt.primary_kw) {
+      var txt = el.innerText || el.textContent || '';
+      var kw = currentArt.primary_kw.toLowerCase();
+      var count = (txt.toLowerCase().match(new RegExp(kw.replace(/[.*+?^${}()|[\]\]/g,'\$&'), 'g')) || []).length;
+      var kwEl = document.getElementById('ed-kw');
+      if (kwEl) kwEl.textContent = currentArt.primary_kw + ' (' + count + 'x)';
     }
   });
   
@@ -2557,23 +2659,48 @@ function calculateScores(content, primaryKw) {
   if (words >= 600 && words <= 2500) aeo += 10; // right length range
   aeo = Math.min(aeo, 100);
 
-  return { seo: seo, geo: geo, aeo: aeo };
+  // Build checklist
+  var checks = [
+    { label: 'Keyword in H1', pass: h1Match && content.toLowerCase().includes(kw.split(' ')[0]) },
+    { label: 'Keyword in first 100 words', pass: kwInIntro },
+    { label: 'Keyword in 2+ H2 headings', pass: h2WithKw >= 2 },
+    { label: 'Article 800+ words', pass: words >= 800 },
+    { label: 'Internal links present', pass: hasInternalLinks },
+    { label: '8+ bold phrases', pass: hasBold >= 8 },
+    { label: 'FAQ section included', pass: hasFaq },
+    { label: 'Summary table included', pass: hasTable },
+  ];
+
+  return { seo: seo, geo: geo, aeo: aeo, checks: checks };
 }
 
 function updateScoreDisplay(scores) {
   function setScore(type, score) {
     var n = document.getElementById('ed-' + type);
     var b = document.getElementById('ed-' + type + '-bar');
-    var h = document.getElementById('ed-' + type + '-h');
     if (n) n.textContent = score;
-    if (b) b.style.width = score + '%';
-    var color = score >= 85 ? 'var(--green)' : score >= 70 ? 'var(--amber)' : 'var(--urgent)';
-    if (b) b.style.background = color;
-    if (h) h.textContent = score >= 85 ? 'Good' : score >= 70 ? 'Needs work' : 'Poor';
+    if (b) {
+      b.style.width = score + '%';
+      b.style.background = score >= 80 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--urgent)';
+    }
   }
   setScore('seo', scores.seo);
   setScore('geo', scores.geo);
   setScore('aeo', scores.aeo);
+
+  // ── SEO Checklist ────────────────────────────────────────────────────
+  var cl = document.getElementById('seo-checklist');
+  if (!cl || !scores.checks) return;
+  cl.innerHTML = '';
+  scores.checks.forEach(function(item) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:6px;padding:3px 0;';
+    var icon = item.pass ? '✓' : '✗';
+    var color = item.pass ? 'var(--green)' : 'var(--muted)';
+    row.innerHTML = '<span style="font-size:10px;font-weight:700;color:'+color+';width:12px;flex-shrink:0;">'+icon+'</span>' +
+      '<span style="font-size:10px;color:'+(item.pass?'#94a3b8':'#475569')+';">'+item.label+'</span>';
+    cl.appendChild(row);
+  });
 }
 
 
