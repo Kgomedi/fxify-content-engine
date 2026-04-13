@@ -853,6 +853,19 @@ select.finput{cursor:pointer;}
           <div id="pl-paa" style="display:grid;gap:8px;margin-bottom:20px;"></div>
         </div>
       </div>
+
+      <!-- DAVID APPROVAL (accessible when David uses admin screen) -->
+      <div id="da-approval" class="pg">
+        <div class="pgh">Final Approval</div>
+        <p class="pgs" id="david-greeting-2"></p>
+        <div id="da-approval-list"><p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p></div>
+      </div>
+      <div id="da-log" class="pg">
+        <div class="pgh">Approved Log</div>
+        <p class="pgs">Articles you've approved — with Sheperd for publishing.</p>
+        <div id="da-log-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p></div>
+      </div>
+
     </div>
   </div>
 </div>
@@ -1439,6 +1452,8 @@ function goPage(sc,pg,navEl){
   if(pg==='l-topics') loadLiamTopics();
   if(pg==='d-approval') loadDavidQ();
   if(pg==='d-log') loadDavidLog();
+  if(pg==='da-approval') loadDavidApprovalAdmin();
+  if(pg==='da-log') loadDavidLogAdmin();
   if(pg==='d-pipeline') loadDavidPipeline();
   if(pg==='d-analytics') loadDavidAnalytics();
   if(pg==='a-analytics') loadAnalytics();
@@ -1714,6 +1729,43 @@ async function loadDavidAnalytics(){
       tbody.appendChild(tr);
     });
   }
+}
+
+async function loadDavidApprovalAdmin(){
+  // David's approval queue shown inside admin screen
+  var nb = document.getElementById('nb-david');
+  var res = await supa.from('articles').select('*').eq('status','David Approval').order('created_at',{ascending:false});
+  var l = document.getElementById('da-approval-list');
+  if (!l) return;
+  // Set greeting
+  var greet = document.getElementById('david-greeting-2');
+  if (greet && !greet.textContent) {
+    var msgs = ["The boss is in. Liam did his part — now it's your call. 👔","Articles are queued up. One tap and they're off to publish. 💼","The SEO is clean, the copy is tight. Just need the big boss stamp. 🏆","Good to see you, David. Liam says these are ready. He's usually right. 👀"];
+    greet.textContent = msgs[Math.floor(Math.random()*msgs.length)];
+  }
+  if (res.error || !res.data || !res.data.length) {
+    l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p>';
+    if(nb) nb.textContent=''; return;
+  }
+  l.innerHTML='';
+  res.data.forEach(function(a){ l.appendChild(makeReviewCard(a,{role:'david',fwdLabel:'Final approval done',nextStatus:'Publishing',listId:'da-approval-list'})); });
+  if(nb) nb.textContent=res.data.length;
+}
+
+async function loadDavidLogAdmin(){
+  var l = document.getElementById('da-log-list');
+  if (!l) return;
+  var res = await supa.from('articles').select('*').in('status',['Publishing','Live']).order('updated_at',{ascending:false});
+  if (res.error || !res.data || !res.data.length) { l.innerHTML='<p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p>'; return; }
+  l.innerHTML='';
+  res.data.forEach(function(a){
+    var c=document.createElement('div'); c.className='card'; c.style.cursor='default';
+    var color=a.status==='Live'?'var(--green)':'var(--tealB)';
+    c.innerHTML='<div class="cbody"><div class="ctop"><p class="ctitle">'+(a.title||'Untitled')+'</p><span class="badge" style="background:rgba(0,0,0,.05);color:'+color+';">'+a.status+'</span></div></div>'+
+      '<div class="cmeta"><span class="mkw">'+(a.primary_kw||'')+'</span><span class="mtime">'+(a.word_count||0)+' words</span></div>'+
+      '<div class="cfoot"><span class="cfi">'+(a.category||'')+'</span><span style="font-size:11px;color:var(--muted);">Approved by David ✓</span></div>';
+    l.appendChild(c);
+  });
 }
 
 async function loadDavidLog(){
@@ -3161,7 +3213,6 @@ function wireMeta() {
 
 
 // ── PUBLISHED ARTICLES ────────────────────────────────────────────────────
-var publishedCache = null;
 
 
 function renderPublishedArticles(articles, listId, countId, filter) {
@@ -4400,6 +4451,74 @@ async function seedSampleArticles() {
   loadPipeline(); loadReviewQ(); loadLiamQ(); loadDavidQ(); loadWriterDrafts();
 }
 
+// ── QUEUE HEALTH CHECK ───────────────────────────────────────────────────
+async function checkQueueHealth() {
+  var res = await supa.from('articles').select('status');
+  if (res.error || !res.data) return;
+  var arts = res.data;
+
+  var counts = {
+    total: arts.length,
+    briefed: arts.filter(function(a){ return a.status === 'Briefed'; }).length,
+    drafting: arts.filter(function(a){ return a.status === 'Drafting'; }).length,
+    sheperdReview: arts.filter(function(a){ return a.status === 'Sheperd Review'; }).length,
+    liamReview: arts.filter(function(a){ return a.status === 'Liam Review'; }).length,
+    davidApproval: arts.filter(function(a){ return a.status === 'David Approval'; }).length,
+    publishing: arts.filter(function(a){ return a.status === 'Publishing'; }).length,
+  };
+
+  if (counts.total === 0) {
+    // Show prominent seed prompt
+    showSeedPrompt('Pipeline is empty — no articles in any stage.');
+    return;
+  }
+
+  var empty = [];
+  if (counts.briefed === 0) empty.push('Briefed');
+  if (counts.drafting === 0) empty.push('Drafting');
+  if (counts.sheperdReview === 0) empty.push('Sheperd Review');
+  if (counts.liamReview === 0) empty.push('Liam Review');
+  if (counts.davidApproval === 0) empty.push('David Approval');
+
+  if (empty.length >= 4) {
+    showSeedPrompt('Most queues are empty (' + empty.join(', ') + ').');
+  }
+}
+
+function showSeedPrompt(msg) {
+  // Remove existing prompt
+  var existing = document.getElementById('seed-prompt');
+  if (existing) existing.remove();
+
+  var prompt = document.createElement('div');
+  prompt.id = 'seed-prompt';
+  prompt.style.cssText = 'position:fixed;bottom:80px;right:24px;z-index:600;background:var(--navy);border:1px solid rgba(124,58,237,.4);border-radius:12px;padding:14px 18px;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,.3);';
+  prompt.innerHTML =
+    '<div style="display:flex;align-items:flex-start;gap:10px;">' +
+      '<span style="font-size:20px;flex-shrink:0;">🌱</span>' +
+      '<div style="flex:1;">' +
+        '<p style="font-size:12px;font-weight:600;color:#cbd5e1;margin-bottom:4px;">Pipeline looks empty</p>' +
+        '<p style="font-size:11px;color:#475569;margin-bottom:10px;line-height:1.5;">' + msg + ' Seed sample articles so every role has something to work with.</p>' +
+        '<div style="display:flex;gap:6px;">' +
+          '<button id="seed-now-btn" style="padding:5px 12px;border-radius:6px;border:none;background:var(--purple);color:#fff;font-size:11px;font-weight:600;cursor:pointer;font-family:inherit;">Seed samples now</button>' +
+          '<button id="seed-dismiss-btn" style="padding:5px 10px;border-radius:6px;border:1px solid #334155;background:transparent;color:#475569;font-size:11px;cursor:pointer;font-family:inherit;">Dismiss</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  document.body.appendChild(prompt);
+
+  document.getElementById('seed-now-btn').addEventListener('click', function(){
+    prompt.remove();
+    seedSampleArticles();
+  });
+  document.getElementById('seed-dismiss-btn').addEventListener('click', function(){
+    prompt.remove();
+  });
+
+  // Auto-dismiss after 12 seconds
+  setTimeout(function(){ if(prompt.parentNode) prompt.remove(); }, 12000);
+}
+
 // ── PUBLISHING BADGE ─────────────────────────────────────────────────────
 async function loadPublishingBadge() {
   // Only relevant for admin
@@ -4446,7 +4565,7 @@ function init(){
   // Role map — email → { role, name, screen }
   var USERS = {
     'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
-    'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'david',  initials:'DX', av:'a', defaultPage:'d-pipeline' },
+    'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
     'liam@quirkydigital.com':      { role:'liam',   name:'Liam',            screen:'liam',   initials:'L',  av:'b' },
     'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
     'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
@@ -4485,6 +4604,38 @@ function init(){
     loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
+
+    // David: inject his approval links into the admin sidebar
+    if (user.role === 'david') {
+      var adminSb = document.getElementById('admin-sb');
+      if (adminSb && !document.getElementById('david-nav-items')) {
+        var davidNav = document.createElement('div');
+        davidNav.id = 'david-nav-items';
+        davidNav.innerHTML =
+          '<div class="ndiv"></div>' +
+          '<div class="ngrp">My Approvals</div>' +
+          '<div class="nlink" data-pg="da-approval" data-sc="admin" id="david-approval-link"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>' +
+          '<div class="nlink" data-pg="da-log" data-sc="admin" id="david-log-link"><span class="nico">▲</span>Approved Log</div>';
+        adminSb.appendChild(davidNav);
+        // Wire these links — they load David pages but show in admin screen
+        davidNav.querySelectorAll('.nlink[data-pg]').forEach(function(link){
+          link.addEventListener('click', function(){
+            // Show david pages inside admin screen
+            document.querySelectorAll('#admin .pg').forEach(function(p){ p.classList.remove('active'); });
+            document.querySelectorAll('#admin .nlink').forEach(function(n){ n.classList.remove('active'); });
+            link.classList.add('active');
+            // Mount david pages into admin main area if not already there
+            var pg = link.getAttribute('data-pg');
+            var existing = document.getElementById(pg);
+            if (existing) {
+              existing.classList.add('active');
+              if(pg==='d-approval') loadDavidQ();
+              if(pg==='d-log') loadDavidLog();
+            }
+          });
+        });
+      }
+    }
 
     // David greeting
     if (user.role === 'david') {
