@@ -1911,11 +1911,13 @@ function openEditor(art,role){
     var scores = calculateScores(htmlContent, art.primary_kw || '');
     updateScoreDisplay(scores);
     // Display meta if available
-    if (art.meta) {
+    if (art.meta && art.meta.SEO_TITLE) {
       displayMeta(art.meta, art.word_count);
-    } else if (art.content) {
+    } else if (art.content && typeof art.content === 'string') {
       var parsedMeta = parseMeta(art.content);
-      if (parsedMeta.SEO_TITLE) displayMeta(parsedMeta, art.word_count);
+      if (parsedMeta.SEO_TITLE && parsedMeta.SEO_TITLE.length < 80 && !parsedMeta.SEO_TITLE.includes('<')) {
+        displayMeta(parsedMeta, art.word_count);
+      }
     }
     if (art.id) loadComments(art.id);
     wireToolbar();
@@ -2500,39 +2502,59 @@ function wireComments() {
 function calculateScores(content, primaryKw) {
   if (!content || !primaryKw) return { seo: 0, geo: 0, aeo: 0 };
   
-  var text = content.replace(/<[^>]+>/g, ' ').toLowerCase();
-  var kw = primaryKw.toLowerCase();
-  var kwCount = (text.match(new RegExp(kw, 'g')) || []).length;
-  var words = text.trim().split(/\s+/).filter(Boolean).length;
-  
-  // SEO score
+  var text = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+  var kw = primaryKw.toLowerCase().trim();
+  var kwWords = kw.split(/\s+/);
+  var kwCount = (text.match(new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'g')) || []).length;
+  var words = text.split(/\s+/).filter(Boolean).length;
+  var h1Match = /<h1[^>]*>/i.test(content);
+  var h2Count = (content.match(/<h2[^>]*>/gi) || []).length;
+  var h2WithKw = 0;
+  var h2Matches = content.match(/<h2[^>]*>(.*?)<\/h2>/gi) || [];
+  h2Matches.forEach(function(h){ if(h.toLowerCase().includes(kw)) h2WithKw++; });
+  var hasFaq = /faq|frequently asked/i.test(content);
+  var hasTable = /<table/i.test(content);
+  var hasBold = (content.match(/<strong>/gi) || []).length;
+  var hasLists = /<ul|<ol/i.test(content);
+  var hasInternalLinks = /fxify\.com/i.test(content);
+  var introText = text.substring(0, 300);
+  var kwInIntro = introText.includes(kw);
+
+  // ── SEO Score ────────────────────────────────────────────────────────
   var seo = 0;
-  if (kwCount >= 1) seo += 20;
-  if (kwCount >= 3) seo += 15;
-  if (kwCount <= 12) seo += 10;
-  if (content.includes('<h1>') || content.includes('<h2>')) seo += 20;
-  if (words >= 600) seo += 15;
-  if (words >= 900) seo += 10;
-  if (content.includes('<ul>') || content.includes('<ol>')) seo += 10;
+  if (h1Match && content.toLowerCase().includes('<h1')) seo += 15; // has H1
+  if (kwCount >= 1) seo += 10;   // keyword present
+  if (kwCount >= 3) seo += 10;   // keyword density OK
+  if (kwInIntro) seo += 15;      // keyword in first 300 chars
+  if (h2WithKw >= 1) seo += 10;  // keyword in at least 1 H2
+  if (h2WithKw >= 2) seo += 5;   // keyword in 2+ H2s
+  if (words >= 800) seo += 10;   // good length
+  if (words >= 1200) seo += 5;   // long form
+  if (hasInternalLinks) seo += 10; // internal links
+  if (hasBold >= 5) seo += 5;    // bolding used
+  if (hasFaq) seo += 5;          // FAQ section
   seo = Math.min(seo, 100);
 
-  // GEO score
+  // ── GEO Score (AI answer engines) ───────────────────────────────────
   var geo = 0;
-  if (text.indexOf(kw) < 200) geo += 25; // early mention
-  var sentences = text.split(/[.!?]+/).filter(Boolean);
-  var shortSentences = sentences.filter(function(s){ return s.trim().split(/\s+/).length < 20; }).length;
-  if (shortSentences / sentences.length > 0.6) geo += 20;
-  if (content.includes('<strong>')) geo += 15;
-  if (words >= 500) geo += 20;
-  if (content.includes('?')) geo += 20; // has questions
+  if (kwInIntro) geo += 20;       // direct answer early
+  if (hasTable) geo += 15;        // structured data
+  if (hasFaq) geo += 20;          // FAQ = answer engine gold
+  if (hasBold >= 8) geo += 15;    // bolded key facts
+  var sentences = text.split(/[.!?]+/).filter(function(s){ return s.trim().length > 10; });
+  var shortSents = sentences.filter(function(s){ return s.trim().split(/\s+/).length <= 20; }).length;
+  if (sentences.length > 0 && shortSents/sentences.length > 0.6) geo += 15; // short sentences
+  if (words >= 500) geo += 15;    // enough substance
   geo = Math.min(geo, 100);
 
-  // AEO score
+  // ── AEO Score (featured snippets, PAA) ───────────────────────────────
   var aeo = 0;
-  if (content.includes('<h2>') || content.includes('<h3>')) aeo += 25;
-  if ((content.match(/<li>/g) || []).length >= 3) aeo += 25;
-  if (text.includes('what') || text.includes('how') || text.includes('why')) aeo += 25;
-  if (words >= 400 && words <= 1800) aeo += 25;
+  if (hasFaq) aeo += 30;           // FAQ directly targets PAA
+  if (h2Count >= 3) aeo += 15;     // good heading structure
+  if (hasLists) aeo += 15;         // lists rank for snippets
+  if (hasTable) aeo += 15;         // tables rank for snippets
+  if (kwInIntro) aeo += 15;        // definition-style opening
+  if (words >= 600 && words <= 2500) aeo += 10; // right length range
   aeo = Math.min(aeo, 100);
 
   return { seo: seo, geo: geo, aeo: aeo };
@@ -3119,18 +3141,21 @@ function wireReadMode() {
 // ── META PACKAGE ──────────────────────────────────────────────────────────
 function parseMeta(text) {
   var meta = {};
+  // Only parse if there is a META block — never fall back to article content
+  if (!text || typeof text !== 'string') return meta;
   var metaMatch = text.match(/---META---([\s\S]*?)---END META---/);
-  if (!metaMatch) {
-    // Fallback: try to find individual fields
-    metaMatch = [null, text];
-  }
+  if (!metaMatch) return meta;
   var block = metaMatch[1] || '';
   var fields = ['SEO_TITLE','META_DESC','SLUG','EXCERPT','OG_TITLE','OG_DESC',
                 'TWITTER_TITLE','TWITTER_DESC','SCHEMA_TYPE','FOCUS_KW'];
   fields.forEach(function(f) {
-    var re = new RegExp(f + ':\s*(.+?)(?=\n[A-Z_]+:|$)', 's');
-    var m = block.match(re);
-    if (m) meta[f] = m[1].trim();
+    var lines = block.split('\n');
+    for (var i = 0; i < lines.length; i++) {
+      if (lines[i].indexOf(f + ':') === 0) {
+        meta[f] = lines[i].slice(f.length + 1).trim();
+        break;
+      }
+    }
   });
   return meta;
 }
@@ -3139,10 +3164,13 @@ function displayMeta(meta, wordCount) {
   function setField(id, val, checkLen, maxLen) {
     var el = document.getElementById(id);
     if (!el || !val) return;
-    el.textContent = val;
+    // Strip any HTML tags that might have leaked in
+    var clean = String(val).replace(/<[^>]+>/g, '').replace(/&[a-z]+;/gi, ' ').trim();
+    if (!clean || clean.length < 2) return; // don't show garbage
+    el.textContent = clean;
     if (checkLen) {
-      el.className = 'meta-field-val ' + (val.length <= maxLen ? 'good' : 'warn');
-      el.title = val.length + '/' + maxLen + ' chars';
+      el.className = 'meta-field-val ' + (clean.length <= maxLen ? 'good' : 'warn');
+      el.title = clean.length + '/' + maxLen + ' chars';
     }
   }
   setField('m-seo-title', meta.SEO_TITLE, true, 60);
