@@ -2434,13 +2434,17 @@ async function generate(){
     // Strip ---META--- block
     var metaIdx = text.indexOf('---META---');
     var articleHtml = metaIdx > 0 ? text.substring(0, metaIdx).trim() : text.trim();
-    // Strip any image placeholders Claude added despite instructions
+    // Strip any image content Claude added
     articleHtml = articleHtml
-      .replace(/<div[^>]*class="img-placeholder"[^>]*>[\s\S]*?<\/div>/gi, '')
+      .replace(/<div[^>]*img-placeholder[^>]*>[\s\S]*?<\/div>/gi, '')
       .replace(/<div[^>]*data-imgplaceholder[^>]*>[\s\S]*?<\/div>/gi, '')
-      .replace(/\[IMAGE\]/gi, '')
-      .replace(/\[VISUAL:[^\]]*\]/gi, '')
-      .replace(/<p>\s*<\/p>/g, '');
+      .replace(/<img[^>]*>/gi, '')
+      .replace(/!\[.*?\]\(.*?\)/g, '')
+      .replace(/\[IMAGE[^\]]*\]/gi, '')
+      .replace(/\[VISUAL[^\]]*\]/gi, '')
+      .replace(/\[PHOTO[^\]]*\]/gi, '')
+      .replace(/<p>\s*<\/p>/g, '')
+      .replace(/<p><br\s*\/?><\/p>/g, '');
     
     // If markdown came back, convert it aggressively
     if(!articleHtml.trim().startsWith('<')) {
@@ -2492,14 +2496,26 @@ function initEditor(content) {
   
   // Simple contenteditable rich editor
   el.contentEditable = 'true';
-  // Strip all image placeholders from content — writers add manually with /image
-  var cleanContent = (content || '<p>Start writing your article here...</p>')
-    .replace(/<div[^>]*class="img-placeholder"[^>]*>[\s\S]*?<\/div>/gi, '')
-    .replace(/<div[^>]*data-imgplaceholder[^>]*>[\s\S]*?<\/div>/gi, '')
-    .replace(/\[IMAGE\]/gi, '')
-    .replace(/\[VISUAL:[^\]]*\]/gi, '')
-    .replace(/<p>\s*<\/p>/g, '')
-    .trim();
+  // Strip ALL image related content — writers add manually with /image
+  function stripImages(c) {
+    // Remove img-placeholder divs (any variant)
+    c = c.replace(/<div[^>]*img-placeholder[^>]*>[\s\S]*?<\/div>/gi, '');
+    c = c.replace(/<div[^>]*data-imgplaceholder[^>]*>[\s\S]*?<\/div>/gi, '');
+    // Remove actual img tags
+    c = c.replace(/<img[^>]*>/gi, '');
+    // Remove markdown image syntax
+    c = c.replace(/!\[.*?\]\(.*?\)/g, '');
+    // Remove [IMAGE] [VISUAL:] [PHOTO] placeholders
+    c = c.replace(/\[IMAGE[^\]]*\]/gi, '');
+    c = c.replace(/\[VISUAL[^\]]*\]/gi, '');
+    c = c.replace(/\[PHOTO[^\]]*\]/gi, '');
+    c = c.replace(/\[image[^\]]*\]/gi, '');
+    // Remove empty paragraphs left behind
+    c = c.replace(/<p>\s*<\/p>/g, '');
+    c = c.replace(/<p><br\s*\/?><\/p>/g, '');
+    return c.trim();
+  }
+  var cleanContent = stripImages(content || '<p>Start writing your article here...</p>');
   el.innerHTML = cleanContent;
   
   // Track changes for autosave and word count
