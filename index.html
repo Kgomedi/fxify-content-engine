@@ -2412,22 +2412,42 @@ async function generate(){
     'NO markdown. NO ** asterisks. NO # hashes. NO pipe tables. Pure HTML only.\n'+
     'WORD COUNT: You MUST hit '+len+'. This is mandatory. If you are running short, expand each H2 section with more specific detail, trader examples, and prop account context. Do NOT stop early. Do NOT truncate. Write the complete article including all FAQs and the full meta package before stopping.';
   try{
-    var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:8000})});
+    var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:8000,system:'You are a Senior Copywriter at FXIFY. You ONLY output clean HTML. Never use markdown, asterisks, or hash symbols. Always use proper HTML tags.'})});
     var data=await r.json();
     var text='';
     if(Array.isArray(data)&&data[0]&&data[0].content&&data[0].content[0]) text=data[0].content[0].text;
     else if(data.content&&data.content[0]) text=data.content[0].text;
     else if(data.text) text=data.text;
     if(!text) throw new Error('No content returned from n8n');
-    // Strip any ---META--- block from the HTML content before saving
+    console.log('Raw output first 200 chars:', text.substring(0,200));
+    console.log('Is HTML:', text.trim().startsWith('<'));
+    // Strip ---META--- block
     var metaIdx = text.indexOf('---META---');
     var articleHtml = metaIdx > 0 ? text.substring(0, metaIdx).trim() : text.trim();
-    // If Claude still returned markdown despite instructions, convert key patterns
-    articleHtml = articleHtml.replace(/^# (.+)$/gm, '<h1>$1</h1>');
-    articleHtml = articleHtml.replace(/^## (.+)$/gm, '<h2>$1</h2>');
-    articleHtml = articleHtml.replace(/^### (.+)$/gm, '<h3>$1</h3>');
-    articleHtml = articleHtml.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    articleHtml = articleHtml.replace(/\*\*/g, '');
+    
+    // If markdown came back, convert it aggressively
+    if(!articleHtml.trim().startsWith('<')) {
+      // Full markdown to HTML conversion
+      articleHtml = articleHtml
+        .replace(/^#### (.+)$/gm, '<h4>$1</h4>')
+        .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+        .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+        .replace(/^# (.+)$/gm, '<h1>$1</h1>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\*(.+?)\*/g, '<em>$1</em>')
+        .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+        .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+        .replace(/(<li>.*<\/li>\n?)+/g, '<ul>$&</ul>')
+        .replace(/^---+$/gm, '<hr>')
+        .replace(/\n\n/g, '</p><p>')
+        .replace(/^(?!<)(.+)$/gm, '<p>$1</p>')
+        .replace(/<p><\/p>/g, '');
+    }
+    
+    // Regardless — clean up any remaining raw markdown
+    articleHtml = articleHtml
+      .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+      .replace(/\*\*/g, '');
     var wc=articleHtml.replace(/<[^>]+>/g,' ').trim().split(/\s+/).filter(Boolean).length;
     currentArt={title:title,category:cat,assignee:writer,primaryKw:pkw,content:articleHtml,tone:tone,length:len,word_count:wc,dueDate:dueDate,priority:priority};
     var saved=await dbInsert(currentArt);
@@ -3211,9 +3231,23 @@ async function runLiamPlanner() {
     });
     var data = await r.json();
     var text = '';
-    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
-    else if (data.content && data.content[0]) text = data.content[0].text;
+    if (typeof data === 'string') text = data;
+    else if (Array.isArray(data) && data[0]) {
+      var d0 = data[0];
+      if (typeof d0 === 'string') text = d0;
+      else if (d0.text) text = d0.text;
+      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
+      else if (d0.output) text = d0.output;
+      else if (d0.message) text = d0.message;
+      else text = JSON.stringify(d0);
+    }
     else if (data.text) text = data.text;
+    else if (data.content && data.content[0]) text = data.content[0].text || '';
+    else if (data.output) text = data.output;
+    else if (data.message) text = data.message;
+    else text = JSON.stringify(data);
+    console.log('n8n raw response type:', typeof data, Array.isArray(data) ? 'array['+data.length+']' : '');
+    console.log('Extracted text start:', text.substring(0,100));
     var jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON');
     var plan = JSON.parse(jsonMatch[0]);
@@ -3695,9 +3729,23 @@ async function runLiamPlanner() {
     });
     var data = await r.json();
     var text = '';
-    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
-    else if (data.content && data.content[0]) text = data.content[0].text;
+    if (typeof data === 'string') text = data;
+    else if (Array.isArray(data) && data[0]) {
+      var d0 = data[0];
+      if (typeof d0 === 'string') text = d0;
+      else if (d0.text) text = d0.text;
+      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
+      else if (d0.output) text = d0.output;
+      else if (d0.message) text = d0.message;
+      else text = JSON.stringify(d0);
+    }
     else if (data.text) text = data.text;
+    else if (data.content && data.content[0]) text = data.content[0].text || '';
+    else if (data.output) text = data.output;
+    else if (data.message) text = data.message;
+    else text = JSON.stringify(data);
+    console.log('n8n raw response type:', typeof data, Array.isArray(data) ? 'array['+data.length+']' : '');
+    console.log('Extracted text start:', text.substring(0,100));
     var jsonMatch = text.match(/\{[\s\S]*\}/);
     if (!jsonMatch) throw new Error('No JSON');
     var plan = JSON.parse(jsonMatch[0]);
@@ -4475,9 +4523,23 @@ async function runPlanner() {
     });
     var data = await r.json();
     var text = '';
-    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
-    else if (data.content && data.content[0]) text = data.content[0].text;
+    if (typeof data === 'string') text = data;
+    else if (Array.isArray(data) && data[0]) {
+      var d0 = data[0];
+      if (typeof d0 === 'string') text = d0;
+      else if (d0.text) text = d0.text;
+      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
+      else if (d0.output) text = d0.output;
+      else if (d0.message) text = d0.message;
+      else text = JSON.stringify(d0);
+    }
     else if (data.text) text = data.text;
+    else if (data.content && data.content[0]) text = data.content[0].text || '';
+    else if (data.output) text = data.output;
+    else if (data.message) text = data.message;
+    else text = JSON.stringify(data);
+    console.log('n8n raw response type:', typeof data, Array.isArray(data) ? 'array['+data.length+']' : '');
+    console.log('Extracted text start:', text.substring(0,100));
 
     // Parse JSON - handle extra text, markdown fences, truncated responses
     var jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -4933,9 +4995,23 @@ async function runYouTubeResearch(prefix) {
     });
     var data = await r.json();
     var text = '';
-    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
-    else if (data.content && data.content[0]) text = data.content[0].text;
+    if (typeof data === 'string') text = data;
+    else if (Array.isArray(data) && data[0]) {
+      var d0 = data[0];
+      if (typeof d0 === 'string') text = d0;
+      else if (d0.text) text = d0.text;
+      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
+      else if (d0.output) text = d0.output;
+      else if (d0.message) text = d0.message;
+      else text = JSON.stringify(d0);
+    }
     else if (data.text) text = data.text;
+    else if (data.content && data.content[0]) text = data.content[0].text || '';
+    else if (data.output) text = data.output;
+    else if (data.message) text = data.message;
+    else text = JSON.stringify(data);
+    console.log('n8n raw response type:', typeof data, Array.isArray(data) ? 'array['+data.length+']' : '');
+    console.log('Extracted text start:', text.substring(0,100));
 
     // Robust JSON extraction
     var jsonMatch = text.match(/\{[\s\S]*\}/);
@@ -5271,9 +5347,23 @@ async function generateOutline() {
     });
     var data = await r.json();
     var text = '';
-    if (Array.isArray(data) && data[0] && data[0].content && data[0].content[0]) text = data[0].content[0].text;
-    else if (data.content && data.content[0]) text = data.content[0].text;
+    if (typeof data === 'string') text = data;
+    else if (Array.isArray(data) && data[0]) {
+      var d0 = data[0];
+      if (typeof d0 === 'string') text = d0;
+      else if (d0.text) text = d0.text;
+      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
+      else if (d0.output) text = d0.output;
+      else if (d0.message) text = d0.message;
+      else text = JSON.stringify(d0);
+    }
     else if (data.text) text = data.text;
+    else if (data.content && data.content[0]) text = data.content[0].text || '';
+    else if (data.output) text = data.output;
+    else if (data.message) text = data.message;
+    else text = JSON.stringify(data);
+    console.log('n8n raw response type:', typeof data, Array.isArray(data) ? 'array['+data.length+']' : '');
+    console.log('Extracted text start:', text.substring(0,100));
 
     currentOutline = text;
     if (content) content.textContent = text;
