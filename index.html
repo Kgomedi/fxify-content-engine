@@ -2410,7 +2410,7 @@ async function generate(){
     '<table><thead><tr><th> for tables — always include thead with th elements\n'+
     '<hr> for dividers between sections\n'+
     '<blockquote> for callout boxes\n'+
-    '— Do NOT add any image placeholders. Writers will add images manually using the /image command in the editor.\n'+
+    '— NEVER add image placeholders, [IMAGE], [VISUAL], or any upload boxes. Do not reference images at all. Writers handle images separately.\n'+
     'For internal links: <a href="/relevant-page">anchor text</a>\n'+
     'NO markdown. NO ** asterisks. NO # hashes. NO pipe tables. Pure HTML only.\n'+
     'TARGET: '+len+'.\n'+
@@ -2434,6 +2434,13 @@ async function generate(){
     // Strip ---META--- block
     var metaIdx = text.indexOf('---META---');
     var articleHtml = metaIdx > 0 ? text.substring(0, metaIdx).trim() : text.trim();
+    // Strip any image placeholders Claude added despite instructions
+    articleHtml = articleHtml
+      .replace(/<div[^>]*class="img-placeholder"[^>]*>[\s\S]*?<\/div>/gi, '')
+      .replace(/<div[^>]*data-imgplaceholder[^>]*>[\s\S]*?<\/div>/gi, '')
+      .replace(/\[IMAGE\]/gi, '')
+      .replace(/\[VISUAL:[^\]]*\]/gi, '')
+      .replace(/<p>\s*<\/p>/g, '');
     
     // If markdown came back, convert it aggressively
     if(!articleHtml.trim().startsWith('<')) {
@@ -2485,7 +2492,15 @@ function initEditor(content) {
   
   // Simple contenteditable rich editor
   el.contentEditable = 'true';
-  el.innerHTML = content || '<p>Start writing your article here...</p>';
+  // Strip all image placeholders from content — writers add manually with /image
+  var cleanContent = (content || '<p>Start writing your article here...</p>')
+    .replace(/<div[^>]*class="img-placeholder"[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/<div[^>]*data-imgplaceholder[^>]*>[\s\S]*?<\/div>/gi, '')
+    .replace(/\[IMAGE\]/gi, '')
+    .replace(/\[VISUAL:[^\]]*\]/gi, '')
+    .replace(/<p>\s*<\/p>/g, '')
+    .trim();
+  el.innerHTML = cleanContent;
   
   // Track changes for autosave and word count
   el.addEventListener('input', function() {
