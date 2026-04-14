@@ -2110,7 +2110,6 @@ function openEditor(art,role){
     wireReadMode();
     wireComments();
     initInlineComments();
-    makeImgPlaceholders();
     initImageUpload();
     wireSuggestionSpans();
     loadInternalLinks();
@@ -4451,6 +4450,8 @@ function wireSuggestionSpans() {
 }
 
 function makeImgPlaceholders() {
+  // Disabled — images added by writer using /image command only
+  return;
   var edEl = document.getElementById('tiptap-editor');
   if (!edEl) return;
 
