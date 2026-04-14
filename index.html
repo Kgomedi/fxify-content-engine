@@ -2410,7 +2410,7 @@ async function generate(){
     '<table><thead><tr><th> for tables — always include thead with th elements\n'+
     '<hr> for dividers between sections\n'+
     '<blockquote> for callout boxes\n'+
-    'For image placeholders: <div class="img-placeholder" data-imgplaceholder="true"><p>[Brief description of ideal image]</p></div> — MAXIMUM 2 image placeholders per article. Place them only after H2 sections, never inside FAQ, never inside Key Takeaways, never inside tables.\n'+
+    '— Do NOT add any image placeholders. Writers will add images manually using the /image command in the editor.\n'+
     'For internal links: <a href="/relevant-page">anchor text</a>\n'+
     'NO markdown. NO ** asterisks. NO # hashes. NO pipe tables. Pure HTML only.\n'+
     'TARGET: '+len+'.\n'+
@@ -2704,9 +2704,63 @@ function wireToolbar() {
   // Track selection to update toolbar state
   var edEl = document.getElementById('tiptap-editor');
   if (edEl) {
-    edEl.addEventListener('keyup', updateToolbarState);
+    edEl.addEventListener('keyup', function(e) {
+      updateToolbarState();
+      checkSlashCommand(edEl);
+    });
     edEl.addEventListener('mouseup', updateToolbarState);
   }
+}
+
+function checkSlashCommand(el) {
+  var sel = window.getSelection();
+  if (!sel || !sel.rangeCount) return;
+  var range = sel.getRangeAt(0);
+  var node = range.startContainer;
+  if (node.nodeType !== 3) return;
+  var text = node.textContent;
+  var offset = range.startOffset;
+  var before = text.substring(0, offset);
+  var slashIdx = before.lastIndexOf('/');
+  if (slashIdx < 0) return;
+  var cmd = before.substring(slashIdx + 1).toLowerCase().trim();
+  if (!['image','img','photo','visual'].includes(cmd)) return;
+
+  // Remove the slash command text from node
+  node.textContent = text.substring(0, slashIdx) + text.substring(offset);
+
+  // Create image placeholder
+  var ph = document.createElement('div');
+  ph.className = 'img-placeholder';
+  ph.setAttribute('data-imgplaceholder', 'true');
+  ph.innerHTML = '<span class="ph-icon">[IMAGE]</span><p>Click to upload image</p><span class="ph-hint">Click to upload</span>';
+  ph.addEventListener('click', function() { openImageUpload(ph); });
+
+  // Insert after current block element
+  var block = node.parentElement;
+  while (block && block !== el && !['P','H1','H2','H3','H4','LI','BLOCKQUOTE','DIV'].includes(block.tagName)) {
+    block = block.parentElement;
+  }
+  if (block && block !== el) {
+    block.insertAdjacentElement('afterend', ph);
+  } else {
+    el.appendChild(ph);
+  }
+
+  // Add empty paragraph after placeholder
+  var p = document.createElement('p');
+  p.innerHTML = '<br>';
+  ph.insertAdjacentElement('afterend', p);
+
+  // Move cursor into new paragraph
+  var newRange = document.createRange();
+  newRange.setStart(p, 0);
+  newRange.collapse(true);
+  sel.removeAllRanges();
+  sel.addRange(newRange);
+
+  // Brief toast
+  toast('Image placeholder added — click to upload');
 }
 
 // ── COMMENTS SYSTEM ────────────────────────────────────────────────────────
