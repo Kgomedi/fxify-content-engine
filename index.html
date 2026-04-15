@@ -686,10 +686,10 @@ select.finput{cursor:pointer;}
             <div class="frow fg">
               <div><label class="flbl">Assign to writer</label><select class="finput" id="b-writer"><option>— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
               <div><label class="flbl">Author (E-E-A-T)</label><select class="finput" id="b-author">
+                <option value="sheperd">Sheperd Morena — Senior Copywriter</option>
                 <option value="fariha">Fariha Khan — Senior Copywriter</option>
                 <option value="harry">Harry Hosking — Senior Copywriter</option>
                 <option value="imran">Imran Najib — Senior Copywriter</option>
-                <option value="sheperd">Sheperd Morena — Senior Copywriter</option>
               </select></div>
             </div>
           </div>
@@ -888,6 +888,20 @@ select.finput{cursor:pointer;}
           <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="pl-loading-txt">Scraping competitors...</p>
           <p style="font-size:12px;color:var(--muted);">This takes 15-30 seconds</p>
         </div>
+        <!-- DAILY TOPIC IDEAS -->
+        <div id="daily-ideas-section" style="margin-bottom:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <div class="shead" style="margin-bottom:2px;">Today's ideas <span id="daily-ideas-date" style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;"></span></div>
+              <p style="font-size:11px;color:var(--muted);">Auto-generated every morning at 7am via n8n</p>
+            </div>
+            <button class="btn btn-s" id="refresh-daily-btn" style="font-size:11px;">↻ Refresh</button>
+          </div>
+          <div id="daily-ideas-list" style="display:grid;gap:8px;">
+            <p style="font-size:13px;color:var(--muted);font-style:italic;">Loading today's ideas...</p>
+          </div>
+        </div>
+
         <div id="pl-results" style="display:none;">
           <div class="shead">Keyword gaps found</div>
           <div id="pl-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
@@ -1195,6 +1209,20 @@ select.finput{cursor:pointer;}
           <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="lpl-loading-txt">Scraping competitors...</p>
           <p style="font-size:12px;color:var(--muted);">This takes 15-30 seconds</p>
         </div>
+        <!-- DAILY TOPIC IDEAS (Liam) -->
+        <div id="ldaily-ideas-section" style="margin-bottom:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+            <div>
+              <div class="shead" style="margin-bottom:2px;">Today's ideas <span id="ldaily-ideas-date" style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;"></span></div>
+              <p style="font-size:11px;color:var(--muted);">Auto-generated every morning at 7am</p>
+            </div>
+            <button class="btn btn-s" id="lrefresh-daily-btn" style="font-size:11px;">↻ Refresh</button>
+          </div>
+          <div id="ldaily-ideas-list" style="display:grid;gap:8px;">
+            <p style="font-size:13px;color:var(--muted);font-style:italic;">Loading today's ideas...</p>
+          </div>
+        </div>
+
         <div id="lpl-results" style="display:none;">
           <div class="shead">Keyword gaps</div>
           <div id="lpl-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
@@ -1620,6 +1648,8 @@ function goPage(sc,pg,navEl){
   if(pg==='a-analytics') loadAnalytics();
   if(pg==='w-youtube') initYouTubePage('yt');
   if(pg==='a-youtube') initYouTubePage('ayt');
+  if(pg==='a-planner') loadDailyIdeas('daily-ideas-list', 'daily-ideas-date');
+  if(pg==='l-planner') loadDailyIdeas('ldaily-ideas-list', 'ldaily-ideas-date');
 }
 
 function closeSB(){
@@ -3405,7 +3435,13 @@ function openReadMode() {
   var rawContent = edEl ? edEl.innerHTML : (art.content || '');
 
   // Build author info
-  var authorKey = art.authorKey || 'sheperd';
+  // Auto-set author based on logged in user
+  var authorKey = art.authorKey || (currentUser && currentUser.email ? 
+    (currentUser.email.split('.')[0] === 'sheperd' ? 'sheperd' :
+     currentUser.email.split('.')[0] === 'fariha' ? 'fariha' :
+     currentUser.email.split('.')[0] === 'harrison' ? 'harry' :
+     currentUser.email.split('.')[0] === 'imran' ? 'imran' :
+     'sheperd') : 'sheperd');
   var authorMap = {
     fariha: {name:'Fariha Khan', title:'Senior Content Writer', initials:'FK'},
     harry:  {name:'Harry Hosking', title:'Markets Analyst', initials:'HH'},
@@ -5477,17 +5513,31 @@ async function generateOutline() {
 
 // ── CONTEXT CARRY-THROUGH from planner to brief ───────────────────────────
 function prefillBriefFromPlanner(topic) {
+  // Core fields
   var titleEl = document.getElementById('b-title');
   var kwEl = document.getElementById('b-pkw');
+  var skwEl = document.getElementById('b-skw');
   var geoEl = document.getElementById('b-geo');
+  var claimEl = document.getElementById('b-claim');
   var qEl = document.getElementById('b-q');
+  var paaEl = document.getElementById('b-paa');
   var intentEl = document.getElementById('b-intent');
   var catEl = document.getElementById('b-cat');
 
   if (titleEl) titleEl.value = topic.title || '';
   if (kwEl) kwEl.value = topic.keyword || '';
+  // Build secondary keywords from PAA + angle
+  if (skwEl) {
+    var skw = [];
+    if (topic.keyword) skw.push(topic.keyword + ' guide');
+    if (topic.angle) skw.push(topic.angle.split(' ').slice(0,4).join(' '));
+    skwEl.value = skw.join(', ');
+  }
   if (geoEl) geoEl.value = topic.geo_angle || '';
+  if (claimEl && topic.angle) claimEl.value = topic.angle || '';
   if (qEl) qEl.value = topic.aeo_snippet || '';
+  // PAA — use topic title as the primary question if no aeo_snippet
+  if (paaEl && !topic.aeo_snippet) paaEl.value = 'What is ' + (topic.keyword || topic.title) + '?';
   if (intentEl && topic.intent) {
     var opts = intentEl.options;
     for (var i = 0; i < opts.length; i++) {
@@ -5500,13 +5550,91 @@ function prefillBriefFromPlanner(topic) {
       if (copts[j].value === topic.category || copts[j].text === topic.category) { catEl.selectedIndex = j; break; }
     }
   }
-  // Show the outline section
-  var outlineSection = document.getElementById('outline-section');
-  if (outlineSection) outlineSection.style.display = 'block';
-  // Navigate to generate
+  // Switch to SEO tab briefly to show it's filled, then back to core
   var genLink = document.querySelector('[data-pg="a-generate"]');
   if (genLink) genLink.click();
-  toast('Brief pre-filled with all context — review and generate outline first');
+  // Show outline section
+  var outlineSection = document.getElementById('outline-section');
+  if (outlineSection) outlineSection.style.display = 'block';
+  // Update currentBriefData
+  currentBriefData = {
+    title: topic.title || '',
+    cat: topic.category || 'Guides',
+    len: 'Standard guide — 800 words',
+    tone: 'Educational',
+    pkw: topic.keyword || '',
+  };
+  toast('All fields pre-filled — GEO, AEO, intent, keywords all loaded');
+}
+
+// ── DAILY TOPIC IDEAS ─────────────────────────────────────────────────────
+async function loadDailyIdeas(listId, dateId) {
+  var listEl = document.getElementById(listId);
+  var dateEl = document.getElementById(dateId);
+  if (!listEl) return;
+
+  var today = new Date().toISOString().split('T')[0];
+  if (dateEl) dateEl.textContent = '· ' + new Date().toLocaleDateString('en-GB', {weekday:'short', day:'numeric', month:'short'});
+
+  try {
+    var res = await supa.from('daily_topics')
+      .select('*')
+      .eq('date', today)
+      .order('priority_score', { ascending: false });
+
+    if (res.error || !res.data || !res.data.length) {
+      listEl.innerHTML = '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;text-align:center;">' +
+        '<p style="font-size:13px;color:var(--muted);margin-bottom:8px;">No ideas generated yet for today</p>' +
+        '<p style="font-size:11px;color:var(--muted);">The n8n workflow runs at 7am — or check your n8n schedule is active</p>' +
+        '</div>';
+      return;
+    }
+
+    renderDailyIdeas(res.data, listId);
+  } catch(e) {
+    listEl.innerHTML = '<p style="font-size:12px;color:var(--muted);">Could not load ideas — create the daily_topics table in Supabase first</p>';
+  }
+}
+
+function renderDailyIdeas(ideas, listId) {
+  var listEl = document.getElementById(listId);
+  if (!listEl) return;
+  listEl.innerHTML = '';
+
+  var priorityColor = { High: 'var(--high)', Urgent: 'var(--urgent)', Normal: 'var(--blue)', Low: 'var(--muted)' };
+
+  ideas.forEach(function(idea) {
+    var card = document.createElement('div');
+    card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;';
+    var color = priorityColor[idea.priority] || 'var(--blue)';
+    card.innerHTML =
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+          '<p style="font-size:13px;font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (idea.title||'') + '</p>' +
+          '<span style="font-size:9px;font-weight:700;padding:2px 7px;border-radius:20px;background:var(--highL);color:' + color + ';flex-shrink:0;">' + (idea.priority||'Normal') + '</span>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+          '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">' + (idea.keyword||'') + '</span>' +
+          '<span style="font-size:11px;color:var(--muted);">' + (idea.intent||'') + '</span>' +
+          (idea.geo_angle ? '<span style="font-size:11px;color:var(--teal);">GEO: ' + idea.geo_angle.substring(0,50) + (idea.geo_angle.length>50?'...':'') + '</span>' : '') +
+        '</div>' +
+        (idea.angle ? '<p style="font-size:11px;color:var(--muted);margin-top:4px;font-style:italic;">' + idea.angle + '</p>' : '') +
+      '</div>' +
+      '<button class="btn btn-p btn-s" style="font-size:11px;flex-shrink:0;">Use this topic →</button>';
+
+    card.querySelector('button').addEventListener('click', function() {
+      prefillBriefFromPlanner({
+        title: idea.title,
+        keyword: idea.keyword,
+        intent: idea.intent,
+        category: idea.category || 'Guides',
+        geo_angle: idea.geo_angle || '',
+        aeo_snippet: idea.aeo_snippet || '',
+        angle: idea.angle || ''
+      });
+    });
+    listEl.appendChild(card);
+  });
 }
 
 // ── GOOGLE LOGIN (top-level so it's always accessible) ───────────────────
@@ -5540,7 +5668,33 @@ async function doGoogleLogin() {
 document.addEventListener('DOMContentLoaded', function() {
   var btn = document.getElementById('login-btn');
   if (btn) btn.addEventListener('click', doGoogleLogin);
+
+  // Auto-set author dropdown based on logged in user
+  if (currentUser && currentUser.email) {
+    var authorSel = document.getElementById('b-author');
+    if (authorSel) {
+      var emailPrefix = currentUser.email.split('.')[0].toLowerCase();
+      var authorMap = { sheperd: 'sheperd', fariha: 'fariha', harrison: 'harry', imran: 'imran' };
+      var authorVal = authorMap[emailPrefix] || 'sheperd';
+      for (var ai = 0; ai < authorSel.options.length; ai++) {
+        if (authorSel.options[ai].value === authorVal) { authorSel.selectedIndex = ai; break; }
+      }
+    }
+  }
 });
+
+var USERS = {
+  'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
+  'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
+  'liam@quirkydigital.com':      { role:'liam',   name:'Liam',            screen:'liam',   initials:'L',  av:'b' },
+  'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
+  'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
+  'imran.najib@fxify.com':       { role:'writer', name:'Imran Najib',     screen:'writer', initials:'IN', av:''  },
+  'mamnun.ahmed@fxify.com':      { role:'writer', name:'Mamnun Ahmed',    screen:'writer', initials:'MA', av:''  },
+  'roshan.ganesh@fxify.com':     { role:'writer', name:'Roshan Ganesh',   screen:'writer', initials:'RG', av:''  },
+  'shatha.altrad@fxify.com':     { role:'writer', name:'Shatha Altrad',   screen:'writer', initials:'SA', av:''  },
+  };
+
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init(){
@@ -5563,17 +5717,7 @@ function init(){
 
   // ── EMAIL AUTH ──────────────────────────────────────────────────────────
   // Role map — email → { role, name, screen }
-  var USERS = {
-    'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
-    'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
-    'liam@quirkydigital.com':      { role:'liam',   name:'Liam',            screen:'liam',   initials:'L',  av:'b' },
-    'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
-    'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
-    'imran.najib@fxify.com':       { role:'writer', name:'Imran Najib',     screen:'writer', initials:'IN', av:''  },
-    'mamnun.ahmed@fxify.com':      { role:'writer', name:'Mamnun Ahmed',    screen:'writer', initials:'MA', av:''  },
-    'roshan.ganesh@fxify.com':     { role:'writer', name:'Roshan Ganesh',   screen:'writer', initials:'RG', av:''  },
-    'shatha.altrad@fxify.com':     { role:'writer', name:'Shatha Altrad',   screen:'writer', initials:'SA', av:''  },
-  };
+  // USERS moved to top-level scope
 
   // Passwords handled by Google OAuth via Supabase
 
@@ -6107,6 +6251,12 @@ function init(){
   // Liam planner
   var lplBtn = document.getElementById('lpl-analyse-btn');
   if (lplBtn) lplBtn.addEventListener('click', runLiamPlanner);
+
+  // Daily ideas refresh buttons
+  var refreshDaily = document.getElementById('refresh-daily-btn');
+  if (refreshDaily) refreshDaily.addEventListener('click', function(){ loadDailyIdeas('daily-ideas-list', 'daily-ideas-date'); toast('Refreshed'); });
+  var lRefreshDaily = document.getElementById('lrefresh-daily-btn');
+  if (lRefreshDaily) lRefreshDaily.addEventListener('click', function(){ loadDailyIdeas('ldaily-ideas-list', 'ldaily-ideas-date'); toast('Refreshed'); });
 
   // Internal links tabs
   document.addEventListener('click', function(e) {
