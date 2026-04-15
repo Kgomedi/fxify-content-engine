@@ -659,6 +659,20 @@ select.finput{cursor:pointer;}
       <div id="a-generate" class="pg">
         <div class="pgh">Generate Draft</div>
         <p class="pgs">Fill in the brief and let Claude do the heavy lifting. Back in 60 seconds. ⚡</p>
+
+        <!-- SEO TOPIC OPTIMIZER -->
+        <div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:14px 18px;margin-bottom:16px;">
+          <p style="font-size:12px;font-weight:600;color:var(--tealB);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">⚡ SEO Brief Generator</p>
+          <p style="font-size:12px;color:#475569;margin-bottom:10px;">Type any topic title — Claude generates the full SEO brief for you</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <input class="finput" id="seo-optimizer-input" type="text" placeholder="e.g. How to Pass a Prop Firm Challenge" style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:#fff;"/>
+            <button class="btn btn-p" id="seo-optimizer-btn" style="white-space:nowrap;">Generate SEO Brief →</button>
+          </div>
+          <div id="seo-optimizer-loading" style="display:none;margin-top:10px;">
+            <p style="font-size:12px;color:#475569;">Claude is researching keywords and building your brief...</p>
+          </div>
+        </div>
+
         <div class="tabbar">
           <button class="tabbtn active" data-tab="core">Core</button>
           <button class="tabbtn" data-tab="seo">SEO</button>
@@ -1574,6 +1588,7 @@ select.finput{cursor:pointer;}
 
 <script>
 (function(){
+
 'use strict';
 
 // ── SUPABASE ──────────────────────────────────────────────────────────────
@@ -3341,12 +3356,7 @@ async function runLiamPlanner() {
   var competitorData = competitors.length ? await scrapeUrls(competitors) : '';
   var ownData = ownSite ? await scrapeUrls([ownSite]) : '';
 
-  var prompt = 'You are a senior SEO strategist for prop trading / fintech.\n\n' +
-    'SEED TOPIC: ' + topic + '\nCATEGORY: ' + cat + '\n' +
-    (ownData ? 'OWN SITE:\n' + ownData + '\n\n' : '') +
-    (competitorData ? 'COMPETITORS:\n' + competitorData + '\n\n' : '') +
-    'Respond ONLY with valid JSON: {"gaps":[],"topics":[{"title":"","keyword":"","intent":"","angle":"","priority":"","category":"","geo_angle":"","aeo_snippet":""}],"paa":[],"geo_topics":[],"backlink_angles":[{"angle":"","target_type":"","content_hook":""}]}\n' +
-    'Generate 5 gaps, 6 topics, 5 PAA, 3 GEO topics, 2 backlink angles. No other text.';
+  var prompt = 'You are a senior SEO strategist for FXIFY. Generate a complete SEO brief for: "' + topic + '". Return ONLY JSON: {"title":"","primary_keyword":"","secondary_keywords":"","search_intent":"Informational","category":"Guides","geo_angle":"","aeo_question":"","paa_questions":"","key_claim":"","internal_links":"/programs, /rules","word_count":"Standard guide — 800 words","angle":""}. No text outside JSON.';
 
   try {
     var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
@@ -5550,12 +5560,14 @@ function prefillBriefFromPlanner(topic) {
       if (copts[j].value === topic.category || copts[j].text === topic.category) { catEl.selectedIndex = j; break; }
     }
   }
-  // Switch to SEO tab briefly to show it's filled, then back to core
-  var genLink = document.querySelector('[data-pg="a-generate"]');
+  // Navigate to generate page
+  var genLink = document.querySelector('[data-pg="a-generate"]') || document.querySelector('[data-pg="a-generate"][data-sc="admin"]');
   if (genLink) genLink.click();
+
   // Show outline section
   var outlineSection = document.getElementById('outline-section');
   if (outlineSection) outlineSection.style.display = 'block';
+
   // Update currentBriefData
   currentBriefData = {
     title: topic.title || '',
@@ -5564,7 +5576,31 @@ function prefillBriefFromPlanner(topic) {
     tone: 'Educational',
     pkw: topic.keyword || '',
   };
-  toast('All fields pre-filled — GEO, AEO, intent, keywords all loaded');
+
+  // Show visual confirmation on each tab
+  setTimeout(function() {
+    // Flash SEO tab to show it's filled
+    var seoTab = document.querySelector('[data-tab="seo"]');
+    if (seoTab && (document.getElementById('b-pkw').value || document.getElementById('b-skw').value)) {
+      seoTab.style.background = 'rgba(14,196,173,.15)';
+      seoTab.style.color = 'var(--tealB)';
+      setTimeout(function(){ seoTab.style.background=''; seoTab.style.color=''; }, 2000);
+    }
+    var geoTab = document.querySelector('[data-tab="geo"]');
+    if (geoTab && document.getElementById('b-geo').value) {
+      geoTab.style.background = 'rgba(14,196,173,.15)';
+      geoTab.style.color = 'var(--tealB)';
+      setTimeout(function(){ geoTab.style.background=''; geoTab.style.color=''; }, 2000);
+    }
+    var aeoTab = document.querySelector('[data-tab="aeo"]');
+    if (aeoTab && document.getElementById('b-q').value) {
+      aeoTab.style.background = 'rgba(14,196,173,.15)';
+      aeoTab.style.color = 'var(--tealB)';
+      setTimeout(function(){ aeoTab.style.background=''; aeoTab.style.color=''; }, 2000);
+    }
+  }, 300);
+
+  toast('Brief pre-filled — keyword, GEO, AEO, intent all loaded. Check each tab.');
 }
 
 // ── DAILY TOPIC IDEAS ─────────────────────────────────────────────────────
@@ -5635,6 +5671,124 @@ function renderDailyIdeas(ideas, listId) {
     });
     listEl.appendChild(card);
   });
+}
+
+// ── SEO BRIEF GENERATOR ──────────────────────────────────────────────────
+async function runSEOOptimizer() {
+  var input = document.getElementById('seo-optimizer-input');
+  var btn = document.getElementById('seo-optimizer-btn');
+  var loading = document.getElementById('seo-optimizer-loading');
+  var topic = input ? input.value.trim() : '';
+  if (!topic) { toast('Enter a topic title first'); return; }
+
+  btn.disabled = true; btn.textContent = 'Generating...';
+  loading.style.display = 'block';
+
+  var prompt = 'You are a senior SEO strategist for FXIFY. Generate a complete SEO brief for: "' + topic + '". Return ONLY JSON with these exact fields: {"title":"","primary_keyword":"","secondary_keywords":"","search_intent":"Informational","category":"Guides","geo_angle":"","aeo_question":"","paa_questions":"","key_claim":"","internal_links":"/programs, /rules","word_count":"Standard guide — 800 words","angle":""}. No other text.'
+
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 1000 })
+    });
+    var data = await r.json();
+    var text = '';
+    if (typeof data === 'string') text = data;
+    else if (Array.isArray(data) && data[0]) {
+      var d0 = data[0];
+      if (typeof d0 === 'string') text = d0;
+      else if (d0.text) text = d0.text;
+      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
+      else text = JSON.stringify(d0);
+    }
+    else if (data.text) text = data.text;
+    else if (data.content && data.content[0]) text = data.content[0].text || '';
+    else text = JSON.stringify(data);
+
+    var jsonMatch = text.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) throw new Error('No JSON returned');
+    var brief = JSON.parse(jsonMatch[0]);
+
+    // Fill all brief fields
+    var fields = {
+      'b-title': brief.title || topic,
+      'b-pkw': brief.primary_keyword || '',
+      'b-skw': brief.secondary_keywords || '',
+      'b-geo': brief.geo_angle || '',
+      'b-claim': brief.key_claim || '',
+      'b-q': brief.aeo_question || '',
+      'b-paa': brief.paa_questions || '',
+      'b-links': brief.internal_links || ''
+    };
+    Object.keys(fields).forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.value = fields[id];
+    });
+
+    // Set intent dropdown
+    var intentEl = document.getElementById('b-intent');
+    if (intentEl && brief.search_intent) {
+      for (var i = 0; i < intentEl.options.length; i++) {
+        if (intentEl.options[i].value === brief.search_intent || intentEl.options[i].text === brief.search_intent) {
+          intentEl.selectedIndex = i; break;
+        }
+      }
+    }
+
+    // Set category dropdown
+    var catEl = document.getElementById('b-cat');
+    if (catEl && brief.category) {
+      for (var j = 0; j < catEl.options.length; j++) {
+        if (catEl.options[j].value === brief.category || catEl.options[j].text === brief.category) {
+          catEl.selectedIndex = j; break;
+        }
+      }
+    }
+
+    // Set word count
+    var lenEl = document.getElementById('b-len');
+    if (lenEl && brief.word_count) {
+      for (var k = 0; k < lenEl.options.length; k++) {
+        if (lenEl.options[k].value === brief.word_count || lenEl.options[k].text === brief.word_count) {
+          lenEl.selectedIndex = k; break;
+        }
+      }
+    }
+
+    // Update currentBriefData
+    currentBriefData = {
+      title: brief.title || topic,
+      cat: brief.category || 'Guides',
+      len: brief.word_count || 'Standard guide — 800 words',
+      tone: 'Educational',
+      pkw: brief.primary_keyword || ''
+    };
+
+    // Show outline section
+    var outlineSection = document.getElementById('outline-section');
+    if (outlineSection) outlineSection.style.display = 'block';
+
+    // Flash all tabs to show they're filled
+    ['seo','geo','aeo'].forEach(function(tab) {
+      var t = document.querySelector('[data-tab="' + tab + '"]');
+      if (t) {
+        t.style.background = 'rgba(14,196,173,.2)';
+        t.style.color = 'var(--tealB)';
+        setTimeout(function(){ t.style.background=''; t.style.color=''; }, 2500);
+      }
+    });
+
+    // Clear the input
+    input.value = '';
+    toast('Full SEO brief generated — all tabs filled. Review then generate outline.');
+
+  } catch(e) {
+    toast('Error: ' + e.message);
+    console.error(e);
+  }
+
+  btn.disabled = false; btn.textContent = 'Generate SEO Brief →';
+  loading.style.display = 'none';
 }
 
 // ── GOOGLE LOGIN (top-level so it's always accessible) ───────────────────
@@ -6091,6 +6245,14 @@ function init(){
   // Train AI button
   var trainBtn = document.getElementById('train-ai-btn');
   if (trainBtn) trainBtn.addEventListener('click', trainAI);
+
+  // SEO Brief Generator
+  var seoOptBtn = document.getElementById('seo-optimizer-btn');
+  if (seoOptBtn) seoOptBtn.addEventListener('click', runSEOOptimizer);
+  var seoOptInput = document.getElementById('seo-optimizer-input');
+  if (seoOptInput) seoOptInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') runSEOOptimizer();
+  });
   wireReadMode();
   wireMeta();
   // Writer instruction card dismiss
@@ -6293,6 +6455,7 @@ function init(){
 }
 
 init();
+
 })();
 </script>
 </body>
