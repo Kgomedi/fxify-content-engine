@@ -1394,6 +1394,14 @@ select.finput{cursor:pointer;}
       </div>
       <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
+        <p class="eslbl" style="margin-bottom:8px;">ESL Readability <span class="snum" style="font-size:18px;" id="ed-esl">—</span></p>
+        <div style="background:var(--bg2);border-radius:4px;height:4px;margin-bottom:8px;overflow:hidden;"><div id="ed-esl-bar" style="height:100%;border-radius:4px;background:var(--green);width:0%;transition:width .4s;"></div></div>
+        <div id="esl-issues" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;"></div>
+        <button class="btn btn-p btn-s" id="improve-esl-btn" style="width:100%;font-size:11px;display:none;">✍️ Fix Grammar &amp; Readability</button>
+        <div id="improve-esl-loading" style="display:none;font-size:11px;color:var(--tealB);margin-top:6px;text-align:center;">Fixing grammar &amp; readability...</div>
+      </div>
+      <div class="esdiv"></div>
+      <div class="esblk" style="width:100%;">
         <p class="eslbl" style="margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;">
           Internal links
           <button id="il-refresh" style="font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;font-family:inherit;">↻ Refresh</button>
@@ -1474,7 +1482,7 @@ select.finput{cursor:pointer;}
       <div style="display:flex;flex:1;overflow:hidden;">
         <div style="flex:1;overflow-y:auto;display:flex;flex-direction:column;">
           <div class="afeat"><span>Featured image · click to replace</span></div>
-          <div class="ambar"><span class="amtag" id="ed-cat">Guides</span><span class="ami">By Fariha Khan</span><span class="ami">·</span><span class="ami" id="ed-date">April 2026</span></div>
+          <div class="ambar"><span class="amtag" id="ed-cat">Guides</span><span class="ami" id="ed-author-byline">By —</span><span class="ami">·</span><span class="ami" id="ed-date">April 2026</span></div>
           <div id="tiptap-editor" class="tiptap-editor" style="min-height:400px;"></div>
           <div class="wc-bar"><span id="wc-display">0 words</span> · <span id="char-display">0 characters</span></div>
         </div>
@@ -2129,6 +2137,12 @@ function openEditor(art,role){
   document.getElementById('ed-title').textContent=art.title||'Draft';
   document.getElementById('ed-cat').textContent=art.category||'Guides';
   document.getElementById('ed-kw').textContent=art.primary_kw||'—';
+  // Set author byline dynamically
+  var bylineEl = document.getElementById('ed-author-byline');
+  if (bylineEl) {
+    var authorName = art.assignee || (currentUser ? currentUser.name : 'FXIFY Editorial');
+    bylineEl.textContent = 'By ' + authorName;
+  }
   document.getElementById('ed-wc').textContent=(art.word_count||0)+' words';
   setScore('seo',art.seo_score||0);
   setScore('geo',art.geo_score||0);
@@ -2998,6 +3012,11 @@ function calculateScores(content, primaryKw) {
   aeo = Math.min(aeo, 100);
 
   // Build checklist
+  var hasEeat = /at fxify.*?we have seen|we.ve seen traders|in our experience/i.test(text);
+  var hasH3 = /<h3/i.test(content);
+  var hasMeta = !!(currentArt && currentArt.meta && currentArt.meta.SEO_TITLE);
+  var kwDensityOk = words > 0 && (kwCount / words * 100) >= 0.5 && (kwCount / words * 100) <= 3;
+
   var checks = [
     { label: 'Keyword in H1', pass: h1Match && content.toLowerCase().includes(kw.split(' ')[0]) },
     { label: 'Keyword in first 100 words', pass: kwInIntro },
@@ -3007,6 +3026,10 @@ function calculateScores(content, primaryKw) {
     { label: '8+ bold phrases', pass: hasBold >= 8 },
     { label: 'FAQ section included', pass: hasFaq },
     { label: 'Summary table included', pass: hasTable },
+    { label: 'E-E-A-T signal present', pass: hasEeat },
+    { label: 'H3 subheadings used', pass: hasH3 },
+    { label: 'Keyword density 0.5–3%', pass: kwDensityOk },
+    { label: 'Meta package generated', pass: hasMeta },
   ];
 
   return { seo: seo, geo: geo, aeo: aeo, checks: checks };
@@ -3028,6 +3051,13 @@ function updateScoreDisplay(scores) {
   // Show improve button if SEO score is below 80
   var improveBtn = document.getElementById('improve-seo-btn');
   if (improveBtn) improveBtn.style.display = (scores.seo < 80) ? 'block' : 'none';
+
+  // ESL score — run inline
+  var edElEsl = document.getElementById('tiptap-editor');
+  if (edElEsl) {
+    var eslResult = calculateESL(edElEsl.innerHTML);
+    updateESLDisplay(eslResult);
+  }
 
   // ── SEO Checklist ────────────────────────────────────────────────────
   var cl = document.getElementById('seo-checklist');
@@ -5814,10 +5844,18 @@ async function improveArticleSEO() {
   var scores = calculateScores(content, kw);
   var failing = (scores.checks || []).filter(function(c){ return !c.pass; }).map(function(c){ return c.label; });
 
-  var prompt = 'You are a Senior Copywriter at FXIFY. Improve the SEO of this HTML article without changing meaning or tone.\n\n' +
+  var prompt = 'You are a Senior Copywriter at FXIFY. Improve this HTML article to fix all failing SEO checks. Do not change the meaning, H1, or core structure.\n\n' +
     'PRIMARY KEYWORD: ' + kw + '\n\n' +
-    'FAILING SEO CHECKS: ' + failing.join(', ') + '\n\n' +
-    'RULES: Add keyword naturally to H2s missing it (max 2). Bold 3-5 key terms. If keyword missing from first 100 words rewrite opening sentence to include it. If no FAQ add 3-question FAQ at end. If no internal links add 2 links to /programs and /rules naturally. Do NOT change H1 or structure. Output ONLY the complete improved HTML — no explanation.\n\n' +
+    'FAILING CHECKS TO FIX: ' + failing.join(', ') + '\n\n' +
+    'IMPROVEMENT RULES:\n' +
+    '1. KEYWORD IN H2s — Add the keyword naturally to any H2 headings missing it (max 2 changes)\n' +
+    '2. BOLD PHRASES — Add <strong> tags to 8-10 key terms, stats, and important phrases throughout\n' +
+    '3. INTERNAL LINKS — Add at least 2 internal links: <a href="/programs">FXIFY programs</a> and <a href="/rules">drawdown rules</a> placed naturally in the text\n' +
+    '4. E-E-A-T — Add one "At FXIFY, we have seen traders..." experience signal if missing\n' +
+    '5. KEYWORD DENSITY — If keyword appears fewer than 3 times, add it naturally in 1-2 body paragraphs\n' +
+    '6. FAQ SCHEMA HINT — Ensure FAQ questions use <h3> tags so they qualify for FAQ rich results\n' +
+    '7. TABLE — If no summary table exists and article is 800+ words, add a 2-column <table> with key terms after the intro\n' +
+    'Output ONLY the complete improved HTML article. No explanation. No preamble. Start with the first HTML tag.\n\n' +
     'ARTICLE HTML:\n' + content;
 
   try {
@@ -5866,6 +5904,194 @@ async function improveArticleSEO() {
   }
 
   btn.disabled = false; btn.textContent = '⚡ Auto-improve SEO';
+  loading.style.display = 'none';
+}
+
+// ── ESL READABILITY ENGINE ────────────────────────────────────────────────
+// Based on Flesch-Kincaid + Grammarly-style heuristics
+
+function calculateESL(content) {
+  var text = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+  if (!text) return { score: 0, grade: 'F', issues: [] };
+
+  var sentences = text.split(/[.!?]+/).map(function(s){ return s.trim(); }).filter(function(s){ return s.length > 5; });
+  var words = text.split(/\s+/).filter(Boolean);
+  var wordCount = words.length;
+  var sentenceCount = sentences.length || 1;
+
+  // Average sentence length
+  var avgSentLen = wordCount / sentenceCount;
+
+  // Syllable count (approximation)
+  function syllables(word) {
+    word = word.toLowerCase().replace(/[^a-z]/g, '');
+    if (word.length <= 3) return 1;
+    word = word.replace(/(?:[^laeiouy]es|ed|[^laeiouy]e)$/, '');
+    word = word.replace(/^y/, '');
+    var m = word.match(/[aeiouy]{1,2}/g);
+    return m ? m.length : 1;
+  }
+  var totalSyllables = words.reduce(function(sum, w){ return sum + syllables(w); }, 0);
+  var avgSyllables = totalSyllables / wordCount;
+
+  // Flesch Reading Ease: 206.835 - 1.015*(words/sentences) - 84.6*(syllables/words)
+  var fre = 206.835 - (1.015 * avgSentLen) - (84.6 * avgSyllables);
+  fre = Math.max(0, Math.min(100, fre));
+
+  // Grade level (Flesch-Kincaid Grade)
+  var fkGrade = (0.39 * avgSentLen) + (11.8 * avgSyllables) - 15.59;
+
+  // Passive voice detection
+  var passiveMatches = text.match(/(is|are|was|were|be|been|being)\s+\w+ed/gi) || [];
+  var passiveRate = passiveMatches.length / sentenceCount;
+
+  // Long sentences (>20 words)
+  var longSentences = sentences.filter(function(s){ return s.split(/\s+/).length > 20; }).length;
+  var longSentRate = longSentences / sentenceCount;
+
+  // Complex words (3+ syllables) excluding proper nouns
+  var complexWords = words.filter(function(w){ return syllables(w) >= 3 && w.toLowerCase() === w; }).length;
+  var complexRate = complexWords / wordCount;
+
+  // Hedge words (weak language)
+  var hedgeWords = ['perhaps', 'maybe', 'somewhat', 'rather', 'quite', 'fairly', 'generally', 'usually', 'often', 'sometimes', 'it is worth noting', 'it should be noted', 'in order to', 'due to the fact'];
+  var hedgeCount = hedgeWords.reduce(function(n, w){ return n + (text.toLowerCase().split(w).length - 1); }, 0);
+
+  // Jargon without explanation
+  var jargon = ['drawdown', 'slippage', 'leverage', 'equity', 'margin', 'lot size', 'pip', 'spread'];
+  var unexplainedJargon = jargon.filter(function(j){
+    return text.toLowerCase().includes(j) && !text.toLowerCase().includes(j + ' is') && !text.toLowerCase().includes(j + ' means') && !text.toLowerCase().includes('what is ' + j);
+  });
+
+  // Build issues list
+  var issues = [];
+  if (avgSentLen > 20) issues.push({ label: 'Avg sentence too long (' + Math.round(avgSentLen) + ' words)', pass: false });
+  else issues.push({ label: 'Sentence length OK (' + Math.round(avgSentLen) + ' avg)', pass: true });
+
+  if (passiveRate > 0.15) issues.push({ label: 'Too much passive voice (' + passiveMatches.length + ' instances)', pass: false });
+  else issues.push({ label: 'Active voice OK', pass: true });
+
+  if (complexRate > 0.12) issues.push({ label: 'Too many complex words (' + Math.round(complexRate*100) + '%)', pass: false });
+  else issues.push({ label: 'Word complexity OK', pass: true });
+
+  if (longSentRate > 0.2) issues.push({ label: Math.round(longSentRate*100) + '% sentences over 20 words', pass: false });
+  else issues.push({ label: 'Long sentences OK', pass: true });
+
+  if (hedgeCount > 3) issues.push({ label: hedgeCount + ' weak/hedge phrases found', pass: false });
+  else issues.push({ label: 'No weak language', pass: true });
+
+  if (unexplainedJargon.length > 0) issues.push({ label: 'Define on first use: ' + unexplainedJargon.slice(0,3).join(', '), pass: false });
+  else issues.push({ label: 'Jargon explained OK', pass: true });
+
+  if (fre >= 60) issues.push({ label: 'Reading ease: ' + Math.round(fre) + '/100 (Good)', pass: true });
+  else if (fre >= 40) issues.push({ label: 'Reading ease: ' + Math.round(fre) + '/100 (Needs work)', pass: false });
+  else issues.push({ label: 'Reading ease: ' + Math.round(fre) + '/100 (Too complex)', pass: false });
+
+  // Overall ESL score
+  var passing = issues.filter(function(i){ return i.pass; }).length;
+  var score = Math.round((passing / issues.length) * 100);
+
+  var grade = score >= 85 ? 'A' : score >= 70 ? 'B' : score >= 55 ? 'C' : score >= 40 ? 'D' : 'F';
+  var gradeColor = score >= 85 ? 'var(--green)' : score >= 70 ? 'var(--amber)' : 'var(--urgent)';
+
+  return { score: score, grade: grade, gradeColor: gradeColor, fre: Math.round(fre), fkGrade: Math.round(fkGrade * 10) / 10, issues: issues, passiveCount: passiveMatches.length, avgSentLen: Math.round(avgSentLen) };
+}
+
+function updateESLDisplay(esl) {
+  var scoreEl = document.getElementById('ed-esl');
+  var barEl = document.getElementById('ed-esl-bar');
+  var issuesEl = document.getElementById('esl-issues');
+  var improveBtn = document.getElementById('improve-esl-btn');
+
+  if (scoreEl) {
+    scoreEl.textContent = esl.grade;
+    scoreEl.style.color = esl.gradeColor;
+  }
+  if (barEl) {
+    barEl.style.width = esl.score + '%';
+    barEl.style.background = esl.gradeColor;
+  }
+  if (issuesEl) {
+    issuesEl.innerHTML = '';
+    esl.issues.forEach(function(item) {
+      var row = document.createElement('div');
+      row.style.cssText = 'display:flex;align-items:flex-start;gap:6px;padding:3px 0;';
+      var icon = item.pass ? '✓' : '✗';
+      var color = item.pass ? 'var(--green)' : 'var(--urgent)';
+      row.innerHTML = '<span style="font-size:10px;font-weight:700;color:'+color+';width:12px;flex-shrink:0;">'+icon+'</span>' +
+        '<span style="font-size:10px;color:'+(item.pass?'#94a3b8':'#475569')+';">'+item.label+'</span>';
+      issuesEl.appendChild(row);
+    });
+  }
+  if (improveBtn) improveBtn.style.display = esl.score < 85 ? 'block' : 'none';
+}
+
+async function improveESL() {
+  var edEl = document.getElementById('tiptap-editor');
+  var btn = document.getElementById('improve-esl-btn');
+  var loading = document.getElementById('improve-esl-loading');
+  if (!edEl || !currentArt) { toast('Open an article first'); return; }
+
+  var content = edEl.innerHTML;
+  var esl = calculateESL(content);
+  var failing = esl.issues.filter(function(i){ return !i.pass; }).map(function(i){ return i.label; });
+  if (!failing.length) { toast('Grammar and readability already excellent'); return; }
+
+  btn.disabled = true; btn.textContent = 'Fixing...';
+  loading.style.display = 'block';
+
+  var prompt = 'You are an expert editor improving an article for ESL (English as Second Language) readers and global prop trading audience. Fix ONLY the issues listed. Keep the meaning, facts, and structure identical.\n\n' +
+    'ISSUES TO FIX: ' + failing.join(' | ') + '\n\n' +
+    'RULES:\n' +
+    '1. Break sentences over 20 words into 2 shorter sentences\n' +
+    '2. Replace passive voice with active voice wherever possible\n' +
+    '3. Replace complex 3-syllable words with simpler alternatives where meaning is preserved\n' +
+    '4. Remove hedge words: perhaps, maybe, somewhat, it is worth noting, in order to, due to the fact that\n' +
+    '5. Add a brief definition in parentheses the first time jargon appears e.g. "drawdown (maximum loss allowed)"\n' +
+    '6. Keep ALL HTML tags, bold phrases, links, and headings exactly as they are\n' +
+    '7. Do NOT change facts, numbers, FXIFY-specific claims, or SEO keywords\n' +
+    '8. Output ONLY the complete improved HTML — no explanation\n\n' +
+    'ARTICLE HTML:\n' + content;
+
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 8000 })
+    });
+    var data = await r.json();
+    var text = '';
+    if (typeof data === 'string') text = data;
+    else if (Array.isArray(data) && data[0]) {
+      var d0 = data[0];
+      if (d0.text) text = d0.text;
+      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
+      else text = JSON.stringify(d0);
+    }
+    else if (data.text) text = data.text;
+    else if (data.content && data.content[0]) text = data.content[0].text || '';
+
+    if (!text || !text.trim().startsWith('<')) { toast('Could not improve — try again'); return; }
+
+    // Strip any image placeholders
+    text = text.replace(/<div[^>]*img-placeholder[^>]*>[\s\S]*?<\/div>/gi, '');
+
+    edEl.innerHTML = text;
+
+    // Save and recalculate
+    var wc = (edEl.innerText || '').trim().split(/\s+/).filter(Boolean).length;
+    if (currentArt.id) dbUpdate(currentArt.id, { content: text, word_count: wc });
+
+    var newEsl = calculateESL(text);
+    updateESLDisplay(newEsl);
+    if (currentArt && currentArt.primary_kw) {
+      var newScores = calculateScores(text, currentArt.primary_kw);
+      updateScoreDisplay(newScores);
+    }
+    toast('Grammar & readability improved — ESL score updated ✓');
+
+  } catch(e) { toast('Error: ' + e.message); }
+
+  btn.disabled = false; btn.textContent = '✍️ Fix Grammar & Readability';
   loading.style.display = 'none';
 }
 
@@ -6353,6 +6579,9 @@ function init(){
   // SEO improve button
   var improveSeoBtn = document.getElementById('improve-seo-btn');
   if (improveSeoBtn) improveSeoBtn.addEventListener('click', improveArticleSEO);
+
+  var improveEslBtn = document.getElementById('improve-esl-btn');
+  if (improveEslBtn) improveEslBtn.addEventListener('click', improveESL);
   // Writer instruction card dismiss
   var wicDismiss = document.getElementById('wic-dismiss');
   if(wicDismiss) wicDismiss.addEventListener('click', function(){
