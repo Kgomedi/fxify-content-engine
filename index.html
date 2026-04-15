@@ -1380,7 +1380,9 @@ select.finput{cursor:pointer;}
       <div class="esblk" style="width:100%;">
         <p class="eslbl" style="margin-bottom:8px;">SEO Score <span class="snum" style="color:var(--blue);font-size:18px;" id="ed-seo">—</span></p>
         <div style="background:var(--bg2);border-radius:4px;height:4px;margin-bottom:8px;overflow:hidden;"><div id="ed-seo-bar" style="height:100%;border-radius:4px;background:var(--blue);width:0%;transition:width .4s;"></div></div>
-        <div id="seo-checklist" style="display:flex;flex-direction:column;gap:4px;"></div>
+        <div id="seo-checklist" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;"></div>
+        <button class="btn btn-p btn-s" id="improve-seo-btn" style="width:100%;font-size:11px;display:none;">⚡ Auto-improve SEO</button>
+        <div id="improve-seo-loading" style="display:none;font-size:11px;color:var(--tealB);margin-top:6px;text-align:center;">Claude is improving SEO...</div>
       </div>
       <div class="esblk" style="width:100%;margin-top:8px;">
         <p class="eslbl" style="margin-bottom:8px;">GEO Score <span class="snum" style="color:var(--tealB);font-size:18px;" id="ed-geo">—</span></p>
@@ -3023,6 +3025,9 @@ function updateScoreDisplay(scores) {
   setScore('seo', scores.seo);
   setScore('geo', scores.geo);
   setScore('aeo', scores.aeo);
+  // Show improve button if SEO score is below 80
+  var improveBtn = document.getElementById('improve-seo-btn');
+  if (improveBtn) improveBtn.style.display = (scores.seo < 80) ? 'block' : 'none';
 
   // ── SEO Checklist ────────────────────────────────────────────────────
   var cl = document.getElementById('seo-checklist');
@@ -5791,6 +5796,79 @@ async function runSEOOptimizer() {
   loading.style.display = 'none';
 }
 
+// ── SEO AUTO-IMPROVE ─────────────────────────────────────────────────────
+async function improveArticleSEO() {
+  var edEl = document.getElementById('tiptap-editor');
+  var btn = document.getElementById('improve-seo-btn');
+  var loading = document.getElementById('improve-seo-loading');
+  if (!edEl || !currentArt) { toast('Open an article first'); return; }
+
+  var content = edEl.innerHTML;
+  var kw = currentArt.primary_kw || currentArt.primaryKw || '';
+  if (!kw) { toast('No primary keyword set — add one in the brief'); return; }
+
+  btn.disabled = true; btn.textContent = 'Improving...';
+  loading.style.display = 'block';
+
+  // Get current failing checks
+  var scores = calculateScores(content, kw);
+  var failing = (scores.checks || []).filter(function(c){ return !c.pass; }).map(function(c){ return c.label; });
+
+  var prompt = 'You are a Senior Copywriter at FXIFY. Improve the SEO of this HTML article without changing meaning or tone.\n\n' +
+    'PRIMARY KEYWORD: ' + kw + '\n\n' +
+    'FAILING SEO CHECKS: ' + failing.join(', ') + '\n\n' +
+    'RULES: Add keyword naturally to H2s missing it (max 2). Bold 3-5 key terms. If keyword missing from first 100 words rewrite opening sentence to include it. If no FAQ add 3-question FAQ at end. If no internal links add 2 links to /programs and /rules naturally. Do NOT change H1 or structure. Output ONLY the complete improved HTML — no explanation.\n\n' +
+    'ARTICLE HTML:\n' + content;
+
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt: prompt, max_tokens: 8000 })
+    });
+    var data = await r.json();
+    var text = '';
+    if (typeof data === 'string') text = data;
+    else if (Array.isArray(data) && data[0]) {
+      var d0 = data[0];
+      if (d0.text) text = d0.text;
+      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
+      else text = JSON.stringify(d0);
+    }
+    else if (data.text) text = data.text;
+    else if (data.content && data.content[0]) text = data.content[0].text || '';
+
+    if (!text || !text.trim().startsWith('<')) {
+      toast('Could not improve — try again'); return;
+    }
+
+    // Strip any image placeholders that crept in
+    text = text
+      .replace(/<div[^>]*img-placeholder[^>]*>[\s\S]*?<\/div>/gi, '')
+      .replace(/\[IMAGE[^\]]*\]/gi, '');
+
+    // Apply to editor
+    edEl.innerHTML = text;
+
+    // Autosave
+    var newText = edEl.innerText || '';
+    var wc = newText.trim().split(/\s+/).filter(Boolean).length;
+    if (currentArt.id) dbUpdate(currentArt.id, { content: text, word_count: wc });
+
+    // Recalculate scores
+    var newScores = calculateScores(text, kw);
+    updateScoreDisplay(newScores);
+
+    toast('SEO improved — score updated ✓');
+
+  } catch(e) {
+    toast('Error: ' + e.message);
+    console.error(e);
+  }
+
+  btn.disabled = false; btn.textContent = '⚡ Auto-improve SEO';
+  loading.style.display = 'none';
+}
+
 // ── GOOGLE LOGIN (top-level so it's always accessible) ───────────────────
 async function doGoogleLogin() {
   var btn = document.getElementById('login-btn');
@@ -6271,6 +6349,10 @@ function init(){
   });
   wireReadMode();
   wireMeta();
+
+  // SEO improve button
+  var improveSeoBtn = document.getElementById('improve-seo-btn');
+  if (improveSeoBtn) improveSeoBtn.addEventListener('click', improveArticleSEO);
   // Writer instruction card dismiss
   var wicDismiss = document.getElementById('wic-dismiss');
   if(wicDismiss) wicDismiss.addEventListener('click', function(){
