@@ -6834,9 +6834,74 @@ function init(){
       return;
     }
     var t2 = document.getElementById('toast');
-    if (t2) { t2.textContent = 'runBriefResearch() coming in Task 1.2 ⚡'; t2.classList.add('show'); setTimeout(function(){ t2.classList.remove('show'); }, 3000); }
+runBriefResearch();
   });
 })();
+  async function runBriefResearch() {
+  var topic = (document.getElementById('v2-topic')||{}).value||'';
+  topic = topic.trim();
+  if (!topic) { toast('Add a topic first'); return; }
+  var cat = (document.getElementById('v2-cat')||{}).value||'Guides';
+  var writer = (document.getElementById('v2-writer')||{}).value||'';
+  var btn = document.getElementById('v2-research-btn');
+  var output = document.getElementById('v2-brief-output');
+  btn.disabled = true; btn.textContent = 'Researching...';
+  if (output) {
+    output.style.display = 'block';
+    output.innerHTML = '<div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:20px 24px;"><p style="font-size:13px;font-weight:600;color:var(--tealB);margin-bottom:8px;">⚡ Building your brief...</p><p style="font-size:12px;color:#475569;">Scraping competitors · Analysing gaps · Writing brief</p></div>';
+  }
+  var researchContext = '';
+  try { researchContext = await scrapeUrls(['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://www.myforexfunds.com/blog/']); } catch(e) {}
+  var prompt = 'You are a Senior SEO Strategist for FXIFY. Research this topic and return a complete content brief.\n\nTOPIC: '+topic+'\nCATEGORY: '+cat+'\n\n'+(researchContext?'COMPETITOR RESEARCH:\n'+researchContext+'\n\n':'')+'Return ONLY valid JSON:\n{"title":"","primary_keyword":"","secondary_keywords":"","search_intent":"Informational","word_count":"Standard guide — 800 words","outline":["H2 1","H2 2","H2 3","H2 4","H2 5"],"do":["do this","do this"],"dont":["avoid this"],"reddit_pain_points":["pain point"],"serp_insights":"","geo_angle":"","aeo_question":"","internal_links":"/programs, /rules","competitor_gaps":""}';
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:2000})});
+    var data = await r.json();
+    var text = '';
+    if (Array.isArray(data)&&data[0]) { var d0=data[0]; if(d0.text) text=d0.text; else if(d0.content&&d0.content[0]) text=d0.content[0].text||''; }
+    else if (data.text) text=data.text;
+    else if (data.content&&data.content[0]) text=data.content[0].text||'';
+    var jm = text.match(/\{[\s\S]*\}/); if(!jm) throw new Error('No JSON');
+    var brief = JSON.parse(jm[0]);
+    var ins = await supa.from('articles').insert([{title:brief.title||topic,category:cat,status:'Briefed',priority:'Normal',primary_kw:brief.primary_keyword||'',assignee:(writer==='— Unassigned —'?'':writer)||'',content:JSON.stringify(brief),tone:'Educational',length:brief.word_count||'Standard guide — 800 words',word_count:0,doc_url:''}]).select();
+    var savedArt = ins.data&&ins.data[0]?ins.data[0]:null;
+    if (savedArt) { toast('Brief saved to pipeline ✓'); loadPipeline(); }
+    renderBriefOutput(brief, savedArt);
+  } catch(e) { toast('Error: '+e.message); if(output) output.innerHTML='<p style="color:var(--urgent);padding:16px;">Error: '+e.message+'</p>'; }
+  btn.disabled=false; btn.textContent='⚡ Research & Build Brief →';
+}
+
+function renderBriefOutput(brief, savedArt) {
+  var output = document.getElementById('v2-brief-output');
+  if (!output) return;
+  var outlineHtml = (brief.outline||[]).map(function(h,i){ return '<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);"><span style="font-size:10px;font-weight:700;color:var(--tealB);width:20px;">'+( i+1)+'</span><span style="font-size:13px;color:#cbd5e1;">'+h+'</span></div>'; }).join('');
+  var doHtml = (brief.do||[]).map(function(d){ return '<p style="font-size:12px;color:#6ee7b7;padding:3px 0;">✓ '+d+'</p>'; }).join('');
+  var dontHtml = (brief.dont||[]).map(function(d){ return '<p style="font-size:12px;color:#fca5a5;padding:3px 0;">✗ '+d+'</p>'; }).join('');
+  var redditHtml = (brief.reddit_pain_points||[]).map(function(p){ return '<p style="font-size:12px;color:#94a3b8;padding:3px 0;">• '+p+'</p>'; }).join('');
+  output.innerHTML =
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-top:12px;">'+
+    '<div style="background:var(--navy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">'+
+      '<div><p style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">'+(brief.title||'Brief ready')+'</p>'+
+      '<div style="display:flex;gap:6px;"><span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">'+(brief.primary_keyword||'')+'</span>'+
+      '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.06);color:#94a3b8;">'+(brief.word_count||'')+'</span></div></div>'+
+      (savedArt?'<button class="btn btn-p btn-s" id="v2-open-editor-btn">Open in editor →</button>':'')+
+    '</div>'+
+    '<div style="padding:14px 18px;border-bottom:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Outline</p>'+outlineHtml+'</div>'+
+    '<div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);">'+
+      '<div style="padding:14px 18px;border-right:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:6px;">Do</p>'+doHtml+'</div>'+
+      '<div style="padding:14px 18px;"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--urgent);margin-bottom:6px;">Don\'t</p>'+dontHtml+'</div>'+
+    '</div>'+
+    (brief.serp_insights?'<div style="padding:14px 18px;border-bottom:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">SERP insights</p><p style="font-size:12px;color:var(--text2);line-height:1.6;">'+brief.serp_insights+'</p></div>':'')+
+    (redditHtml?'<div style="padding:14px 18px;border-bottom:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);margin-bottom:6px;">Reddit pain points</p>'+redditHtml+'</div>':'')+
+    (brief.competitor_gaps?'<div style="padding:14px 18px;border-bottom:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;">Competitor gap</p><p style="font-size:12px;color:var(--text2);">'+brief.competitor_gaps+'</p></div>':'')+
+    '<div style="padding:14px 18px;">'+
+      (brief.geo_angle?'<p style="font-size:11px;color:var(--teal);margin-bottom:4px;"> GEO: '+brief.geo_angle+'</p>':'')+
+      (brief.aeo_question?'<p style="font-size:11px;color:var(--purple);">⭐ Snippet target: '+brief.aeo_question+'</p>':'')+
+    '</div></div>';
+  if (savedArt) {
+    var edBtn = document.getElementById('v2-open-editor-btn');
+    if (edBtn) edBtn.addEventListener('click', function(){ openEditor(savedArt,'sheperd'); });
+  }
+}
 
 init();
 
