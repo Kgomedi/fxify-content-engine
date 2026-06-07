@@ -2593,7 +2593,7 @@ WRITING RULES:
     'SCHEMA_TYPE: (Article or FAQPage or HowTo)\n'+
     'FOCUS_KW: '+pkw+'\n'+
     '---END META---\n\n'+
-    'Write the complete article now. Do not stop before the meta package.'
+    'Write the complete article now. Do not stop before the meta package.';
   try{
     var r=await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:8000,system:'You are a Senior Copywriter at FXIFY. You ONLY output clean HTML. Never use markdown, asterisks, or hash symbols. Always use proper HTML tags.'})});
     var data=await r.json();
@@ -7227,7 +7227,7 @@ async function runTopicIdeas() {
     '"why_now":"One sentence: why this has search momentum in 2026 specifically",'+
     '"opportunity_score":85,'+
     '"priority":"High|Normal|Low"'+
-    '}]}'
+    '}]}';
   try {
     var text   = await v2Fetch(prompt, 3500);
     var result = parseJSON(text);
@@ -7503,7 +7503,7 @@ WRITING RULES:
     'Two sentences. First: the conclusion a trader should take away. Second: what FXIFY specifically offers for this situation, with a named program or fact.\n\n'+
 
     'Return ONLY valid JSON — no markdown, no preamble:\n'+
-    '{"title":"","primary_keyword":"","secondary_keywords":[],"search_intent":"","word_count":"","hook_angle":"","key_terms":[{"term":"","definition":""}],"toc":[],"sections":[{"h2":"","angle":"","what_to_check":""}],"fxify_angle":"","faqs":[{"q":"","a":""}],"bottom_line":"","competitor_gaps":"","meta_title":"","meta_desc":"","slug":"","geo_angle":"","aeo_question":""}'
+    '{"title":"","primary_keyword":"","secondary_keywords":[],"search_intent":"","word_count":"","hook_angle":"","key_terms":[{"term":"","definition":""}],"toc":[],"sections":[{"h2":"","angle":"","what_to_check":""}],"fxify_angle":"","faqs":[{"q":"","a":""}],"bottom_line":"","competitor_gaps":"","meta_title":"","meta_desc":"","slug":"","geo_angle":"","aeo_question":""}';
   try {
     var text  = await v2Fetch(prompt, 3500);
     var brief = parseJSON(text);
