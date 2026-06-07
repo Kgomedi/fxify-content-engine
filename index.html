@@ -660,6 +660,30 @@ select.finput{cursor:pointer;}
         <div class="pgh">Generate Draft</div>
         <p class="pgs">Fill in the brief and let Claude do the heavy lifting. Back in 60 seconds. ⚡</p>
 
+        <!-- v1/v2 TAB SWITCHER -->
+        <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;width:fit-content;">
+          <button class="gen-ver-btn active" data-ver="v1" style="padding:8px 20px;font-size:12px;font-weight:600;border:none;background:var(--navy);color:var(--tealB);cursor:pointer;transition:.15s;">v1 — Generate Draft</button>
+          <button class="gen-ver-btn" data-ver="v2" style="padding:8px 20px;font-size:12px;font-weight:500;border:none;background:var(--surface);color:var(--muted);cursor:pointer;border-left:1px solid var(--border);transition:.15s;">v2 — Brief + Write</button>
+        </div>
+
+        <!-- v2 BRIEF FORM (hidden by default) -->
+        <div id="v2-form" style="display:none;">
+          <div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:18px 20px;margin-bottom:16px;">
+            <p style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;">v2 Brief Generator</p>
+            <p style="font-size:12px;color:#475569;margin-bottom:16px;">Enter a topic. Claude researches Reddit, Google top 10, and competitors — then builds a full brief before writing.</p>
+            <div class="fg"><label class="flbl">Topic / working title</label><input class="finput" id="v2-topic" type="text" placeholder="e.g. How to Manage Drawdown on a Funded Account" style="max-width:600px;"/></div>
+            <div class="frow fg" style="max-width:600px;">
+              <div><label class="flbl">Category</label><select class="finput" id="v2-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option><option>Crypto</option></select></div>
+              <div><label class="flbl">Assign to writer</label><select class="finput" id="v2-writer"><option>— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
+            </div>
+            <button class="btn btn-p" id="v2-research-btn" style="min-width:200px;">⚡ Research &amp; Build Brief →</button>
+          </div>
+          <div id="v2-brief-output" style="display:none;"></div>
+        </div>
+
+        <!-- v1 FORM (existing) -->
+        <div id="v1-form">
+
         <!-- SEO TOPIC OPTIMIZER -->
         <div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:14px 18px;margin-bottom:16px;">
           <p style="font-size:12px;font-weight:600;color:var(--tealB);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">⚡ SEO Brief Generator</p>
@@ -748,8 +772,9 @@ select.finput{cursor:pointer;}
           </div>
           <button class="btn btn-p btn-f" style="max-width:200px;" id="gen-btn">Create Draft</button>
         </div>
-        <div id="gen-banner" style="display:none;">
-          <div class="rbanner"><div class="rbt"><p>Draft created ✓</p><p id="gen-sub">Loading...</p></div><button class="btn btn-p btn-s" id="open-ed-btn">Open in editor →</button></div>
+</div><!-- /v1-form -->
+
+        <div id="gen-banner" style="display:none;">          <div class="rbanner"><div class="rbt"><p>Draft created ✓</p><p id="gen-sub">Loading...</p></div><button class="btn btn-p btn-s" id="open-ed-btn">Open in editor →</button></div>
         </div>
 
         <!-- OUTLINE GENERATOR -->
@@ -6780,6 +6805,38 @@ function init(){
   // goPage triggers
   var origGoPage = goPage;
 }
+
+// ── v1/v2 TAB SWITCHER ───────────────────────────────────────────────────
+(function() {
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('.gen-ver-btn');
+    if (!btn) return;
+    var ver = btn.getAttribute('data-ver');
+    document.querySelectorAll('.gen-ver-btn').forEach(function(b) {
+      var isActive = b.getAttribute('data-ver') === ver;
+      b.classList.toggle('active', isActive);
+      b.style.background = isActive ? 'var(--navy)' : 'var(--surface)';
+      b.style.color = isActive ? 'var(--tealB)' : 'var(--muted)';
+    });
+    var v1 = document.getElementById('v1-form');
+    var v2 = document.getElementById('v2-form');
+    if (v1) v1.style.display = ver === 'v1' ? 'block' : 'none';
+    if (v2) v2.style.display = ver === 'v2' ? 'block' : 'none';
+  });
+
+  document.addEventListener('click', function(e) {
+    var btn = e.target.closest('#v2-research-btn');
+    if (!btn) return;
+    var topic = document.getElementById('v2-topic');
+    if (!topic || !topic.value.trim()) {
+      var t = document.getElementById('toast');
+      if (t) { t.textContent = 'Add a topic first'; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 3000); }
+      return;
+    }
+    var t2 = document.getElementById('toast');
+    if (t2) { t2.textContent = 'runBriefResearch() coming in Task 1.2 ⚡'; t2.classList.add('show'); setTimeout(function(){ t2.classList.remove('show'); }, 3000); }
+  });
+})();
 
 init();
 
