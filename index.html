@@ -676,7 +676,7 @@ select.finput{cursor:pointer;}
               <div><label class="flbl">Category</label><select class="finput" id="v2-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option><option>Crypto</option></select></div>
               <div><label class="flbl">Assign to writer</label><select class="finput" id="v2-writer"><option>— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
             </div>
-            <button class="btn btn-p" id="v2-research-btn" style="min-width:200px;">⚡ Research &amp; Build Brief →</button>
+            <button class="btn btn-p" id="v2-research-btn" style="min-width:200px;">⚡ Generate topic ideas</button>
           </div>
           <div id="v2-brief-output" style="display:none;"></div>
         </div>
@@ -6825,84 +6825,327 @@ function init(){
   });
 
   document.addEventListener('click', function(e) {
-    var btn = e.target.closest('#v2-research-btn');
-    if (!btn) return;
-    var topic = document.getElementById('v2-topic');
-    if (!topic || !topic.value.trim()) {
-      var t = document.getElementById('toast');
-      if (t) { t.textContent = 'Add a topic first'; t.classList.add('show'); setTimeout(function(){ t.classList.remove('show'); }, 3000); }
-      return;
+    if (e.target.closest('#v2-research-btn')) { runTopicIdeas(); return; }
+    if (e.target.closest('#v2-custom-btn')) {
+      var val = (document.getElementById('v2-topic')||{}).value||'';
+      if (!val.trim()) { toast('Type a topic first'); return; }
+      runBriefResearch(val.trim());
     }
-    var t2 = document.getElementById('toast');
-runBriefResearch();
   });
 })();
-  async function runBriefResearch() {
-  var topic = (document.getElementById('v2-topic')||{}).value||'';
-  topic = topic.trim();
-  if (!topic) { toast('Add a topic first'); return; }
-  var cat = (document.getElementById('v2-cat')||{}).value||'Guides';
-  var writer = (document.getElementById('v2-writer')||{}).value||'';
+  async function scrapeUrls(urls) {
+  var results = [];
+  for (var i = 0; i < Math.min(urls.length, 3); i++) {
+    try {
+      var r = await fetch('https://api.firecrawl.dev/v1/scrape', {
+        method: 'POST',
+        headers: {'Content-Type':'application/json','Authorization':'Bearer fc-918ef0f7ffac439caca532272347e770'},
+        body: JSON.stringify({url: urls[i], formats:['markdown'], onlyMainContent:true})
+      });
+      var d = await r.json();
+      if (d.success && d.data && d.data.markdown) {
+        results.push('--- SOURCE: '+urls[i]+' ---\n'+d.data.markdown.substring(0,2000));
+      }
+    } catch(e) { console.warn('Scrape failed:', urls[i]); }
+  }
+  return results.join('\n\n');
+}
+
+function parseJSON(text) {
+  var m = text.match(/\{[\s\S]*\}/);
+  if (!m) throw new Error('No JSON in response');
+  var raw = m[0];
+  try { return JSON.parse(raw); } catch(e) {
+    raw = raw.replace(/,\s*$/, '').replace(/,\s*\}$/, '}').replace(/,\s*\]$/, ']');
+    var opens = (raw.match(/\{/g)||[]).length - (raw.match(/\}/g)||[]).length;
+    var openArr = (raw.match(/\[/g)||[]).length - (raw.match(/\]/g)||[]).length;
+    if ((raw.match(/"/g)||[]).length % 2 !== 0) raw += '"';
+    for (var a = 0; a < openArr; a++) raw += ']';
+    for (var b = 0; b < opens; b++) raw += '}';
+    return JSON.parse(raw);
+  }
+}
+
+async function runTopicIdeas() {
+  var cat = (document.getElementById('v2-cat')||{}).value||'All';
   var btn = document.getElementById('v2-research-btn');
   var output = document.getElementById('v2-brief-output');
   btn.disabled = true; btn.textContent = 'Researching...';
   if (output) {
     output.style.display = 'block';
-    output.innerHTML = '<div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:20px 24px;"><p style="font-size:13px;font-weight:600;color:var(--tealB);margin-bottom:8px;">⚡ Building your brief...</p><p style="font-size:12px;color:#475569;">Scraping competitors · Analysing gaps · Writing brief</p></div>';
+    output.innerHTML = '<div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:20px 24px;"><p style="font-size:13px;font-weight:600;color:var(--tealB);margin-bottom:8px;">⚡ Finding topic gaps...</p><p style="font-size:12px;color:#475569;">Scraping competitors · Analysing gaps · Building ideas</p></div>';
   }
   var researchContext = '';
-  try { researchContext = await scrapeUrls(['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://www.myforexfunds.com/blog/']); } catch(e) {}
-  var prompt = 'You are a Senior SEO Strategist for FXIFY. Research this topic and return a complete content brief.\n\nTOPIC: '+topic+'\nCATEGORY: '+cat+'\n\n'+(researchContext?'COMPETITOR RESEARCH:\n'+researchContext+'\n\n':'')+'Return ONLY valid JSON:\n{"title":"","primary_keyword":"","secondary_keywords":"","search_intent":"Informational","word_count":"Standard guide — 800 words","outline":["H2 1","H2 2","H2 3","H2 4","H2 5"],"do":["do this","do this"],"dont":["avoid this"],"reddit_pain_points":["pain point"],"serp_insights":"","geo_angle":"","aeo_question":"","internal_links":"/programs, /rules","competitor_gaps":""}';
+  try { researchContext = await scrapeUrls(['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://apextraderfunding.com/blog/']); } catch(e) {}
+  var prompt =
+    'You are a Senior SEO Strategist for FXIFY — a broker-backed prop trading firm.\n\n'+
+    'FXIFY CONTEXT:\n'+
+    '- Programs: One Phase (no consistency rule, first payout on demand), Two Phase Standard, Three Phase Challenge, Instant Funding, Lightning Challenge\n'+
+    '- Broker-backed since 2023 (parent: FXPIG since 2010)\n'+
+    '- Performance split up to 90%, $40M+ paid out, 250K+ traders\n'+
+    '- Daily drawdown 5%, max drawdown 10%, All-In or Raw pricing\n'+
+    '- First payout on demand, public demo for spread verification\n\n'+
+    (researchContext?'COMPETITOR CONTENT (scraped):\n'+researchContext+'\n\n':'')+
+    'CATEGORY FOCUS: '+cat+'\n\n'+
+    'Generate 8 high-value blog topic ideas FXIFY should publish. Each must:\n'+
+    '- Target a real search query traders type into Google\n'+
+    '- Have a clear competitor gap — something FTMO/FundedNext/Apex are NOT covering well\n'+
+    '- Have a specific FXIFY angle tied to a real product feature\n'+
+    '- NOT be generic (avoid "What is prop trading" type topics)\n'+
+    '- Reflect real trader pain points in 2026\n\n'+
+    'Return ONLY valid JSON (no markdown, no preamble):\n'+
+    '{"topics":[{"title":"Exact H1 title keyword-led under 65 chars","primary_keyword":"exact keyword phrase","secondary_keywords":["kw2","kw3"],"category":"Guides","search_intent":"Informational","difficulty":"Low","word_count":"1200","competitor_gap":"Specific gap FTMO/FundedNext/Apex are missing","fxify_angle":"Which specific FXIFY feature wins this topic","why_now":"Why momentum in 2026"}]}';
   try {
-    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt:prompt,max_tokens:2000})});
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt:prompt, max_tokens:3000})
+    });
     var data = await r.json();
     var text = '';
     if (Array.isArray(data)&&data[0]) { var d0=data[0]; if(d0.text) text=d0.text; else if(d0.content&&d0.content[0]) text=d0.content[0].text||''; }
     else if (data.text) text=data.text;
     else if (data.content&&data.content[0]) text=data.content[0].text||'';
-    var jm = text.match(/\{[\s\S]*\}/); if(!jm) throw new Error('No JSON');
-    var brief = JSON.parse(jm[0]);
-    var ins = await supa.from('articles').insert([{title:brief.title||topic,category:cat,status:'Briefed',priority:'Normal',primary_kw:brief.primary_keyword||'',assignee:(writer==='— Unassigned —'?'':writer)||'',content:JSON.stringify(brief),tone:'Educational',length:brief.word_count||'Standard guide — 800 words',word_count:0,doc_url:''}]).select();
-    var savedArt = ins.data&&ins.data[0]?ins.data[0]:null;
-    if (savedArt) { toast('Brief saved to pipeline ✓'); loadPipeline(); }
-    renderBriefOutput(brief, savedArt);
-  } catch(e) { toast('Error: '+e.message); if(output) output.innerHTML='<p style="color:var(--urgent);padding:16px;">Error: '+e.message+'</p>'; }
-  btn.disabled=false; btn.textContent='⚡ Research & Build Brief →';
+    var result = parseJSON(text);
+    renderTopicIdeas(result.topics||[]);
+  } catch(e) {
+    toast('Error: '+e.message);
+    if (output) output.innerHTML='<p style="color:var(--urgent);padding:16px;">Error: '+e.message+'</p>';
+  }
+  btn.disabled=false; btn.textContent='⚡ Generate topic ideas';
 }
 
-function renderBriefOutput(brief, savedArt) {
+function renderTopicIdeas(topics) {
+  window._v2Topics = topics;
   var output = document.getElementById('v2-brief-output');
   if (!output) return;
-  var outlineHtml = (brief.outline||[]).map(function(h,i){ return '<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);"><span style="font-size:10px;font-weight:700;color:var(--tealB);width:20px;">'+( i+1)+'</span><span style="font-size:13px;color:#cbd5e1;">'+h+'</span></div>'; }).join('');
-  var doHtml = (brief.do||[]).map(function(d){ return '<p style="font-size:12px;color:#6ee7b7;padding:3px 0;">✓ '+d+'</p>'; }).join('');
-  var dontHtml = (brief.dont||[]).map(function(d){ return '<p style="font-size:12px;color:#fca5a5;padding:3px 0;">✗ '+d+'</p>'; }).join('');
-  var redditHtml = (brief.reddit_pain_points||[]).map(function(p){ return '<p style="font-size:12px;color:#94a3b8;padding:3px 0;">• '+p+'</p>'; }).join('');
-  output.innerHTML =
-    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-top:12px;">'+
-    '<div style="background:var(--navy);padding:14px 18px;display:flex;align-items:center;justify-content:space-between;">'+
-      '<div><p style="font-size:14px;font-weight:700;color:#fff;margin-bottom:4px;">'+(brief.title||'Brief ready')+'</p>'+
-      '<div style="display:flex;gap:6px;"><span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">'+(brief.primary_keyword||'')+'</span>'+
-      '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:rgba(255,255,255,.06);color:#94a3b8;">'+(brief.word_count||'')+'</span></div></div>'+
-      (savedArt?'<button class="btn btn-p btn-s" id="v2-open-editor-btn">Open in editor →</button>':'')+
-    '</div>'+
-    '<div style="padding:14px 18px;border-bottom:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Outline</p>'+outlineHtml+'</div>'+
-    '<div style="display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--border);">'+
-      '<div style="padding:14px 18px;border-right:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--green);margin-bottom:6px;">Do</p>'+doHtml+'</div>'+
-      '<div style="padding:14px 18px;"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--urgent);margin-bottom:6px;">Don\'t</p>'+dontHtml+'</div>'+
-    '</div>'+
-    (brief.serp_insights?'<div style="padding:14px 18px;border-bottom:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--blue);margin-bottom:6px;">SERP insights</p><p style="font-size:12px;color:var(--text2);line-height:1.6;">'+brief.serp_insights+'</p></div>':'')+
-    (redditHtml?'<div style="padding:14px 18px;border-bottom:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--purple);margin-bottom:6px;">Reddit pain points</p>'+redditHtml+'</div>':'')+
-    (brief.competitor_gaps?'<div style="padding:14px 18px;border-bottom:1px solid var(--border);"><p style="font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--amber);margin-bottom:6px;">Competitor gap</p><p style="font-size:12px;color:var(--text2);">'+brief.competitor_gaps+'</p></div>':'')+
-    '<div style="padding:14px 18px;">'+
-      (brief.geo_angle?'<p style="font-size:11px;color:var(--teal);margin-bottom:4px;"> GEO: '+brief.geo_angle+'</p>':'')+
-      (brief.aeo_question?'<p style="font-size:11px;color:var(--purple);">⭐ Snippet target: '+brief.aeo_question+'</p>':'')+
-    '</div></div>';
-  if (savedArt) {
-    var edBtn = document.getElementById('v2-open-editor-btn');
-    if (edBtn) edBtn.addEventListener('click', function(){ openEditor(savedArt,'sheperd'); });
+  output.style.display = 'block';
+  var diffChipMap = { Low:'chip-green', Medium:'chip-amber', High:'chip-red' };
+  var html = '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">' +
+    '<span style="font-size:13px;font-weight:600;color:#fff;">'+topics.length+' topic ideas — click any to build the full brief</span>' +
+    '<button class="btn btn-s" id="v2-refresh-topics-btn">↻ Refresh</button></div>';
+  topics.forEach(function(t, i) {
+    var diff = t.difficulty||'Medium';
+    var chipCls = diffChipMap[diff]||'chip-muted';
+    html += '<div class="topic-card" style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;cursor:pointer;margin-bottom:8px;">'+
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;">'+
+        '<div style="font-size:14px;font-weight:600;color:#fff;line-height:1.35;">'+t.title+'</div>'+
+        '<span class="chip '+chipCls+'" style="flex-shrink:0;">'+diff+' competition</span>'+
+      '</div>'+
+      '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">'+
+        '<span class="chip chip-blue">'+t.primary_keyword+'</span>'+
+        '<span class="chip chip-muted">'+(t.search_intent||'Informational')+'</span>'+
+        '<span class="chip chip-muted">'+(t.category||'Guide')+'</span>'+
+        '<span class="chip chip-muted">~'+(t.word_count||'1200')+' words</span>'+
+      '</div>'+
+      '<div style="font-size:12px;color:#f87171;margin-bottom:3px;"><strong>Gap:</strong> '+t.competitor_gap+'</div>'+
+      '<div style="font-size:12px;color:#34d399;margin-bottom:3px;"><strong>FXIFY angle:</strong> '+t.fxify_angle+'</div>'+
+      '<div style="font-size:11px;color:var(--muted);">'+t.why_now+'</div>'+
+      '<div style="margin-top:10px;"><button class="btn btn-p btn-s v2-build-btn" data-idx="'+i+'">Build full brief →</button></div>'+
+    '</div>';
+  });
+  output.innerHTML = html;
+  var refreshBtn = document.getElementById('v2-refresh-topics-btn');
+  if (refreshBtn) refreshBtn.addEventListener('click', runTopicIdeas);
+  output.querySelectorAll('.v2-build-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      var t = window._v2Topics[parseInt(btn.dataset.idx)];
+      if (t) runBriefResearch(t);
+    });
+  });
+}
+
+async function runBriefResearch(topicObj) {
+  var topic = (typeof topicObj === 'string') ? topicObj : topicObj.title;
+  var cat = (typeof topicObj === 'object' && topicObj.category) ? topicObj.category : (document.getElementById('v2-cat')||{}).value||'Guides';
+  var writer = (document.getElementById('v2-writer')||{}).value||'';
+  var output = document.getElementById('v2-brief-output');
+  if (output) {
+    output.style.display = 'block';
+    output.innerHTML = '<div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:20px 24px;"><p style="font-size:13px;font-weight:600;color:var(--tealB);margin-bottom:8px;">⚡ Building brief...</p><p style="font-size:12px;color:#475569;">Scraping competitors · Mapping FXIFY angle · Writing structured brief</p></div>';
+  }
+  var researchContext = '';
+  try { researchContext = await scrapeUrls(['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://apextraderfunding.com/blog/']); } catch(e) {}
+  var extraContext = (typeof topicObj === 'object') ?
+    'TOPIC RESEARCH:\nPrimary keyword: '+(topicObj.primary_keyword||'')+
+    '\nSecondary keywords: '+(topicObj.secondary_keywords||[]).join(', ')+
+    '\nCompetitor gap: '+(topicObj.competitor_gap||'')+
+    '\nFXIFY angle: '+(topicObj.fxify_angle||'')+
+    '\nWhy now: '+(topicObj.why_now||'')+'\n\n' : '';
+  var prompt =
+    'You are a Senior Content Strategist for FXIFY — a broker-backed prop trading firm. Write a complete article brief for a human writer.\n\n'+
+    'TOPIC: '+topic+'\nCATEGORY: '+cat+'\n\n'+extraContext+
+    'FXIFY CONTEXT:\n'+
+    '- Broker-backed since 2023 (parent: FXPIG operating since 2010)\n'+
+    '- Programs: One Phase (no consistency rule, first payout on demand), Two Phase Standard (first payout on demand), Three Phase Challenge (first payout on demand), Instant Funding, Lightning Challenge\n'+
+    '- Performance split up to 90%, $40M+ paid out, 250K+ traders\n'+
+    '- Daily drawdown 5%, max drawdown 10%, All-In or Raw pricing, public demo for spread verification\n\n'+
+    (researchContext?'COMPETITOR CONTENT:\n'+researchContext+'\n\n':'')+
+    'FXIFY BLOG FORMAT — follow exactly:\n'+
+    '1. Hook: personal trader story or direct observation. NEVER start with "In this article"\n'+
+    '2. Key Terms table: Term | What it means (3-5 rows specific to this topic)\n'+
+    '3. Whats in this guide: bullet list of H2s\n'+
+    '4. Body H2 sections: each ends with bold "What to check:" tip\n'+
+    '5. Why Id start with FXIFY: evidence-based, references specific program\n'+
+    '6. FAQs: 5 real questions traders Google\n'+
+    '7. Bottom Line: 2 sentences max\n\n'+
+    'RULES: Everything must be specific to THIS topic. No generic filler. Hook must be a real scenario. Each section must state the argument. FAQs must be real search queries. FXIFY angle must name a specific program or feature. No em-dashes. ESL Grade 5-6. Use "performance split" not "profit split".\n\n'+
+    'Return ONLY valid JSON (no markdown, no preamble):\n'+
+    '{"title":"","primary_keyword":"","secondary_keywords":[],"search_intent":"","word_count":"","hook_angle":"","key_terms":[{"term":"","definition":""}],"toc":[],"sections":[{"h2":"","angle":"","what_to_check":""}],"fxify_angle":"","faqs":[{"q":"","a":""}],"bottom_line":"","competitor_gaps":"","meta_title":"","meta_desc":"","slug":"","geo_angle":"","aeo_question":""}';
+  try {
+    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft',{
+      method:'POST', headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({prompt:prompt, max_tokens:3000})
+    });
+    var data = await r.json();
+    var text = '';
+    if (Array.isArray(data)&&data[0]) { var d0=data[0]; if(d0.text) text=d0.text; else if(d0.content&&d0.content[0]) text=d0.content[0].text||''; }
+    else if (data.text) text=data.text;
+    else if (data.content&&data.content[0]) text=data.content[0].text||'';
+    var brief = parseJSON(text);
+    var ins = await supa.from('articles').insert([{
+      title:brief.title||topic, category:cat, status:'Briefed', priority:'Normal',
+      primary_kw:brief.primary_keyword||'',
+      assignee:(writer==='— Unassigned —'?'':writer)||'',
+      content:JSON.stringify(brief), tone:'Educational',
+      length:brief.word_count||'Standard guide — 1200 words',
+      word_count:0, doc_url:''
+    }]).select();
+    var savedArt = ins.data&&ins.data[0]?ins.data[0]:null;
+    if (savedArt) { toast('Brief saved to pipeline ✓'); loadPipeline(); }
+    renderBriefOutput(brief, topic, writer);
+  } catch(e) {
+    toast('Error: '+e.message);
+    if (output) output.innerHTML='<p style="color:var(--urgent);padding:16px;">Error: '+e.message+'</p>';
   }
 }
 
+function renderBriefOutput(brief, topicFallback, writer) {
+  var output = document.getElementById('v2-brief-output');
+  if (!output) return;
+  var kwHtml = '<span class="chip chip-blue">'+(brief.primary_keyword||'')+'</span> '+
+    (brief.secondary_keywords||[]).map(function(k){ return '<span class="chip chip-muted">'+k+'</span>'; }).join(' ');
+  var termsHtml = (brief.key_terms||[]).map(function(t){
+    return '<tr><td style="font-weight:600;color:#fff;padding:7px 12px 7px 0;font-size:12px;white-space:nowrap;vertical-align:top;">'+t.term+'</td><td style="font-size:12px;color:var(--text2);padding:7px 0;line-height:1.5;">'+t.definition+'</td></tr>';
+  }).join('');
+  var tocHtml = (brief.toc||[]).map(function(h,i){
+    return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid rgba(255,255,255,.04);"><span style="font-size:10px;font-weight:700;color:var(--tealB);width:16px;flex-shrink:0;">'+(i+1)+'</span><span style="font-size:13px;color:#cbd5e1;">'+h+'</span></div>';
+  }).join('');
+  var sectionsHtml = (brief.sections||[]).map(function(s,i){
+    return '<div style="border-left:2px solid var(--tealB);padding-left:12px;margin-bottom:12px;">'+
+      '<div style="font-size:10px;font-weight:700;color:var(--tealB);letter-spacing:.06em;text-transform:uppercase;margin-bottom:4px;">H2 '+(i+1)+' — '+s.h2+'</div>'+
+      '<div style="font-size:13px;color:var(--text);line-height:1.55;margin-bottom:5px;">'+s.angle+'</div>'+
+      '<div style="font-size:12px;color:#fbbf24;"><strong>What to check:</strong> '+s.what_to_check+'</div>'+
+    '</div>';
+  }).join('');
+  var faqHtml = (brief.faqs||[]).map(function(f){
+    return '<div style="padding:8px 0;border-bottom:1px solid rgba(255,255,255,.04);">'+
+      '<div style="font-size:13px;font-weight:600;color:#fff;margin-bottom:3px;">'+f.q+'</div>'+
+      '<div style="font-size:12px;color:var(--text2);line-height:1.55;">'+f.a+'</div>'+
+    '</div>';
+  }).join('');
+  var copyText = [
+    'BRIEF: '+(brief.title||''),
+    'Keyword: '+(brief.primary_keyword||''),
+    'Secondary: '+(brief.secondary_keywords||[]).join(', '),
+    'Words: '+(brief.word_count||''),
+    '',
+    'HOOK: '+(brief.hook_angle||''),
+    '',
+    'KEY TERMS:',
+    ].concat((brief.key_terms||[]).map(function(t){ return '  '+t.term+' — '+t.definition; })).concat([
+    '',
+    'STRUCTURE:',
+    ]).concat((brief.toc||[]).map(function(h,i){ return '  '+(i+1)+'. '+h; })).concat([
+    '',
+    'SECTIONS:',
+    ]).concat((brief.sections||[]).flatMap ? (brief.sections||[]).flatMap(function(s){ return ['  H2: '+s.h2,'  Angle: '+s.angle,'  What to check: '+s.what_to_check,'']; }) : []).concat([
+    'FXIFY ANGLE: '+(brief.fxify_angle||''),
+    '',
+    'FAQS:',
+    ]).concat((brief.faqs||[]).flatMap ? (brief.faqs||[]).flatMap(function(f){ return ['  Q: '+f.q,'  A: '+f.a,'']; }) : []).concat([
+    'BOTTOM LINE: '+(brief.bottom_line||''),
+    '',
+    'SEO:',
+    '  Meta title: '+(brief.meta_title||''),
+    '  Meta desc: '+(brief.meta_desc||''),
+    '  Slug: /blog/'+(brief.slug||'')+'/',
+  ]).join('\n');
+  output.innerHTML =
+    '<div style="display:flex;justify-content:flex-end;margin-bottom:10px;gap:8px;">'+
+      (window._v2Topics ? '<button class="btn btn-s" id="v2-back-topics-btn">← Back to topics</button>' : '')+
+    '</div>'+
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">'+
+    '<div style="background:var(--navy);padding:16px 20px;">'+
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">'+
+        '<div>'+
+          '<p style="font-size:15px;font-weight:700;color:#fff;margin-bottom:8px;line-height:1.35;">'+(brief.title||topicFallback)+'</p>'+
+          '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">'+kwHtml+'</div>'+
+          '<div style="display:flex;gap:10px;font-size:11px;color:var(--muted);">'+
+            '<span>'+(brief.search_intent||'Informational')+'</span><span>·</span>'+
+            '<span>'+(brief.word_count||'1200')+' words</span>'+
+            (writer&&writer!=='— Unassigned —'?'<span>·</span><span>'+writer+'</span>':'')+
+          '</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;">'+
+          '<button class="btn btn-p btn-s" id="v2-copy-brief-btn">Copy brief</button>'+
+          '<button class="btn btn-s" id="v2-copy-meta-btn">Copy SEO meta</button>'+
+        '</div>'+
+      '</div>'+
+    '</div>'+
+    '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tealB);margin-bottom:8px;">Hook angle</p>'+
+      '<div style="background:rgba(30,170,144,.1);border-radius:8px;padding:12px 14px;font-size:13px;color:#a7f3d0;font-style:italic;line-height:1.6;">'+(brief.hook_angle||'')+'</div>'+
+    '</div>'+
+    (termsHtml ? '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Key Terms table</p>'+
+      '<table style="width:100%;border-collapse:collapse;"><tbody>'+termsHtml+'</tbody></table>'+
+    '</div>' : '')+
+    '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Article structure</p>'+
+      tocHtml+
+    '</div>'+
+    '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:12px;">Section briefs</p>'+
+      sectionsHtml+
+    '</div>'+
+    (brief.fxify_angle ? '<div style="padding:14px 20px;border-bottom:1px solid var(--border);background:rgba(30,170,144,.04);">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--tealB);margin-bottom:8px;">FXIFY angle</p>'+
+      '<p style="font-size:13px;color:#94a3b8;line-height:1.6;">'+brief.fxify_angle+'</p>'+
+    '</div>' : '')+
+    (brief.competitor_gaps ? '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#fbbf24;margin-bottom:8px;">Competitor gap we own</p>'+
+      '<p style="font-size:13px;color:var(--text2);line-height:1.6;">'+brief.competitor_gaps+'</p>'+
+    '</div>' : '')+
+    (faqHtml ? '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:#a78bfa;margin-bottom:8px;">FAQs (pre-written)</p>'+
+      faqHtml+
+    '</div>' : '')+
+    (brief.bottom_line ? '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px;">Bottom line</p>'+
+      '<p style="font-size:13px;color:var(--text2);font-style:italic;line-height:1.6;">'+brief.bottom_line+'</p>'+
+    '</div>' : '')+
+    '<div style="padding:14px 20px;">'+
+      '<p style="font-size:10px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:10px;">SEO package</p>'+
+      (brief.meta_title ? '<div style="display:flex;gap:8px;margin-bottom:6px;"><span style="font-size:10px;font-weight:600;color:var(--muted);width:76px;flex-shrink:0;padding-top:2px;">Meta title</span><span style="font-size:12px;color:var(--text2);">'+brief.meta_title+'</span></div>' : '')+
+      (brief.meta_desc ? '<div style="display:flex;gap:8px;margin-bottom:6px;"><span style="font-size:10px;font-weight:600;color:var(--muted);width:76px;flex-shrink:0;padding-top:2px;">Meta desc</span><span style="font-size:12px;color:var(--text2);">'+brief.meta_desc+'</span></div>' : '')+
+      (brief.slug ? '<div style="display:flex;gap:8px;margin-bottom:6px;"><span style="font-size:10px;font-weight:600;color:var(--muted);width:76px;flex-shrink:0;padding-top:2px;">Slug</span><span style="font-size:12px;color:var(--tealB);font-family:monospace;">/blog/'+brief.slug+'/</span></div>' : '')+
+      (brief.aeo_question ? '<div style="display:flex;gap:8px;margin-bottom:6px;"><span style="font-size:10px;font-weight:600;color:var(--muted);width:76px;flex-shrink:0;padding-top:2px;">AEO snippet</span><span style="font-size:12px;color:#a78bfa;">'+brief.aeo_question+'</span></div>' : '')+
+      (brief.geo_angle ? '<div style="display:flex;gap:8px;"><span style="font-size:10px;font-weight:600;color:var(--muted);width:76px;flex-shrink:0;padding-top:2px;">GEO angle</span><span style="font-size:12px;color:var(--tealB);">'+brief.geo_angle+'</span></div>' : '')+
+    '</div>'+
+    '</div>';
+  var backBtn = document.getElementById('v2-back-topics-btn');
+  if (backBtn) backBtn.addEventListener('click', function(){ renderTopicIdeas(window._v2Topics); });
+  var copyBriefBtn = document.getElementById('v2-copy-brief-btn');
+  if (copyBriefBtn) copyBriefBtn.addEventListener('click', function(){
+    navigator.clipboard.writeText(copyText).then(function(){ toast('Brief copied ✓'); });
+  });
+  var copyMetaBtn = document.getElementById('v2-copy-meta-btn');
+  if (copyMetaBtn) copyMetaBtn.addEventListener('click', function(){
+    var metaText = ['SEO Title: '+(brief.meta_title||''),'Meta Description: '+(brief.meta_desc||''),'Slug: /blog/'+(brief.slug||'')+'/','Focus Keyword: '+(brief.primary_keyword||''),'AEO Snippet: '+(brief.aeo_question||''),'GEO Angle: '+(brief.geo_angle||'')].join('\n');
+    navigator.clipboard.writeText(metaText).then(function(){ toast('SEO meta copied ✓'); });
+  });
+}
 init();
 
 })();
