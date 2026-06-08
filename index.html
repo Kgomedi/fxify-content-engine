@@ -1623,6 +1623,18 @@ async function cuSyncFromClickUp() {
   } catch(e) { console.warn('cuSyncFromClickUp error:', e.message); }
 }
 
+// ── AUTH STATE CHANGE — wired at IIFE level so it catches the OAuth redirect ──
+supa.auth.onAuthStateChange(function(event, session) {
+  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+    var email = session.user.email.toLowerCase();
+    if (!currentUser) resolveUserFromEmail(email);
+  }
+  if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    sessionStorage.removeItem('fxify_user');
+  }
+});
+
 // ── STATE ─────────────────────────────────────────────────────────────────
 var activeRole = 'admin';
 var prevScreen = 'admin';
@@ -5521,18 +5533,7 @@ function init(){
     bootUser(user);
   }
 
-  // Listen for auth state changes (handles redirect callback automatically)
-  supa.auth.onAuthStateChange(function(event, session) {
-    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
-      var email = session.user.email.toLowerCase();
-      // Only boot if not already logged in
-      if (!currentUser) resolveUserFromEmail(email);
-    }
-    if (event === 'SIGNED_OUT') {
-      currentUser = null;
-      sessionStorage.removeItem('fxify_user');
-    }
-  });
+  // auth state change wired at IIFE level below
 
   // Impersonate modal
   document.getElementById('imp-cancel').addEventListener('click', function(){ document.getElementById('imp-modal').classList.remove('open'); });
