@@ -634,26 +634,37 @@ select.finput{cursor:pointer;}
 
       <!-- PIPELINE -->
       <div id="a-pipeline" class="pg active">
-        <div class="pgh">Content Pipeline</div>
-        <p class="pgs">Full picture. Move things, assign things, keep it moving. 🚀</p>
-        <div class="srow">
-          <div class="sc sc-r"><p class="slbl">Needs attention</p><p class="sval" style="color:var(--urgent)" id="st-overdue">—</p><p class="shin">overdue</p></div>
-          <div class="sc sc-b"><p class="slbl">In progress</p><p class="sval" id="st-drafting">—</p><p class="shin">drafting</p></div>
-          <div class="sc sc-t"><p class="slbl">In review</p><p class="sval" id="st-review">—</p><p class="shin">with reviewers</p></div>
-          <div class="sc sc-g"><p class="slbl">Published</p><p class="sval" id="st-live">—</p><p class="shin">articles live</p></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:4px;">
+          <div>
+            <div class="pgh" style="margin-bottom:2px;">Content Pipeline</div>
+            <p class="pgs" style="margin-bottom:0;">Live from ClickUp — every status change syncs both ways.</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn btn-s" id="cu-refresh-btn" style="font-size:11px;">↻ Refresh</button>
+            <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">Open in ClickUp ↗</a>
+          </div>
         </div>
-        <div class="shead">Board</div>
-        <div class="pboard">
-          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--muted)">Briefed</span><span class="pcnt" id="cnt-briefed">0</span></div><div class="pbody" id="col-briefed"></div></div>
-          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--blue)">Drafting</span><span class="pcnt" id="cnt-drafting">0</span></div><div class="pbody" id="col-drafting"></div></div>
-          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--purple)">Sheperd Review</span><span class="pcnt" id="cnt-sr">0</span></div><div class="pbody" id="col-sr"></div></div>
-          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--blue)">Liam Review</span><span class="pcnt" id="cnt-lr">0</span></div><div class="pbody" id="col-lr"></div></div>
-          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--amber)">David Approval</span><span class="pcnt" id="cnt-da">0</span></div><div class="pbody" id="col-da"></div></div>
-          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--tealB)">Publishing</span><span class="pcnt" id="cnt-pub">0</span></div><div class="pbody" id="col-pub"></div></div>
-          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--green)">Live</span><span class="pcnt" id="cnt-live">0</span></div><div class="pbody" id="col-live"></div></div>
+
+        <!-- Stats strip -->
+        <div class="srow" style="margin-top:16px;">
+          <div class="sc sc-r"><p class="slbl">To do</p><p class="sval" id="cu-st-todo">—</p></div>
+          <div class="sc sc-b"><p class="slbl">In progress</p><p class="sval" id="cu-st-prog">—</p></div>
+          <div class="sc sc-t"><p class="slbl">In review</p><p class="sval" id="cu-st-review">—</p></div>
+          <div class="sc sc-g"><p class="slbl">Complete</p><p class="sval" id="cu-st-done">—</p></div>
+        </div>
+
+        <!-- Board -->
+        <div class="shead" style="margin-top:8px;">Board</div>
+        <div id="cu-board-loading" style="padding:40px 0;text-align:center;">
+          <p style="font-size:13px;color:var(--muted);">Loading from ClickUp...</p>
+        </div>
+        <div id="cu-board" style="display:none;overflow-x:auto;padding-bottom:4px;"></div>
+        <div id="cu-board-error" style="display:none;background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:var(--rl);padding:14px 16px;margin-top:12px;">
+          <p style="font-size:13px;font-weight:500;color:var(--urgent);margin-bottom:4px;">Could not load ClickUp tasks</p>
+          <p style="font-size:12px;color:var(--urgent);" id="cu-board-error-msg">Check your API key and List ID in the config.</p>
+          <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" style="font-size:12px;color:var(--blue);margin-top:8px;display:inline-block;">Open list directly in ClickUp ↗</a>
         </div>
       </div>
-
       <!-- GENERATE -->
       <div id="a-generate" class="pg">
         <div class="pgh">Brief Builder</div>
@@ -1583,6 +1594,110 @@ var supa = supabase.createClient(
   'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM'
 );
 
+// ── CLICKUP ───────────────────────────────────────────────────────────────
+var CU = {
+  key:    'pk_100917934_R3XGNBIOXGU2VM47VGAMIANONU6Z63EQ',
+  list:   '901603213790',
+  base:   'https://api.clickup.com/api/v2',
+  // Status map: app status -> ClickUp status name (adjust to match your list)
+  statusMap: {
+    'Briefed':        'to do',
+    'Drafting':       'in progress',
+    'Sheperd Review': 'in review',
+    'Liam Review':    'seo review',
+    'David Approval': 'pending approval',
+    'Publishing':     'publishing',
+    'Live':           'complete'
+  }
+};
+
+async function cuFetch(path, method, body) {
+  try {
+    var opts = {
+      method: method || 'GET',
+      headers: { 'Authorization': CU.key, 'Content-Type': 'application/json' }
+    };
+    if (body) opts.body = JSON.stringify(body);
+    var r = await fetch(CU.base + path, opts);
+    return await r.json();
+  } catch(e) {
+    console.warn('ClickUp API error:', e.message);
+    return null;
+  }
+}
+
+async function cuCreateTask(article) {
+  // Build description from brief JSON if available
+  var desc = '';
+  try {
+    var brief = typeof article.content === 'string' && article.content.trim().startsWith('{')
+      ? JSON.parse(article.content) : null;
+    if (brief) {
+      desc = 'KEYWORD: ' + (brief.primary_keyword || article.primary_kw || '') + '\n' +
+             'SEARCH INTENT: ' + (brief.search_intent || '') + '\n' +
+             'WORD COUNT: ' + (brief.word_count || '') + '\n\n' +
+             'HOOK:\n' + (brief.hook_angle || '') + '\n\n' +
+             'FXIFY ANGLE:\n' + (brief.fxify_angle || '') + '\n\n' +
+             'COMPETITOR GAP:\n' + (brief.competitor_gaps || '') + '\n\n' +
+             'BOTTOM LINE:\n' + (brief.bottom_line || '') + '\n\n' +
+             'META TITLE: ' + (brief.meta_title || '') + '\n' +
+             'META DESC: ' + (brief.meta_desc || '') + '\n' +
+             'SLUG: /blog/' + (brief.slug || '') + '/';
+    } else {
+      desc = 'Primary keyword: ' + (article.primary_kw || '') + '\n' +
+             'Category: ' + (article.category || '') + '\n' +
+             'Assignee: ' + (article.assignee || 'Unassigned');
+    }
+  } catch(e) { desc = 'Category: ' + (article.category || ''); }
+
+  var assigneeIds = await cuResolveAssignee(article.assignee);
+
+  var body = {
+    name:        article.title || 'Untitled',
+    description: desc,
+    status:      CU.statusMap[article.status] || 'to do',
+    priority:    article.priority === 'Urgent' ? 1 : article.priority === 'High' ? 2 : 3,
+    tags:        [article.category || 'content'],
+    custom_fields: []
+  };
+  if (assigneeIds.length) body.assignees = assigneeIds;
+
+  var res = await cuFetch('/list/' + CU.list + '/task', 'POST', body);
+  if (res && res.id) {
+    console.log('ClickUp task created:', res.id, res.url);
+    return res;
+  }
+  console.warn('ClickUp task creation failed:', res);
+  return null;
+}
+
+async function cuUpdateStatus(taskId, appStatus) {
+  if (!taskId) return;
+  var cuStatus = CU.statusMap[appStatus];
+  if (!cuStatus) return;
+  await cuFetch('/task/' + taskId, 'PUT', { status: cuStatus });
+}
+
+async function cuResolveAssignee(name) {
+  // Cache members list
+  if (!window._cuMembers) {
+    var res = await cuFetch('/list/' + CU.list + '/member');
+    window._cuMembers = (res && res.members) ? res.members : [];
+  }
+  if (!name || name === '— Unassigned —') return [];
+  var first = name.split(' ')[0].toLowerCase();
+  var match = window._cuMembers.filter(function(m) {
+    return m.username.toLowerCase().includes(first) ||
+           (m.email && m.email.toLowerCase().includes(first));
+  });
+  return match.map(function(m){ return m.id; });
+}
+
+async function cuGetTasks() {
+  var res = await cuFetch('/list/' + CU.list + '/task?include_closed=true&subtasks=false&page=0');
+  return (res && res.tasks) ? res.tasks : [];
+}
+
 // ── STATE ─────────────────────────────────────────────────────────────────
 var activeRole = 'admin';
 var prevScreen = 'admin';
@@ -1676,88 +1791,116 @@ async function dbInsert(data){
     due_date:data.dueDate||null
   }]).select();
   if(res.error){console.error('insert:',res.error);return null;}
-  return res.data[0];
+  var art = res.data[0];
+  // Sync to ClickUp
+  try {
+    var cuTask = await cuCreateTask({ title:art.title, category:art.category, status:art.status, priority:art.priority, primary_kw:art.primary_kw, assignee:art.assignee, content:art.content });
+    if (cuTask && cuTask.id) {
+      await supa.from('articles').update({ doc_url: cuTask.url, meta: { clickup_id: cuTask.id, clickup_url: cuTask.url } }).eq('id', art.id);
+      art.clickup_id  = cuTask.id;
+      art.clickup_url = cuTask.url;
+    }
+  } catch(e) { console.warn('ClickUp sync failed (non-fatal):', e.message); }
+  return art;
 }
 
 async function dbUpdate(id,fields){
   fields.updated_at=new Date().toISOString();
   var res=await supa.from('articles').update(fields).eq('id',id);
   if(res.error) console.error('update:',res.error);
+  // Sync status to ClickUp if status changed
+  if (fields.status) {
+    try {
+      var artRes = await supa.from('articles').select('meta').eq('id',id).single();
+      var cuId = artRes.data && artRes.data.meta && artRes.data.meta.clickup_id;
+      if (cuId) await cuUpdateStatus(cuId, fields.status);
+    } catch(e) { console.warn('ClickUp status sync failed (non-fatal):', e.message); }
+  }
 }
 
 // ── PIPELINE ──────────────────────────────────────────────────────────────
 async function loadPipeline(){
-  var res=await supa.from('articles').select('*').order('created_at',{ascending:false});
-  if(res.error||!res.data) return;
-  var arts=res.data;
-  var groups={'Briefed':[],'Drafting':[],'Sheperd Review':[],'Liam Review':[],'David Approval':[],'Publishing':[],'Live':[]};
-  arts.forEach(function(a){if(groups[a.status]) groups[a.status].push(a);});
-  var cols={Briefed:'briefed',Drafting:'drafting','Sheperd Review':'sr','Liam Review':'lr','David Approval':'da',Publishing:'pub',Live:'live'};
-  Object.keys(cols).forEach(function(st){
-    var col=document.getElementById('col-'+cols[st]);
-    var cnt=document.getElementById('cnt-'+cols[st]);
-    if(!col) return;
-    // For Live column: preserve scraped cards, only clear pipeline cards
-    if(st === 'Live') {
-      var scrapedCards = col.querySelectorAll('.pipeline-scraped-card');
-      col.innerHTML='';
-      scrapedCards.forEach(function(c){ col.appendChild(c); });
-    } else {
-      col.innerHTML='';
-    }
-    var list=groups[st]||[];
-    var pipelineCount = list.length;
-    if(cnt && st !== 'Live') cnt.textContent=pipelineCount;
-    if(st === 'Live') {
-      // Count scraped cards that were preserved
-      var scrapedCount = col.querySelectorAll('.pipeline-scraped-card').length;
-      if(cnt) cnt.textContent = pipelineCount + scrapedCount;
-    }
-    if(!list.length && st !== 'Live'){col.innerHTML='<p class="pempty">Nothing here yet </p>'; return;}
-    if(!list.length) return;
-    list.forEach(function(art){
-      var c=document.createElement('div');
-      c.className='pcard';
-      if(art.priority==='Urgent') c.style.borderLeft='2px solid var(--urgent)';
-      if(art.priority==='High') c.style.borderLeft='2px solid var(--high)';
-      var daysAgo = art.created_at ? Math.floor((Date.now()-new Date(art.created_at))/(1000*60*60*24)) : null;
-      var dateStr = daysAgo === 0 ? 'Today' : daysAgo === 1 ? '1d ago' : daysAgo ? daysAgo+'d ago' : '';
-      var dueStr = '';
-      var dueColor = '#64748b';
-      if (art.due_date) {
-        var dueDate = new Date(art.due_date);
-        var daysUntil = Math.ceil((dueDate - Date.now())/(1000*60*60*24));
-        if (daysUntil < 0) { dueStr = 'Warning️ Overdue '+Math.abs(daysUntil)+'d'; dueColor = 'var(--urgent)'; }
-        else if (daysUntil === 0) { dueStr = ' Due today'; dueColor = 'var(--urgent)'; }
-        else if (daysUntil === 1) { dueStr = '⏰ Due tomorrow'; dueColor = 'var(--high)'; }
-        else { dueStr = 'Due Due '+dueDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'}); }
-      }
-      c.innerHTML='<p class="pct">'+(art.title||'Untitled')+'</p><div class="pcm"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="pcw">'+(art.assignee||'—')+'</span></div>'+
-        (dueStr?'<p style="font-size:9px;font-weight:500;margin-top:3px;color:'+dueColor+';">'+dueStr+'</p>':'')+(dateStr?'<p style="font-size:9px;color:#475569;margin-top:1px;">Created '+dateStr+'</p>':'');
-      // Publishing articles — open editor to grab HTML
-      if(art.status === 'Publishing') {
-        c.style.borderLeft='2px solid var(--tealB)';
-        c.title='Click to open and copy HTML';
-        c.addEventListener('click',function(){ openEditor(art,'sheperd'); });
-      } else {
-        c.addEventListener('click',function(){openDrawer(art);});
-      }
-      col.appendChild(c);
-    });
-  });
-  // Stats
-  function s(id,v){var e=document.getElementById(id);if(e)e.textContent=v;}
-  s('st-overdue',arts.filter(function(a){return a.status!=='Live'&&a.status!=='Publishing';}).length);
-  s('st-drafting',groups['Drafting'].length);
-  s('st-review',(groups['Sheperd Review'].length+groups['Liam Review'].length+groups['David Approval'].length));
-  // Published stat = pipeline Live articles + scraped published articles
-  var scrapedLiveCount = (publishedCache && publishedCache.length) ? publishedCache.length : 
-    document.querySelectorAll('.pipeline-scraped-card').length;
-  s('st-live', groups['Live'].length + scrapedLiveCount);
-  var nb=document.getElementById('nb-pipeline');
-  if(nb) nb.textContent=arts.filter(function(a){return a.status!=='Live';}).length;
+  loadClickUpBoard();
 }
 
+async function loadClickUpBoard(){
+  var board   = document.getElementById('cu-board');
+  var loading = document.getElementById('cu-board-loading');
+  var errEl   = document.getElementById('cu-board-error');
+  var errMsg  = document.getElementById('cu-board-error-msg');
+  if (!board) return;
+
+  if (loading) loading.style.display = 'block';
+  if (board)   board.style.display   = 'none';
+  if (errEl)   errEl.style.display   = 'none';
+
+  var tasks = await cuGetTasks();
+
+  if (!tasks.length) {
+    if (loading) loading.style.display = 'none';
+    if (errEl)   errEl.style.display   = 'block';
+    if (errMsg)  errMsg.textContent    = 'No tasks returned — check API key and List ID, or the list may be empty.';
+    return;
+  }
+
+  // Group by status
+  var columns = {};
+  tasks.forEach(function(t) {
+    var s = (t.status && t.status.status) ? t.status.status : 'unknown';
+    if (!columns[s]) columns[s] = [];
+    columns[s].push(t);
+  });
+
+  // Stats
+  function setEl(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; }
+  var todo    = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['to do','briefed'].includes(s.toLowerCase()); }).length;
+  var prog    = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return s.toLowerCase().includes('progress')||s.toLowerCase().includes('draft'); }).length;
+  var review  = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return s.toLowerCase().includes('review')||s.toLowerCase().includes('approval'); }).length;
+  var done    = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['complete','live','done','closed'].includes(s.toLowerCase()); }).length;
+  setEl('cu-st-todo',   todo);
+  setEl('cu-st-prog',   prog);
+  setEl('cu-st-review', review);
+  setEl('cu-st-done',   done);
+
+  // Render board columns
+  var colOrder = Object.keys(columns).sort();
+  var boardHtml = '<div style="display:grid;grid-template-columns:repeat('+Math.max(colOrder.length,3)+',minmax(160px,1fr));gap:10px;">';
+  colOrder.forEach(function(status) {
+    var colTasks = columns[status];
+    var colColor = status.toLowerCase().includes('progress') ? 'var(--blue)' :
+                   status.toLowerCase().includes('review')   ? 'var(--purple)' :
+                   status.toLowerCase().includes('approval') ? 'var(--amber)' :
+                   status.toLowerCase().includes('complete') || status.toLowerCase().includes('live') ? 'var(--green)' :
+                   'var(--muted)';
+    boardHtml += '<div class="pcol"><div class="phead"><span class="plbl" style="color:'+colColor+';text-transform:capitalize;">'+status+'</span><span class="pcnt">'+colTasks.length+'</span></div><div class="pbody">';
+    colTasks.slice(0,15).forEach(function(t) {
+      var priority = t.priority && t.priority.priority ? t.priority.priority : '';
+      var priColor = priority === 'urgent' ? 'var(--urgent)' : priority === 'high' ? 'var(--high)' : 'transparent';
+      var assignees = (t.assignees||[]).map(function(a){ return a.username||a.email||''; }).filter(Boolean).join(', ');
+      var cuUrl = t.url || ('https://app.clickup.com/t/'+t.id);
+      boardHtml +=
+        '<div class="pcard" style="border-left:2px solid '+priColor+';" data-cuurl="'+cuUrl+'">' +
+          '<p class="pct">'+(t.name||'Untitled')+'</p>' +
+          '<div class="pcm">' +
+            (priority ? '<span class="badge b'+priority[0]+'" style="text-transform:capitalize;font-size:9px;">'+priority+'</span>' : '<span></span>') +
+            '<span class="pcw">'+(assignees||'—')+'</span>' +
+          '</div>' +
+          '<p style="font-size:9px;color:var(--tealB);margin-top:4px;">↗ Open in ClickUp</p>' +
+        '</div>';
+    });
+    if (!colTasks.length) boardHtml += '<p class="pempty">Nothing here</p>';
+    boardHtml += '</div></div>';
+  });
+  boardHtml += '</div>';
+
+  board.innerHTML = boardHtml;
+  if (loading) loading.style.display = 'none';
+  board.style.display = 'block';
+
+  // Nav badge = open tasks
+  var nb = document.getElementById('nb-pipeline');
+  if (nb) nb.textContent = (todo + prog + review) || '';
+}
 // ── REVIEW CARD BUILDER ───────────────────────────────────────────────────
 function makeReviewCard(art,opts){
   var c=document.createElement('div');
@@ -6502,6 +6645,12 @@ function init(){
   });
   var plBtn = document.getElementById('pl-analyse-btn');
   if (plBtn) plBtn.addEventListener('click', runPlanner);
+  // ClickUp refresh button
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.id === 'cu-refresh-btn') { loadClickUpBoard(); return; }
+    var card = e.target.closest('[data-cuurl]');
+    if (card) window.open(card.getAttribute('data-cuurl'), '_blank');
+  });
   var openEdBtn = document.getElementById('open-ed-btn'); if(openEdBtn) openEdBtn.addEventListener('click',function(){if(currentArt) openEditor(currentArt,'sheperd');});
 
   // Editor back
@@ -7252,22 +7401,24 @@ async function runBriefResearch(topicObj) {
   try {
     var text  = await v2Fetch(prompt, 3500);
     var brief = parseJSON(text);
-    // Save to Supabase
-    var ins = await supa.from('articles').insert([{
-      title:       brief.title || topic,
-      category:    cat,
-      status:      'Briefed',
-      priority:    'Normal',
-      primary_kw:  brief.primary_keyword || '',
-      assignee:    (writer === '— Unassigned —' ? '' : writer) || '',
-      content:     JSON.stringify(brief),
-      tone:        'Educational',
-      length:      brief.word_count || 'Standard guide — 1200 words',
-      word_count:  0,
-      doc_url:     ''
-    }]).select();
-    var savedArt = ins.data && ins.data[0] ? ins.data[0] : null;
-    if (savedArt) { v2Toast('Brief saved to pipeline ✓'); loadPipeline(); }
+    // Save to Supabase + ClickUp
+    var briefData = {
+      title:    brief.title || topic,
+      category: cat,
+      status:   'Briefed',
+      priority: 'Normal',
+      primaryKw: brief.primary_keyword || '',
+      assignee: (writer === '— Unassigned —' ? '' : writer) || '',
+      content:  JSON.stringify(brief),
+      tone:     'Educational',
+      length:   brief.word_count || 'Standard guide — 1200 words',
+    };
+    var savedArt = await dbInsert(briefData);
+    if (savedArt) {
+      var cuMsg = savedArt.clickup_url ? ' + ClickUp task created ✓' : '';
+      v2Toast('Brief saved' + cuMsg);
+      loadPipeline();
+    }
     renderBriefOutput(brief, topic, writer);
   } catch(e) {
     output.innerHTML = '<p style="color:var(--urgent);padding:16px;">Error: ' + e.message + '</p>';
