@@ -1477,7 +1477,8 @@ select.finput{cursor:pointer;}
 // ── SUPABASE ──────────────────────────────────────────────────────────────
 var supa = supabase.createClient(
   'https://geeihjpvyclvqmrxbjxp.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM',
+  { auth: { detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } }
 );
 
 // ── CLICKUP ───────────────────────────────────────────────────────────────
@@ -5306,6 +5307,14 @@ var USERS = {
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init(){
+  // ── CHECK FOR EXISTING SESSION immediately (OAuth redirect recovery)
+  supa.auth.getSession().then(function(res) {
+    if (res.data && res.data.session && !currentUser) {
+      var email = res.data.session.user.email.toLowerCase();
+      resolveUserFromEmail(email);
+    }
+  });
+
   // Dynamic friendly greeting
   var hr=new Date().getHours();
   var greetEl=document.getElementById('greet');
@@ -5352,14 +5361,6 @@ function init(){
       currentWriterEmail = user.email;
     }
 
-    // Clear generate form on login — no stale data from previous session
-    ['b-title','b-pkw','b-skw','b-geo','b-claim','b-q','b-paa','b-links','b-research'].forEach(function(id){
-      var el = document.getElementById(id); if (el) el.value = '';
-    });
-    var outSec = document.getElementById('outline-section');
-    if (outSec) outSec.style.display = 'none';
-    var genBan = document.getElementById('gen-banner');
-    if (genBan) genBan.style.display = 'none';
     currentBriefData = null; currentOutline = '';
 
     goScreen(user.screen);
