@@ -1,34 +1,3 @@
-function cuResolveAssignee(name) {
-  if (!name || name === '— Unassigned —') return [];
-  var n = name.toLowerCase().trim();
-  // 1. Exact email match
-  var byEmail = CU.members.filter(function(m){ return m.email.toLowerCase() === n; });
-  if (byEmail.length) return byEmail.map(function(m){ return m.id; });
-  // 2. Exact full username match
-  var byFull = CU.members.filter(function(m){ return m.username.toLowerCase() === n; });
-  if (byFull.length) return byFull.map(function(m){ return m.id; });
-  // 3. Exact first+last — e.g. "Harry Hosking" only matches Harry Hosking not Harry McHugh
-  var parts = n.split(' ');
-  if (parts.length >= 2) {
-    var byName = CU.members.filter(function(m){
-      var u = m.username.toLowerCase();
-      return u.startsWith(parts[0]) && u.includes(parts[parts.length - 1]);
-    });
-    if (byName.length === 1) return byName.map(function(m){ return m.id; });
-  }
-  // 4. Email prefix before @ — e.g. "fariha.khan" matches fariha.khan@fxify.com
-  var byEmailPrefix = CU.members.filter(function(m){ return m.email.toLowerCase().split('@')[0] === n; });
-  if (byEmailPrefix.length) return byEmailPrefix.map(function(m){ return m.id; });
-  // 5. No match
-  console.warn('cuResolveAssignee: no member found for "' + name + '"');
-  return [];
-}
-
-function cuGetMembers() {
-  window._cuMembers = CU.members;
-  return CU.members;
-}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1487,6 +1456,146 @@ var CU = {
     'completed':      'Live',
   },
 };
+
+function cuResolveAssignee(name) {
+  if (!name || name === '— Unassigned —') return [];
+  var n = name.toLowerCase().trim();
+  // 1. Exact email match
+  var byEmail = CU.members.filter(function(m){ return m.email.toLowerCase() === n; });
+  if (byEmail.length) return byEmail.map(function(m){ return m.id; });
+  // 2. Exact full username match
+  var byFull = CU.members.filter(function(m){ return m.username.toLowerCase() === n; });
+  if (byFull.length) return byFull.map(function(m){ return m.id; });
+  // 3. Exact first+last — e.g. "Harry Hosking" only matches Harry Hosking not Harry McHugh
+  var parts = n.split(' ');
+  if (parts.length >= 2) {
+    var byName = CU.members.filter(function(m){
+      var u = m.username.toLowerCase();
+      return u.startsWith(parts[0]) && u.includes(parts[parts.length - 1]);
+    });
+    if (byName.length === 1) return byName.map(function(m){ return m.id; });
+  }
+  // 4. Email prefix before @ — e.g. "fariha.khan" matches fariha.khan@fxify.com
+  var byEmailPrefix = CU.members.filter(function(m){ return m.email.toLowerCase().split('@')[0] === n; });
+  if (byEmailPrefix.length) return byEmailPrefix.map(function(m){ return m.id; });
+  // 5. No match
+  console.warn('cuResolveAssignee: no member found for "' + name + '"');
+  return [];
+}
+
+function cuGetMembers() {
+  window._cuMembers = CU.members;
+  return CU.members;
+}
+async function cuGetTasks() {
+  // Paginate all tasks — ClickUp returns max 100 per page
+  var allTasks = [];
+  var page = 0;
+  while (true) {
+    var res = await cuFetch('/list/' + CU.list + '/task?include_closed=true&subtasks=false&page=' + page + '&order_by=created&reverse=true');
+    if (!res || !res.tasks || !res.tasks.length) break;
+    allTasks = allTasks.concat(res.tasks);
+    if (res.tasks.length < 100) break;
+    page++;
+    if (page > 9) break;
+  }
+  return allTasks;
+}
+
+async function cuGetTask(taskId) {
+  var res = await cuFetch('/task/' + taskId + '?include_subtasks=false');
+  return res || null;
+}
+
+async function cuUpdateField(taskId, fieldId, value) {
+  return await cuFetch('/task/' + taskId + '/field/' + fieldId, 'POST', { value: value });
+}
+
+async function cuUpdateAssignees(taskId, addIds, removeIds) {
+  return await cuFetch('/task/' + taskId, 'PUT', {
+    assignees: { add: addIds || [], rem: removeIds || [] }
+  });
+}
+
+async function cuSetDueDate(taskId, timestamp) {
+  return await cuFetch('/task/' + taskId, 'PUT', { due_date: timestamp, due_date_time: true });
+}
+
+
+
+
+async function cuFetch(path, method, body) {
+  try {
+    var opts = { method: method || 'GET', headers: { 'Authorization': CU.key, 'Content-Type': 'application/json' } };
+    if (body) opts.body = JSON.stringify(body);
+    var r = await fetch(CU.base + path, opts);
+    return await r.json();
+  } catch(e) { console.warn('ClickUp API error:', e.message); return null; }
+}
+
+async function cuCreateTask(article) {
+  var brief = null;
+  try { if (article.content && article.content.trim().startsWith('{')) brief = JSON.parse(article.content); } catch(e) {}
+  var desc = '';
+  if (brief) {
+    desc += 'KEYWORD: ' + (brief.primary_keyword || article.primary_kw || '') + '\n';
+    if (brief.secondary_keywords) desc += 'SECONDARY: ' + brief.secondary_keywords.join(', ') + '\n';
+    desc += 'INTENT: ' + (brief.search_intent || 'Informational') + '\n';
+    desc += 'WORDS: ' + (brief.word_count || '1200') + '\n\n';
+    if (brief.h1_title) desc += 'H1: ' + brief.h1_title + '\n\n';
+    if (brief.hook_angle) desc += 'HOOK:\n' + brief.hook_angle + '\n\n';
+    if (brief.fxify_angle) desc += 'FXIFY ANGLE:\n' + brief.fxify_angle + '\n\n';
+    if (brief.sections) { desc += 'STRUCTURE:\n'; brief.sections.forEach(function(s,i){ desc += (i+1)+'. '+(s.heading||s)+(s.angle?'\n   '+s.angle:'')+'\n'; }); desc += '\n'; }
+    if (brief.competitor_gaps) desc += 'COMPETITOR GAP:\n' + brief.competitor_gaps + '\n\n';
+    desc += 'VOICE RULES:\n✓ One idea per sentence\n✓ Trader scenario hooks\n✗ delve into / dive into\n✗ sentences over 25 words\n✗ profit split (use performance split)';
+  } else { desc = article.content || ''; }
+  var assigneeIds = cuResolveAssignee(article.assignee || '');
+  var cuPriority = { 'Urgent':1, 'High':2, 'Normal':3, 'Low':4 };
+  var pri = cuPriority[article.priority] || 3;
+  var dueDate = null;
+  if (article.due_date) { try { dueDate = new Date(article.due_date).getTime(); } catch(e){} }
+  var customFields = [];
+  if (article.primary_kw) customFields.push({ id: CU.fields.primaryKeyword.id, value: article.primary_kw });
+  if (article.category && CU.fieldOptions.category[article.category]) customFields.push({ id: CU.fields.category.id, value: CU.fieldOptions.category[article.category] });
+  customFields.push({ id: CU.fields.source.id, value: CU.fieldOptions.source['FXIFY'] });
+  var body = { name: article.title || 'Untitled', description: desc, status: CU.statusMap[article.status] || 'to do', priority: pri, assignees: assigneeIds, custom_fields: customFields };
+  if (dueDate) body.due_date = dueDate;
+  var res = await cuFetch('/list/' + CU.list + '/task', 'POST', body);
+  if (!res || !res.id) { console.warn('ClickUp task creation failed:', res); return null; }
+  return res;
+}
+
+async function cuUpdateStatus(taskId, appStatus) {
+  if (!taskId) return;
+  var cuStatus = CU.statusMap[appStatus];
+  if (!cuStatus) return;
+  await cuFetch('/task/' + taskId, 'PUT', { status: cuStatus });
+}
+
+async function cuSyncFromClickUp() {
+  try {
+    var tasks = await cuGetTasks();
+    if (!tasks.length) return;
+    var res = await supa.from('articles').select('id,meta,status').not('meta', 'is', null);
+    if (res.error || !res.data) return;
+    var updates = 0;
+    for (var i = 0; i < res.data.length; i++) {
+      var art = res.data[i];
+      try {
+        var meta = JSON.parse(art.meta || '{}');
+        if (!meta.clickup_id) continue;
+        var cuTask = tasks.find(function(t){ return t.id === meta.clickup_id; });
+        if (!cuTask) continue;
+        var newStatus = CU.reverseStatusMap[(cuTask.status && cuTask.status.status)||''] || art.status;
+        if (newStatus !== art.status) {
+          await supa.from('articles').update({ status: newStatus }).eq('id', art.id);
+          updates++;
+        }
+      } catch(e) { continue; }
+    }
+    toast('Synced ' + updates + ' status' + (updates === 1 ? '' : 'es') + ' from ClickUp');
+  } catch(e) { console.warn('Sync error:', e.message); toast('Sync failed: ' + e.message); }
+}
 
 
 // ── STATE ─────────────────────────────────────────────────────────────────
