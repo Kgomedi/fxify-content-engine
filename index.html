@@ -872,36 +872,53 @@ select.finput{cursor:pointer;}
 
       <!-- YOUTUBE SEO (admin) -->
       <div id="a-youtube" class="pg">
-        <div class="pgh">YouTube SEO</div>
-        <p class="pgs">Research topics, generate titles, descriptions and tags — powered by Firecrawl + Claude ▶</p>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:16px;">
-          <div class="fg">
-            <label class="flbl">Video topic or keyword</label>
-            <input class="finput" id="ayt-topic" type="text" placeholder="e.g. prop trading drawdown, how to pass FXIFY challenge"/>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
+          <div>
+            <div class="pgh" style="margin-bottom:2px;">YouTube Topic Discovery</div>
+            <p class="pgs" style="margin-bottom:0;">4 live signals ranked by opportunity — SEO volume, X momentum, Reddit pain, competitor gaps 🎬</p>
           </div>
+          <div style="display:flex;gap:6px;align-items:center;">
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--greenL);color:var(--green);font-weight:600;" id="yt-dfs-badge">DataForSEO ✓</span>
+            <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--greenL);color:var(--green);font-weight:600;">Firecrawl ✓</span>
+          </div>
+        </div>
+
+        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:12px;">
           <div class="frow fg">
-            <div><label class="flbl">Video type</label><select class="finput" id="ayt-type"><option>Tutorial / How-to</option><option>Market analysis</option><option>Prop firm explainer</option><option>Trader psychology</option><option>News / Update</option><option>Challenge walkthrough</option></select></div>
-            <div><label class="flbl">Target audience</label><select class="finput" id="ayt-audience"><option>Aspiring funded traders</option><option>Active prop traders</option><option>Forex beginners</option><option>Experienced traders</option></select></div>
+            <div>
+              <label class="flbl">Seed topic or keyword</label>
+              <input class="finput" id="yt-topic" type="text" placeholder="e.g. prop trading drawdown, how to pass FXIFY challenge"/>
+            </div>
+            <div>
+              <label class="flbl">Video type</label>
+              <select class="finput" id="yt-type">
+                <option>Tutorial / How-to</option>
+                <option>Market analysis</option>
+                <option>Prop firm explainer</option>
+                <option>Trader psychology</option>
+                <option>News / Update</option>
+                <option>Challenge walkthrough</option>
+              </select>
+            </div>
           </div>
-          <div class="fg">
-            <label class="flbl">Competitor YouTube channels <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label>
-            <textarea class="finput" id="ayt-competitors" rows="3" placeholder="https://www.youtube.com/@FTMO&#10;https://www.youtube.com/@TopstepTrader" style="resize:vertical;min-height:80px;"></textarea>
+          <div style="margin-bottom:14px;">
+            <p class="flbl" style="margin-bottom:8px;">Active signals</p>
+            <div style="display:flex;gap:8px;flex-wrap:wrap;">
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-seo" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);font-weight:600;">SEO</span> YouTube keyword volume</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-x" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#15803d;font-weight:600;">X</span> Viral angles &amp; trader takes</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-reddit" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--highL);color:var(--high);font-weight:600;">Reddit</span> Trader pain &amp; questions</label>
+              <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-comp" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--urgentL);color:var(--urgent);font-weight:600;">Competitors</span> FTMO / FundedNext / Apex channels</label>
+            </div>
           </div>
-          <button class="btn btn-p" style="min-width:200px;" id="ayt-research-btn">▶ Research &amp; Generate</button>
+          <button class="btn btn-p" style="min-width:240px;" id="yt-research-btn">⚡ Discover topics →</button>
         </div>
-        <div id="ayt-loading" style="display:none;text-align:center;padding:40px 20px;">
-          <div style="font-size:28px;margin-bottom:12px;">▶</div>
-          <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="ayt-loading-txt">Scraping competitor channels...</p>
-          <p style="font-size:12px;color:var(--muted);">15-30 seconds</p>
+
+        <div id="yt-loading" style="display:none;background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:20px 24px;">
+          <p style="font-size:13px;font-weight:600;color:var(--tealB);margin-bottom:14px;">⚡ Pulling signals...</p>
+          <div id="yt-signal-steps"></div>
         </div>
-        <div id="ayt-results" style="display:none;">
-          <div class="shead">Keyword & topic gaps</div>
-          <div id="ayt-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
-          <div class="shead">Video ideas — with full SEO</div>
-          <div id="ayt-videos" style="display:grid;gap:12px;margin-bottom:20px;"></div>
-          <div class="shead">Questions people search on YouTube</div>
-          <div id="ayt-questions" style="display:grid;gap:8px;margin-bottom:20px;"></div>
-        </div>
+
+        <div id="yt-results" style="display:none;"></div>
       </div>
 
       <!-- DAVID APPROVAL (accessible when David uses admin screen) -->
@@ -4484,256 +4501,501 @@ async function loadPublishingBadge() {
 }
 
 // ── YOUTUBE SEO ENGINE ───────────────────────────────────────────────────
+// ── YOUTUBE TOPIC DISCOVERY ENGINE ─────────────────────────────────────────
+// Sources: DataForSEO (YouTube volume) + Firecrawl (X, Reddit, competitor channels)
+
+var YT_COMPETITOR_CHANNELS = [
+  { name: 'FTMO',          url: 'https://www.youtube.com/@FTMO' },
+  { name: 'FundedNext',    url: 'https://www.youtube.com/@FundedNext' },
+  { name: 'Apex',          url: 'https://www.youtube.com/@ApexTraderFunding' },
+  { name: 'Topstep',       url: 'https://www.youtube.com/@Topstep' },
+  { name: 'MyFundedFX',    url: 'https://www.youtube.com/@MyFundedFX' },
+];
+
+var YT_REDDIT_SOURCES = [
+  'https://www.reddit.com/r/Forex/top/?t=week',
+  'https://www.reddit.com/r/propfirms/top/?t=week',
+  'https://www.reddit.com/r/Daytrading/top/?t=week',
+];
+
+var YT_X_SOURCES = [
+  'https://x.com/search?q=prop+trading&f=top',
+  'https://x.com/search?q=funded+trader&f=top',
+  'https://x.com/search?q=FTMO+OR+FundedNext+OR+FXIFY&f=top',
+];
+
 function initYouTubePage(prefix) {
   var btn = document.getElementById(prefix + '-research-btn');
   if (!btn || btn._ytWired) return;
   btn._ytWired = true;
-  btn.addEventListener('click', function(){ runYouTubeResearch(prefix); });
+  btn.addEventListener('click', function(){ runYouTubeDiscovery(); });
 }
 
-async function runYouTubeResearch(prefix) {
-  var topic = (document.getElementById(prefix + '-topic').value || '').trim();
-  if (!topic) { toast('Add a video topic first'); return; }
+function ytSetStep(steps, idx, status) {
+  // status: 'active' | 'done' | 'skip'
+  var dot = document.getElementById('yt-dot-' + idx);
+  var txt = document.getElementById('yt-txt-' + idx);
+  if (!dot || !txt) return;
+  if (status === 'active') { dot.style.background = 'var(--tealB)'; txt.style.color = '#cbd5e1'; }
+  if (status === 'done')   { dot.style.background = 'var(--green)'; txt.style.color = 'var(--green)'; }
+  if (status === 'skip')   { dot.style.background = '#334155'; txt.style.color = '#334155'; }
+}
 
-  var type = document.getElementById(prefix + '-type').value;
-  var audience = document.getElementById(prefix + '-audience').value;
-  var competitorRaw = (document.getElementById(prefix + '-competitors').value || '').trim();
-  var competitorUrls = competitorRaw ? competitorRaw.split('\n').filter(Boolean) : [];
+function ytShowLoader(steps) {
+  var loadEl = document.getElementById('yt-loading');
+  var stepsEl = document.getElementById('yt-signal-steps');
+  if (!loadEl || !stepsEl) return;
+  stepsEl.innerHTML = steps.map(function(s, i) {
+    return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+      '<div style="width:6px;height:6px;border-radius:50%;background:#334155;flex-shrink:0;" id="yt-dot-'+i+'"></div>' +
+      '<span style="font-size:12px;color:#334155;" id="yt-txt-'+i+'">'+s+'</span>' +
+      '</div>';
+  }).join('');
+  loadEl.style.display = 'block';
+  ytSetStep(steps, 0, 'active');
+}
 
-  var btn = document.getElementById(prefix + '-research-btn');
-  var loading = document.getElementById(prefix + '-loading');
-  var loadTxt = document.getElementById(prefix + '-loading-txt');
-  var results = document.getElementById(prefix + '-results');
+async function runYouTubeDiscovery() {
+  var topic    = (document.getElementById('yt-topic')||{}).value || '';
+  var vidType  = (document.getElementById('yt-type')||{}).value || 'Tutorial / How-to';
+  var useSEO   = document.getElementById('sig-seo') && document.getElementById('sig-seo').checked;
+  var useX     = document.getElementById('sig-x') && document.getElementById('sig-x').checked;
+  var useReddit= document.getElementById('sig-reddit') && document.getElementById('sig-reddit').checked;
+  var useComp  = document.getElementById('sig-comp') && document.getElementById('sig-comp').checked;
 
+  if (!topic.trim()) { toast('Enter a seed topic first'); return; }
+
+  var btn     = document.getElementById('yt-research-btn');
+  var results = document.getElementById('yt-results');
   btn.disabled = true; btn.textContent = 'Researching...';
-  loading.style.display = 'block'; results.style.display = 'none';
+  results.style.display = 'none';
 
-  // Scrape competitor channels
-  var competitorData = '';
-  if (competitorUrls.length) {
-    if (loadTxt) loadTxt.textContent = 'Scraping ' + competitorUrls.length + ' competitor channel(s)...';
-    competitorData = await scrapeUrls(competitorUrls);
+  var steps = [
+    useSEO    ? 'DataForSEO — YouTube keyword volume & trends...' : null,
+    useX      ? 'Firecrawl — X trader takes & viral angles...'    : null,
+    useReddit ? 'Firecrawl — Reddit pain points & questions...'   : null,
+    useComp   ? 'Firecrawl — Competitor YouTube channels...'      : null,
+    'Claude — scoring & ranking topics...',
+  ].filter(Boolean);
+
+  ytShowLoader(steps);
+
+  var stepIdx = 0;
+
+  // ── SIGNAL 1: DataForSEO YouTube volume ──────────────────────────────
+  var seoData = [];
+  if (useSEO && V2_CONFIG.dfsLogin && V2_CONFIG.dfsPass) {
+    ytSetStep(steps, stepIdx, 'active');
+    try {
+      var creds = btoa(V2_CONFIG.dfsLogin + ':' + V2_CONFIG.dfsPass);
+      // YouTube-specific keyword suggestions
+      var r1 = await fetch('https://api.dataforseo.com/v3/dataforseo_labs/google/keyword_suggestions/live', {
+        method: 'POST',
+        headers: { 'Authorization': 'Basic ' + creds, 'Content-Type': 'application/json' },
+        body: JSON.stringify([{ keyword: topic, language_code: 'en', location_code: 2840, limit: 20 }])
+      });
+      var d1 = await r1.json();
+      var items = (d1.tasks && d1.tasks[0] && d1.tasks[0].result && d1.tasks[0].result[0] && d1.tasks[0].result[0].items) || [];
+      // Also get YouTube-specific autocomplete
+      var r2 = await fetch('https://api.dataforseo.com/v3/serp/youtube/organic/live/advanced', {
+        method: 'POST',
+        headers: { 'Authorization': 'Basic ' + creds, 'Content-Type': 'application/json' },
+        body: JSON.stringify([{ keyword: topic, language_code: 'en', location_code: 2840, depth: 10 }])
+      });
+      var d2 = await r2.json();
+      var ytItems = (d2.tasks && d2.tasks[0] && d2.tasks[0].result && d2.tasks[0].result[0] && d2.tasks[0].result[0].items) || [];
+      seoData = {
+        keywords: items.slice(0,15).map(function(k){ return { keyword: k.keyword, volume: k.keyword_info && k.keyword_info.search_volume, cpc: k.keyword_info && k.keyword_info.cpc }; }),
+        ytVideos: ytItems.slice(0,10).map(function(v){ return { title: v.title, views: v.views_count, channel: v.channel_name }; })
+      };
+    } catch(e) {
+      console.warn('DataForSEO error:', e.message);
+      seoData = { keywords: [], ytVideos: [], error: e.message };
+    }
+    ytSetStep(steps, stepIdx, 'done');
+    stepIdx++;
   }
 
-  if (loadTxt) loadTxt.textContent = 'Claude is building your YouTube strategy...';
+  // ── SIGNAL 2: X via Firecrawl ─────────────────────────────────────────
+  var xData = '';
+  if (useX) {
+    ytSetStep(steps, stepIdx, 'active');
+    try {
+      var xUrls = YT_X_SOURCES.map(function(url) {
+        return url.replace('prop+trading', encodeURIComponent(topic)).replace('funded+trader', encodeURIComponent(topic + ' trader'));
+      });
+      var xResults = await Promise.allSettled(xUrls.slice(0,2).map(function(url) {
+        return fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
+          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
+        }).then(function(r){ return r.json(); });
+      }));
+      xData = xResults
+        .filter(function(r){ return r.status === 'fulfilled' && r.value.success; })
+        .map(function(r){ return r.value.data && r.value.data.markdown ? r.value.data.markdown.substring(0, 1500) : ''; })
+        .join('\n\n');
+    } catch(e) { console.warn('X scrape error:', e.message); }
+    ytSetStep(steps, stepIdx, 'done');
+    stepIdx++;
+  }
+
+  // ── SIGNAL 3: Reddit via Firecrawl ────────────────────────────────────
+  var redditData = '';
+  if (useReddit) {
+    ytSetStep(steps, stepIdx, 'active');
+    try {
+      var redditResults = await Promise.allSettled(YT_REDDIT_SOURCES.map(function(url) {
+        return fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
+          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
+        }).then(function(r){ return r.json(); });
+      }));
+      redditData = redditResults
+        .filter(function(r){ return r.status === 'fulfilled' && r.value.success; })
+        .map(function(r){
+          var md = r.value.data && r.value.data.markdown ? r.value.data.markdown : '';
+          // Extract post titles only — questions and pain points
+          var lines = md.split('\n').filter(function(l){ return l.length > 20 && l.length < 200 && (l.includes('?') || l.includes('how') || l.includes('why') || l.includes('when')); });
+          return lines.slice(0,15).join('\n');
+        })
+        .filter(Boolean)
+        .join('\n\n');
+    } catch(e) { console.warn('Reddit scrape error:', e.message); }
+    ytSetStep(steps, stepIdx, 'done');
+    stepIdx++;
+  }
+
+  // ── SIGNAL 4: Competitor YouTube channels via Firecrawl ───────────────
+  var compData = '';
+  if (useComp) {
+    ytSetStep(steps, stepIdx, 'active');
+    try {
+      var compResults = await Promise.allSettled(YT_COMPETITOR_CHANNELS.slice(0,3).map(function(ch) {
+        return fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
+          body: JSON.stringify({ url: ch.url + '/videos', formats: ['markdown'], onlyMainContent: true })
+        }).then(function(r){ return r.json().then(function(d){ return { channel: ch.name, data: d }; }); });
+      }));
+      compData = compResults
+        .filter(function(r){ return r.status === 'fulfilled' && r.value.data.success; })
+        .map(function(r){
+          var md = r.value.data.data && r.value.data.data.markdown ? r.value.data.data.markdown : '';
+          // Extract video titles
+          var titles = [];
+          var re = /^#+\s+(.{10,100})$/gm;
+          var m;
+          while ((m = re.exec(md)) !== null && titles.length < 20) titles.push(m[1].trim());
+          // Also grab linked titles
+          var linkRe = /\[([^\]]{15,100})\]\(https?:\/\/[^)]+\)/g;
+          while ((m = linkRe.exec(md)) !== null && titles.length < 30) titles.push(m[1].trim());
+          return 'CHANNEL: ' + r.value.channel + '\nVideos: ' + titles.slice(0,20).join(' | ');
+        })
+        .join('\n\n');
+    } catch(e) { console.warn('Competitor scrape error:', e.message); }
+    ytSetStep(steps, stepIdx, 'done');
+    stepIdx++;
+  }
+
+  // ── SIGNAL 5: Claude scores and ranks ─────────────────────────────────
+  ytSetStep(steps, stepIdx, 'active');
+
+  var kwBlock = seoData.keywords ? seoData.keywords.map(function(k){
+    return '- ' + k.keyword + (k.volume ? ' | vol: ' + k.volume : '') + (k.cpc ? ' | CPC: $' + Number(k.cpc).toFixed(2) : '');
+  }).join('\n') : '';
+
+  var ytBlock = seoData.ytVideos ? seoData.ytVideos.map(function(v){
+    return '- ' + v.title + (v.views ? ' (' + v.views + ' views)' : '') + (v.channel ? ' — ' + v.channel : '');
+  }).join('\n') : '';
 
   var prompt =
-    'You are a YouTube SEO strategist specialising in prop trading and forex content. FXIFY YouTube Channel covers trading education, market analysis, prop firm explainers, trader psychology and challenge walkthroughs.\n\n' +
-    'RESEARCH REQUEST:\n' +
-    'Topic/keyword: ' + topic + '\n' +
-    'Video type: ' + type + '\n' +
-    'Target audience: ' + audience + '\n' +
-    (competitorData ? 'COMPETITOR CHANNEL DATA (scraped):\n' + competitorData + '\n\n' : '') +
-    'Respond ONLY with valid JSON:\n' +
-    '{\n' +
-    '  "gaps": ["topic gap 1","gap 2","gap 3","gap 4","gap 5"],\n' +
-    '  "videos": [{\n' +
-    '    "title": "Exact YouTube title under 60 chars keyword-first",\n' +
-    '    "hook": "First 2 sentences to hook the viewer",\n' +
-    '    "description": "Full YouTube description 150 words keyword in first 2 sentences",\n' +
-    '    "tags": ["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8"],\n' +
-    '    "thumbnail_concept": "Ideal thumbnail description",\n' +
-    '    "chapters": ["0:00 Intro","1:30 Section"],\n' +
-    '    "keyword": "primary keyword",\n' +
-    '    "search_volume": "High or Medium or Low",\n' +
-    '    "competition": "High or Medium or Low",\n' +
-    '    "angle": "What makes this different from competitors"\n' +
-    '  }],\n' +
-    '  "questions": ["YouTube search question 1?","Q2?","Q3?","Q4?","Q5?"]\n' +
-    '}\n\n' +
-    'Generate 5 gaps, 5 video ideas with full SEO, 5 search questions. No text outside JSON.';
+    'You are a YouTube content strategist for FXIFY — a broker-backed prop trading firm.\n\n' +
+    'SEED TOPIC: ' + topic + '\n' +
+    'VIDEO TYPE: ' + vidType + '\n\n' +
+
+    'FXIFY FACTS:\n' +
+    '- One Phase: no consistency rule, payout on demand\n' +
+    '- Instant Funding Lite: from $19 — lowest entry in category\n' +
+    '- Broker-backed via FXPIG (since 2010)\n' +
+    '- Performance split up to 90%, $40M+ paid out\n\n' +
+
+    (kwBlock ? 'KEYWORD DATA (DataForSEO):\n' + kwBlock + '\n\n' : '') +
+    (ytBlock ? 'TOP YOUTUBE VIDEOS ON THIS TOPIC:\n' + ytBlock + '\n\n' : '') +
+    (xData ? 'X (TWITTER) SIGNALS — trader takes & viral angles:\n' + xData.substring(0,1500) + '\n\n' : '') +
+    (redditData ? 'REDDIT PAIN POINTS & QUESTIONS:\n' + redditData.substring(0,1500) + '\n\n' : '') +
+    (compData ? 'COMPETITOR YOUTUBE CHANNELS:\n' + compData.substring(0,2000) + '\n\n' : '') +
+
+    'SCORING CRITERIA (combined opportunity score 1-100):\n' +
+    '- Search demand (25%): YouTube keyword volume + autocomplete signals\n' +
+    '- Social momentum (25%): X virality, Reddit question frequency this week\n' +
+    '- Competitor gap (25%): what FTMO/FundedNext/Apex haven\'t covered or covered poorly\n' +
+    '- FXIFY angle (25%): how specifically FXIFY wins this topic with a verifiable fact\n\n' +
+
+    'Generate 8 ranked YouTube topics. Return ONLY valid JSON:\n' +
+    '{"topics":[{' +
+    '"title":"Exact YouTube title under 60 chars — keyword first, click-worthy",' +
+    '"score":85,' +
+    '"keyword":"primary search phrase",' +
+    '"yt_volume":"number or TBC",' +
+    '"reddit_signals":"number of Reddit questions found or None",' +
+    '"x_momentum":"Hot|Rising|Steady|None",' +
+    '"competitor_gap":"What FTMO/FundedNext/Apex miss or got wrong on this",' +
+    '"fxify_angle":"Specific FXIFY program or fact that wins this",' +
+    '"hook":"First 2 sentences of the video script — trader situation, not an intro",' +
+    '"why_now":"One sentence: why this week specifically",' +
+    '"thumbnail":"Thumbnail concept in 10 words",' +
+    '"video_type":"Tutorial|Explainer|Comparison|News|Opinion",' +
+    '"priority":"High|Normal|Low"' +
+    '}]}';
 
   try {
-    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt, max_tokens: 6000 })
+    var text = await v2Fetch(prompt, 4000);
+    var result = parseJSON(text);
+    var topics = (result.topics || []).sort(function(a,b){ return (b.score||0)-(a.score||0); });
+    ytSetStep(steps, stepIdx, 'done');
+    renderYouTubeDiscovery(topics, {
+      hasSEO: useSEO && seoData.keywords && seoData.keywords.length > 0,
+      hasX: useX && xData.length > 0,
+      hasReddit: useReddit && redditData.length > 0,
+      hasComp: useComp && compData.length > 0,
     });
-    var data = await r.json();
-    var text = '';
-    if (typeof data === 'string') text = data;
-    else if (Array.isArray(data) && data[0]) {
-      var d0 = data[0];
-      if (typeof d0 === 'string') text = d0;
-      else if (d0.text) text = d0.text;
-      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
-      else if (d0.output) text = d0.output;
-      else if (d0.message) text = d0.message;
-      else text = JSON.stringify(d0);
-    }
-    else if (data.text) text = data.text;
-    else if (data.content && data.content[0]) text = data.content[0].text || '';
-    else if (data.output) text = data.output;
-    else if (data.message) text = data.message;
-    else text = JSON.stringify(data);
-    console.log('n8n raw response type:', typeof data, Array.isArray(data) ? 'array['+data.length+']' : '');
-    console.log('Extracted text start:', text.substring(0,100));
-
-    // Robust JSON extraction
-    var jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('No JSON in response — try again');
-    var rawJson = jsonMatch[0];
-    var plan;
-    try {
-      plan = JSON.parse(rawJson);
-    } catch(e) {
-      // Try to fix truncated JSON
-      var fixed = rawJson.replace(/,\s*$/, '').replace(/,\s*\}$/, '}').replace(/,\s*\]$/, ']');
-      var opens = (fixed.match(/\{/g)||[]).length - (fixed.match(/\}/g)||[]).length;
-      var openArr = (fixed.match(/\[/g)||[]).length - (fixed.match(/\]/g)||[]).length;
-      var qCount = (fixed.match(/"/g)||[]).length;
-      if (qCount % 2 !== 0) fixed = fixed + '"';
-      for (var x=0; x<openArr; x++) fixed += ']';
-      for (var y=0; y<opens; y++) fixed += '}';
-      try { plan = JSON.parse(fixed); }
-      catch(e2) {
-        plan = { gaps: [], videos: [], questions: [] };
-        var gm = rawJson.match(/"gaps"\s*:\s*\[([^\]]*)/);
-        if (gm) { var gi = gm[1].match(/"([^"]+)"/g); if (gi) plan.gaps = gi.map(function(g){ return g.replace(/"/g,''); }); }
-        toast('Partial results — Claude response was cut short. Try again.');
-      }
-    }
-    if (!plan.videos) plan.videos = [];
-    if (!plan.gaps) plan.gaps = [];
-    if (!plan.questions) plan.questions = [];
-
-    renderYouTubeResults(plan, prefix);
-    loading.style.display = 'none';
-    results.style.display = 'block';
-    toast('YouTube strategy ready ▶');
-
   } catch(e) {
-    loading.style.display = 'none';
+    document.getElementById('yt-loading').style.display = 'none';
     toast('Error: ' + e.message);
     console.error(e);
   }
 
-  btn.disabled = false; btn.textContent = '▶ Research & Generate';
+  btn.disabled = false; btn.textContent = '⚡ Discover topics →';
 }
 
-function renderYouTubeResults(plan, prefix) {
-  var gapsEl = document.getElementById(prefix + '-gaps');
-  if (gapsEl && plan.gaps) {
-    gapsEl.innerHTML = '';
-    plan.gaps.forEach(function(g) {
-      var chip = document.createElement('div');
-      chip.style.cssText = 'background:#fef2f2;border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--urgent);font-weight:500;';
-      chip.textContent = g;
-      gapsEl.appendChild(chip);
+function renderYouTubeDiscovery(topics, signals) {
+  var loadEl   = document.getElementById('yt-loading');
+  var resultsEl = document.getElementById('yt-results');
+  if (loadEl) loadEl.style.display = 'none';
+  if (!resultsEl) return;
+
+  var scoreColor = function(s){ return s>=75?'var(--green)':s>=50?'var(--amber)':'var(--urgent)'; };
+  var priColor   = { High:'var(--high)', Normal:'var(--blue)', Low:'var(--muted)' };
+  var xColor     = { Hot:'var(--urgent)', Rising:'var(--amber)', Steady:'var(--green)', None:'var(--muted)' };
+
+  // Signal sources bar
+  var sigBadges = [
+    signals.hasSEO    ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);font-weight:600;">SEO ✓</span>' : '',
+    signals.hasX      ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#15803d;font-weight:600;">X ✓</span>' : '',
+    signals.hasReddit ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--highL);color:var(--high);font-weight:600;">Reddit ✓</span>' : '',
+    signals.hasComp   ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--urgentL);color:var(--urgent);font-weight:600;">Competitors ✓</span>' : '',
+  ].filter(Boolean).join(' ');
+
+  var highCount = topics.filter(function(t){ return (t.score||0)>=75; }).length;
+
+  var html =
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">' +
+      '<div>' +
+        '<p style="font-size:14px;font-weight:600;color:var(--text);">' + topics.length + ' topics ranked by opportunity</p>' +
+        '<div style="display:flex;gap:6px;margin-top:4px;flex-wrap:wrap;">' + sigBadges + '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:8px;">' +
+        '<button class="btn btn-s" id="yt-rerun-btn">↻ Re-run</button>' +
+        '<button class="btn btn-s" id="yt-export-btn" style="font-size:11px;">Export CSV</button>' +
+      '</div>' +
+    '</div>' +
+
+    '<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:16px;">' +
+      '<div class="sc sc-t"><p class="slbl">High opportunity</p><p class="sval" style="color:var(--green);">' + highCount + '</p></div>' +
+      '<div class="sc sc-b"><p class="slbl">Total topics</p><p class="sval">' + topics.length + '</p></div>' +
+      '<div class="sc sc-r"><p class="slbl">Hot on X</p><p class="sval" style="color:var(--urgent);">' + topics.filter(function(t){return t.x_momentum==='Hot';}).length + '</p></div>' +
+      '<div class="sc sc-g"><p class="slbl">Competitor gaps</p><p class="sval">' + topics.filter(function(t){return t.competitor_gap&&t.competitor_gap!=='None';}).length + '</p></div>' +
+    '</div>';
+
+  topics.forEach(function(t, i) {
+    var sc  = scoreColor(t.score||0);
+    var xc  = xColor[t.x_momentum] || 'var(--muted)';
+    var pc  = priColor[t.priority] || 'var(--blue)';
+
+    html +=
+      '<div class="card" style="border-left:3px solid '+sc+';cursor:default;margin-bottom:10px;" id="yt-card-'+i+'">' +
+        '<div class="cbody">' +
+          '<div class="ctop">' +
+            '<p class="ctitle" style="font-size:14px;font-weight:600;">' + t.title + '</p>' +
+            '<div style="text-align:center;flex-shrink:0;">' +
+              '<p style="font-size:20px;font-weight:800;color:'+sc+';line-height:1;">' + (t.score||'—') + '</p>' +
+              '<p style="font-size:9px;color:var(--muted);">score</p>' +
+            '</div>' +
+          '</div>' +
+
+          // Signal badges
+          '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">' +
+            '<span class="mkw">' + (t.keyword||'') + '</span>' +
+            '<span class="badge bl">📊 ' + (t.yt_volume||'TBC') + ' searches</span>' +
+            '<span class="badge" style="background:rgba(0,0,0,.04);color:'+xc+';">X: ' + (t.x_momentum||'—') + '</span>' +
+            (t.reddit_signals && t.reddit_signals !== 'None' ? '<span class="badge" style="background:var(--highL);color:var(--high);">Reddit: ' + t.reddit_signals + '</span>' : '') +
+            '<span class="badge" style="color:'+pc+';background:var(--bg2);">' + (t.priority||'Normal') + '</span>' +
+            '<span class="badge bl">' + (t.video_type||'Tutorial') + '</span>' +
+          '</div>' +
+
+          // Hook
+          '<div style="background:var(--tealL);border-left:3px solid var(--tealB);border-radius:0 6px 6px 0;padding:10px 12px;margin-bottom:8px;">' +
+            '<p style="font-size:9px;font-weight:700;color:var(--tealB);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;">Opening hook</p>' +
+            '<p style="font-size:12px;color:var(--teal);font-style:italic;line-height:1.55;">' + (t.hook||'') + '</p>' +
+          '</div>' +
+
+          // Competitor gap
+          '<div style="background:var(--urgentL);border-radius:6px;padding:8px 10px;margin-bottom:6px;">' +
+            '<p style="font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Competitor gap</p>' +
+            '<p style="font-size:12px;color:var(--text2);line-height:1.45;">' + (t.competitor_gap||'') + '</p>' +
+          '</div>' +
+
+          // FXIFY angle
+          '<div style="background:rgba(14,196,173,.06);border-radius:6px;padding:8px 10px;margin-bottom:6px;">' +
+            '<p style="font-size:9px;font-weight:700;color:var(--tealB);letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">FXIFY angle</p>' +
+            '<p style="font-size:12px;color:var(--teal);line-height:1.45;">' + (t.fxify_angle||'') + '</p>' +
+          '</div>' +
+
+          '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;">' +
+            '<p style="font-size:11px;color:var(--muted);">🖼 ' + (t.thumbnail||'') + '</p>' +
+            '<p style="font-size:11px;color:var(--amber);">⏱ ' + (t.why_now||'') + '</p>' +
+          '</div>' +
+        '</div>' +
+        '<div class="cfoot">' +
+          '<span style="font-size:11px;color:var(--muted);">' + (t.video_type||'Tutorial') + '</span>' +
+          '<button class="btn btn-p btn-s yt-full-btn" data-idx="'+i+'">Full SEO package →</button>' +
+        '</div>' +
+      '</div>';
+  });
+
+  resultsEl.innerHTML = html;
+  resultsEl.style.display = 'block';
+
+  // Wire buttons
+  var rerunBtn = document.getElementById('yt-rerun-btn');
+  if (rerunBtn) rerunBtn.addEventListener('click', runYouTubeDiscovery);
+
+  var exportBtn = document.getElementById('yt-export-btn');
+  if (exportBtn) exportBtn.addEventListener('click', function(){ ytExportCSV(topics); });
+
+  resultsEl.querySelectorAll('.yt-full-btn').forEach(function(btn) {
+    btn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      runYTFullSEO(topics[parseInt(btn.dataset.idx)]);
     });
+  });
+}
+
+async function runYTFullSEO(t) {
+  var output = document.getElementById('yt-results');
+  v2ShowLoader(output, ['Building full SEO package...']);
+
+  var prompt =
+    'You are a YouTube SEO expert for FXIFY. Build the complete production-ready SEO package for this video.\n\n' +
+    'TITLE: ' + t.title + '\n' +
+    'HOOK: ' + (t.hook||'') + '\n' +
+    'FXIFY ANGLE: ' + (t.fxify_angle||'') + '\n' +
+    'COMPETITOR GAP: ' + (t.competitor_gap||'') + '\n\n' +
+    'FXIFY FACTS: One Phase (no consistency rule, payout on demand), Instant Funding from $19, broker-backed via FXPIG, performance split up to 90%.\n\n' +
+    'Return ONLY valid JSON:\n' +
+    '{"title_options":["option1","option2","option3"],' +
+    '"description":"Full 250-word YouTube description. Keyword in first 2 sentences. Includes chapters, links, CTA.",' +
+    '"tags":["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8","tag9","tag10"],' +
+    '"chapters":["0:00 Intro","1:30 Section"],' +
+    '"thumbnail_text":"3-5 words max for thumbnail overlay",' +
+    '"thumbnail_concept":"Full thumbnail visual description",' +
+    '"pinned_comment":"First comment to pin — CTA or key stat",' +
+    '"end_screen":"What to show on end screen",' +
+    '"hashtags":["#prop","#trading"],' +
+    '"script_outline":["Section 1: title and what to cover","Section 2"],' +
+    '"cta":"Primary call to action for the video"}';
+
+  try {
+    var text = await v2Fetch(prompt, 3000);
+    var pkg = parseJSON(text);
+    renderYTSEOPackage(pkg, t);
+  } catch(e) {
+    toast('Error: ' + e.message);
   }
-  var videosEl = document.getElementById(prefix + '-videos');
-  if (videosEl && plan.videos) {
-    videosEl.innerHTML = '';
-    plan.videos.forEach(function(v) {
-      var desc = v.description || '';
-      var tags = v.tags || [];
-      var tagsStr = tags.join(', ');
-      var volColor = v.search_volume === 'High' ? 'var(--green)' : v.search_volume === 'Medium' ? 'var(--amber)' : 'var(--muted)';
-      var compColor = v.competition === 'High' ? 'var(--urgent)' : v.competition === 'Medium' ? 'var(--amber)' : 'var(--green)';
+}
 
-      var card = document.createElement('div');
-      card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:4px;';
+function renderYTSEOPackage(pkg, topic) {
+  var output = document.getElementById('yt-results');
+  if (!output) return;
 
-      // Header
-      var hdr = document.createElement('div');
-      hdr.style.cssText = 'background:var(--navy);padding:14px 16px;';
-      var title = document.createElement('p');
-      title.style.cssText = 'font-size:15px;font-weight:700;color:#fff;margin-bottom:6px;line-height:1.3;';
-      title.textContent = v.title || '';
-      var meta = document.createElement('div');
-      meta.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;';
-      [[v.keyword||'','var(--blueL)','var(--blue)'],['Volume: '+(v.search_volume||'--'),'var(--greenL)',volColor],['Competition: '+(v.competition||'--'),'var(--urgentL)',compColor]].forEach(function(s){
-        var sp = document.createElement('span');
-        sp.style.cssText = 'font-size:10px;padding:2px 8px;border-radius:20px;background:'+s[1]+';color:'+s[2]+';';
-        sp.textContent = s[0]; meta.appendChild(sp);
-      });
-      hdr.appendChild(title); hdr.appendChild(meta); card.appendChild(hdr);
+  var tagsStr = (pkg.tags||[]).join(', ');
+  var hashStr = (pkg.hashtags||[]).join(' ');
 
-      // Hook
-      var hookDiv = document.createElement('div');
-      hookDiv.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);background:var(--tealL);';
-      var hookLbl = document.createElement('p');
-      hookLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
-      hookLbl.textContent = 'Opening hook';
-      var hookTxt = document.createElement('p');
-      hookTxt.style.cssText = 'font-size:13px;color:#0f172a;font-style:italic;line-height:1.5;';
-      hookTxt.textContent = v.hook || '';
-      hookDiv.appendChild(hookLbl); hookDiv.appendChild(hookTxt); card.appendChild(hookDiv);
+  output.innerHTML =
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;gap:8px;">' +
+      '<p style="font-size:14px;font-weight:600;color:var(--text);">Full SEO package — ' + topic.title + '</p>' +
+      '<button class="btn btn-s" id="yt-back-btn">← Back to topics</button>' +
+    '</div>' +
 
-      // Angle
-      var angleDiv = document.createElement('div');
-      angleDiv.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
-      var angleLbl = document.createElement('p');
-      angleLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--purple);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
-      angleLbl.textContent = 'Angle vs competitors';
-      var angleTxt = document.createElement('p');
-      angleTxt.style.cssText = 'font-size:13px;color:var(--text2);';
-      angleTxt.textContent = v.angle || '';
-      angleDiv.appendChild(angleLbl); angleDiv.appendChild(angleTxt); card.appendChild(angleDiv);
+    '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">' +
 
-      // Thumbnail
-      var thumbDiv = document.createElement('div');
-      thumbDiv.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
-      var thumbLbl = document.createElement('p');
-      thumbLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;';
-      thumbLbl.textContent = 'Thumbnail concept';
-      var thumbTxt = document.createElement('p');
-      thumbTxt.style.cssText = 'font-size:13px;color:var(--text2);';
-      thumbTxt.textContent = v.thumbnail_concept || '';
-      thumbDiv.appendChild(thumbLbl); thumbDiv.appendChild(thumbTxt); card.appendChild(thumbDiv);
+      // Title options
+      '<div style="background:var(--navy);padding:16px 20px;border-bottom:1px solid rgba(14,196,173,.1);">' +
+        '<p style="font-size:10px;font-weight:700;color:var(--tealB);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">Title options</p>' +
+        (pkg.title_options||[]).map(function(t, i){
+          return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);">' +
+            '<p style="font-size:13px;color:#cbd5e1;">' + t + '</p>' +
+            '<button class="btn btn-s" style="font-size:10px;" onclick="navigator.clipboard.writeText(\''+t.replace(/'/g,"\\'")+'\')" >Copy</button>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
 
       // Description
-      var descDiv = document.createElement('div');
-      descDiv.style.cssText = 'padding:12px 16px;border-bottom:1px solid var(--border);';
-      var descLbl = document.createElement('p');
-      descLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--blue);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;';
-      descLbl.textContent = 'Description';
-      var descBox = document.createElement('div');
-      descBox.style.cssText = 'background:var(--bg2);border-radius:6px;padding:10px 12px;font-size:12px;color:var(--text2);line-height:1.6;white-space:pre-wrap;';
-      descBox.textContent = desc;
-      var copyDescBtn = document.createElement('button');
-      copyDescBtn.className = 'btn btn-s';
-      copyDescBtn.style.marginTop = '8px';
-      copyDescBtn.textContent = 'Copy description';
-      copyDescBtn.addEventListener('click', function(){ navigator.clipboard.writeText(desc).then(function(){ toast('Copied'); }); });
-      descDiv.appendChild(descLbl); descDiv.appendChild(descBox); descDiv.appendChild(copyDescBtn);
-      card.appendChild(descDiv);
+      ['Description', 'Tags', 'Hashtags', 'Chapters', 'Thumbnail', 'Script outline', 'CTA', 'Pinned comment'].map(function(section) {
+        var val, mono = false, copyVal;
+        if (section==='Description') { val=pkg.description; copyVal=val; }
+        else if (section==='Tags') { val=tagsStr; copyVal=val; mono=true; }
+        else if (section==='Hashtags') { val=hashStr; copyVal=val; mono=true; }
+        else if (section==='Chapters') { val=(pkg.chapters||[]).join('\n'); copyVal=val; }
+        else if (section==='Thumbnail') { val='Text: '+pkg.thumbnail_text+' · Visual: '+pkg.thumbnail_concept; copyVal=val; }
+        else if (section==='Script outline') { val=(pkg.script_outline||[]).map(function(s,i){return (i+1)+'. '+s;}).join('\n'); copyVal=val; }
+        else if (section==='CTA') { val=pkg.cta; copyVal=val; }
+        else if (section==='Pinned comment') { val=pkg.pinned_comment; copyVal=val; }
+        if (!val) return '';
+        return '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
+            '<p style="font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.1em;text-transform:uppercase;">'+section+'</p>' +
+            '<button class="btn btn-s" style="font-size:10px;" onclick="navigator.clipboard.writeText('+JSON.stringify(copyVal||'')+')" >Copy</button>' +
+          '</div>' +
+          '<p style="font-size:13px;color:var(--text2);line-height:1.65;white-space:pre-wrap;'+(mono?'font-family:monospace;font-size:12px;':'')+'">'+val+'</p>' +
+        '</div>';
+      }).join('') +
 
-      // Tags
-      var tagsDiv = document.createElement('div');
-      tagsDiv.style.cssText = 'padding:12px 16px;';
-      var tagsLbl = document.createElement('p');
-      tagsLbl.style.cssText = 'font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px;';
-      tagsLbl.textContent = 'Tags';
-      var tagsRow = document.createElement('div');
-      tagsRow.style.cssText = 'display:flex;gap:5px;flex-wrap:wrap;';
-      tags.forEach(function(t){
-        var chip = document.createElement('span');
-        chip.style.cssText = 'font-size:11px;padding:2px 8px;border-radius:20px;background:var(--bg2);color:var(--text2);border:1px solid var(--border);';
-        chip.textContent = t; tagsRow.appendChild(chip);
-      });
-      var copyTagsBtn = document.createElement('button');
-      copyTagsBtn.className = 'btn btn-s';
-      copyTagsBtn.style.cssText = 'margin-top:8px;display:block;';
-      copyTagsBtn.textContent = 'Copy all tags';
-      copyTagsBtn.addEventListener('click', function(){ navigator.clipboard.writeText(tagsStr).then(function(){ toast('Tags copied'); }); });
-      tagsDiv.appendChild(tagsLbl); tagsDiv.appendChild(tagsRow); tagsDiv.appendChild(copyTagsBtn);
-      card.appendChild(tagsDiv);
+    '</div>';
 
-      videosEl.appendChild(card);
-    });
-  }
-  var qEl = document.getElementById(prefix + '-questions');
-  if (qEl && plan.questions) {
-    qEl.innerHTML = '';
-    plan.questions.forEach(function(q) {
-      var item = document.createElement('div');
-      item.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--text);margin-bottom:6px;';
-      item.textContent = q;
-      qEl.appendChild(item);
-    });
-  }
+  var backBtn = document.getElementById('yt-back-btn');
+  if (backBtn) backBtn.addEventListener('click', function(){
+    // Re-run discovery to show results again
+    runYouTubeDiscovery();
+  });
 }
+
+function ytExportCSV(topics) {
+  var rows = [['Score','Title','Keyword','YT Volume','X Momentum','Reddit Signals','Competitor Gap','FXIFY Angle','Why Now','Priority']];
+  topics.forEach(function(t){
+    rows.push([
+      t.score||'',
+      '"'+(t.title||'').replace(/"/g,'""')+'"',
+      '"'+(t.keyword||'')+'"',
+      t.yt_volume||'TBC',
+      t.x_momentum||'',
+      t.reddit_signals||'',
+      '"'+(t.competitor_gap||'').replace(/"/g,'""')+'"',
+      '"'+(t.fxify_angle||'').replace(/"/g,'""')+'"',
+      '"'+(t.why_now||'').replace(/"/g,'""')+'"',
+      t.priority||''
+    ].join(','));
+  });
+  var blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'fxify-youtube-topics-'+new Date().toISOString().split('T')[0]+'.csv';
+  a.click();
+  toast('CSV downloaded ✓');
+}
+
 
 // ── FEEDBACK LOOP ────────────────────────────────────────────────────────
 var feedbackRules = ''; // active learned rules injected into prompts
