@@ -5748,8 +5748,8 @@ function init(){
 var V2_CONFIG = {
   firecrawl: 'fc-918ef0f7ffac439caca532272347e770',
   webhook:   'https://sheperd.app.n8n.cloud/webhook/generate-draft',
-  dfsLogin:  '',   // set via credentials panel → localStorage
-  dfsPass:   '',
+  dfsLogin:  'sheperd.morena@fxify.com',
+  dfsPass:   '953542a6e47cca32',
   competitors: {
     all:        ['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://apextraderfunding.com/blog/'],
     ftmo:       ['https://ftmo.com/en/blog/'],
@@ -5767,11 +5767,9 @@ var V2_CONFIG = {
     if (pass)  V2_CONFIG.dfsPass  = pass;
     var el = document.getElementById('dfs-status');
     if (el) {
-      if (login && pass) {
-        el.textContent = 'Connected';
-        el.style.background = 'var(--greenL)';
-        el.style.color = 'var(--green)';
-      }
+      el.textContent = 'Connected';
+      el.style.background = 'var(--greenL)';
+      el.style.color = 'var(--green)';
     }
     var li = document.getElementById('dfs-login');
     var pi = document.getElementById('dfs-password');
