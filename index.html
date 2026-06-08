@@ -1477,8 +1477,7 @@ select.finput{cursor:pointer;}
 // ── SUPABASE ──────────────────────────────────────────────────────────────
 var supa = supabase.createClient(
   'https://geeihjpvyclvqmrxbjxp.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM',
-  { auth: { storageKey: 'fxify-content-engine', detectSessionInUrl: true, persistSession: true } }
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM'
 );
 
 // ── CLICKUP ───────────────────────────────────────────────────────────────
@@ -5303,6 +5302,28 @@ var USERS = {
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 function init(){
+  // Bootstrap: read session from localStorage directly (handles any key name)
+  (function() {
+    var keys = Object.keys(localStorage);
+    for (var i = 0; i < keys.length; i++) {
+      if (keys[i].includes('supabase') || keys[i].includes('fxify-content-engine') || keys[i].includes('sb-geei')) {
+        try {
+          var stored = JSON.parse(localStorage.getItem(keys[i]));
+          var email = stored && stored.user && stored.user.email;
+          if (!email && stored && stored.access_token) {
+            // Decode JWT to get email
+            var payload = JSON.parse(atob(stored.access_token.split('.')[1]));
+            email = payload && payload.email;
+          }
+          if (email && !currentUser) {
+            resolveUserFromEmail(email.toLowerCase());
+            return;
+          }
+        } catch(e2) {}
+      }
+    }
+  })();
+
   // Dynamic friendly greeting
   var hr=new Date().getHours();
   var greetEl=document.getElementById('greet');
