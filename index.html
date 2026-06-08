@@ -619,7 +619,6 @@ select.finput{cursor:pointer;}
       <div class="ngrp">Pipeline</div>
       <div class="nlink active" data-pg="a-pipeline" data-sc="admin"><span class="nico">◈</span>Pipeline<span class="nbadge" id="nb-pipeline">0</span></div>
       <div class="nlink" data-pg="a-generate" data-sc="admin"><span class="nico">⚡</span>Generate Draft</div>
-      <div class="nlink" data-pg="a-planner" data-sc="admin"><span class="nico">◈</span>Topic Planner</div>
       <div class="nlink" data-pg="a-review" data-sc="admin"><span class="nico">◎</span>Review Queue<span class="nbadge" id="nb-review">0</span></div>
       <div class="ndiv"></div>
       <div class="ngrp">Content</div>
@@ -658,16 +657,9 @@ select.finput{cursor:pointer;}
       <!-- GENERATE -->
       <div id="a-generate" class="pg">
         <div class="pgh">Generate Draft</div>
-        <p class="pgs">Fill in the brief and let Claude do the heavy lifting. Back in 60 seconds. ⚡</p>
+        <p class="pgs">Find real keyword gaps, score them by opportunity, and build a full brief in one flow. ⚡</p>
 
-        <!-- v1/v2 TAB SWITCHER -->
-        <div style="display:flex;gap:0;margin-bottom:16px;border:1px solid var(--border);border-radius:var(--r);overflow:hidden;width:fit-content;">
-          <button class="gen-ver-btn active" data-ver="v1" style="padding:8px 20px;font-size:12px;font-weight:600;border:none;background:var(--navy);color:var(--tealB);cursor:pointer;transition:.15s;">v1 — Generate Draft</button>
-          <button class="gen-ver-btn" data-ver="v2" style="padding:8px 20px;font-size:12px;font-weight:500;border:none;background:var(--surface);color:var(--muted);cursor:pointer;border-left:1px solid var(--border);transition:.15s;">v2 — Brief + Write</button>
-        </div>
-
-        <!-- v2 TOPIC INTELLIGENCE HUB -->
-        <div id="v2-form" style="display:none;">
+        <div id="v2-form">
 
           <!-- CONFIG STRIP -->
           <div style="background:var(--navy);border:1px solid rgba(14,196,173,.15);border-radius:var(--rl);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
@@ -755,125 +747,12 @@ select.finput{cursor:pointer;}
         </div>
 
         <!-- v1 FORM (existing) -->
-        <div id="v1-form">
-
-        <!-- SEO TOPIC OPTIMIZER -->
-        <div style="background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:14px 18px;margin-bottom:16px;">
-          <p style="font-size:12px;font-weight:600;color:var(--tealB);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">⚡ SEO Brief Generator</p>
-          <p style="font-size:12px;color:#475569;margin-bottom:10px;">Type any topic title — Claude generates the full SEO brief for you</p>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <input class="finput" id="seo-optimizer-input" type="text" placeholder="e.g. How to Pass a Prop Firm Challenge" style="flex:1;min-width:200px;background:rgba(255,255,255,.06);border-color:rgba(255,255,255,.1);color:#fff;"/>
-            <button class="btn btn-p" id="seo-optimizer-btn" style="white-space:nowrap;">Generate SEO Brief →</button>
-          </div>
-          <div id="seo-optimizer-loading" style="display:none;margin-top:10px;">
-            <p style="font-size:12px;color:#475569;">Claude is researching keywords and building your brief...</p>
-          </div>
-        </div>
-
-        <div class="tabbar">
-          <button class="tabbtn active" data-tab="core">Core</button>
-          <button class="tabbtn" data-tab="seo">SEO</button>
-          <button class="tabbtn" data-tab="geo">GEO</button>
-          <button class="tabbtn" data-tab="aeo">AEO</button>
-          <button class="tabbtn" data-tab="research">Research</button>
-        </div>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:12px;">
-          <div class="tabpanel active" id="tab-core">
-            <div class="fg"><label class="flbl">Article title</label><input class="finput" id="b-title" type="text" placeholder="e.g. How to Manage Drawdown on a Funded Account"/></div>
-            <div class="frow fg">
-              <div><label class="flbl">Category</label><select class="finput" id="b-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option><option>Crypto</option></select></div>
-              <div><label class="flbl">Length</label><select class="finput" id="b-len">
-              <option>Quick answer — 600 words</option>
-              <option selected>Standard guide — 800 words</option>
-              <option>In-depth guide — 1,000 words</option>
-              <option>Comparison — 1,200 words</option>
-            </select></div>
-            </div>
-            <div class="frow fg">
-              <div><label class="flbl">Due date</label><input class="finput" id="b-due" type="date"/></div>
-              <div><label class="flbl">Priority</label><select class="finput" id="b-priority"><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent — drop everything</option><option value="Low">Low — when you get to it</option></select></div>
-            </div>
-            <div class="fg"><label class="flbl">Tone</label><div class="topts"><div class="topt active">Educational</div><div class="topt">Analytical</div><div class="topt">Motivational</div><div class="topt">News</div></div></div>
-            <div class="frow fg">
-              <div><label class="flbl">Assign to writer</label><select class="finput" id="b-writer"><option>— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
-              <div><label class="flbl">Author (E-E-A-T)</label><select class="finput" id="b-author">
-                <option value="sheperd">Sheperd Morena — Senior Copywriter</option>
-                <option value="fariha">Fariha Khan — Senior Copywriter</option>
-                <option value="harry">Harry Hosking — Senior Copywriter</option>
-                <option value="imran">Imran Najib — Senior Copywriter</option>
-              </select></div>
-            </div>
-          </div>
-          <div class="tabpanel" id="tab-seo">
-            <div style="background:var(--blueL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--blue);">Optimise for search engines — keywords, meta, and internal linking.</div>
-            <div class="frow fg"><div><label class="flbl">Primary keyword</label><input class="finput" id="b-pkw" type="text" placeholder="e.g. funded account drawdown"/></div><div><label class="flbl">Secondary keywords</label><input class="finput" id="b-skw" type="text" placeholder="e.g. prop firm drawdown rules"/></div></div>
-            <div class="frow fg"><div><label class="flbl">Search intent</label><select class="finput" id="b-intent"><option>Informational</option><option>Commercial</option><option>Navigational</option><option>Transactional</option></select></div><div><label class="flbl">Internal links</label><input class="finput" id="b-links" type="text" placeholder="e.g. /blog/drawdown, /programs"/></div></div>
-          </div>
-          <div class="tabpanel" id="tab-geo">
-            <div style="background:var(--tealL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--teal);">Optimise for answer engines — Perplexity, Google AI Overviews, ChatGPT.</div>
-            <div class="fg"><label class="flbl">Answer target</label><input class="finput" id="b-geo" type="text" placeholder="What question should this answer in AI results?"/></div>
-            <div class="fg"><label class="flbl">Key claim</label><input class="finput" id="b-claim" type="text" placeholder="e.g. FXIFY has one of the most flexible drawdown policies"/></div>
-          </div>
-          <div class="tabpanel" id="tab-aeo">
-            <div style="background:var(--purpleL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;font-size:12px;color:var(--purple);">Optimise for featured snippets, People Also Ask, and voice search.</div>
-            <div class="fg"><label class="flbl">Primary question</label><input class="finput" id="b-q" type="text" placeholder="e.g. How do I pass a prop firm evaluation?"/></div>
-            <div class="fg"><label class="flbl">PAA targets</label><input class="finput" id="b-paa" type="text" placeholder="e.g. What happens if I fail? Can I retry?"/></div>
-          </div>
-          <div class="tabpanel" id="tab-research">
-            <div style="background:var(--tealL);border-radius:var(--r);padding:10px 12px;margin-bottom:14px;">
-              <p style="font-size:12px;color:var(--teal);font-weight:500;margin-bottom:2px;">Powered by Firecrawl</p>
-              <p style="font-size:12px;color:var(--teal);font-weight:300;">Paste URLs and Claude will use the scraped content to write a better informed draft.</p>
-            </div>
-            <div class="fg">
-              <label class="flbl">Research URLs — one per line</label>
-              <textarea class="finput" id="b-research" rows="4" placeholder="https://fxify.com/programs&#10;https://ftmo.com/en/evaluation/&#10;https://forexfactory.com/news" style="resize:vertical;min-height:100px;"></textarea>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;">
-              <div style="background:var(--tealL);border-radius:8px;padding:10px 12px;">
-                <p style="font-size:11px;color:var(--teal);font-weight:600;margin-bottom:3px;">Fact checking</p>
-                <p style="font-size:11px;color:var(--muted);">Paste your own rules page. Claude writes accurately about your product.</p>
-              </div>
-              <div style="background:var(--blueL);border-radius:8px;padding:10px 12px;">
-                <p style="font-size:11px;color:var(--blue);font-weight:600;margin-bottom:3px;">Prop comparisons</p>
-                <p style="font-size:11px;color:var(--muted);">Paste competitor pages. Claude pulls real figures for comparison articles.</p>
-              </div>
-              <div style="background:var(--purpleL);border-radius:8px;padding:10px 12px;">
-                <p style="font-size:11px;color:var(--purple);font-weight:600;margin-bottom:3px;">Market context</p>
-                <p style="font-size:11px;color:var(--muted);">Paste news articles. Claude incorporates current market conditions.</p>
-              </div>
-            </div>
-          </div>
-          <button class="btn btn-p btn-f" style="max-width:200px;" id="gen-btn">Create Draft</button>
-        </div>
-</div><!-- /v1-form -->
+        
 
         <div id="gen-banner" style="display:none;">          <div class="rbanner"><div class="rbt"><p>Draft created ✓</p><p id="gen-sub">Loading...</p></div><button class="btn btn-p btn-s" id="open-ed-btn">Open in editor →</button></div>
         </div>
 
         <!-- OUTLINE GENERATOR -->
-        <div id="outline-section" style="margin-top:16px;display:none;">
-          <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
-            <div style="background:var(--navy);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
-              <div>
-                <p style="font-size:13px;font-weight:600;color:#fff;margin-bottom:2px;">Step 1 — Generate outline first</p>
-                <p style="font-size:11px;color:#475569;">Claude writes the structure. You approve it. Then it generates the full draft in sections — no more cutoffs.</p>
-              </div>
-              <button class="btn btn-p btn-s" id="outline-btn">Generate outline →</button>
-            </div>
-            <div id="outline-loading" style="display:none;padding:20px;text-align:center;">
-              <p style="font-size:13px;color:var(--muted);">Building outline...</p>
-            </div>
-            <div id="outline-result" style="display:none;padding:16px 20px;">
-              <div id="outline-content" style="background:var(--bg2);border-radius:var(--r);padding:14px 16px;font-size:13px;color:var(--text2);line-height:1.8;margin-bottom:12px;white-space:pre-wrap;"></div>
-              <div style="display:flex;gap:8px;">
-                <button class="btn btn-p" id="outline-approve-btn">Approve & generate full draft →</button>
-                <button class="btn btn-s" id="outline-regenerate-btn">Regenerate outline</button>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
       <!-- REVIEW QUEUE -->
       <div id="a-review" class="pg">
         <div class="pgh">Review Queue</div>
@@ -1267,7 +1146,6 @@ select.finput{cursor:pointer;}
       <div class="ndiv"></div>
       <div class="ngrp">SEO Strategy</div>
       <div class="nlink" data-pg="l-topics" data-sc="liam"><span class="nico">◈</span>Submit Topics<span class="nbadge" id="nb-ltopics">0</span></div>
-      <div class="nlink" data-pg="l-planner" data-sc="liam"><span class="nico">⚡</span>Topic Planner</div>
       <div class="nlink" data-pg="l-live" data-sc="liam"><span class="nico">🌐</span>Published Articles</div>
     </nav>
     <div class="ma">
@@ -6580,19 +6458,7 @@ function init(){
     }
   });
 
-  document.getElementById('gen-btn').addEventListener('click', function() {
-    // Always refresh brief data on generate
-    currentBriefData = {
-      title: document.getElementById('b-title').value.trim(),
-      cat: document.getElementById('b-cat').value,
-      len: document.getElementById('b-len').value,
-      tone: document.querySelector('.topt.active') ? document.querySelector('.topt.active').textContent.trim() : 'Educational',
-      pkw: (document.getElementById('b-pkw').value || '').trim() || document.getElementById('b-title').value.trim().toLowerCase(),
-    };
-    var outlineSection = document.getElementById('outline-section');
-    if (outlineSection && currentBriefData.title) outlineSection.style.display = 'block';
-    generate();
-  });
+  // gen-btn removed with v1 form
 
   // Outline buttons
   var outlineBtn = document.getElementById('outline-btn');
@@ -6636,7 +6502,7 @@ function init(){
   });
   var plBtn = document.getElementById('pl-analyse-btn');
   if (plBtn) plBtn.addEventListener('click', runPlanner);
-  document.getElementById('open-ed-btn').addEventListener('click',function(){if(currentArt) openEditor(currentArt,'sheperd');});
+  var openEdBtn = document.getElementById('open-ed-btn'); if(openEdBtn) openEdBtn.addEventListener('click',function(){if(currentArt) openEditor(currentArt,'sheperd');});
 
   // Editor back
   document.getElementById('ed-back').addEventListener('click',function(){goScreen(prevScreen);});
@@ -6832,26 +6698,7 @@ function init(){
   var origGoPage = goPage;
 }
 
-// ── v1/v2 TAB SWITCHER ───────────────────────────────────────────────────
-(function() {
-  document.addEventListener('click', function(e) {
-    var btn = e.target.closest('.gen-ver-btn');
-    if (!btn) return;
-    var ver = btn.getAttribute('data-ver');
-    document.querySelectorAll('.gen-ver-btn').forEach(function(b) {
-      var isActive = b.getAttribute('data-ver') === ver;
-      b.classList.toggle('active', isActive);
-      b.style.background = isActive ? 'var(--navy)' : 'var(--surface)';
-      b.style.color = isActive ? 'var(--tealB)' : 'var(--muted)';
-    });
-    var v1 = document.getElementById('v1-form');
-    var v2 = document.getElementById('v2-form');
-    if (v1) v1.style.display = ver === 'v1' ? 'block' : 'none';
-    if (v2) v2.style.display = ver === 'v2' ? 'block' : 'none';
-  });
-
-  // v2 click handlers wired in v2WireCustomBtn() called from init()
-})();
+// v2 Hub is the only generate interface — tab switcher removed
   // ═══════════════════════════════════════════════════════════════════
 // v2 TOPIC INTELLIGENCE HUB
 // ═══════════════════════════════════════════════════════════════════
@@ -7114,40 +6961,56 @@ async function runTopicIdeas() {
   var acBlock = autocomplete.length ? autocomplete.join(' | ') : '';
 
   var prompt =
-    'You are a Senior SEO Strategist for FXIFY. You find the topics that will actually rank, convert, and make a trader trust FXIFY before they open an account.\n\n'+
+    'You are a Senior SEO Strategist for FXIFY. Your job is to find topic gaps that will rank, convert, and earn a trader\'s trust before they buy a challenge.\n\n'+
 
-    'TASK: Identify 8 topic gaps — searches real prop traders make that:\n'+
-    '1. FXIFY has not published yet (check the published list)\n'+
-    '2. Competitors either miss entirely or cover poorly (check competitor content)\n'+
-    '3. Have genuine search demand — real traders actually type this into Google\n'+
-    '4. Give FXIFY a specific, defensible angle tied to a named product feature or verified fact\n\n'+
+    'STUDY THESE REAL FXIFY ARTICLE TITLES AND ANGLES BEFORE WRITING ANYTHING:\n'+
+    '- "Best Prop Firms for Forex Trading" — compares FXIFY, FTMO, FundedNext, FTUK on verified data. Angle: the best firm is the one whose rules line up with how you actually trade.\n'+
+    '- "Best Prop Firms With Fast Payouts" — compares FXIFY, FTMO, FundedNext, Alpha Capital on actual payout mechanics. Angle: every firm says fast, the mechanics behind the word are not the same.\n'+
+    '- "Top 5 Prop Firms With No Consistency Rule" — names specific firms, explains what the rule costs a trader. Angle: swing traders produce big days. A consistency rule treats that as a problem.\n'+
+    '- "News Events for Prop Traders: When to Sit Out" — actionable, trader-decision focused. Angle: holding a full-sized position through NFP exposes your daily drawdown limit before the candle closes.\n'+
+    '- "Best Prop Firms for Beginners" — seven traits with verifiable criteria. Angle: a firm with no support channel is hard to trust with your challenge fee.\n\n'+
 
-    'SCORING: Opportunity score 1-100. Weighted:\n'+
-    '- Search demand (30%): volume + intent alignment with funded trader decision journey\n'+
-    '- Competitor gap (30%): how poorly the top 3 competitors cover this right now\n'+
-    '- FXIFY angle strength (25%): how specifically FXIFY wins this topic with verifiable data\n'+
-    '- Freshness (15%): recency of the topic in 2026 trader conversations\n\n'+
+    'THIS IS THE TITLE PATTERN FXIFY USES:\n'+
+    '- Keyword-first, clean, no clickbait. "Best Prop Firms for Forex Trading" not "The ULTIMATE Guide to Prop Firms"\n'+
+    '- Comparison articles name all firms being compared in the meta description\n'+
+    '- Decision-framing: "When to Sit Out", "What to Look For", "How to Choose" — the reader is making a decision\n\n'+
+
+    'THIS IS THE FXIFY ANGLE PATTERN:\n'+
+    '- Always tied to a specific, verifiable differentiator: First Payout on Demand, no consistency rule on One Phase, broker-backed via FXPIG, Instant Funding Lite from $19\n'+
+    '- Never: "FXIFY is one of the leading firms" — always: "FXIFY removes the consistency rule from select plans"\n'+
+    '- Comparisons cite competitor data from official sources — FTMO profit target is 10%, FundedNext uses trailing drawdown, etc.\n\n'+
 
     'SEED KEYWORD: '+seed+'\n'+
     'CATEGORY FOCUS: '+cat+'\n\n'+
 
     (kwBlock ? 'KEYWORD DATA:\n'+kwBlock+'\n\n' : '')+
-    (acBlock ? 'AUTOCOMPLETE SIGNALS (what traders are actually searching):\n'+acBlock+'\n\n' : '')+
-    (compBlock ? 'COMPETITOR CONTENT (what they publish — find the gaps):\n'+compBlock+'\n\n' : '')+
-    (fxifyBlock ? 'FXIFY ALREADY PUBLISHED — DO NOT REPEAT ANY OF THESE:\n'+fxifyBlock+'\n\n' : '')+
+    (acBlock ? 'AUTOCOMPLETE (what traders actually type):\n'+acBlock+'\n\n' : '')+
+    (compBlock ? 'COMPETITOR CONTENT (find the gaps):\n'+compBlock+'\n\n' : '')+
+    (fxifyBlock ? 'FXIFY ALREADY PUBLISHED — DO NOT REPEAT:\n'+fxifyBlock+'\n\n' : '')+
 
-    'FXIFY FACTS TO WORK WITH:\n'+
-    '- Broker-backed via FXPIG™ (only firm in space with confirmed broker backing)\n'+
-    '- One Phase: no consistency rule, payout on demand — unique in the category\n'+
-    '- Instant Funding Lite: from $19, lowest entry point in category\n'+
-    '- $400K max account, MT5/DXTrade/TradingView, 5% daily / 10% max drawdown\n'+
-    '- Performance split up to 90%, $40M+ paid out\n\n'+
+    'FXIFY VERIFIED FACTS TO BUILD ANGLES FROM:\n'+
+    '- One Phase: no consistency rule, first payout on demand — unique in the category\n'+
+    '- Two Phase Standard: trailing drawdown (floor rises as you profit)\n'+
+    '- Two Phase Classic: static drawdown (floor stays fixed)\n'+
+    '- Three Phase Challenge: lowest assessment fee in the lineup\n'+
+    '- Instant Funding Lite: from $19 for a $2,500 account — lowest entry point in the market\n'+
+    '- Broker-backed via FXPIG (established 2010) — only prop firm with a confirmed real broker behind it\n'+
+    '- $400K max account from day one of funded stage\n'+
+    '- Performance split up to 90%, $40M+ paid out to 250K+ traders\n'+
+    '- Platforms: MT4, MT5, DXTrade, TradingView\n\n'+
 
-    'Return ONLY valid JSON — no markdown, no preamble:\n'+
+    'GENERATE 8 TOPICS. Each one must:\n'+
+    '1. Be a real search a funded trader or evaluation buyer types into Google — not a generic topic\n'+
+    '2. Have a FXIFY angle that names a specific program or verified fact\n'+
+    '3. Follow the FXIFY title pattern above — keyword-first, decision-framing, no clickbait\n'+
+    '4. NOT already exist in the FXIFY published list above\n'+
+    '5. Have a competitor gap that names what FTMO/FundedNext/Apex actually does wrong or skips\n\n'+
+
+    'Return ONLY valid JSON:\n'+
     '{"topics":[{'+
-    '"title":"Exact H1 under 65 chars — keyword-led, reads like something a trader would click",'+
-    '"primary_keyword":"exact match phrase traders type",'+
-    '"secondary_keywords":["supporting kw 2","supporting kw 3"],'+
+    '"title":"Keyword-first title under 65 chars — follows the FXIFY title pattern exactly",'+
+    '"primary_keyword":"exact phrase traders type",'+
+    '"secondary_keywords":["kw2","kw3"],'+
     '"search_volume":"number or TBC",'+
     '"kd_score":"0-100 or TBC",'+
     '"cpc":"$X.XX or TBC",'+
@@ -7155,9 +7018,9 @@ async function runTopicIdeas() {
     '"category":"Guides",'+
     '"search_intent":"Informational|Commercial|Transactional",'+
     '"word_count":"1200",'+
-    '"competitor_gap":"Specific: what exactly FTMO/FundedNext/Apex get wrong or skip on this topic",'+
-    '"fxify_angle":"Which exact FXIFY program or verified fact wins this — name it specifically",'+
-    '"why_now":"One sentence: why this has search momentum in 2026 specifically",'+
+    '"competitor_gap":"Name the specific firm and what they get wrong or skip on this topic",'+
+    '"fxify_angle":"Name the exact FXIFY program or verified fact that wins this topic",'+
+    '"why_now":"One sentence: why traders are searching this in 2026 specifically",'+
     '"opportunity_score":85,'+
     '"priority":"High|Normal|Low"'+
     '}]}';
