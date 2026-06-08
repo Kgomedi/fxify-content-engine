@@ -5270,7 +5270,7 @@ async function doGoogleLogin() {
   btn.disabled = true;
   try {
     var res = await supa.auth.signInWithOAuth({
-      provider: 'google',
+      provider: 'google'
     });
     if (res.error) {
       btn.textContent = 'Continue with Google';
