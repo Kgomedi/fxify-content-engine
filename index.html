@@ -5567,6 +5567,15 @@ var USERS = {
 
 
 // ── INIT ──────────────────────────────────────────────────────────────────
+// ── STUBS for removed v1 functions ──────────────────────────────────────
+function generateOutline() { toast('Outline feature removed — use Brief Builder'); }
+function generate() { toast('Use Brief Builder → Build brief'); }
+function runSEOOptimizer() { toast('Use Brief Builder for SEO research'); }
+function runPlanner() { toast('Use Brief Builder for topic planning'); }
+function loadDailyIdeas() {}
+function loadLiamTopics() {}
+
+
 function init(){
   // Bootstrap: read session from localStorage directly (handles any key name)
   (function() {
@@ -5789,30 +5798,14 @@ function init(){
   // gen-btn removed with v1 form
 
   // Outline buttons
-  var outlineBtn = document.getElementById('outline-btn');
-  if (outlineBtn) outlineBtn.addEventListener('click', generateOutline);
 
-  var outlineApproveBtn = document.getElementById('outline-approve-btn');
-  if (outlineApproveBtn) outlineApproveBtn.addEventListener('click', function() {
-    if (!currentOutline) { toast('Generate outline first'); return; }
-    toast('Outline approved — generating full draft in sections...');
-    generate(true); // pass true to use outline
-  });
 
-  var outlineRegenBtn = document.getElementById('outline-regenerate-btn');
-  if (outlineRegenBtn) outlineRegenBtn.addEventListener('click', generateOutline);
 
   // Train AI button
   var trainBtn = document.getElementById('train-ai-btn');
   if (trainBtn) trainBtn.addEventListener('click', trainAI);
 
   // SEO Brief Generator
-  var seoOptBtn = document.getElementById('seo-optimizer-btn');
-  if (seoOptBtn) seoOptBtn.addEventListener('click', runSEOOptimizer);
-  var seoOptInput = document.getElementById('seo-optimizer-input');
-  if (seoOptInput) seoOptInput.addEventListener('keydown', function(e){
-    if (e.key === 'Enter') runSEOOptimizer();
-  });
   wireReadMode();
   wireMeta();
 
@@ -5828,8 +5821,6 @@ function init(){
     var wic = document.getElementById('writer-instruction-card');
     if(wic) wic.style.display='none';
   });
-  var plBtn = document.getElementById('pl-analyse-btn');
-  if (plBtn) plBtn.addEventListener('click', runPlanner);
   // ClickUp refresh button
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'cu-refresh-btn') { loadClickUpBoard(); return; }
@@ -5964,10 +5955,6 @@ function init(){
   // Liam planner
 
   // Daily ideas refresh buttons
-  var refreshDaily = document.getElementById('refresh-daily-btn');
-  if (refreshDaily) refreshDaily.addEventListener('click', function(){ loadDailyIdeas('daily-ideas-list', 'daily-ideas-date'); toast('Refreshed'); });
-  var lRefreshDaily = document.getElementById('lrefresh-daily-btn');
-  if (lRefreshDaily) lRefreshDaily.addEventListener('click', function(){ loadDailyIdeas('ldaily-ideas-list', 'ldaily-ideas-date'); toast('Refreshed'); });
 
   // Internal links tabs
   document.addEventListener('click', function(e) {
