@@ -1774,10 +1774,20 @@ async function cuSyncFromClickUp() {
 
   function resolveUserFromEmail(email) {
     var errEl = document.getElementById('login-error');
-    var isApproved = email.endsWith('@fxify.com') || email === 'david.xavier@fxify.com';
+    var isApproved = email.endsWith('@fxify.com') || email === 'david.xavier@fxify.com' || email === 'shepherdmorena2@gmail.com';
     if (!isApproved) {
-      if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
-      supa.auth.signOut();
+      console.log('Access denied for:', email);
+      supa.auth.signOut().then(function() {
+        var errEl2 = document.getElementById('login-error');
+        if (errEl2) {
+          errEl2.textContent = 'Access denied: ' + email + ' is not approved. Use your @fxify.com account.';
+          errEl2.style.display = 'block';
+        }
+        // Make sure login screen is visible
+        document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+        var loginScreen = document.getElementById('login');
+        if (loginScreen) loginScreen.classList.add('active');
+      });
       return;
     }
     var userDef = USERS[email];
@@ -2571,7 +2581,7 @@ function parseArt(text,kw){
   var body=mi>0?text.substring(0,mi):text;
   var lines=body.split('\n');
   var out='',inUl=false,inOl=false,inTable=false,tableRows=[];
-  var kre=kw?new RegExp('('+kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')+')','gi'):null;
+  var kre=kw?new RegExp('('+kw.replace(/[.*+?^${}()|\[\]\\]/g,'\\$&')+')','gi'):null;
 
   function flushList(){
     if(inUl){out+='</ul>';inUl=false;}
@@ -3115,7 +3125,7 @@ function calculateScores(content, primaryKw) {
   var text = content.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
   var kw = primaryKw.toLowerCase().trim();
   var kwWords = kw.split(/\s+/);
-  var kwCount = (text.match(new RegExp(kw.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'), 'g')) || []).length;
+  var kwCount = (text.match(new RegExp(kw.replace(/[.*+?^${}()|\[\]\\]/g,'\\$&'), 'g')) || []).length;
   var words = text.split(/\s+/).filter(Boolean).length;
   var h1Match = /<h1[^>]*>/i.test(content);
   var h2Count = (content.match(/<h2[^>]*>/gi) || []).length;
@@ -5488,6 +5498,7 @@ async function doGoogleLogin() {
 
 var USERS = {
   'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
+  'shepherdmorena2@gmail.com':   { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
   'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
   'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
   'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
