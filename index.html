@@ -1477,8 +1477,7 @@ select.finput{cursor:pointer;}
 // ── SUPABASE ──────────────────────────────────────────────────────────────
 var supa = supabase.createClient(
   'https://geeihjpvyclvqmrxbjxp.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM',
-  { auth: { detectSessionInUrl: true, persistSession: true, autoRefreshToken: true } }
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM'
 );
 
 // ── CLICKUP ───────────────────────────────────────────────────────────────
@@ -1795,6 +1794,15 @@ async function cuSyncFromClickUp() {
   }
 
 
+
+// Wire login button as early as possible
+document.addEventListener('DOMContentLoaded', function() {
+  var btn = document.getElementById('login-btn');
+  if (btn && !btn._wired) {
+    btn._wired = true;
+    btn.addEventListener('click', doGoogleLogin);
+  }
+});
 
 // ── AUTH STATE CHANGE — wired at IIFE level so it catches the OAuth redirect ──
 supa.auth.onAuthStateChange(function(event, session) {
@@ -5455,8 +5463,12 @@ async function doGoogleLogin() {
   btn.textContent = 'Redirecting...';
   btn.disabled = true;
   try {
+    var redirectUrl = window.location.hostname === 'localhost'
+      ? 'https://fxify-content-engine.vercel.app'
+      : window.location.origin;
     var res = await supa.auth.signInWithOAuth({
-      provider: 'google'
+      provider: 'google',
+      options: { redirectTo: redirectUrl }
     });
     if (res.error) {
       btn.textContent = 'Continue with Google';
@@ -5531,7 +5543,7 @@ function init(){
   // ── GOOGLE OAUTH via Supabase ──────────────────────────────────────────
   // Login button wired inside init — backup wiring below too
   var loginBtn = document.getElementById('login-btn');
-  if (loginBtn) loginBtn.addEventListener('click', doGoogleLogin);
+  if (loginBtn && !loginBtn._wired) { loginBtn._wired = true; loginBtn.addEventListener('click', doGoogleLogin); }
 
   // Handle OAuth callback — Supabase puts session in URL hash on return
   async function handleAuthCallback() {
