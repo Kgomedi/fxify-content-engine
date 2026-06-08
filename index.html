@@ -910,7 +910,7 @@ select.finput{cursor:pointer;}
               <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-comp" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--urgentL);color:var(--urgent);font-weight:600;">Competitors</span> FTMO / FundedNext / Apex channels</label>
             </div>
           </div>
-          <button class="btn btn-p" style="min-width:240px;" id="yt-research-btn">⚡ Discover topics →</button>
+          <button class="btn btn-p" style="min-width:240px;" id="ayt-research-btn">⚡ Discover topics →</button>
         </div>
 
         <div id="yt-loading" style="display:none;background:var(--navy);border:1px solid rgba(14,196,173,.2);border-radius:var(--rl);padding:20px 24px;">
@@ -4528,6 +4528,7 @@ function initYouTubePage(prefix) {
   var btn = document.getElementById(prefix + '-research-btn');
   if (!btn || btn._ytWired) return;
   btn._ytWired = true;
+  // Admin page uses full discovery engine; writer page uses same
   btn.addEventListener('click', function(){ runYouTubeDiscovery(); });
 }
 
