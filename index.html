@@ -1623,6 +1623,179 @@ async function cuSyncFromClickUp() {
   } catch(e) { console.warn('cuSyncFromClickUp error:', e.message); }
 }
 
+
+
+  function bootUser(user) {
+    currentUser = user;
+    activeRole = user.role;
+
+    // Update all topbars with user name + initials
+    updateTopbars(user);
+
+    // Always set these for filter to work
+    currentRole = user.role;
+    activeRole = user.role;
+    if (user.role === 'writer') {
+      currentWriterEmail = user.email;
+    }
+
+    currentBriefData = null; currentOutline = '';
+
+    goScreen(user.screen);
+    loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadDavidQ();
+  loadPublishingBadge();
+    setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
+
+    // David: inject his approval links into the admin sidebar
+    if (user.role === 'david') {
+      var adminSb = document.getElementById('admin-sb');
+      if (adminSb && !document.getElementById('david-nav-items')) {
+        var davidNav = document.createElement('div');
+        davidNav.id = 'david-nav-items';
+        davidNav.innerHTML =
+          '<div class="ndiv"></div>' +
+          '<div class="ngrp">My Approvals</div>' +
+          '<div class="nlink" data-pg="da-approval" data-sc="admin" id="david-approval-link"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>' +
+          '<div class="nlink" data-pg="da-log" data-sc="admin" id="david-log-link"><span class="nico">▲</span>Approved Log</div>';
+        adminSb.appendChild(davidNav);
+        // Wire these links — they load David pages but show in admin screen
+        davidNav.querySelectorAll('.nlink[data-pg]').forEach(function(link){
+          link.addEventListener('click', function(){
+            // Show david pages inside admin screen
+            document.querySelectorAll('#admin .pg').forEach(function(p){ p.classList.remove('active'); });
+            document.querySelectorAll('#admin .nlink').forEach(function(n){ n.classList.remove('active'); });
+            link.classList.add('active');
+            // Mount david pages into admin main area if not already there
+            var pg = link.getAttribute('data-pg');
+            var existing = document.getElementById(pg);
+            if (existing) {
+              existing.classList.add('active');
+              if(pg==='d-approval') loadDavidQ();
+              if(pg==='d-log') loadDavidLog();
+            }
+          });
+        });
+      }
+    }
+
+    // David greeting
+    if (user.role === 'david') {
+      var davidGreetings = [
+        "The boss is in. Liam did his part — now it\'s your call. 👔",
+        "Morning, David. The pipeline awaits your signature. ✍️",
+        "Articles are queued up. One tap from you and they\'re off to publish. 💼",
+        "The SEO is clean, the copy is tight. Just need the big boss stamp. 🏆",
+        "Good to see you, David. Liam says these are ready. He\'s usually right. 👀",
+        "The team delivered. Now the final word is yours, as always. 🎯",
+      ];
+      var dg = document.getElementById('david-greeting');
+      if (dg) dg.textContent = davidGreetings[Math.floor(Math.random() * davidGreetings.length)];
+    }
+
+    // Add sign out button to topbar
+    ['admin','writer','david'].forEach(function(sc) {
+      var tbr = document.querySelector('#' + sc + ' .tbr');
+      if (tbr && !tbr.querySelector('.signout-btn')) {
+        var sob = document.createElement('button');
+        sob.className = 'btn btn-s signout-btn';
+        sob.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.08);color:#475569;background:transparent;';
+        sob.textContent = 'Sign out';
+        sob.addEventListener('click', function(){
+          if(confirm('Sign out?')){
+            sessionStorage.removeItem('fxify_user');
+            currentUser = null; impersonating = null; currentWriterEmail = null;
+            supa.auth.signOut();
+            goScreen('login');
+          }
+        });
+        tbr.insertBefore(sob, tbr.firstChild);
+      }
+    });
+
+    // Show impersonate button for admin and david
+    if (user.role === 'admin' || user.role === 'david') {
+      showImpersonateBtn();
+    }
+  }
+
+
+
+
+  function updateTopbars(user) {
+    // Update each screen's topbar
+    var screens = ['admin','writer','david'];
+    screens.forEach(function(sc) {
+      var nameEl = document.querySelector('#' + sc + ' .tbu');
+      var avEl = document.querySelector('#' + sc + ' .tbav');
+      if (nameEl) nameEl.textContent = user.name;
+      if (avEl) {
+        avEl.textContent = user.initials;
+        avEl.className = 'tbav' + (user.av ? ' ' + user.av : '');
+      }
+    });
+    // Also update by ID for admin screen specifically
+    var adminTbu = document.getElementById('admin-tbu');
+    var adminTbav = document.getElementById('admin-tbav');
+    var adminCtx = document.getElementById('admin-ctx');
+    if (adminTbu) adminTbu.textContent = user.name;
+    if (adminTbav) { adminTbav.textContent = user.initials; adminTbav.className = 'tbav' + (user.av ? ' ' + user.av : ''); }
+    if (adminCtx) adminCtx.textContent = user.role === 'david' ? 'Manager' : 'Admin';
+    // Update writer greeting
+    var greetEl = document.getElementById('writer-greeting');
+    if (greetEl && user.role === 'writer') {
+      var firstName = user.name.split(' ')[0];
+      var hr = new Date().getHours();
+      var greetWord = hr < 12 ? 'Morning' : hr < 17 ? 'Afternoon' : 'Evening';
+      greetEl.textContent = greetWord + ', ' + firstName + '. Here\'s your plate. 👊';
+    }
+  }
+
+
+
+
+  function showImpersonateBtn() {
+    // Add "Switch view" button to both admin and david topbars
+    [['admin','imp-btn'],['david','imp-btn-d']].forEach(function(pair) {
+      var sc = pair[0], btnId = pair[1];
+      var tbr = document.querySelector('#' + sc + ' .tbr');
+      if (tbr && !document.getElementById(btnId)) {
+        var btn = document.createElement('button');
+        btn.id = btnId;
+        btn.className = 'btn btn-s';
+        btn.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#94a3b8;background:transparent;';
+        btn.textContent = '👁 Switch view';
+        btn.addEventListener('click', function(){ document.getElementById('imp-modal').classList.add('open'); });
+        tbr.insertBefore(btn, tbr.firstChild);
+      }
+    });
+  }
+
+
+
+
+  function resolveUserFromEmail(email) {
+    var errEl = document.getElementById('login-error');
+    var isApproved = email.endsWith('@fxify.com') || email === 'david.xavier@fxify.com';
+    if (!isApproved) {
+      if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
+      supa.auth.signOut();
+      return;
+    }
+    var userDef = USERS[email];
+    // Unknown @fxify.com → new writer
+    if (!userDef && email.endsWith('@fxify.com')) {
+      var nameParts = email.split('@')[0].split('.');
+      var name = nameParts.map(function(p){ return p.charAt(0).toUpperCase() + p.slice(1); }).join(' ');
+      userDef = { role:'writer', name: name, screen:'writer', initials: nameParts.map(function(p){ return p[0].toUpperCase(); }).join(''), av:'' };
+    }
+    if (!userDef) { if (errEl) { errEl.textContent = 'Access denied.'; errEl.style.display = 'block'; } return; }
+    var user = { email: email, role: userDef.role, name: userDef.name, screen: userDef.screen, initials: userDef.initials, av: userDef.av };
+    sessionStorage.setItem('fxify_user', JSON.stringify(user));
+    bootUser(user);
+  }
+
+
+
 // ── AUTH STATE CHANGE — wired at IIFE level so it catches the OAuth redirect ──
 supa.auth.onAuthStateChange(function(event, session) {
   if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
@@ -5281,13 +5454,9 @@ async function doGoogleLogin() {
   if (!btn) return;
   btn.textContent = 'Redirecting...';
   btn.disabled = true;
-  var redirectUrl = window.location.hostname === 'localhost'
-    ? 'https://fxify-content-engine.vercel.app'
-    : window.location.origin;
   try {
     var res = await supa.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: redirectUrl }
+      provider: 'google'
     });
     if (res.error) {
       btn.textContent = 'Continue with Google';
@@ -5359,145 +5528,6 @@ function init(){
     }
   } catch(e) {}
 
-  function bootUser(user) {
-    currentUser = user;
-    activeRole = user.role;
-
-    // Update all topbars with user name + initials
-    updateTopbars(user);
-
-    // Always set these for filter to work
-    currentRole = user.role;
-    activeRole = user.role;
-    if (user.role === 'writer') {
-      currentWriterEmail = user.email;
-    }
-
-    currentBriefData = null; currentOutline = '';
-
-    goScreen(user.screen);
-    loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadDavidQ();
-  loadPublishingBadge();
-    setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
-
-    // David: inject his approval links into the admin sidebar
-    if (user.role === 'david') {
-      var adminSb = document.getElementById('admin-sb');
-      if (adminSb && !document.getElementById('david-nav-items')) {
-        var davidNav = document.createElement('div');
-        davidNav.id = 'david-nav-items';
-        davidNav.innerHTML =
-          '<div class="ndiv"></div>' +
-          '<div class="ngrp">My Approvals</div>' +
-          '<div class="nlink" data-pg="da-approval" data-sc="admin" id="david-approval-link"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>' +
-          '<div class="nlink" data-pg="da-log" data-sc="admin" id="david-log-link"><span class="nico">▲</span>Approved Log</div>';
-        adminSb.appendChild(davidNav);
-        // Wire these links — they load David pages but show in admin screen
-        davidNav.querySelectorAll('.nlink[data-pg]').forEach(function(link){
-          link.addEventListener('click', function(){
-            // Show david pages inside admin screen
-            document.querySelectorAll('#admin .pg').forEach(function(p){ p.classList.remove('active'); });
-            document.querySelectorAll('#admin .nlink').forEach(function(n){ n.classList.remove('active'); });
-            link.classList.add('active');
-            // Mount david pages into admin main area if not already there
-            var pg = link.getAttribute('data-pg');
-            var existing = document.getElementById(pg);
-            if (existing) {
-              existing.classList.add('active');
-              if(pg==='d-approval') loadDavidQ();
-              if(pg==='d-log') loadDavidLog();
-            }
-          });
-        });
-      }
-    }
-
-    // David greeting
-    if (user.role === 'david') {
-      var davidGreetings = [
-        "The boss is in. Liam did his part — now it\'s your call. 👔",
-        "Morning, David. The pipeline awaits your signature. ✍️",
-        "Articles are queued up. One tap from you and they\'re off to publish. 💼",
-        "The SEO is clean, the copy is tight. Just need the big boss stamp. 🏆",
-        "Good to see you, David. Liam says these are ready. He\'s usually right. 👀",
-        "The team delivered. Now the final word is yours, as always. 🎯",
-      ];
-      var dg = document.getElementById('david-greeting');
-      if (dg) dg.textContent = davidGreetings[Math.floor(Math.random() * davidGreetings.length)];
-    }
-
-    // Add sign out button to topbar
-    ['admin','writer','david'].forEach(function(sc) {
-      var tbr = document.querySelector('#' + sc + ' .tbr');
-      if (tbr && !tbr.querySelector('.signout-btn')) {
-        var sob = document.createElement('button');
-        sob.className = 'btn btn-s signout-btn';
-        sob.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.08);color:#475569;background:transparent;';
-        sob.textContent = 'Sign out';
-        sob.addEventListener('click', function(){
-          if(confirm('Sign out?')){
-            sessionStorage.removeItem('fxify_user');
-            currentUser = null; impersonating = null; currentWriterEmail = null;
-            supa.auth.signOut();
-            goScreen('login');
-          }
-        });
-        tbr.insertBefore(sob, tbr.firstChild);
-      }
-    });
-
-    // Show impersonate button for admin and david
-    if (user.role === 'admin' || user.role === 'david') {
-      showImpersonateBtn();
-    }
-  }
-
-  function updateTopbars(user) {
-    // Update each screen's topbar
-    var screens = ['admin','writer','david'];
-    screens.forEach(function(sc) {
-      var nameEl = document.querySelector('#' + sc + ' .tbu');
-      var avEl = document.querySelector('#' + sc + ' .tbav');
-      if (nameEl) nameEl.textContent = user.name;
-      if (avEl) {
-        avEl.textContent = user.initials;
-        avEl.className = 'tbav' + (user.av ? ' ' + user.av : '');
-      }
-    });
-    // Also update by ID for admin screen specifically
-    var adminTbu = document.getElementById('admin-tbu');
-    var adminTbav = document.getElementById('admin-tbav');
-    var adminCtx = document.getElementById('admin-ctx');
-    if (adminTbu) adminTbu.textContent = user.name;
-    if (adminTbav) { adminTbav.textContent = user.initials; adminTbav.className = 'tbav' + (user.av ? ' ' + user.av : ''); }
-    if (adminCtx) adminCtx.textContent = user.role === 'david' ? 'Manager' : 'Admin';
-    // Update writer greeting
-    var greetEl = document.getElementById('writer-greeting');
-    if (greetEl && user.role === 'writer') {
-      var firstName = user.name.split(' ')[0];
-      var hr = new Date().getHours();
-      var greetWord = hr < 12 ? 'Morning' : hr < 17 ? 'Afternoon' : 'Evening';
-      greetEl.textContent = greetWord + ', ' + firstName + '. Here\'s your plate. 👊';
-    }
-  }
-
-  function showImpersonateBtn() {
-    // Add "Switch view" button to both admin and david topbars
-    [['admin','imp-btn'],['david','imp-btn-d']].forEach(function(pair) {
-      var sc = pair[0], btnId = pair[1];
-      var tbr = document.querySelector('#' + sc + ' .tbr');
-      if (tbr && !document.getElementById(btnId)) {
-        var btn = document.createElement('button');
-        btn.id = btnId;
-        btn.className = 'btn btn-s';
-        btn.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#94a3b8;background:transparent;';
-        btn.textContent = '👁 Switch view';
-        btn.addEventListener('click', function(){ document.getElementById('imp-modal').classList.add('open'); });
-        tbr.insertBefore(btn, tbr.firstChild);
-      }
-    });
-  }
-
   // ── GOOGLE OAUTH via Supabase ──────────────────────────────────────────
   // Login button wired inside init — backup wiring below too
   var loginBtn = document.getElementById('login-btn');
@@ -5510,30 +5540,7 @@ function init(){
       var email = res.data.session.user.email.toLowerCase();
       resolveUserFromEmail(email);
     }
-  }
-
-  function resolveUserFromEmail(email) {
-    var errEl = document.getElementById('login-error');
-    var isApproved = email.endsWith('@fxify.com') || email === 'david.xavier@fxify.com';
-    if (!isApproved) {
-      if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
-      supa.auth.signOut();
-      return;
-    }
-    var userDef = USERS[email];
-    // Unknown @fxify.com → new writer
-    if (!userDef && email.endsWith('@fxify.com')) {
-      var nameParts = email.split('@')[0].split('.');
-      var name = nameParts.map(function(p){ return p.charAt(0).toUpperCase() + p.slice(1); }).join(' ');
-      userDef = { role:'writer', name: name, screen:'writer', initials: nameParts.map(function(p){ return p[0].toUpperCase(); }).join(''), av:'' };
-    }
-    if (!userDef) { if (errEl) { errEl.textContent = 'Access denied.'; errEl.style.display = 'block'; } return; }
-    var user = { email: email, role: userDef.role, name: userDef.name, screen: userDef.screen, initials: userDef.initials, av: userDef.av };
-    sessionStorage.setItem('fxify_user', JSON.stringify(user));
-    bootUser(user);
-  }
-
-  // auth state change wired at IIFE level below
+  }  // auth state change wired at IIFE level below
 
   // Impersonate modal
   document.getElementById('imp-cancel').addEventListener('click', function(){ document.getElementById('imp-modal').classList.remove('open'); });
