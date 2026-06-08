@@ -3979,7 +3979,8 @@ async function loadAnalytics() {
   var seoArts = arts.filter(function(a){ return a.seo_score; });
   var avgSeo = seoArts.length ? Math.round(seoArts.reduce(function(s,a){ return s+(a.seo_score||0);},0)/seoArts.length) : 0;
 
-    set('an-total', total);
+  function set(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; }
+  set('an-total', total);
   set('an-total-sub', total + ' articles created');
   set('an-live', live);
   set('an-pipeline', pipeline);
