@@ -422,7 +422,6 @@ select.finput option{background:var(--bg2);color:var(--text);}
     <nav class="sb" id="admin-sb">
       <div class="ngrp">Workflow</div>
       <div class="nlink active" data-pg="a-pipeline" data-sc="admin"><span class="nico">◈</span>Pipeline<span class="nbadge" id="nb-pipeline">0</span></div>
-      <div class="nlink" data-pg="a-review" data-sc="admin"><span class="nico">◎</span>Review Queue<span class="nbadge" id="nb-review">0</span></div>
       <div class="ndiv"></div>
       <div class="ngrp">Content Engine</div>
       <div class="nlink" data-pg="a-generate" data-sc="admin"><span class="nico">⚡</span>Content Intelligence</div>
@@ -446,10 +445,17 @@ select.finput option{background:var(--bg2);color:var(--text);}
             <p class="pgs" style="margin-bottom:0;">Live from ClickUp. Click any card to edit in-app — status, assignee, priority, due date all sync back.</p>
           </div>
           <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap;">
+            <!-- List toggle -->
+            <div style="display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:2px;">
+              <button class="btn btn-s pipeline-list-btn active" data-list="both"   style="font-size:11px;padding:3px 10px;border:none;background:var(--teal);color:var(--bg);">All</button>
+              <button class="btn btn-s pipeline-list-btn"        data-list="blog"   style="font-size:11px;padding:3px 10px;border:none;background:transparent;color:var(--text3);">✦ Blog</button>
+              <button class="btn btn-s pipeline-list-btn"        data-list="video"  style="font-size:11px;padding:3px 10px;border:none;background:transparent;color:var(--text3);">▶ Video</button>
+            </div>
             <button class="btn btn-p btn-s" id="cu-new-task-btn">+ New task</button>
             <button class="btn btn-s" id="cu-refresh-btn">↻ Refresh</button>
-            <button class="btn btn-s" id="cu-sync-btn" style="color:var(--teal);border-color:rgba(0,212,170,0.3);">⇅ Sync Supabase</button>
-            <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">ClickUp ↗</a>
+            <button class="btn btn-s" id="cu-sync-btn" style="color:var(--teal);border-color:rgba(0,212,170,0.3);">⇅ Sync</button>
+            <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">Blog ↗</a>
+            <a href="https://app.clickup.com/9005041798/v/li/901603213575" target="_blank" class="btn btn-s" style="text-decoration:none;">Video ↗</a>
           </div>
         </div>
 
@@ -464,7 +470,13 @@ select.finput option{background:var(--bg2);color:var(--text);}
         <!-- NEW TASK FORM -->
         <div id="cu-create-panel" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,170,0.2);border-radius:var(--rl);padding:16px 20px;margin-bottom:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <p style="font-size:13px;font-weight:600;color:var(--text);">New task in ClickUp</p>
+            <div style="display:flex;align-items:center;gap:10px;">
+              <p style="font-size:13px;font-weight:600;color:var(--text);">New task</p>
+              <div style="display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:2px;">
+                <button class="new-task-list-btn active" data-list="blog"  style="padding:3px 10px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:var(--teal);color:var(--bg);">✦ Blog</button>
+                <button class="new-task-list-btn"        data-list="video" style="padding:3px 10px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">▶ Video</button>
+              </div>
+            </div>
             <button style="background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;" id="cu-create-close">×</button>
           </div>
           <div class="frow fg">
@@ -703,12 +715,7 @@ select.finput option{background:var(--bg2);color:var(--text);}
         </div>
       </div>
 
-      <!-- REVIEW QUEUE -->
-      <div id="a-review" class="pg">
-        <div class="pgh">Review Queue</div>
-        <p class="pgs">Writers submitted. Review, comment, then approve straight to David. ✍️</p>
-        <div id="a-review-list"><p class="pempty" style="padding:40px 0;">No articles in review yet.</p></div>
-      </div>
+      
 
       <!-- ANALYTICS -->
       <div id="a-analytics" class="pg">
@@ -1039,6 +1046,62 @@ select.finput option{background:var(--bg2);color:var(--text);}
       </div>
     </div>
   </div>
+
+        <!-- WRITER SUBMIT MODAL -->
+        <div id="ws-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:400;align-items:center;justify-content:center;padding:20px;backdrop-filter:blur(4px);">
+          <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;width:100%;max-width:500px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--border);background:var(--bg3);display:flex;align-items:center;justify-content:space-between;">
+              <div>
+                <p style="font-size:14px;font-weight:600;color:var(--text);">Submit article</p>
+                <p style="font-size:11px;color:var(--text3);margin-top:2px;" id="ws-article-title"></p>
+              </div>
+              <button style="background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;line-height:1;" id="ws-close-btn">×</button>
+            </div>
+            <div style="padding:18px 20px;display:grid;gap:12px;">
+
+              <!-- Draft URL -->
+              <div>
+                <label class="flbl">Google Doc / Draft URL</label>
+                <input class="finput" id="ws-draft-url" type="url" placeholder="https://docs.google.com/document/d/..."/>
+                <p style="font-size:10px;color:var(--text3);margin-top:4px;">Paste the link to your Google Doc draft.</p>
+              </div>
+
+              <!-- Content / Blog URL -->
+              <div>
+                <label class="flbl">Live blog URL <span style="color:var(--text3);font-weight:400;">(if already published)</span></label>
+                <input class="finput" id="ws-content-url" type="url" placeholder="https://fxify.com/blog/article-slug"/>
+              </div>
+
+              <!-- Meta Info -->
+              <div>
+                <label class="flbl">Meta info status</label>
+                <select class="finput" id="ws-meta-info">
+                  <option value="">— Select —</option>
+                  <option value="26e8eb15-5f7d-431c-9029-43a8dc725ec3">Pending</option>
+                  <option value="92ab2750-0477-491b-8125-106d63e31a28">In Progress</option>
+                  <option value="4dc55660-0be6-4cd1-9eeb-6f5a94853b9d">Revisions</option>
+                  <option value="277723d5-2fff-4dfa-bfa5-8a0fad855006">Done</option>
+                </select>
+              </div>
+
+              <!-- Notes -->
+              <div>
+                <label class="flbl">Notes for Sheperd <span style="color:var(--text3);font-weight:400;">(optional)</span></label>
+                <textarea class="finput" id="ws-notes" rows="3" placeholder="Anything Sheperd should know — edge cases, decisions you made, sections you want feedback on..." style="resize:vertical;font-size:12px;"></textarea>
+              </div>
+
+              <!-- Word count display -->
+              <div style="background:var(--bg3);border-radius:var(--r);padding:10px 14px;display:flex;gap:16px;">
+                <div><p style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-bottom:2px;">WORD COUNT</p><p style="font-size:15px;font-weight:700;color:var(--text);font-family:DM Mono,monospace;" id="ws-wc">—</p></div>
+                <div><p style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-bottom:2px;">SEO SCORE</p><p style="font-size:15px;font-weight:700;color:var(--text);font-family:DM Mono,monospace;" id="ws-seo">—</p></div>
+                <div><p style="font-size:9px;color:var(--text3);font-family:DM Mono,monospace;margin-bottom:2px;">STATUS AFTER</p><p style="font-size:12px;font-weight:600;color:var(--teal);">In Review</p></div>
+              </div>
+
+              <button class="btn btn-p btn-f" id="ws-confirm-btn" style="font-size:13px;padding:12px;">Submit for review →</button>
+              <p id="ws-error" style="display:none;font-size:11px;color:var(--urgent);text-align:center;"></p>
+            </div>
+          </div>
+        </div>
 </div>
 
 <!-- EDITOR -->
@@ -1434,6 +1497,38 @@ var CU = {
     metaInfo:    { 'Pending':'26e8eb15-5f7d-431c-9029-43a8dc725ec3','In Progress':'92ab2750-0477-491b-8125-106d63e31a28','Revisions':'4dc55660-0be6-4cd1-9eeb-6f5a94853b9d','Done':'277723d5-2fff-4dfa-bfa5-8a0fad855006' },
   },
 
+  // ── VIDEO LIST (901603213575) ─────────────────────────────────────────────
+  videoList: '901603213575',
+
+  videoFields: {
+    liveDate:       { id:'1428943f-31fe-418f-b082-faf52f4d00b2' },
+    finalDraft:     { id:'14736fb9-9915-468d-bee3-80ddaae08baa' },
+    contentPillar:  { id:'18717421-46f9-4cb5-b461-3633e53e04ef' },
+    shootDate:      { id:'366bc44a-f9f4-488b-87dd-b781fc1e9828' },
+    brand:          { id:'36ea3106-df63-4b3d-ad4e-0507f7136b4b', options:['FXIFY','FUTURES'] },
+    dateApproved:   { id:'64e4d255-0784-420f-a95d-b818ebf6d919' },
+    pillarType:     { id:'7a38e9b1-93df-4ff0-958a-af9aca23cc85' },
+    actors:         { id:'8079633d-202e-4dbe-af10-391146164fb0' },
+    translation:    { id:'e2ff6fd8-f4bb-4b3c-bd3a-5683204f782d' },
+    productionType: { id:'f63b51b6-8729-4f7e-93d8-7175719384a4', options:['UGC','In-house','Outsourced'] },
+  },
+
+  videoFieldOptions: {
+    brand:          { 'FXIFY':'dc2c8d21-e774-47da-8a4d-aa24a6b8c976', 'FUTURES':'90487a8f-bb0d-4312-bc33-f8af678805ad' },
+    productionType: { 'UGC':'43c936b3-0a33-4150-acca-cb7268f20744', 'In-house':'2388509f-a67d-499b-8228-e9f712fae678', 'Outsourced':'5019d32e-7b95-4a57-8453-528c97074dd5' },
+    actors: {
+      'Andy':'f699a6da-08a3-4681-a499-dd35e8242527',
+      'David B':'525775c6-fcaa-4834-b217-e52f7455e9cf',
+      'Harrison':'658f343c-940e-4b14-98f4-9b99fe0711e5',
+      'Chris':'4f672bc5-acfc-45a7-82f7-22e837f0a3c5',
+      'Bobby':'5243ee1f-3d16-4780-953c-0d7d97d938d1',
+      'Dave':'0ce4ef40-17bc-4d03-a3cc-84856fc8d279',
+      'Desi':'5ad31439-1ff9-4ceb-b7b1-0ccf6c326cb0',
+      'Annie':'e738a246-1d82-4400-8cb1-0b113d04bae6',
+      'Others (Agency)':'cdafa207-f1fd-4176-a898-aa410bfde5a3',
+    },
+  },
+
   // Legacy maps kept for Supabase sync compatibility
   statusMap: {
     'Briefed':        'to do',
@@ -1494,6 +1589,22 @@ async function cuGetTasks() {
   while (true) {
     var res = await cuFetch('/list/' + CU.list + '/task?include_closed=true&subtasks=false&page=' + page + '&order_by=created&reverse=true');
     if (!res || !res.tasks || !res.tasks.length) break;
+    allTasks = allTasks.concat(res.tasks);
+    if (res.tasks.length < 100) break;
+    page++;
+    if (page > 9) break;
+  }
+  return allTasks;
+}
+
+async function cuGetVideoTasks() {
+  var allTasks = [];
+  var page = 0;
+  while (true) {
+    var res = await cuFetch('/list/' + CU.videoList + '/task?include_closed=true&subtasks=false&page=' + page + '&order_by=created&reverse=true');
+    if (!res || !res.tasks || !res.tasks.length) break;
+    // Tag each task so we know it's from the video list
+    res.tasks.forEach(function(t){ t._listType = 'video'; });
     allTasks = allTasks.concat(res.tasks);
     if (res.tasks.length < 100) break;
     page++;
@@ -1651,7 +1762,7 @@ function goPage(sc,pg,navEl){
   document.getElementById(pg).classList.add('active');
   window.scrollTo(0,0); closeSB();
   if(pg==='a-pipeline') loadPipeline();
-  if(pg==='a-review') loadReviewQ();
+  if(pg==='a-review')
   if(pg==='w-drafts') loadWriterDrafts();
   if(pg==='w-submitted') loadWriterSubmitted();
   if(pg==='l-review')
@@ -1723,7 +1834,10 @@ async function loadPipeline(){
   loadClickUpBoard();
 }
 
-async function loadClickUpBoard(){
+async function loadClickUpBoard(listFilter){
+  listFilter = listFilter || window._cuListFilter || 'both';
+  window._cuListFilter = listFilter;
+
   var board   = document.getElementById('cu-board');
   var loading = document.getElementById('cu-board-loading');
   var errEl   = document.getElementById('cu-board-error');
@@ -1734,32 +1848,33 @@ async function loadClickUpBoard(){
   board.style.display = 'none';
   if (errEl) errEl.style.display = 'none';
 
-  var tasks = await cuGetTasks();
+  // Pull blog and/or video tasks
+  var blogTasks = [], videoTasks = [];
+  if (listFilter === 'both' || listFilter === 'blog') {
+    var bt = await cuGetTasks();
+    bt.forEach(function(t){ t._listType = 'blog'; });
+    blogTasks = bt;
+  }
+  if (listFilter === 'both' || listFilter === 'video') {
+    videoTasks = await cuGetVideoTasks();
+  }
+  var tasks = blogTasks.concat(videoTasks);
 
   if (!tasks.length) {
     if (loading) loading.style.display = 'none';
     if (errEl)   errEl.style.display   = 'block';
-    if (errMsg)  errMsg.textContent    = 'No tasks returned — check API key or the list may be empty.';
+    if (errMsg)  errMsg.textContent    = 'No tasks returned.';
     return;
   }
 
   window._cuAllTasks = tasks;
 
-  // Group by status (exact ClickUp status names)
-  var columns = {};
-  CU.statuses.forEach(function(s){ columns[s.status] = []; });
-  tasks.forEach(function(t) {
-    var s = (t.status && t.status.status) ? t.status.status.toLowerCase() : 'to do';
-    if (columns[s]) columns[s].push(t);
-    else columns[s] = [t]; // unknown status
-  });
-
-  // Stats using real names
+  // Stats
   function setEl(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; }
-  var todo   = (columns['to do']||[]).length + (columns['assigned to agency']||[]).length + (columns['ready to start']||[]).length;
-  var prog   = (columns['ideation & research']||[]).length + (columns['in progress']||[]).length + (columns['copy draft']||[]).length + (columns['production']||[]).length + (columns['post-production']||[]).length;
-  var review = (columns['review']||[]).length + (columns['revisions']||[]).length + (columns['editing']||[]).length + (columns['final review']||[]).length + (columns['adaptation']||[]).length;
-  var done   = (columns['approved']||[]).length + (columns['scheduled']||[]).length + (columns['published']||[]).length + (columns['completed']||[]).length;
+  var todo   = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['to do','assigned to agency','ready to start'].includes(s); }).length;
+  var prog   = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['ideation & research','in progress','copy draft','production','post-production'].includes(s); }).length;
+  var review = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['review','revisions','editing','final review','adaptation'].includes(s); }).length;
+  var done   = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['approved','scheduled','published','completed'].includes(s); }).length;
   setEl('cu-st-todo',   todo);
   setEl('cu-st-prog',   prog);
   setEl('cu-st-review', review);
@@ -1767,57 +1882,69 @@ async function loadClickUpBoard(){
   var nb = document.getElementById('nb-pipeline');
   if (nb) nb.textContent = tasks.length || '';
 
-  // Render board in exact ClickUp column order
-  // Only show columns that have tasks OR are core workflow columns
+  // Group by status
+  var columns = {};
+  CU.statuses.forEach(function(s){ columns[s.status] = []; });
+  tasks.forEach(function(t) {
+    var s = (t.status && t.status.status) ? t.status.status.toLowerCase() : 'to do';
+    if (columns[s]) columns[s].push(t);
+    else { columns[s] = [t]; }
+  });
+
   var coreStatuses = ['to do','in progress','copy draft','review','revisions','editing','final review','approved','scheduled','published'];
   var visibleStatuses = CU.statuses.filter(function(s){
     return coreStatuses.includes(s.status) || (columns[s.status] && columns[s.status].length > 0);
   });
 
-  var boardHtml = '<div style="display:grid;grid-template-columns:repeat(' + Math.min(visibleStatuses.length, 7) + ',minmax(155px,1fr));gap:8px;">';
+  var boardHtml = '<div style="display:grid;grid-template-columns:repeat(' + Math.min(visibleStatuses.length, 7) + ',minmax(160px,1fr));gap:8px;">';
 
   visibleStatuses.forEach(function(statusObj) {
-    var status    = statusObj.status;
-    var colTasks  = columns[status] || [];
-    var colColor  = statusObj.color || '#475569';
-
-    // Capitalise label
-    var label = status.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+    var status   = statusObj.status;
+    var colTasks = columns[status] || [];
+    var colColor = statusObj.color || '#475569';
+    var label    = status.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
 
     boardHtml += '<div class="pcol">' +
       '<div class="phead">' +
         '<span class="plbl" style="color:' + colColor + ';text-transform:none;">' + label + '</span>' +
         '<span class="pcnt">' + colTasks.length + '</span>' +
-      '</div>' +
-      '<div class="pbody">';
+      '</div><div class="pbody">';
 
-    colTasks.slice(0, 20).forEach(function(t) {
+    colTasks.slice(0, 25).forEach(function(t) {
+      var isVideo   = t._listType === 'video';
       var priority  = t.priority && t.priority.priority ? t.priority.priority.toLowerCase() : '';
       var priColor  = priority === 'urgent' ? '#f87171' : priority === 'high' ? '#fb923c' : 'transparent';
       var assignees = (t.assignees||[]).map(function(a){ return a.username||''; }).filter(Boolean);
-      var initials  = assignees.map(function(n){
-        var parts = n.split(' ');
-        return (parts[0][0]||'') + (parts[1] ? parts[1][0] : '');
-      });
-      // Get member colour from our map
+      var initials  = assignees.map(function(n){ var p=n.split(' '); return (p[0][0]||'')+(p[1]?p[1][0]:''); });
       var memberColors = assignees.map(function(name){
         var m = CU.members.find(function(m){ return m.username === name; });
         return m && m.color ? m.color : '#00d4aa';
       });
-
       var due = t.due_date ? new Date(parseInt(t.due_date)).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
       var isOverdue = t.due_date && parseInt(t.due_date) < Date.now() && !['published','completed','approved','canceled'].includes(status);
 
-      // Extract primary keyword from custom fields
-      var pkw = '';
+      // Primary keyword (blog) or shoot date (video)
+      var subline = '';
       (t.custom_fields||[]).forEach(function(cf){
-        if (cf.id === CU.fields.primaryKeyword.id && cf.value) pkw = cf.value;
+        if (!isVideo && cf.id === CU.fields.primaryKeyword.id && cf.value) subline = cf.value;
+        if (isVideo  && cf.id === CU.videoFields.shootDate.id && cf.value) {
+          subline = 'Shoot: ' + new Date(parseInt(cf.value)).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+        }
       });
 
       boardHtml +=
-        '<div class="pcard" data-taskid="' + t.id + '" style="border-left:2px solid ' + priColor + ';">' +
+        '<div class="pcard" data-taskid="' + t.id + '" data-listtype="' + t._listType + '" style="border-left:2px solid ' + priColor + ';">' +
+          // Type badge — Blog or Video
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">' +
+            '<span style="font-size:8px;font-weight:700;padding:1px 6px;border-radius:3px;font-family:DM Mono,monospace;' +
+              (isVideo
+                ? 'background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.2);'
+                : 'background:var(--tealL);color:var(--teal);border:1px solid rgba(0,212,170,0.2);') +
+            '">' + (isVideo ? '▶ VIDEO' : '✦ BLOG') + '</span>' +
+            (priority ? '<span style="font-size:8px;color:' + priColor + ';font-family:DM Mono,monospace;">' + priority.toUpperCase() + '</span>' : '') +
+          '</div>' +
           '<p class="pct">' + (t.name||'Untitled') + '</p>' +
-          (pkw ? '<p style="font-size:9px;color:var(--teal);font-family:DM Mono,monospace;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + pkw + '</p>' : '') +
+          (subline ? '<p style="font-size:9px;color:var(--teal);font-family:DM Mono,monospace;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + subline + '</p>' : '') +
           '<div class="pcm">' +
             '<div style="display:flex;gap:3px;">' +
               initials.slice(0,2).map(function(ini, idx){
@@ -1839,19 +1966,20 @@ async function loadClickUpBoard(){
   if (loading) loading.style.display = 'none';
   board.style.display = 'block';
 
-  // Click → open task panel
+  // Click → task panel
   board.querySelectorAll('.pcard').forEach(function(card) {
     card.addEventListener('click', function() {
-      var taskId = card.dataset.taskid;
-      var task = (window._cuAllTasks||[]).find(function(t){ return t.id === taskId; });
-      if (task) openTaskPanel(task);
+      var taskId   = card.dataset.taskid;
+      var listType = card.dataset.listtype;
+      var task     = (window._cuAllTasks||[]).find(function(t){ return t.id === taskId; });
+      if (task) openTaskPanel(task, listType);
     });
   });
 }
 
 
 // ── TASK PANEL — full ClickUp task editor ───────────────────────────────────
-async function openTaskPanel(task) {
+async function openTaskPanel(task, listType) {
   var panel = document.getElementById('cu-task-panel');
   if (!panel) return;
 
@@ -2007,7 +2135,40 @@ async function openTaskPanel(task) {
         '<div><label class="flbl">Content URL</label><input class="finput" id="tp-content-url" type="url" value="' + (contentUrl||'') + '" placeholder="Live article URL"/></div>' +
       '</div>' +
 
-      // Description preview
+      // Video-specific fields (shown only for video tasks)
+      (listType === 'video' ? (
+        '<div style=\"padding:0;\"><div style=\"font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:4px;font-family:DM Mono,monospace;\">▶ VIDEO FIELDS</div>' +
+        '<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;\">' +
+          '<div><label class=\"flbl\">Production type</label><select class=\"finput\" id=\"tp-prod-type\">' +
+            '<option value=\"\">—</option>' +
+            '<option value=\"43c936b3-0a33-4150-acca-cb7268f20744\"' + (cfVals[CU.videoFields.productionType.id] === '43c936b3-0a33-4150-acca-cb7268f20744' ? ' selected' : '') + '>UGC</option>' +
+            '<option value=\"2388509f-a67d-499b-8228-e9f712fae678\"' + (cfVals[CU.videoFields.productionType.id] === '2388509f-a67d-499b-8228-e9f712fae678' ? ' selected' : '') + '>In-house</option>' +
+            '<option value=\"5019d32e-7b95-4a57-8453-528c97074dd5\"' + (cfVals[CU.videoFields.productionType.id] === '5019d32e-7b95-4a57-8453-528c97074dd5' ? ' selected' : '') + '>Outsourced</option>' +
+          '</select></div>' +
+          '<div><label class=\"flbl\">Brand</label><select class=\"finput\" id=\"tp-brand\">' +
+            '<option value=\"\">—</option>' +
+            '<option value=\"dc2c8d21-e774-47da-8a4d-aa24a6b8c976\"' + (cfVals[CU.videoFields.brand.id] === 'dc2c8d21-e774-47da-8a4d-aa24a6b8c976' ? ' selected' : '') + '>FXIFY</option>' +
+            '<option value=\"90487a8f-bb0d-4312-bc33-f8af678805ad\"' + (cfVals[CU.videoFields.brand.id] === '90487a8f-bb0d-4312-bc33-f8af678805ad' ? ' selected' : '') + '>FUTURES</option>' +
+          '</select></div>' +
+        '</div>' +
+        '<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;\">' +
+          '<div><label class=\"flbl\">Shoot date</label><input class=\"finput\" id=\"tp-shoot-date\" type=\"date\" value=\"' + (cfVals[CU.videoFields.shootDate.id] ? new Date(parseInt(cfVals[CU.videoFields.shootDate.id])).toISOString().split('T')[0] : '') + '\"/></div>' +
+          '<div><label class=\"flbl\">Final draft URL</label><input class=\"finput\" id=\"tp-final-draft\" type=\"url\" value=\"' + (cfVals[CU.videoFields.finalDraft.id] || '') + '\" placeholder=\"Final script/doc URL\"/></div>' +
+        '</div>' +
+        '<div style=\"margin-bottom:8px;\">' +
+          '<label class=\"flbl\">Actor(s)</label>' +
+          '<div style=\"display:flex;gap:6px;flex-wrap:wrap;margin-top:4px;\">' +
+            Object.keys(CU.videoFieldOptions.actors).map(function(name) {
+              var optId = CU.videoFieldOptions.actors[name];
+              var selected = Array.isArray(cfVals[CU.videoFields.actors.id]) && cfVals[CU.videoFields.actors.id].some(function(v){ return v.id === optId || v === optId; });
+              return '<label style=\"display:flex;align-items:center;gap:4px;font-size:11px;color:var(--text2);cursor:pointer;\"><input type=\"checkbox\" class=\"tp-actor-cb\" value=\"' + optId + '\"' + (selected ? ' checked' : '') + ' style=\"accent-color:var(--teal);\"> ' + name + '</label>';
+            }).join('') +
+          '</div>' +
+        '</div>' +
+        '</div>'
+      ) : '') +
+
+            // Description preview
       (task.description ? '<div><label class="flbl">Brief / Description</label><div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:10px;color:var(--text3);line-height:1.7;max-height:140px;overflow-y:auto;white-space:pre-wrap;font-family:DM Mono,monospace;">' + task.description.substring(0,1000).replace(/</g,'&lt;') + (task.description.length>1000?' ...':'') + '</div></div>' : '') +
 
       // Actions
@@ -2079,6 +2240,27 @@ async function openTaskPanel(task) {
         }
       }
 
+      // Save video-specific fields if this is a video task
+      if (task._listType === 'video') {
+        var prodType  = (document.getElementById('tp-prod-type')||{}).value;
+        var brand     = (document.getElementById('tp-brand')||{}).value;
+        var shootDate = (document.getElementById('tp-shoot-date')||{}).value;
+        var finalDraft= (document.getElementById('tp-final-draft')||{}).value;
+        var actorCbs  = document.querySelectorAll('.tp-actor-cb:checked');
+        var actorIds  = Array.from(actorCbs).map(function(cb){ return cb.value; });
+
+        var videoCfUpdates = [];
+        if (prodType)   videoCfUpdates.push([CU.videoFields.productionType.id, prodType]);
+        if (brand)      videoCfUpdates.push([CU.videoFields.brand.id, brand]);
+        if (finalDraft) videoCfUpdates.push([CU.videoFields.finalDraft.id, finalDraft]);
+        if (shootDate)  videoCfUpdates.push([CU.videoFields.shootDate.id, new Date(shootDate).getTime()]);
+        if (actorIds.length) videoCfUpdates.push([CU.videoFields.actors.id, actorIds]);
+
+        for (var vi = 0; vi < videoCfUpdates.length; vi++) {
+          await cuFetch('/task/' + task.id + '/field/' + videoCfUpdates[vi][0], 'POST', { value: videoCfUpdates[vi][1] });
+        }
+      }
+
       // Sync Supabase status
       var appStatus = CU.reverseStatusMap[newStatus] || newStatus;
       var writerName = newAssignee ? (CU.members.find(function(m){ return m.id === newAssignee; })||{}).username || '' : '';
@@ -2120,54 +2302,11 @@ async function createTaskFromBrief() {
 }
 
 
-// ── REVIEW CARD BUILDER ───────────────────────────────────────────────────
-function makeReviewCard(art,opts){
-  var c=document.createElement('div');
-  c.className='card'+(art.priority==='Urgent'?' pu':art.priority==='High'?' ph':'');
-  c.innerHTML=
-    '<div class="cbody"><div class="ctop"><p class="ctitle">'+(art.title||'Untitled')+'</p><div style="display:flex;gap:5px;"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span></div></div>'+
-    (function(){ try { var b=JSON.parse(art.content||'{}'); return b.hook_angle ? '<div style="background:rgba(14,196,173,.07);border-left:2px solid var(--teal);padding:6px 10px;margin:0 0 6px;font-size:11px;color:#94a3b8;font-style:italic;line-height:1.5;">'+b.hook_angle.substring(0,120)+(b.hook_angle.length>120?'...':'')+'</div>' : ''; } catch(e){return '';} })()+
-    '</div>'+
-    '<div class="cmeta"><span class="mkw">'+(art.primary_kw||'')+'</span><span class="mtime">'+(art.word_count||0)+' words</span><span class="mdue ds">'+(art.assignee||'Unassigned')+'</span></div>'+
-    '<div class="cfoot"><span class="cfi">'+(art.category||'Guides')+'</span><div style="display:flex;gap:6px;"><button class="btn btn-d btn-s" data-a="back">Send back</button><button class="btn btn-p btn-s" data-a="fwd">'+opts.fwdLabel+'</button></div></div>';
-  c.addEventListener('click',function(e){if(e.target.closest('button')) return; openEditor(art,opts.role);});
-  c.querySelector('[data-a="back"]').addEventListener('click',function(e){
-    e.stopPropagation();
-    openSendback(function(){
-      dbUpdate(art.id,{status:'Drafting'}).then(function(){
-        c.remove(); toast('Sent back — writer needs to fix a few things ');
-        loadPipeline(); loadWriterDrafts();
-        checkEmpty(opts.listId);
-      });
-    });
-  });
-  c.querySelector('[data-a="fwd"]').addEventListener('click',function(e){
-    e.stopPropagation();
-    dbUpdate(art.id,{status:opts.nextStatus}).then(function(){
-      c.remove(); toast('Approved → '+opts.nextStatus+' done');
-      loadPipeline();
-      if(opts.nextStatus==='David Approval')
-      if(opts.nextStatus==='David Approval') loadDavidQ();
-      checkEmpty(opts.listId);
-    });
-  });
-  return c;
-}
-
 function checkEmpty(listId){
   var l=document.getElementById(listId);
   if(l&&!l.querySelector('.card')) l.innerHTML='<p class="pempty" style="padding:40px 0;">Queue is empty.</p>';
 }
 
-async function loadReviewQ(){
-  var res=await supa.from('articles').select('*').eq('status','Sheperd Review').order('created_at',{ascending:false});
-  var l=document.getElementById('a-review-list');
-  if(!l) return;
-  if(res.error||!res.data||!res.data.length){l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles in review.</p>';var nb=document.getElementById('nb-review');if(nb)nb.textContent='';return;}
-  l.innerHTML='';
-  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'sheperd',fwdLabel:'Approve → Manager',nextStatus:'David Approval',listId:'a-review-list'}));});
-  var nb=document.getElementById('nb-review');if(nb)nb.textContent=res.data.length;
-}
 
 async function loadDavidPipeline(){
   var res = await supa.from('articles').select('*').order('created_at',{ascending:false});
@@ -6133,6 +6272,54 @@ function copyBriefForDocs() {
 }
 
 
+// ── WRITER SUBMIT MODAL ──────────────────────────────────────────────────────
+function openWriterSubmitModal(wc, scores) {
+  var overlay = document.getElementById('ws-overlay');
+  if (!overlay) return;
+
+  // Set article title
+  var titleEl = document.getElementById('ws-article-title');
+  if (titleEl) titleEl.textContent = currentArt ? (currentArt.title || 'Untitled') : '';
+
+  // Set scores
+  var wcEl  = document.getElementById('ws-wc');
+  var seoEl = document.getElementById('ws-seo');
+  if (wcEl)  wcEl.textContent  = wc ? wc.toLocaleString() + ' words' : '—';
+  if (seoEl) seoEl.textContent = scores && scores.seo ? scores.seo + '/100' : '—';
+
+  // Clear previous inputs
+  ['ws-draft-url','ws-content-url','ws-notes'].forEach(function(id){
+    var el = document.getElementById(id); if (el) el.value = '';
+  });
+  var metaSel = document.getElementById('ws-meta-info');
+  if (metaSel) metaSel.selectedIndex = 0;
+
+  // Pre-fill draft URL from brief if available
+  if (currentArt && currentArt.content) {
+    try {
+      var brief = JSON.parse(currentArt.content);
+      if (brief && brief.draft_url) {
+        var draftEl = document.getElementById('ws-draft-url');
+        if (draftEl) draftEl.value = brief.draft_url;
+      }
+    } catch(e) {}
+  }
+
+  var errEl = document.getElementById('ws-error');
+  if (errEl) errEl.style.display = 'none';
+
+  var btn = document.getElementById('ws-confirm-btn');
+  if (btn) { btn.textContent = 'Submit for review →'; btn.disabled = false; }
+
+  overlay.style.display = 'flex';
+  // Focus draft URL
+  setTimeout(function(){
+    var du = document.getElementById('ws-draft-url');
+    if (du) du.focus();
+  }, 100);
+}
+
+
 function init(){
   // Wire brief modal
   var briefModalClose = document.getElementById('brief-modal-close');
@@ -6264,7 +6451,7 @@ function init(){
       targetScreen = 'admin'; bannerLabel = '⚡ Viewing Admin dashboard';
       impersonating = '__admin__'; activeRole = 'admin';
       updateTopbars({ name: 'Sheperd Morena (viewing)', initials: 'SM', av: 'b' });
-      goScreen('admin'); loadPipeline(); loadReviewQ();
+      goScreen('admin'); loadPipeline();
     } else if (sel === '__david__') {
       targetScreen = 'admin'; bannerLabel = '✅ Viewing Manager (David) dashboard';
       impersonating = '__david__'; activeRole = 'david';
@@ -6315,7 +6502,7 @@ function init(){
         banner.remove();
         updateTopbars(currentUser);
         goScreen(currentUser.screen);
-        if (currentUser.role === 'admin') { loadPipeline(); loadReviewQ(); }
+        if (currentUser.role === 'admin') { loadPipeline(); }
         if (currentUser.role === 'david') loadDavidQ();
       });
     }
@@ -6413,6 +6600,14 @@ function init(){
   // ClickUp refresh button
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'cu-refresh-btn') { loadClickUpBoard(); return; }
+    if (e.target && e.target.classList.contains('pipeline-list-btn')) {
+      document.querySelectorAll('.pipeline-list-btn').forEach(function(b){
+        b.style.background = 'transparent'; b.style.color = 'var(--text3)';
+      });
+      e.target.style.background = 'var(--teal)'; e.target.style.color = 'var(--bg)';
+      loadClickUpBoard(e.target.dataset.list);
+      return;
+    }
     if (e.target && e.target.id === 'cu-sync-btn') { cuSyncFromClickUp(); return; }
     if (e.target && e.target.id === 'cu-new-task-btn') {
       var cp = document.getElementById('cu-create-panel');
@@ -6443,6 +6638,14 @@ function init(){
     }
     if (e.target && e.target.id === 'cu-create-close') {
       var cp = document.getElementById('cu-create-panel'); if(cp) cp.style.display='none'; return;
+    }
+    if (e.target && e.target.classList.contains('new-task-list-btn')) {
+      document.querySelectorAll('.new-task-list-btn').forEach(function(b){
+        b.style.background = 'transparent'; b.style.color = 'var(--text3)';
+      });
+      e.target.style.background = 'var(--teal)'; e.target.style.color = 'var(--bg)';
+      window._newTaskList = e.target.dataset.list;
+      return;
     }
     if (e.target && e.target.id === 'ct-submit-btn') {
       (async function() {
@@ -6496,13 +6699,14 @@ function init(){
           // Create ClickUp task with correct status + custom fields
           var cuPri = parseInt(priority) || 3;
           var cuAssignees = assignee ? [parseInt(assignee)] : [];
+          var targetList = (window._newTaskList === 'video') ? CU.videoList : CU.list;
           var cuBody = {
             name: title, description: notes || '',
             status: statusVal, priority: cuPri, assignees: cuAssignees,
             custom_fields: article._customFields,
           };
           if (due) cuBody.due_date = new Date(due).getTime();
-          var cuTask = await cuFetch('/list/' + CU.list + '/task', 'POST', cuBody);
+          var cuTask = await cuFetch('/list/' + targetList + '/task', 'POST', cuBody);
           if (cuTask && cuTask.id && artId) await supa.from('articles').update({ meta: JSON.stringify({ clickup_id: cuTask.id }) }).eq('id', artId);
           if (msg) { msg.textContent='✓ Created'; msg.style.color='var(--green)'; }
           btn.textContent='Create in ClickUp + Supabase →'; btn.disabled=false;
@@ -6533,17 +6737,64 @@ function init(){
   });
 
   // Editor submit (writer)
-  document.getElementById('ed-submit-btn').addEventListener('click',function(){
-    if(!currentArt||!currentArt.id){toast('No draft to submit');return;}
+  document.getElementById('ed-submit-btn').addEventListener('click', function(){
+    if (!currentArt || !currentArt.id) { toast('No draft to submit'); return; }
     var content = getEditorHTML();
-    var text = getEditorText(); var wc = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
-    var scores = calculateScores(content, currentArt.primaryKw||'');
-    dbUpdate(currentArt.id,{status:'Sheperd Review', content:content, word_count:wc, seo_score:scores.seo, geo_score:scores.geo, aeo_score:scores.aeo}).then(function(){
-      toast("Sent to Sheperd — ball's in his court now ");
-      loadPipeline(); loadReviewQ(); loadWriterDrafts();
-      setTimeout(function(){goScreen(prevScreen);},1800);
-    });
+    var text    = getEditorText();
+    var wc      = text.trim() ? text.trim().split(/\s+/).filter(Boolean).length : 0;
+    var scores  = calculateScores(content, currentArt.primary_kw || '');
+    window._submitContent = content;
+    window._submitWc      = wc;
+    window._submitScores  = scores;
+    openWriterSubmitModal(wc, scores);
   });
+
+  var wsConfirmBtn = document.getElementById('ws-confirm-btn');
+  if (wsConfirmBtn) wsConfirmBtn.addEventListener('click', async function() {
+    if (!currentArt || !currentArt.id) return;
+    var btn      = wsConfirmBtn;
+    var errEl    = document.getElementById('ws-error');
+    var draftUrl = (document.getElementById('ws-draft-url')||{}).value || '';
+    var contUrl  = (document.getElementById('ws-content-url')||{}).value || '';
+    var metaInfo = (document.getElementById('ws-meta-info')||{}).value || '';
+    var notes    = (document.getElementById('ws-notes')||{}).value || '';
+    btn.textContent = 'Submitting...'; btn.disabled = true;
+    if (errEl) errEl.style.display = 'none';
+    try {
+      var content = window._submitContent || getEditorHTML();
+      var wc = window._submitWc || 0;
+      var scores = window._submitScores || {};
+      await dbUpdate(currentArt.id, { status:'Sheperd Review', content:content, word_count:wc, seo_score:scores.seo||0, geo_score:scores.geo||0, aeo_score:scores.aeo||0 });
+      try {
+        var artRes = await supa.from('articles').select('meta').eq('id', currentArt.id).single();
+        var cuId = artRes.data && artRes.data.meta ? JSON.parse(artRes.data.meta).clickup_id : null;
+        if (cuId) {
+          await cuFetch('/task/' + cuId, 'PUT', { status: 'review' });
+          if (draftUrl) await cuFetch('/task/' + cuId + '/field/' + CU.fields.draft.id,      'POST', { value: draftUrl });
+          if (contUrl)  await cuFetch('/task/' + cuId + '/field/' + CU.fields.contentUrl.id, 'POST', { value: contUrl });
+          if (metaInfo) await cuFetch('/task/' + cuId + '/field/' + CU.fields.metaInfo.id,   'POST', { value: metaInfo });
+          if (notes) {
+            var existing = await cuGetTask(cuId);
+            var desc = ((existing && existing.description) || '') + (existing && existing.description ? '\n\n' : '') + '--- WRITER NOTES ---\n' + notes;
+            await cuFetch('/task/' + cuId, 'PUT', { description: desc });
+          }
+        }
+      } catch(cuErr) { console.warn('ClickUp submit sync:', cuErr.message); }
+      document.getElementById('ws-overlay').style.display = 'none';
+      toast('Submitted for review \u2713');
+      loadPipeline(); loadWriterDrafts();
+      setTimeout(function(){ goScreen(prevScreen); }, 1800);
+    } catch(e) {
+      if (errEl) { errEl.textContent = 'Error: ' + e.message; errEl.style.display = 'block'; }
+      btn.textContent = 'Submit for review \u2192'; btn.disabled = false;
+    }
+  });
+  var wsCloseBtn = document.getElementById('ws-close-btn');
+  if (wsCloseBtn) wsCloseBtn.addEventListener('click', function(){ document.getElementById('ws-overlay').style.display = 'none'; });
+  var wsOverlay = document.getElementById('ws-overlay');
+  if (wsOverlay) wsOverlay.addEventListener('click', function(e){ if (e.target === wsOverlay) wsOverlay.style.display = 'none'; });
+
+
 
   // Reviewer forward
   document.getElementById('ed-fwd-btn').addEventListener('click',function(){
@@ -6553,7 +6804,7 @@ function init(){
     if(!next) return;
     dbUpdate(currentArt.id,{status:next}).then(function(){
       toast("Approved and moving — let's go! ");
-      loadPipeline(); loadReviewQ(); loadDavidQ();
+      loadPipeline(); loadDavidQ();
       setTimeout(function(){goScreen(prevScreen);},1800);
     });
   });
@@ -6580,7 +6831,7 @@ function init(){
     if (res.error) { toast('Delete failed'); return; }
     closeDrawer();
     toast('Gone. Deleted. Never existed. ');
-    loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts(); loadDavidQ();
   });
   document.getElementById('d-save').addEventListener('click',async function(){
     if(!drawerArt) return;
@@ -6590,7 +6841,7 @@ function init(){
     var due=document.getElementById('d-due')?document.getElementById('d-due').value||null:null;
     await dbUpdate(drawerArt.id,{assignee:assignee,priority:priority,status:status,due_date:due});
     closeDrawer(); toast('Updated — looking good ');
-    loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts(); loadDavidQ();
   });
 
   // Sendback modal
@@ -7563,7 +7814,7 @@ function v2WireCustomBtn() {
     currentBriefData = null; currentOutline = '';
 
     goScreen(user.screen);
-    loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts(); loadDavidQ();
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
