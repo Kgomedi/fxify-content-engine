@@ -2496,58 +2496,7 @@ async function generate(){
     (q?'AEO primary question: '+q+'\n':'')+
     'Author: '+author.name+' — '+author.title+' at FXIFY\n\n'+
 
-    'FXIFY BRAND FACTS (verified — use these exact figures):
-- Broker-backed since 2023 via FXPIG™ (established forex broker since 2010)
-- Programs: One Phase (no consistency rule, payout on demand), Two Phase Standard (trailing drawdown), Two Phase Classic (static drawdown), Three Phase Challenge (lowest assessment fee), Instant Funding (immediate access, two tiers), Lightning Challenge
-- Performance split up to 90%
-- $40M+ paid out to 250K+ traders
-- Daily drawdown limit: 5% | Max drawdown: 10%
-- All-In or Raw pricing model — trader chooses at checkout
-- First payout on demand across all evaluation programs
-- Maximum account size: $400,000 from a single account on day one of funded stage
-- Public demo account for spread verification
-- Platform support: MT4, MT5, DXTrade, TradingView
-- Ranked #1 Best Instant Funding Prop Firm on propfirms.com (83/100)
-
-THE FXIFY VOICE — study these real published sentences and write at this level:
-
-OPENING: "You are about to buy your first prop firm challenge. You have seen the ads. You have watched the YouTube reviews. The fees look similar."
-→ Opens with the reader's exact situation. No preamble. No question. No stat. Reader feels seen.
-
-SPECIFICITY: "The Instant Funding Lite tier, introduced in February 2026, starts at $19 for a $2,500 account, the lowest entry point of any firm in this comparison."
-→ Exact figures. Exact dates. Comparative context. Never vague.
-
-TRADER LOGIC: "When you see a high-conviction setup, you can size up and capture the full move without closing the trade early to protect your payout math."
-→ Explains the consequence to the trader's P&L, not the rule in abstract.
-
-HONEST COMPARISON: "Some prop firms run on a copy of a retail broker's feed. Others run on real broker pipes. The second group holds up better when the market gets fast."
-→ Names the problem without naming the competitor. Reader knows what this means.
-
-STRUCTURE SENTENCE: "Three things happen during high-impact news that change how your account behaves, and none of them depend on whether your trade direction is right."
-→ Sets up a section. Creates forward pull. No fluff.
-
-BANNED PHRASES — if any of these appear, the output fails:
-× "delve into" / "dive into" / "explore"
-× "it's worth noting" / "it is important to" / "it should be noted"
-× "in today's landscape" / "in the world of trading" / "in recent years"
-× "prop trading is when a firm gives you capital" (reader already knows)
-× "FXIFY offers competitive conditions" (too vague — cite the actual condition)
-× "whether you're a beginner or experienced trader"
-× Any sentence starting with "Overall," "Ultimately," "In conclusion,"
-× Any sentence over 25 words
-× Any paragraph over 3 sentences
-× Em-dashes — use a comma or a new sentence instead
-× "profit split" — always "performance split"
-
-WRITING RULES:
-1. One idea per sentence. One sentence, full stop, next sentence.
-2. Write to a specific trader who already trades. Never explain what a prop firm is.
-3. Every FXIFY mention cites a specific figure, feature, or verifiable fact. Never generic praise.
-4. Comparisons with FTMO, FundedNext, Apex must use their real publicly available data — never invented.
-5. ESL Grade 5-6 reading level. Short words. Short sentences. Clear logic.
-6. Active voice only. "FXIFY pays on demand" not "payouts can be requested at any time."
-7. Numbers are specific: "20 to 50 pips" not "significant slippage."
-8. The hook is a scene or a fact the reader recognises from their own trading life. Not an insight they haven't had yet.'+
+    'FXIFY BRAND FACTS (verified — use these exact figures):\n- Broker-backed since 2023 via FXPIG™ (established forex broker since 2010)\n- Programs: One Phase (no consistency rule, payout on demand), Two Phase Standard (trailing drawdown), Two Phase Classic (static drawdown), Three Phase Challenge (lowest assessment fee), Instant Funding (immediate access, two tiers), Lightning Challenge\n- Performance split up to 90%\n- $40M+ paid out to 250K+ traders\n- Daily drawdown limit: 5% | Max drawdown: 10%\n- All-In or Raw pricing model — trader chooses at checkout\n- First payout on demand across all evaluation programs\n- Maximum account size: $400,000 from a single account on day one of funded stage\n- Public demo account for spread verification\n- Platform support: MT4, MT5, DXTrade, TradingView\n- Ranked #1 Best Instant Funding Prop Firm on propfirms.com (83/100)\n\nTHE FXIFY VOICE — study these real published sentences and write at this level:\n\nOPENING: Reader sees: You are about to buy your first prop firm challenge. You have seen the ads.\n→ Opens with the reader\'s exact situation. No preamble. No question. No stat.\n\nSPECIFICITY: Cite exact figures and dates. Instant Funding Lite starts at $19 for a $2,500 account.\n→ Exact figures. Exact dates. Comparative context. Never vague.\n\nTRADER LOGIC: Explain the consequence to the trader\'s P&L, not the rule in abstract.\n\nBANNED PHRASES — output fails if any appear:\n- delve into, dive into, explore\n- it\'s worth noting, it is important to\n- in today\'s landscape, in the world of trading\n- FXIFY offers competitive conditions (cite the actual condition)\n- Sentences over 25 words\n- Paragraphs over 3 sentences\n- Em-dashes (use comma or new sentence)\n- profit split (always: performance split)\n\nWRITING RULES:\n1. One idea per sentence. Full stop. Next sentence.\n2. Write to a trader who already trades.\n3. Every FXIFY mention cites a specific verifiable fact.\n4. ESL Grade 5-6 reading level. Short words. Short sentences.\n5. Active voice only.\n6. Numbers are specific: 20 to 50 pips, not significant slippage.\n7. The hook is a scene the reader recognises from their own trading life.'
 
     '\n\n━━ ARTICLE STRUCTURE (follow in order) ━━━━━━━━━━━━━━━━━━━━━━━\n'+
     '1. H1 — keyword-led, under 65 characters, reads like a search result a trader would click\n'+
@@ -6236,23 +6185,7 @@ async function doGoogleLogin() {
 }
 
 // Wire login button immediately — don't wait for init()
-document.addEventListener('DOMContentLoaded', function() {
-  var btn = document.getElementById('login-btn');
-  if (btn) btn.addEventListener('click', doGoogleLogin);
-
-  // Auto-set author dropdown based on logged in user
-  if (currentUser && currentUser.email) {
-    var authorSel = document.getElementById('b-author');
-    if (authorSel) {
-      var emailPrefix = currentUser.email.split('.')[0].toLowerCase();
-      var authorMap = { sheperd: 'sheperd', fariha: 'fariha', harrison: 'harry', imran: 'imran' };
-      var authorVal = authorMap[emailPrefix] || 'sheperd';
-      for (var ai = 0; ai < authorSel.options.length; ai++) {
-        if (authorSel.options[ai].value === authorVal) { authorSel.selectedIndex = ai; break; }
-      }
-    }
-  }
-});
+// Login button wired in init() — no duplicate listener needed here
 
 var USERS = {
   'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
@@ -7421,58 +7354,7 @@ async function runBriefResearch(topicObj) {
     'CATEGORY: '+cat+'\n\n'+
     extraContext+
 
-    'FXIFY BRAND FACTS (verified — use these exact figures):
-- Broker-backed since 2023 via FXPIG™ (established forex broker since 2010)
-- Programs: One Phase (no consistency rule, payout on demand), Two Phase Standard (trailing drawdown), Two Phase Classic (static drawdown), Three Phase Challenge (lowest assessment fee), Instant Funding (immediate access, two tiers), Lightning Challenge
-- Performance split up to 90%
-- $40M+ paid out to 250K+ traders
-- Daily drawdown limit: 5% | Max drawdown: 10%
-- All-In or Raw pricing model — trader chooses at checkout
-- First payout on demand across all evaluation programs
-- Maximum account size: $400,000 from a single account on day one of funded stage
-- Public demo account for spread verification
-- Platform support: MT4, MT5, DXTrade, TradingView
-- Ranked #1 Best Instant Funding Prop Firm on propfirms.com (83/100)
-
-THE FXIFY VOICE — study these real published sentences and write at this level:
-
-OPENING: "You are about to buy your first prop firm challenge. You have seen the ads. You have watched the YouTube reviews. The fees look similar."
-→ Opens with the reader's exact situation. No preamble. No question. No stat. Reader feels seen.
-
-SPECIFICITY: "The Instant Funding Lite tier, introduced in February 2026, starts at $19 for a $2,500 account, the lowest entry point of any firm in this comparison."
-→ Exact figures. Exact dates. Comparative context. Never vague.
-
-TRADER LOGIC: "When you see a high-conviction setup, you can size up and capture the full move without closing the trade early to protect your payout math."
-→ Explains the consequence to the trader's P&L, not the rule in abstract.
-
-HONEST COMPARISON: "Some prop firms run on a copy of a retail broker's feed. Others run on real broker pipes. The second group holds up better when the market gets fast."
-→ Names the problem without naming the competitor. Reader knows what this means.
-
-STRUCTURE SENTENCE: "Three things happen during high-impact news that change how your account behaves, and none of them depend on whether your trade direction is right."
-→ Sets up a section. Creates forward pull. No fluff.
-
-BANNED PHRASES — if any of these appear, the output fails:
-× "delve into" / "dive into" / "explore"
-× "it's worth noting" / "it is important to" / "it should be noted"
-× "in today's landscape" / "in the world of trading" / "in recent years"
-× "prop trading is when a firm gives you capital" (reader already knows)
-× "FXIFY offers competitive conditions" (too vague — cite the actual condition)
-× "whether you're a beginner or experienced trader"
-× Any sentence starting with "Overall," "Ultimately," "In conclusion,"
-× Any sentence over 25 words
-× Any paragraph over 3 sentences
-× Em-dashes — use a comma or a new sentence instead
-× "profit split" — always "performance split"
-
-WRITING RULES:
-1. One idea per sentence. One sentence, full stop, next sentence.
-2. Write to a specific trader who already trades. Never explain what a prop firm is.
-3. Every FXIFY mention cites a specific figure, feature, or verifiable fact. Never generic praise.
-4. Comparisons with FTMO, FundedNext, Apex must use their real publicly available data — never invented.
-5. ESL Grade 5-6 reading level. Short words. Short sentences. Clear logic.
-6. Active voice only. "FXIFY pays on demand" not "payouts can be requested at any time."
-7. Numbers are specific: "20 to 50 pips" not "significant slippage."
-8. The hook is a scene or a fact the reader recognises from their own trading life. Not an insight they haven't had yet.'+
+    'FXIFY BRAND FACTS (verified — use these exact figures):\n- Broker-backed since 2023 via FXPIG™ (established forex broker since 2010)\n- Programs: One Phase (no consistency rule, payout on demand), Two Phase Standard (trailing drawdown), Two Phase Classic (static drawdown), Three Phase Challenge (lowest assessment fee), Instant Funding (immediate access, two tiers), Lightning Challenge\n- Performance split up to 90%\n- $40M+ paid out to 250K+ traders\n- Daily drawdown limit: 5% | Max drawdown: 10%\n- All-In or Raw pricing model — trader chooses at checkout\n- First payout on demand across all evaluation programs\n- Maximum account size: $400,000 from a single account on day one of funded stage\n- Public demo account for spread verification\n- Platform support: MT4, MT5, DXTrade, TradingView\n- Ranked #1 Best Instant Funding Prop Firm on propfirms.com (83/100)\n\nTHE FXIFY VOICE — study these real published sentences and write at this level:\n\nOPENING: Reader sees: You are about to buy your first prop firm challenge. You have seen the ads.\n→ Opens with the reader\'s exact situation. No preamble. No question. No stat.\n\nSPECIFICITY: Cite exact figures and dates. Instant Funding Lite starts at $19 for a $2,500 account.\n→ Exact figures. Exact dates. Comparative context. Never vague.\n\nTRADER LOGIC: Explain the consequence to the trader\'s P&L, not the rule in abstract.\n\nBANNED PHRASES — output fails if any appear:\n- delve into, dive into, explore\n- it\'s worth noting, it is important to\n- in today\'s landscape, in the world of trading\n- FXIFY offers competitive conditions (cite the actual condition)\n- Sentences over 25 words\n- Paragraphs over 3 sentences\n- Em-dashes (use comma or new sentence)\n- profit split (always: performance split)\n\nWRITING RULES:\n1. One idea per sentence. Full stop. Next sentence.\n2. Write to a trader who already trades.\n3. Every FXIFY mention cites a specific verifiable fact.\n4. ESL Grade 5-6 reading level. Short words. Short sentences.\n5. Active voice only.\n6. Numbers are specific: 20 to 50 pips, not significant slippage.\n7. The hook is a scene the reader recognises from their own trading life.'
 
     '\n\nFXIFY BLOG FORMAT — this is the structure every article follows:\n\n'+
 
