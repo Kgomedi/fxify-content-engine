@@ -1,3 +1,34 @@
+function cuResolveAssignee(name) {
+  if (!name || name === '— Unassigned —') return [];
+  var n = name.toLowerCase().trim();
+  // 1. Exact email match
+  var byEmail = CU.members.filter(function(m){ return m.email.toLowerCase() === n; });
+  if (byEmail.length) return byEmail.map(function(m){ return m.id; });
+  // 2. Exact full username match
+  var byFull = CU.members.filter(function(m){ return m.username.toLowerCase() === n; });
+  if (byFull.length) return byFull.map(function(m){ return m.id; });
+  // 3. Exact first+last — e.g. "Harry Hosking" only matches Harry Hosking not Harry McHugh
+  var parts = n.split(' ');
+  if (parts.length >= 2) {
+    var byName = CU.members.filter(function(m){
+      var u = m.username.toLowerCase();
+      return u.startsWith(parts[0]) && u.includes(parts[parts.length - 1]);
+    });
+    if (byName.length === 1) return byName.map(function(m){ return m.id; });
+  }
+  // 4. Email prefix before @ — e.g. "fariha.khan" matches fariha.khan@fxify.com
+  var byEmailPrefix = CU.members.filter(function(m){ return m.email.toLowerCase().split('@')[0] === n; });
+  if (byEmailPrefix.length) return byEmailPrefix.map(function(m){ return m.id; });
+  // 5. No match
+  console.warn('cuResolveAssignee: no member found for "' + name + '"');
+  return [];
+}
+
+function cuGetMembers() {
+  window._cuMembers = CU.members;
+  return CU.members;
+}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -461,68 +492,89 @@ select.finput option{background:var(--bg2);color:var(--text);}
           <div class="sc sc-g"><p class="slbl">Live</p><p class="sval" id="cu-st-done">—</p></div>
         </div>
 
-        <!-- NEW TASK FORM (collapsed by default) -->
+        <!-- NEW TASK FORM -->
         <div id="cu-create-panel" style="display:none;background:var(--bg2);border:1px solid rgba(0,212,170,0.2);border-radius:var(--rl);padding:16px 20px;margin-bottom:16px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <p style="font-size:13px;font-weight:600;color:var(--text);">Create task in ClickUp</p>
-            <button style="background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;line-height:1;" id="cu-create-close">×</button>
+            <p style="font-size:13px;font-weight:600;color:var(--text);">New task in ClickUp</p>
+            <button style="background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;" id="cu-create-close">×</button>
           </div>
           <div class="frow fg">
-            <div>
-              <label class="flbl">Task title</label>
-              <input class="finput" id="ct-title" type="text" placeholder="e.g. How to Pass the FXIFY One Phase Challenge"/>
-            </div>
-            <div>
-              <label class="flbl">Category</label>
-              <select class="finput" id="ct-category">
-                <option>Guides</option>
-                <option>Explainers</option>
-                <option>Comparisons</option>
-                <option>News & Updates</option>
-                <option>Trading Psychology</option>
-              </select>
-            </div>
+            <div><label class="flbl">Title</label><input class="finput" id="ct-title" type="text" placeholder="e.g. How to Pass the FXIFY One Phase Challenge"/></div>
+            <div><label class="flbl">Primary keyword</label><input class="finput" id="ct-keyword" type="text" placeholder="e.g. FXIFY one phase review"/></div>
           </div>
           <div class="frow fg">
             <div>
               <label class="flbl">Assign to</label>
               <select class="finput" id="ct-assignee">
                 <option value="">— Unassigned —</option>
-                <option>Fariha Khan</option>
-                <option>Harrison Hosking</option>
-                <option>Imran Najib</option>
-                <option>Mamnun Ahmed</option>
-                <option>Roshan Ganesh</option>
-                <option>Shatha Altrad</option>
               </select>
             </div>
             <div>
-              <label class="flbl">Priority</label>
-              <select class="finput" id="ct-priority">
-                <option>Normal</option>
-                <option>High</option>
-                <option>Urgent</option>
-                <option>Low</option>
+              <label class="flbl">Status</label>
+              <select class="finput" id="ct-status">
               </select>
             </div>
           </div>
           <div class="frow fg">
             <div>
-              <label class="flbl">Due date</label>
-              <input class="finput" id="ct-due" type="date"/>
+              <label class="flbl">Priority</label>
+              <select class="finput" id="ct-priority">
+                <option value="3">Normal</option>
+                <option value="2">High</option>
+                <option value="1">Urgent</option>
+                <option value="4">Low</option>
+              </select>
+            </div>
+            <div><label class="flbl">Due date</label><input class="finput" id="ct-due" type="date"/></div>
+          </div>
+          <div class="frow fg">
+            <div>
+              <label class="flbl">Type</label>
+              <select class="finput" id="ct-type">
+                <option value="">—</option>
+                <option value="5dd389a9-a4bb-4229-b3ca-2dc94e09e291">SEO</option>
+                <option value="75c1e47a-06a5-4e32-8a7f-84c7d9ae536e">Non-SEO</option>
+              </select>
             </div>
             <div>
-              <label class="flbl">Primary keyword</label>
-              <input class="finput" id="ct-keyword" type="text" placeholder="e.g. FXIFY one phase review"/>
+              <label class="flbl">Category</label>
+              <select class="finput" id="ct-category">
+                <option value="">—</option>
+                <option value="71481775-35ce-484d-9b63-7ba76761a88f">Strategies</option>
+                <option value="8fade06d-8a9c-4c39-ad1d-d063e0074282">Guides</option>
+                <option value="2cce5c68-4df8-48fb-9045-1f14457a2a1a">Spotlight</option>
+                <option value="7709e42c-81f5-4f3f-824c-f0cb74e05919">Updates</option>
+                <option value="b654c353-303f-49e0-8abb-20954785d047">Prop Trading Insights</option>
+                <option value="9da64d9a-a1ff-4370-b940-740fb5c28f98">Trading Culture</option>
+              </select>
             </div>
           </div>
-          <div class="fg">
-            <label class="flbl">Brief notes (optional — or use Content Hub to generate a full brief)</label>
-            <textarea class="finput" id="ct-notes" rows="3" placeholder="Key angle, competitor gap, FXIFY differentiator..." style="resize:vertical;"></textarea>
+          <div class="frow fg">
+            <div>
+              <label class="flbl">Pillar Type</label>
+              <select class="finput" id="ct-pillar">
+                <option value="">—</option>
+                <option value="1009e261-09cd-4d77-b1f6-1c56306ca381">Brand Awareness</option>
+                <option value="7f38b761-39d5-4620-998a-bbdb4d7c22c9">Product/USP</option>
+                <option value="eaf1c6b0-2356-48a1-850f-78b5b928a557">Promotions</option>
+                <option value="39b2fd82-4b1d-439c-8f16-b67854c3ea4b">Market Insights &amp; Econ Calendar</option>
+                <option value="1e1874ba-dd17-4e6d-ad07-dbc97c3febce">How-To Guides</option>
+                <option value="e7f49ae8-f71a-4894-ba94-d8a024c85f5f">What is...</option>
+                <option value="2ba36ddc-10eb-4218-b1e3-54b5a9642e2f">Trading Tips &amp; Strategies</option>
+                <option value="a0dbdc9f-f7ef-48a2-9a5a-bde153a627a5">Community Engagement</option>
+                <option value="a53721cb-0fee-4523-8054-a1e9aea11031">Company Updates</option>
+                <option value="3483e631-5820-4e3f-8f58-3d87a2399d50">Inspirational</option>
+              </select>
+            </div>
+            <div>
+              <label class="flbl">Draft URL</label>
+              <input class="finput" id="ct-draft-url" type="url" placeholder="Google Docs link"/>
+            </div>
           </div>
+          <div class="fg"><label class="flbl">Brief notes</label><textarea class="finput" id="ct-notes" rows="2" placeholder="Key angle, FXIFY differentiator..." style="resize:vertical;"></textarea></div>
           <div style="display:flex;gap:8px;align-items:center;">
-            <button class="btn btn-p" id="ct-submit-btn" style="min-width:180px;">Create in ClickUp + Supabase →</button>
-            <p id="ct-status-msg" style="font-size:11px;color:var(--text3);"></p>
+            <button class="btn btn-p" id="ct-submit-btn" style="min-width:200px;">Create in ClickUp + Supabase →</button>
+            <p id="ct-status-msg" style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;"></p>
           </div>
         </div>
 
@@ -1326,233 +1378,116 @@ var supa = supabase.createClient(
 
 // ── CLICKUP ───────────────────────────────────────────────────────────────
 var CU = {
-  key:    'pk_100917934_R3XGNBIOXGU2VM47VGAMIANONU6Z63EQ',
-  list:   '901603213790',
-  base:   'https://api.clickup.com/api/v2',
-  // Status map: app status -> ClickUp status name (adjust to match your list)
+  key:  'pk_100917934_R3XGNBIOXGU2VM47VGAMIANONU6Z63EQ',
+  list: '901603213790',
+  base: 'https://api.clickup.com/api/v2',
+
+  // ── EXACT STATUSES from ClickUp (orderindex = column order) ─────────────
+  statuses: [
+    { status:'to do',               color:'#87909e', orderindex:0  },
+    { status:'assigned to agency',  color:'#aa8d80', orderindex:1  },
+    { status:'ready to start',      color:'#e16b16', orderindex:2  },
+    { status:'ideation & research', color:'#5bb5ed', orderindex:3  },
+    { status:'in progress',         color:'#f8ae00', orderindex:4  },
+    { status:'copy draft',          color:'#1090e0', orderindex:5  },
+    { status:'production',          color:'#ee5e99', orderindex:6  },
+    { status:'post-production',     color:'#b660e0', orderindex:7  },
+    { status:'review',              color:'#f1888d', orderindex:8  },
+    { status:'revisions',           color:'#d33d44', orderindex:9  },
+    { status:'editing',             color:'#eb873f', orderindex:10 },
+    { status:'final review',        color:'#4466ff', orderindex:11 },
+    { status:'adaptation',          color:'#5f55ee', orderindex:12 },
+    { status:'approved',            color:'#008844', orderindex:13 },
+    { status:'on hold',             color:'#656f7d', orderindex:14 },
+    { status:'scheduled',           color:'#10d9e0', orderindex:15 },
+    { status:'published',           color:'#0bad01', orderindex:16 },
+    { status:'canceled',            color:'#d33d44', orderindex:17 },
+    { status:'completed',           color:'#008844', orderindex:18 },
+  ],
+
+  // ── MEMBERS (exact from ClickUp) ─────────────────────────────────────────
+  members: [
+    { id:50432102,  username:'Peter Brown',          email:'peter@fxify.com',                  color:'#ea80fc' },
+    { id:50432208,  username:'David',                email:'david@fxify.com',                  color:'#ff897f' },
+    { id:50437213,  username:'Samuel',               email:'itshttpsam@gmail.com',             color:'#ff897f' },
+    { id:50439734,  username:'David Xavier',         email:'david.xavier@fxify.com',           color:'#e78845' },
+    { id:50546936,  username:'Bobby Winters',        email:'bobby@fxpig.com',                  color:'' },
+    { id:50563805,  username:'Christopher Small',    email:'chris@fxpig.com',                  color:'#388d3c' },
+    { id:50616094,  username:'Jim',                  email:'jim@fxify.com',                    color:'#0091ff' },
+    { id:66836723,  username:'Cheng Lee Yang',       email:'chenglee.yang@fxpig.com',          color:'#d60800' },
+    { id:88831322,  username:'Harry McHugh',         email:'harry@fxify.com',                  color:'#d60800' },
+    { id:88879567,  username:'Fattzai',              email:'fattzai@fxify.com',                color:'#0f9d9f' },
+    { id:88920909,  username:'Harry Hosking',        email:'harrison.hosking@fxify.com',       color:'#afb42b' },
+    { id:88998630,  username:'Najihah Rosli',        email:'najihah.rosli@fxify.com',          color:'#ffc53d' },
+    { id:89043573,  username:'Anys Nyss',            email:'intan.shafinaz@fxify.com',         color:'#e16b16' },
+    { id:89079161,  username:'Fariha Khan',          email:'fariha.khan@fxify.com',            color:'#ffc53d' },
+    { id:89097082,  username:'Alina Razgulova',      email:'alina.razgulova@fxify.com',        color:'#5d4037' },
+    { id:89097083,  username:'Kevin Chong',          email:'kevin.chong@fxify.com',            color:'#ff897f' },
+    { id:94826499,  username:'Imran Muhd Najib',     email:'imran.najib@fxify.com',            color:'#595d66' },
+    { id:94831839,  username:'Anastasia Pichugina',  email:'anastasia.pichugina@fxify.com',    color:'#304ffe' },
+    { id:94834141,  username:'Andri Papadopoulou',   email:'andri.papadopoulou@fxify.com',     color:'#ffa727' },
+    { id:95057862,  username:'park hyoung yoon',     email:'park.yoon@fxify.com',              color:'#0197a7' },
+    { id:100905047, username:'Roshan Ganesh',        email:'roshan.ganesh@fxify.com',          color:'#263238' },
+    { id:100917934, username:'Sheperd Morena',       email:'sheperd.morena@fxify.com',         color:'#c51162' },
+    { id:100933874, username:'Shatha Altrad',        email:'shatha.altrad@fxify.com',          color:'#0f9d9f' },
+    { id:100933875, username:'Mamnun Ahmed',         email:'mamnun.ahmed@fxify.com',           color:'#1b5e20' },
+    { id:101027351, username:'Tiago Sousa',          email:'tiago@fxify.com',                  color:'#536cfe' },
+    { id:254552824, username:'Alla Vasylenko',       email:'alla.vasylenko@fxify.com',         color:'#595d66' },
+  ],
+
+  // ── CUSTOM FIELDS ─────────────────────────────────────────────────────────
+  fields: {
+    type:           { id:'0d853bbd-fbde-4f7e-9a3d-fed466ae1084', options:['SEO','Non-SEO'] },
+    liveDate:       { id:'1428943f-31fe-418f-b082-faf52f4d00b2' },
+    contentPillar:  { id:'18717421-46f9-4cb5-b461-3633e53e04ef', options:['Branding','USP','Campaigns','Product Launch','Educational','Market Insights'] },
+    draft:          { id:'2064d475-a107-4e39-b6be-9c29290b4fb5' },
+    difficulty:     { id:'2f0f038a-9668-40a4-948c-f311dfc8a043' },
+    contentUrl:     { id:'30949ca6-9eef-437c-815a-d34c0d4118bb' },
+    interlinked:    { id:'3fb256c7-1979-484b-af6f-618343e6a05e' },
+    pillarType:     { id:'7a38e9b1-93df-4ff0-958a-af9aca23cc85', options:['Brand Awareness','Product/USP','Promotions','Market Insights & Econ Calendar','How-To Guides','What is...','Trading Tips & Strategies','Community Engagement','Company Updates','Inspirational','Upcoming Events','Trading Schedule Updates'] },
+    kwToLink:       { id:'7b743fa7-e837-44be-9e0a-9be933889402' },
+    source:         { id:'b1165ed7-32b3-4fd3-8df6-93835b828273', options:['FXIFY','Quirky'] },
+    author:         { id:'b3f559ac-0588-4e0d-89b4-3610020260d6' },
+    interlinkedKw:  { id:'c1b89d6e-1728-4ac2-885e-359a11e90253' },
+    primaryKeyword: { id:'c340b773-00cc-460a-9635-82a816915856' },
+    category:       { id:'d695ba45-a11b-4a91-b099-dc27715443cd', options:['Strategies','Guides','Spotlight','Updates','Prop Trading Insights','Trading Culture'] },
+    translation:    { id:'e2ff6fd8-f4bb-4b3c-bd3a-5683204f782d' },
+    metaInfo:       { id:'e82a1a28-d7f1-45ba-9918-0ee80e65a59c', options:['Pending','In Progress','Revisions','Done'] },
+  },
+
+  // ── FIELD OPTION IDs (needed for dropdown custom field updates) ──────────
+  fieldOptions: {
+    type:        { 'SEO':'5dd389a9-a4bb-4229-b3ca-2dc94e09e291', 'Non-SEO':'75c1e47a-06a5-4e32-8a7f-84c7d9ae536e' },
+    contentPillar: { 'Branding':'23785817-754a-4d7e-888a-8f1df6dc56bc','USP':'9cb02e08-e3bf-4b67-82b0-e23f24c4fa3f','Campaigns':'6257d769-867e-45c0-bbb5-abcfc0720498','Product Launch':'dd7d9e27-1616-48af-95cb-fac6d408b643','Educational':'f4fc6d90-5ca0-4f1e-b3b5-4f46b616a1a9','Market Insights':'74dec08a-58e7-4d4f-a114-786e8e484f78' },
+    pillarType:  { 'Brand Awareness':'1009e261-09cd-4d77-b1f6-1c56306ca381','Product/USP':'7f38b761-39d5-4620-998a-bbdb4d7c22c9','Promotions':'eaf1c6b0-2356-48a1-850f-78b5b928a557','Market Insights & Econ Calendar':'39b2fd82-4b1d-439c-8f16-b67854c3ea4b','How-To Guides':'1e1874ba-dd17-4e6d-ad07-dbc97c3febce','What is...':'e7f49ae8-f71a-4894-ba94-d8a024c85f5f','Trading Tips & Strategies':'2ba36ddc-10eb-4218-b1e3-54b5a9642e2f','Community Engagement':'a0dbdc9f-f7ef-48a2-9a5a-bde153a627a5','Company Updates':'a53721cb-0fee-4523-8054-a1e9aea11031','Inspirational':'3483e631-5820-4e3f-8f58-3d87a2399d50','Upcoming Events':'c47cb943-2238-4e52-8862-73f757d4d594','Trading Schedule Updates':'10ec70f6-7663-43ad-a398-4a23143b7fd9' },
+    source:      { 'FXIFY':'d2aa1ac5-0167-4709-9001-dbc642e93e71','Quirky':'e5b406d3-2811-4aae-9ca4-3a494bef54db' },
+    category:    { 'Strategies':'71481775-35ce-484d-9b63-7ba76761a88f','Guides':'8fade06d-8a9c-4c39-ad1d-d063e0074282','Spotlight':'2cce5c68-4df8-48fb-9045-1f14457a2a1a','Updates':'7709e42c-81f5-4f3f-824c-f0cb74e05919','Prop Trading Insights':'b654c353-303f-49e0-8abb-20954785d047','Trading Culture':'9da64d9a-a1ff-4370-b940-740fb5c28f98' },
+    metaInfo:    { 'Pending':'26e8eb15-5f7d-431c-9029-43a8dc725ec3','In Progress':'92ab2750-0477-491b-8125-106d63e31a28','Revisions':'4dc55660-0be6-4cd1-9eeb-6f5a94853b9d','Done':'277723d5-2fff-4dfa-bfa5-8a0fad855006' },
+  },
+
+  // Legacy maps kept for Supabase sync compatibility
   statusMap: {
     'Briefed':        'to do',
     'Drafting':       'in progress',
-    'Sheperd Review': 'in review',
-    'David Approval': 'pending approval',
-    'Publishing':     'publishing',
-    'Live':           'complete'
+    'Sheperd Review': 'review',
+    'David Approval': 'final review',
+    'Publishing':     'scheduled',
+    'Live':           'published'
   },
-  // Reverse map for reading ClickUp status back
   reverseStatusMap: {
-    'to do':           'Briefed',
-    'in progress':     'Drafting',
-    'in review':       'Sheperd Review',
-    'pending approval':'David Approval',
-    'publishing':      'Publishing',
-    'complete':        'Live',
-    'done':            'Live',
-    'closed':          'Live'
-  }
+    'to do':          'Briefed',
+    'in progress':    'Drafting',
+    'copy draft':     'Drafting',
+    'review':         'Sheperd Review',
+    'editing':        'Sheperd Review',
+    'final review':   'David Approval',
+    'approved':       'David Approval',
+    'scheduled':      'Publishing',
+    'published':      'Live',
+    'completed':      'Live',
+  },
 };
 
-async function cuFetch(path, method, body) {
-  try {
-    var opts = {
-      method: method || 'GET',
-      headers: { 'Authorization': CU.key, 'Content-Type': 'application/json' }
-    };
-    if (body) opts.body = JSON.stringify(body);
-    var r = await fetch(CU.base + path, opts);
-    return await r.json();
-  } catch(e) {
-    console.warn('ClickUp API error:', e.message);
-    return null;
-  }
-}
-
-async function cuCreateTask(article) {
-  var brief = null;
-  try {
-    if (article.content && article.content.trim().startsWith('{')) {
-      brief = JSON.parse(article.content);
-    }
-  } catch(e) {}
-
-  // Build rich description
-  var desc = '';
-  if (brief) {
-    desc += '📌 KEYWORD: ' + (brief.primary_keyword || article.primary_kw || '') + '\n';
-    if (brief.secondary_keywords && brief.secondary_keywords.length) {
-      desc += '🔑 SECONDARY: ' + brief.secondary_keywords.join(', ') + '\n';
-    }
-    desc += '🎯 SEARCH INTENT: ' + (brief.search_intent || 'Informational') + '\n';
-    desc += '📏 WORD COUNT: ' + (brief.word_count || '1200') + ' words\n';
-    desc += '📂 CATEGORY: ' + (article.category || 'Guides') + '\n\n';
-
-    if (brief.h1_title) desc += '--- H1 TITLE ---\n' + brief.h1_title + '\n\n';
-    if (brief.meta_description) desc += '--- META DESCRIPTION ---\n' + brief.meta_description + '\n\n';
-    if (brief.hook_angle) desc += '--- OPENING HOOK ---\n' + brief.hook_angle + '\n\n';
-    if (brief.fxify_angle) desc += '--- FXIFY ANGLE ---\n' + brief.fxify_angle + '\n\n';
-
-    if (brief.sections && brief.sections.length) {
-      desc += '--- ARTICLE STRUCTURE ---\n';
-      brief.sections.forEach(function(s, i) {
-        desc += (i+1) + '. ' + (s.heading || s);
-        if (s.angle) desc += '\n   Angle: ' + s.angle;
-        if (s.word_count) desc += '\n   Words: ~' + s.word_count;
-        desc += '\n';
-      });
-      desc += '\n';
-    }
-
-    if (brief.competitor_gaps) {
-      desc += '--- COMPETITOR GAP ---\n' + brief.competitor_gaps + '\n';
-      if (brief.competitor_urls && brief.competitor_urls.length) {
-        desc += 'Sources: ' + brief.competitor_urls.filter(Boolean).join(', ') + '\n';
-      }
-      desc += '\n';
-    }
-
-    if (brief.faqs && brief.faqs.length) {
-      desc += '--- FAQs ---\n';
-      brief.faqs.forEach(function(q) {
-        desc += 'Q: ' + (typeof q === 'string' ? q : q.question) + '\n';
-        if (q.answer) desc += 'A: ' + q.answer + '\n';
-      });
-      desc += '\n';
-    }
-
-    desc += '--- VOICE RULES ---\n';
-    desc += '✓ One idea per sentence. Full stop. Next.\n';
-    desc += '✓ Hook = trader scenario, not a definition\n';
-    desc += '✓ Every FXIFY mention cites a specific verified fact\n';
-    desc += '✗ Never: delve into, dive into, in this article we will...\n';
-    desc += '✗ Never: sentences over 25 words\n';
-    desc += '✗ Never: profit split (use performance split)\n';
-  } else {
-    desc = article.content || '';
-  }
-
-  // Resolve assignee
-  var assigneeIds = [];
-  if (article.assignee && article.assignee !== '— Unassigned —') {
-    assigneeIds = await cuResolveAssignee(article.assignee);
-  }
-
-  // Map priority
-  var cuPriority = { 'Urgent': 1, 'High': 2, 'Normal': 3, 'Low': 4 };
-  var pri = cuPriority[article.priority] || 3;
-
-  // Map due date
-  var dueDate = null;
-  if (article.due_date) {
-    try { dueDate = new Date(article.due_date).getTime(); } catch(e) {}
-  }
-
-  var body = {
-    name: article.title || 'Untitled',
-    description: desc,
-    status: CU.statusMap[article.status] || 'to do',
-    priority: pri,
-    assignees: assigneeIds,
-  };
-  if (dueDate) body.due_date = dueDate;
-
-  var res = await cuFetch('/list/' + CU.list + '/task', 'POST', body);
-  if (!res || !res.id) { console.warn('ClickUp task creation failed:', res); return null; }
-  return res;
-}
-
-
-async function cuUpdateStatus(taskId, appStatus) {
-  if (!taskId) return;
-  var cuStatus = CU.statusMap[appStatus];
-  if (!cuStatus) return;
-  await cuFetch('/task/' + taskId, 'PUT', { status: cuStatus });
-}
-
-async function cuResolveAssignee(name) {
-  // Cache members list
-  if (!window._cuMembers) {
-    var res = await cuFetch('/list/' + CU.list + '/member');
-    window._cuMembers = (res && res.members) ? res.members : [];
-  }
-  if (!name || name === '— Unassigned —') return [];
-  var first = name.split(' ')[0].toLowerCase();
-  var match = window._cuMembers.filter(function(m) {
-    return m.username.toLowerCase().includes(first) ||
-           (m.email && m.email.toLowerCase().includes(first));
-  });
-  return match.map(function(m){ return m.id; });
-}
-
-async function cuGetTasks() {
-  // Paginate — ClickUp returns max 100 per page
-  var allTasks = [];
-  var page = 0;
-  while (true) {
-    var res = await cuFetch('/list/' + CU.list + '/task?include_closed=true&subtasks=false&page=' + page + '&order_by=created&reverse=true');
-    if (!res || !res.tasks || !res.tasks.length) break;
-    allTasks = allTasks.concat(res.tasks);
-    if (res.tasks.length < 100) break; // last page
-    page++;
-    if (page > 9) break; // safety cap at 1000 tasks
-  }
-  return allTasks;
-}
-
-async function cuGetTask(taskId) {
-  var res = await cuFetch('/task/' + taskId + '?include_subtasks=false');
-  return res || null;
-}
-
-async function cuUpdateField(taskId, field, value) {
-  if (!taskId) return null;
-  var body = {};
-  body[field] = value;
-  return await cuFetch('/task/' + taskId, 'PUT', body);
-}
-
-async function cuUpdateAssignees(taskId, addIds, removeIds) {
-  return await cuFetch('/task/' + taskId, 'PUT', {
-    assignees: { add: addIds || [], rem: removeIds || [] }
-  });
-}
-
-async function cuSetDueDate(taskId, timestamp) {
-  return await cuFetch('/task/' + taskId, 'PUT', { due_date: timestamp, due_date_time: true });
-}
-
-async function cuGetMembers() {
-  if (window._cuMembers && window._cuMembers.length) return window._cuMembers;
-  var res = await cuFetch('/list/' + CU.list + '/member');
-  window._cuMembers = (res && res.members) ? res.members : [];
-  return window._cuMembers;
-}
-
-// Pull ClickUp statuses and update Supabase articles that have a clickup_id stored
-async function cuSyncFromClickUp() {
-  try {
-    var tasks = await cuGetTasks();
-    if (!tasks.length) return;
-    // Get all articles that have a clickup_id in meta
-    var res = await supa.from('articles').select('id,meta,status').not('meta', 'is', null);
-    if (res.error || !res.data) return;
-    var updates = 0;
-    for (var i = 0; i < res.data.length; i++) {
-      var art = res.data[i];
-      if (!art.meta || !art.meta.clickup_id) continue;
-      var task = tasks.find(function(t){ return t.id === art.meta.clickup_id; });
-      if (!task) continue;
-      var cuStatus = task.status && task.status.status ? task.status.status.toLowerCase() : '';
-      var appStatus = CU.reverseStatusMap[cuStatus];
-      if (appStatus && appStatus !== art.status) {
-        await supa.from('articles').update({ status: appStatus, updated_at: new Date().toISOString() }).eq('id', art.id);
-        updates++;
-      }
-    }
-    if (updates > 0) {
-      toast(updates + ' article' + (updates > 1 ? 's' : '') + ' synced from ClickUp ✓');
-      loadClickUpBoard();
-    }
-  } catch(e) { console.warn('cuSyncFromClickUp error:', e.message); }
-}
 
 // ── STATE ─────────────────────────────────────────────────────────────────
 var activeRole = 'admin';
@@ -1699,73 +1634,103 @@ async function loadClickUpBoard(){
     return;
   }
 
-  window._cuAllTasks = tasks; // cache for task panel
+  window._cuAllTasks = tasks;
 
-  // Stats
+  // Group by status (exact ClickUp status names)
+  var columns = {};
+  CU.statuses.forEach(function(s){ columns[s.status] = []; });
+  tasks.forEach(function(t) {
+    var s = (t.status && t.status.status) ? t.status.status.toLowerCase() : 'to do';
+    if (columns[s]) columns[s].push(t);
+    else columns[s] = [t]; // unknown status
+  });
+
+  // Stats using real names
   function setEl(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; }
-  var todo    = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['to do','briefed'].includes(s.toLowerCase()); }).length;
-  var prog    = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return s.toLowerCase().includes('progress')||s.toLowerCase().includes('draft'); }).length;
-  var review  = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return s.toLowerCase().includes('review')||s.toLowerCase().includes('approval'); }).length;
-  var done    = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['complete','live','done','closed'].includes(s.toLowerCase()); }).length;
+  var todo   = (columns['to do']||[]).length + (columns['assigned to agency']||[]).length + (columns['ready to start']||[]).length;
+  var prog   = (columns['ideation & research']||[]).length + (columns['in progress']||[]).length + (columns['copy draft']||[]).length + (columns['production']||[]).length + (columns['post-production']||[]).length;
+  var review = (columns['review']||[]).length + (columns['revisions']||[]).length + (columns['editing']||[]).length + (columns['final review']||[]).length + (columns['adaptation']||[]).length;
+  var done   = (columns['approved']||[]).length + (columns['scheduled']||[]).length + (columns['published']||[]).length + (columns['completed']||[]).length;
   setEl('cu-st-todo',   todo);
   setEl('cu-st-prog',   prog);
   setEl('cu-st-review', review);
   setEl('cu-st-done',   done);
   var nb = document.getElementById('nb-pipeline');
-  if (nb) nb.textContent = (todo + prog + review) || '';
+  if (nb) nb.textContent = tasks.length || '';
 
-  // Group by status
-  var colOrder = ['to do','in progress','in review','pending approval','publishing','complete'];
-  var columns = {};
-  colOrder.forEach(function(s){ columns[s] = []; });
-  tasks.forEach(function(t) {
-    var s = (t.status && t.status.status) ? t.status.status.toLowerCase() : 'to do';
-    if (!columns[s]) columns[s] = [];
-    columns[s].push(t);
+  // Render board in exact ClickUp column order
+  // Only show columns that have tasks OR are core workflow columns
+  var coreStatuses = ['to do','in progress','copy draft','review','revisions','editing','final review','approved','scheduled','published'];
+  var visibleStatuses = CU.statuses.filter(function(s){
+    return coreStatuses.includes(s.status) || (columns[s.status] && columns[s.status].length > 0);
   });
 
-  var colMeta = {
-    'to do':           { label:'Briefed',        color:'var(--text3)' },
-    'in progress':     { label:'Drafting',        color:'var(--blue)' },
-    'in review':       { label:'Sheperd Review',  color:'var(--purple)' },
-    'pending approval':{ label:'David Approval',  color:'var(--amber)' },
-    'publishing':      { label:'Publishing',      color:'var(--high)' },
-    'complete':        { label:'Live',            color:'var(--green)' },
-  };
+  var boardHtml = '<div style="display:grid;grid-template-columns:repeat(' + Math.min(visibleStatuses.length, 7) + ',minmax(155px,1fr));gap:8px;">';
 
-  var boardHtml = '<div style="display:grid;grid-template-columns:repeat(6,minmax(160px,1fr));gap:8px;">';
-  colOrder.forEach(function(status) {
-    var colTasks = columns[status] || [];
-    var meta = colMeta[status] || { label: status, color: 'var(--text3)' };
-    boardHtml += '<div class="pcol"><div class="phead"><span class="plbl" style="color:' + meta.color + ';">' + meta.label + '</span><span class="pcnt">' + colTasks.length + '</span></div><div class="pbody">';
-    colTasks.slice(0,20).forEach(function(t) {
-      var priority = t.priority && t.priority.priority ? t.priority.priority : '';
-      var priColor = priority === 'urgent' ? 'var(--urgent)' : priority === 'high' ? 'var(--high)' : 'transparent';
+  visibleStatuses.forEach(function(statusObj) {
+    var status    = statusObj.status;
+    var colTasks  = columns[status] || [];
+    var colColor  = statusObj.color || '#475569';
+
+    // Capitalise label
+    var label = status.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+
+    boardHtml += '<div class="pcol">' +
+      '<div class="phead">' +
+        '<span class="plbl" style="color:' + colColor + ';text-transform:none;">' + label + '</span>' +
+        '<span class="pcnt">' + colTasks.length + '</span>' +
+      '</div>' +
+      '<div class="pbody">';
+
+    colTasks.slice(0, 20).forEach(function(t) {
+      var priority  = t.priority && t.priority.priority ? t.priority.priority.toLowerCase() : '';
+      var priColor  = priority === 'urgent' ? '#f87171' : priority === 'high' ? '#fb923c' : 'transparent';
       var assignees = (t.assignees||[]).map(function(a){ return a.username||''; }).filter(Boolean);
-      var initials = assignees.map(function(n){ return n.split(' ').map(function(p){ return p[0]||''; }).join('').toUpperCase().substring(0,2); });
+      var initials  = assignees.map(function(n){
+        var parts = n.split(' ');
+        return (parts[0][0]||'') + (parts[1] ? parts[1][0] : '');
+      });
+      // Get member colour from our map
+      var memberColors = assignees.map(function(name){
+        var m = CU.members.find(function(m){ return m.username === name; });
+        return m && m.color ? m.color : '#00d4aa';
+      });
+
       var due = t.due_date ? new Date(parseInt(t.due_date)).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
-      var isOverdue = t.due_date && parseInt(t.due_date) < Date.now() && status !== 'complete';
+      var isOverdue = t.due_date && parseInt(t.due_date) < Date.now() && !['published','completed','approved','canceled'].includes(status);
+
+      // Extract primary keyword from custom fields
+      var pkw = '';
+      (t.custom_fields||[]).forEach(function(cf){
+        if (cf.id === CU.fields.primaryKeyword.id && cf.value) pkw = cf.value;
+      });
+
       boardHtml +=
         '<div class="pcard" data-taskid="' + t.id + '" style="border-left:2px solid ' + priColor + ';">' +
           '<p class="pct">' + (t.name||'Untitled') + '</p>' +
+          (pkw ? '<p style="font-size:9px;color:var(--teal);font-family:DM Mono,monospace;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + pkw + '</p>' : '') +
           '<div class="pcm">' +
             '<div style="display:flex;gap:3px;">' +
-              initials.slice(0,2).map(function(ini){ return '<span style="width:16px;height:16px;border-radius:50%;background:var(--tealL);color:var(--teal);font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid rgba(0,212,170,0.2);font-family:DM Mono,monospace;">' + ini + '</span>'; }).join('') +
+              initials.slice(0,2).map(function(ini, idx){
+                var mc = memberColors[idx] || '#00d4aa';
+                return '<span style="width:18px;height:18px;border-radius:50%;background:' + mc + '22;color:' + mc + ';font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid ' + mc + '44;font-family:DM Mono,monospace;" title="' + (assignees[idx]||'') + '">' + ini.toUpperCase() + '</span>';
+              }).join('') +
             '</div>' +
             (due ? '<span style="font-size:9px;color:' + (isOverdue?'var(--urgent)':'var(--text3)') + ';font-family:DM Mono,monospace;">' + (isOverdue?'⚠ ':'') + due + '</span>' : '') +
           '</div>' +
         '</div>';
     });
+
     if (!colTasks.length) boardHtml += '<p class="pempty">Empty</p>';
     boardHtml += '</div></div>';
   });
-  boardHtml += '</div>';
 
+  boardHtml += '</div>';
   board.innerHTML = boardHtml;
   if (loading) loading.style.display = 'none';
   board.style.display = 'block';
 
-  // Click task card → open task panel
+  // Click → open task panel
   board.querySelectorAll('.pcard').forEach(function(card) {
     card.addEventListener('click', function() {
       var taskId = card.dataset.taskid;
@@ -1775,96 +1740,173 @@ async function loadClickUpBoard(){
   });
 }
 
-// ── TASK PANEL — in-app ClickUp task editor ──────────────────────────────
+
+// ── TASK PANEL — full ClickUp task editor ───────────────────────────────────
 async function openTaskPanel(task) {
   var panel = document.getElementById('cu-task-panel');
   if (!panel) return;
 
-  panel.innerHTML = '<p style="font-size:12px;color:var(--text3);padding:20px;">Loading task...</p>';
+  panel.innerHTML = '<div style="padding:20px;text-align:center;"><p style="font-size:12px;color:var(--text3);">Loading...</p></div>';
   panel.style.display = 'block';
   document.getElementById('cu-task-overlay').style.display = 'block';
 
-  // Fetch fresh task data
+  // Fetch fresh full task
   var fresh = await cuGetTask(task.id);
   task = fresh || task;
 
-  var members = await cuGetMembers();
-  var assignees = (task.assignees||[]).map(function(a){ return a.id; });
+  var assigneeIds = (task.assignees||[]).map(function(a){ return a.id; });
   var due = task.due_date ? new Date(parseInt(task.due_date)).toISOString().split('T')[0] : '';
 
-  // Status options
-  var allStatuses = Object.keys(CU.statusMap).map(function(appStatus) {
-    return { app: appStatus, cu: CU.statusMap[appStatus] };
-  });
-  var currentCuStatus = (task.status && task.status.status) ? task.status.status.toLowerCase() : 'to do';
+  // Extract custom field values from task
+  var cfVals = {};
+  (task.custom_fields||[]).forEach(function(cf){ cfVals[cf.id] = cf.value; });
 
-  // Priority
-  var priorities = [{v:1,l:'Urgent'},{v:2,l:'High'},{v:3,l:'Normal'},{v:4,l:'Low'}];
-  var currentPri = task.priority ? task.priority.priority : 'normal';
+  // Current status
+  var currentStatus = (task.status && task.status.status) ? task.status.status.toLowerCase() : 'to do';
+  var currentPriority = task.priority ? task.priority.id || '3' : '3';
+
+  // Build status options from exact ClickUp statuses
+  var statusOpts = CU.statuses.map(function(s){
+    var label = s.status.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+    return '<option value="' + s.status + '"' + (currentStatus === s.status ? ' selected' : '') + ' style="color:' + s.color + ';">' + label + '</option>';
+  }).join('');
+
+  // Member options
+  var memberOpts = '<option value="">— Unassigned —</option>' +
+    CU.members.map(function(m){
+      return '<option value="' + m.id + '"' + (assigneeIds.includes(m.id) ? ' selected' : '') + '>' + m.username + '</option>';
+    }).join('');
+
+  // Category options (from real ClickUp field)
+  var catCfVal = cfVals[CU.fields.category.id] || '';
+  var catOpts = '<option value="">—</option>' +
+    CU.fields.category.options.map(function(opt){
+      var optId = CU.fieldOptions.category[opt];
+      return '<option value="' + optId + '"' + (catCfVal === optId ? ' selected' : '') + '>' + opt + '</option>';
+    }).join('');
+
+  // Pillar type options
+  var pillarCfVal = cfVals[CU.fields.pillarType.id] || '';
+  var pillarOpts = '<option value="">—</option>' +
+    CU.fields.pillarType.options.map(function(opt){
+      var optId = CU.fieldOptions.pillarType[opt];
+      return '<option value="' + optId + '"' + (pillarCfVal === optId ? ' selected' : '') + '>' + opt + '</option>';
+    }).join('');
+
+  // Content pillar
+  var contentPillarVal = cfVals[CU.fields.contentPillar.id] || '';
+  var contentPillarOpts = '<option value="">—</option>' +
+    CU.fields.contentPillar.options.map(function(opt){
+      var optId = CU.fieldOptions.contentPillar[opt];
+      return '<option value="' + optId + '"' + (contentPillarVal === optId ? ' selected' : '') + '>' + opt + '</option>';
+    }).join('');
+
+  // Meta info
+  var metaInfoVal = cfVals[CU.fields.metaInfo.id] || '';
+  var metaInfoOpts = '<option value="">—</option>' +
+    CU.fields.metaInfo.options.map(function(opt){
+      var optId = CU.fieldOptions.metaInfo[opt];
+      return '<option value="' + optId + '"' + (metaInfoVal === optId ? ' selected' : '') + '>' + opt + '</option>';
+    }).join('');
+
+  // Type (SEO/Non-SEO)
+  var typeVal = cfVals[CU.fields.type.id] || '';
+  var typeOpts = '<option value="">—</option>' +
+    CU.fields.type.options.map(function(opt){
+      var optId = CU.fieldOptions.type[opt];
+      return '<option value="' + optId + '"' + (typeVal === optId ? ' selected' : '') + '>' + opt + '</option>';
+    }).join('');
+
+  // Source
+  var sourceVal = cfVals[CU.fields.source.id] || '';
+  var sourceOpts = '<option value="">—</option>' +
+    CU.fields.source.options.map(function(opt){
+      var optId = CU.fieldOptions.source[opt];
+      return '<option value="' + optId + '"' + (sourceVal === optId ? ' selected' : '') + '>' + opt + '</option>';
+    }).join('');
+
+  var pkwVal    = cfVals[CU.fields.primaryKeyword.id] || '';
+  var draftUrl  = cfVals[CU.fields.draft.id] || '';
+  var contentUrl= cfVals[CU.fields.contentUrl.id] || '';
+  var kwToLink  = cfVals[CU.fields.kwToLink.id] || '';
+
+  var statusColor = (CU.statuses.find(function(s){ return s.status === currentStatus; }) || {}).color || '#475569';
 
   var html =
-    '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--bg3);">' +
-      '<p style="font-size:13px;font-weight:600;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (task.name||'Task') + '</p>' +
-      '<div style="display:flex;gap:6px;flex-shrink:0;">' +
-        '<a href="' + (task.url||'https://app.clickup.com') + '" target="_blank" class="btn btn-s" style="font-size:10px;text-decoration:none;">Open in ClickUp ↗</a>' +
-        '<button class="btn btn-s" id="task-panel-close">×</button>' +
+    // Header
+    '<div style="display:flex;align-items:flex-start;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border);background:var(--bg3);gap:8px;">' +
+      '<div style="flex:1;min-width:0;">' +
+        '<p style="font-size:11px;color:var(--text3);margin-bottom:3px;font-family:DM Mono,monospace;">Task #' + task.id + '</p>' +
+        '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.3;overflow:hidden;text-overflow:ellipsis;">' + (task.name||'Task') + '</p>' +
+        '<span style="display:inline-block;margin-top:5px;font-size:9px;padding:2px 8px;border-radius:4px;background:' + statusColor + '22;color:' + statusColor + ';border:1px solid ' + statusColor + '44;font-weight:600;font-family:DM Mono,monospace;">' + currentStatus.toUpperCase() + '</span>' +
+      '</div>' +
+      '<div style="display:flex;gap:5px;flex-shrink:0;">' +
+        '<a href="' + (task.url||'https://app.clickup.com/t/'+task.id) + '" target="_blank" class="btn btn-s" style="font-size:10px;text-decoration:none;">↗ ClickUp</a>' +
+        '<button class="btn btn-s" id="task-panel-close" style="padding:4px 8px;">×</button>' +
       '</div>' +
     '</div>' +
-    '<div style="padding:16px;overflow-y:auto;max-height:calc(80vh - 60px);display:grid;gap:14px;">' +
+
+    '<div style="padding:14px 16px;overflow-y:auto;max-height:calc(100vh - 80px);display:grid;gap:12px;">' +
 
       // Title
-      '<div>' +
-        '<label class="flbl">Title</label>' +
-        '<input class="finput" id="tp-title" type="text" value="' + (task.name||'').replace(/"/g,'&quot;') + '"/>' +
+      '<div><label class="flbl">Title</label><input class="finput" id="tp-title" type="text" value="' + (task.name||'').replace(/"/g,'&quot;') + '"/></div>' +
+
+      // Status + Priority
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+        '<div><label class="flbl">Status</label><select class="finput" id="tp-status">' + statusOpts + '</select></div>' +
+        '<div><label class="flbl">Priority</label><select class="finput" id="tp-priority">' +
+          '<option value="1"' + (currentPriority==='1'?' selected':'') + '>🔴 Urgent</option>' +
+          '<option value="2"' + (currentPriority==='2'?' selected':'') + '>🟠 High</option>' +
+          '<option value="3"' + (currentPriority==='3'||!currentPriority?' selected':'') + '>🔵 Normal</option>' +
+          '<option value="4"' + (currentPriority==='4'?' selected':'') + '>⚪ Low</option>' +
+        '</select></div>' +
       '</div>' +
 
-      // Status + Priority row
-      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">' +
-        '<div>' +
-          '<label class="flbl">Status</label>' +
-          '<select class="finput" id="tp-status">' +
-            allStatuses.map(function(s){
-              return '<option value="' + s.cu + '"' + (currentCuStatus === s.cu ? ' selected' : '') + '>' + s.app + '</option>';
-            }).join('') +
-          '</select>' +
-        '</div>' +
-        '<div>' +
-          '<label class="flbl">Priority</label>' +
-          '<select class="finput" id="tp-priority">' +
-            priorities.map(function(p){
-              return '<option value="' + p.v + '"' + (currentPri === p.l.toLowerCase() ? ' selected' : '') + '>' + p.l + '</option>';
-            }).join('') +
-          '</select>' +
-        '</div>' +
+      // Assignees + Due date
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+        '<div><label class="flbl">Assignee</label><select class="finput" id="tp-assignee">' + memberOpts + '</select></div>' +
+        '<div><label class="flbl">Due date</label><input class="finput" id="tp-due" type="date" value="' + due + '"/></div>' +
       '</div>' +
 
-      // Assignees
-      '<div>' +
-        '<label class="flbl">Assignees</label>' +
-        '<select class="finput" id="tp-assignee">' +
-          '<option value="">— Unassigned —</option>' +
-          members.map(function(m){
-            return '<option value="' + m.id + '"' + (assignees.includes(m.id) ? ' selected' : '') + '>' + (m.username||m.email||'') + '</option>';
-          }).join('') +
-        '</select>' +
+      // Custom fields — row 1
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+        '<div><label class="flbl">Type</label><select class="finput" id="tp-type">' + typeOpts + '</select></div>' +
+        '<div><label class="flbl">Source</label><select class="finput" id="tp-source">' + sourceOpts + '</select></div>' +
       '</div>' +
 
-      // Due date
-      '<div>' +
-        '<label class="flbl">Due date</label>' +
-        '<input class="finput" id="tp-due" type="date" value="' + due + '"/>' +
+      // Custom fields — row 2
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+        '<div><label class="flbl">Category</label><select class="finput" id="tp-category">' + catOpts + '</select></div>' +
+        '<div><label class="flbl">Pillar Type</label><select class="finput" id="tp-pillar">' + pillarOpts + '</select></div>' +
+      '</div>' +
+
+      // Custom fields — row 3
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+        '<div><label class="flbl">Content Pillar</label><select class="finput" id="tp-content-pillar">' + contentPillarOpts + '</select></div>' +
+        '<div><label class="flbl">Meta Info</label><select class="finput" id="tp-meta-info">' + metaInfoOpts + '</select></div>' +
+      '</div>' +
+
+      // Primary keyword
+      '<div><label class="flbl">Primary keyword</label><input class="finput" id="tp-pkw" type="text" value="' + pkwVal.replace(/"/g,'&quot;') + '" placeholder="e.g. FXIFY one phase review"/></div>' +
+
+      // KW to link
+      '<div><label class="flbl">KW to link</label><input class="finput" id="tp-kwlink" type="text" value="' + (kwToLink||'').replace(/"/g,'&quot;') + '" placeholder="Keywords to interlink"/></div>' +
+
+      // URLs row
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">' +
+        '<div><label class="flbl">Draft URL</label><input class="finput" id="tp-draft-url" type="url" value="' + (draftUrl||'') + '" placeholder="Google Docs link"/></div>' +
+        '<div><label class="flbl">Content URL</label><input class="finput" id="tp-content-url" type="url" value="' + (contentUrl||'') + '" placeholder="Live article URL"/></div>' +
       '</div>' +
 
       // Description preview
-      (task.description ? '<div><label class="flbl">Brief / Description</label><div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:11px;color:var(--text3);line-height:1.7;max-height:160px;overflow-y:auto;white-space:pre-wrap;font-family:DM Mono,monospace;">' + task.description.substring(0,800) + (task.description.length>800?'...':'') + '</div></div>' : '') +
+      (task.description ? '<div><label class="flbl">Brief / Description</label><div style="background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-size:10px;color:var(--text3);line-height:1.7;max-height:140px;overflow-y:auto;white-space:pre-wrap;font-family:DM Mono,monospace;">' + task.description.substring(0,1000).replace(/</g,'&lt;') + (task.description.length>1000?' ...':'') + '</div></div>' : '') +
 
-      // Save button
+      // Actions
       '<div style="display:flex;gap:8px;">' +
         '<button class="btn btn-p btn-f" id="tp-save-btn">Save changes →</button>' +
-        '<button class="btn btn-d btn-s" id="tp-delete-btn">Delete task</button>' +
+        '<button class="btn btn-d btn-s" id="tp-delete-btn">Delete</button>' +
       '</div>' +
-
-      '<div id="tp-status-msg" style="display:none;font-size:11px;padding:6px 10px;border-radius:var(--r);"></div>' +
+      '<div id="tp-status-msg" style="display:none;font-size:11px;padding:7px 10px;border-radius:var(--r);font-family:DM Mono,monospace;"></div>' +
 
     '</div>';
 
@@ -1878,47 +1920,82 @@ async function openTaskPanel(task) {
     var btn = document.getElementById('tp-save-btn');
     btn.textContent = 'Saving...'; btn.disabled = true;
     var msg = document.getElementById('tp-status-msg');
-
     try {
-      var newTitle    = document.getElementById('tp-title').value.trim();
-      var newStatus   = document.getElementById('tp-status').value;
-      var newPriority = parseInt(document.getElementById('tp-priority').value);
-      var newAssignee = document.getElementById('tp-assignee').value;
-      var newDue      = document.getElementById('tp-due').value;
+      var newTitle     = (document.getElementById('tp-title')||{}).value || task.name;
+      var newStatus    = (document.getElementById('tp-status')||{}).value;
+      var newPriority  = parseInt((document.getElementById('tp-priority')||{}).value||'3');
+      var newAssignee  = parseInt((document.getElementById('tp-assignee')||{}).value||'0');
+      var newDue       = (document.getElementById('tp-due')||{}).value;
+      var newPkw       = (document.getElementById('tp-pkw')||{}).value;
+      var newKwLink    = (document.getElementById('tp-kwlink')||{}).value;
+      var newDraftUrl  = (document.getElementById('tp-draft-url')||{}).value;
+      var newContentUrl= (document.getElementById('tp-content-url')||{}).value;
+      var newType      = (document.getElementById('tp-type')||{}).value;
+      var newSource    = (document.getElementById('tp-source')||{}).value;
+      var newCategory  = (document.getElementById('tp-category')||{}).value;
+      var newPillar    = (document.getElementById('tp-pillar')||{}).value;
+      var newCPillar   = (document.getElementById('tp-content-pillar')||{}).value;
+      var newMetaInfo  = (document.getElementById('tp-meta-info')||{}).value;
 
-      var body = { name: newTitle, status: newStatus, priority: newPriority };
-      if (newDue) body.due_date = new Date(newDue).getTime();
-      var res = await cuFetch('/task/' + task.id, 'PUT', body);
+      // Update main task fields
+      var taskBody = { name: newTitle, status: newStatus, priority: newPriority };
+      if (newDue) taskBody.due_date = new Date(newDue).getTime();
+      await cuFetch('/task/' + task.id, 'PUT', taskBody);
 
-      // Update assignees separately
-      if (newAssignee && !assignees.includes(parseInt(newAssignee))) {
-        await cuFetch('/task/' + task.id, 'PUT', { assignees: { add: [parseInt(newAssignee)], rem: [] } });
-      } else if (!newAssignee && assignees.length) {
-        await cuFetch('/task/' + task.id, 'PUT', { assignees: { add: [], rem: assignees } });
+      // Update assignee
+      if (newAssignee && !assigneeIds.includes(newAssignee)) {
+        await cuFetch('/task/' + task.id, 'PUT', { assignees: { add: [newAssignee], rem: [] } });
+      } else if (!newAssignee && assigneeIds.length) {
+        await cuFetch('/task/' + task.id, 'PUT', { assignees: { add: [], rem: assigneeIds } });
       }
 
-      // Sync Supabase
-      var appStatus = Object.keys(CU.statusMap).find(function(k){ return CU.statusMap[k] === newStatus; }) || newStatus;
-      await supa.from('articles').update({ status: appStatus }).ilike('title', newTitle);
+      // Update custom fields one by one
+      var cfUpdates = [
+        [CU.fields.primaryKeyword.id, newPkw],
+        [CU.fields.kwToLink.id, newKwLink],
+        [CU.fields.draft.id, newDraftUrl],
+        [CU.fields.contentUrl.id, newContentUrl],
+      ];
+      // Dropdown fields need the option id (not name)
+      if (newType)     cfUpdates.push([CU.fields.type.id, newType]);
+      if (newSource)   cfUpdates.push([CU.fields.source.id, newSource]);
+      if (newCategory) cfUpdates.push([CU.fields.category.id, newCategory]);
+      if (newPillar)   cfUpdates.push([CU.fields.pillarType.id, newPillar]);
+      if (newCPillar)  cfUpdates.push([CU.fields.contentPillar.id, newCPillar]);
+      if (newMetaInfo) cfUpdates.push([CU.fields.metaInfo.id, newMetaInfo]);
 
-      msg.textContent = 'Saved ✓'; msg.style.display = 'block'; msg.style.background = 'var(--greenL)'; msg.style.color = 'var(--green)';
+      for (var ci = 0; ci < cfUpdates.length; ci++) {
+        if (cfUpdates[ci][1]) {
+          await cuFetch('/task/' + task.id + '/field/' + cfUpdates[ci][0], 'POST', { value: cfUpdates[ci][1] });
+        }
+      }
+
+      // Sync Supabase status
+      var appStatus = CU.reverseStatusMap[newStatus] || newStatus;
+      var writerName = newAssignee ? (CU.members.find(function(m){ return m.id === newAssignee; })||{}).username || '' : '';
+      await supa.from('articles').update({ status: appStatus, primary_kw: newPkw || undefined, assignee: writerName || undefined }).ilike('title', newTitle);
+
+      msg.textContent = '✓ Saved'; msg.style.display = 'block';
+      msg.style.background = 'var(--greenL)'; msg.style.color = 'var(--green)';
       btn.textContent = 'Save changes →'; btn.disabled = false;
-      setTimeout(function(){ loadClickUpBoard(); }, 800);
+      setTimeout(function(){ loadClickUpBoard(); }, 600);
     } catch(e) {
-      msg.textContent = 'Error: ' + e.message; msg.style.display = 'block'; msg.style.background = 'var(--urgentL)'; msg.style.color = 'var(--urgent)';
+      msg.textContent = 'Error: ' + e.message; msg.style.display = 'block';
+      msg.style.background = 'var(--urgentL)'; msg.style.color = 'var(--urgent)';
       btn.textContent = 'Save changes →'; btn.disabled = false;
     }
   });
 
   // Wire delete
   document.getElementById('tp-delete-btn').addEventListener('click', async function() {
-    if (!confirm('Delete this task from ClickUp? This cannot be undone.')) return;
+    if (!confirm('Delete "' + task.name + '" from ClickUp? Cannot be undone.')) return;
     await cuFetch('/task/' + task.id, 'DELETE');
     closeTaskPanel();
     loadClickUpBoard();
-    toast('Task deleted from ClickUp');
+    toast('Task deleted');
   });
 }
+
 
 function closeTaskPanel() {
   var panel = document.getElementById('cu-task-panel');
@@ -6230,7 +6307,29 @@ function init(){
     if (e.target && e.target.id === 'cu-sync-btn') { cuSyncFromClickUp(); return; }
     if (e.target && e.target.id === 'cu-new-task-btn') {
       var cp = document.getElementById('cu-create-panel');
-      if (cp) cp.style.display = cp.style.display === 'none' ? 'block' : 'none';
+      if (cp) {
+        cp.style.display = cp.style.display === 'none' ? 'block' : 'none';
+        // Populate assignee dropdown with real ClickUp members
+        var assignSel = document.getElementById('ct-assignee');
+        if (assignSel && assignSel.options.length === 1) {
+          CU.members.forEach(function(m) {
+            var opt = document.createElement('option');
+            opt.value = m.id; opt.textContent = m.username;
+            assignSel.appendChild(opt);
+          });
+        }
+        // Populate status dropdown with real ClickUp statuses
+        var statusSel = document.getElementById('ct-status');
+        if (statusSel && statusSel.options.length === 0) {
+          CU.statuses.forEach(function(s) {
+            var label = s.status.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+            var opt = document.createElement('option');
+            opt.value = s.status; opt.textContent = label;
+            if (s.status === 'to do') opt.selected = true;
+            statusSel.appendChild(opt);
+          });
+        }
+      }
       return;
     }
     if (e.target && e.target.id === 'cu-create-close') {
@@ -6250,11 +6349,52 @@ function init(){
           var category = (document.getElementById('ct-category')||{}).value || 'Guides';
           var keyword  = (document.getElementById('ct-keyword')||{}).value || '';
           var notes    = (document.getElementById('ct-notes')||{}).value || '';
-          var article  = { title:title, category:category, status:assignee?'Drafting':'Briefed', priority:priority, assignee:assignee, primary_kw:keyword, due_date:due, content:notes?JSON.stringify({primary_keyword:keyword,notes:notes}):'' };
-          var sbRes = await supa.from('articles').insert([{ title:title, category:category, status:article.status, priority:priority, primary_kw:keyword, assignee:assignee, content:article.content, due_date:due||null }]).select();
+          var statusVal = (document.getElementById('ct-status')||{}).value || 'to do';
+          var typeVal   = (document.getElementById('ct-type')||{}).value || '';
+          var catVal    = (document.getElementById('ct-category')||{}).value || '';
+          var pillarVal = (document.getElementById('ct-pillar')||{}).value || '';
+          var draftUrl  = (document.getElementById('ct-draft-url')||{}).value || '';
+          var assigneeMem = assignee ? CU.members.find(function(m){ return String(m.id) === String(assignee); }) : null;
+          var assigneeName = assigneeMem ? assigneeMem.username : '';
+          // Map ClickUp status back to app status
+          var appStatus = CU.reverseStatusMap[statusVal] || 'Briefed';
+          // Priority label
+          var priLabels = {'1':'Urgent','2':'High','3':'Normal','4':'Low'};
+          var priLabel = priLabels[priority] || 'Normal';
+
+          var article = {
+            title: title, category: 'Guides', status: appStatus, priority: priLabel,
+            assignee: assigneeName, primary_kw: keyword, due_date: due,
+            content: notes ? JSON.stringify({ primary_keyword: keyword, notes: notes }) : '',
+            _cuStatus: statusVal, _cuAssigneeId: assignee ? parseInt(assignee) : null,
+            _customFields: [
+              typeVal    ? { id: CU.fields.type.id,        value: typeVal }    : null,
+              catVal     ? { id: CU.fields.category.id,    value: catVal }     : null,
+              pillarVal  ? { id: CU.fields.pillarType.id,  value: pillarVal }  : null,
+              draftUrl   ? { id: CU.fields.draft.id,       value: draftUrl }   : null,
+              keyword    ? { id: CU.fields.primaryKeyword.id, value: keyword } : null,
+              { id: CU.fields.source.id, value: CU.fieldOptions.source['FXIFY'] },
+            ].filter(Boolean),
+          };
+
+          var sbRes = await supa.from('articles').insert([{
+            title: title, category: article.category, status: appStatus,
+            priority: priLabel, primary_kw: keyword, assignee: assigneeName,
+            content: article.content, due_date: due || null
+          }]).select();
           var artId = sbRes.data && sbRes.data[0] && sbRes.data[0].id;
-          var cuTask = await cuCreateTask(article);
-          if (cuTask && cuTask.id && artId) await supa.from('articles').update({ meta:JSON.stringify({clickup_id:cuTask.id}) }).eq('id',artId);
+
+          // Create ClickUp task with correct status + custom fields
+          var cuPri = parseInt(priority) || 3;
+          var cuAssignees = assignee ? [parseInt(assignee)] : [];
+          var cuBody = {
+            name: title, description: notes || '',
+            status: statusVal, priority: cuPri, assignees: cuAssignees,
+            custom_fields: article._customFields,
+          };
+          if (due) cuBody.due_date = new Date(due).getTime();
+          var cuTask = await cuFetch('/list/' + CU.list + '/task', 'POST', cuBody);
+          if (cuTask && cuTask.id && artId) await supa.from('articles').update({ meta: JSON.stringify({ clickup_id: cuTask.id }) }).eq('id', artId);
           if (msg) { msg.textContent='✓ Created'; msg.style.color='var(--green)'; }
           btn.textContent='Create in ClickUp + Supabase →'; btn.disabled=false;
           ['ct-title','ct-keyword','ct-notes','ct-due'].forEach(function(id){ var el=document.getElementById(id); if(el) el.value=''; });
