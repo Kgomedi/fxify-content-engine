@@ -1477,7 +1477,8 @@ select.finput{cursor:pointer;}
 // ── SUPABASE ──────────────────────────────────────────────────────────────
 var supa = supabase.createClient(
   'https://geeihjpvyclvqmrxbjxp.supabase.co',
-  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM'
+  'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdlZWloanB2eWNsdnFtcnhianhwIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3NjE1MTgsImV4cCI6MjA5MTMzNzUxOH0.mXXQpNA5IBKe4StPn5byJ3BJr4aHGWvR0RCsD7wikiM',
+  { auth: { storageKey: 'fxify-content-engine', detectSessionInUrl: true, persistSession: true } }
 );
 
 // ── CLICKUP ───────────────────────────────────────────────────────────────
