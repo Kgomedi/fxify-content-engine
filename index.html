@@ -5516,19 +5516,6 @@ function init(){
     bootUser(user);
   }
 
-  // Listen for auth state changes (handles redirect callback automatically)
-  supa.auth.onAuthStateChange(function(event, session) {
-    if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
-      var email = session.user.email.toLowerCase();
-      // Only boot if not already logged in
-      if (!currentUser) resolveUserFromEmail(email);
-    }
-    if (event === 'SIGNED_OUT') {
-      currentUser = null;
-      sessionStorage.removeItem('fxify_user');
-    }
-  });
-
   // Impersonate modal
   document.getElementById('imp-cancel').addEventListener('click', function(){ document.getElementById('imp-modal').classList.remove('open'); });
   document.getElementById('imp-confirm').addEventListener('click', function(){
@@ -6746,6 +6733,36 @@ function v2WireCustomBtn() {
     }
   });
 }
+// ── AUTH STATE LISTENER — must be at IIFE level, before init() ──────────────
+// Fires when Supabase processes the OAuth hash on redirect
+supa.auth.onAuthStateChange(function(event, session) {
+  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+    var email = session.user.email.toLowerCase();
+    if (!currentUser) resolveUserFromEmail(email);
+  }
+  if (event === 'SIGNED_OUT') {
+    currentUser = null;
+    sessionStorage.removeItem('fxify_user');
+  }
+});
+
+// ── HASH DETECTION — catches OAuth redirect when onAuthStateChange is slow ───
+// Supabase processes the hash async; poll getSession until it's ready
+if (window.location.hash && window.location.hash.indexOf('access_token') !== -1) {
+  var _authPollCount = 0;
+  var _authPoll = setInterval(function() {
+    _authPollCount++;
+    supa.auth.getSession().then(function(res) {
+      if (res.data && res.data.session && !currentUser) {
+        clearInterval(_authPoll);
+        resolveUserFromEmail(res.data.session.user.email.toLowerCase());
+      } else if (_authPollCount >= 20) {
+        clearInterval(_authPoll);
+      }
+    });
+  }, 200);
+}
+
 init();
 
 })();
