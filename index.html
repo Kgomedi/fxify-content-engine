@@ -641,6 +641,7 @@ select.finput{cursor:pointer;}
           </div>
           <div style="display:flex;gap:8px;align-items:center;">
             <button class="btn btn-s" id="cu-refresh-btn" style="font-size:11px;">↻ Refresh</button>
+            <button class="btn btn-s" id="cu-sync-btn" style="font-size:11px;color:var(--tealB);border-color:rgba(14,196,173,.3);">⇅ Sync from ClickUp</button>
             <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">Open in ClickUp ↗</a>
           </div>
         </div>
@@ -767,14 +768,19 @@ select.finput{cursor:pointer;}
       <!-- REVIEW QUEUE -->
       <div id="a-review" class="pg">
         <div class="pgh">Review Queue</div>
-        <p class="pgs">Writers did their thing — now it's your turn. Be fair, be fast. ✍️</p>
+        <p class="pgs">Writers submitted. Review, comment, then approve straight to David. ✍️</p>
         <div id="a-review-list"><p class="pempty" style="padding:40px 0;">No articles in review yet.</p></div>
       </div>
 
       <!-- ANALYTICS -->
       <div id="a-analytics" class="pg">
-        <div class="pgh">Analytics</div>
-        <p class="pgs">Real pipeline data — connect GA4 or Search Console for traffic metrics 📊</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
+          <div>
+            <div class="pgh" style="margin-bottom:2px;">Analytics</div>
+            <p class="pgs" style="margin-bottom:0;">Pipeline pulled from ClickUp + Supabase article data 📊</p>
+          </div>
+          <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">View in ClickUp ↗</a>
+        </div>
         <div class="agrid">
           <div class="acard"><p class="albl">Total articles</p><p class="aval" id="an-total">—</p><p class="ach" id="an-total-sub">Loading...</p></div>
           <div class="acard"><p class="albl">Live & published</p><p class="aval cu" id="an-live">—</p><p class="ach" id="an-live-sub">articles published</p></div>
@@ -864,54 +870,6 @@ select.finput{cursor:pointer;}
           <span style="font-size:12px;color:var(--muted);align-self:center;" id="a-live-count"></span>
         </div>
         <div id="a-live-list"><p class="pempty" style="padding:40px 0;">Click refresh to load published articles from fxify.com/blog.</p></div>
-      </div>
-
-      <!-- TOPIC & SEO PLANNER -->
-      <div id="a-planner" class="pg">
-        <div class="pgh">Topic & SEO Planner</div>
-        <p class="pgs">Analyse competitors, find keyword gaps, build your content strategy</p>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:16px;">
-          <div class="fg">
-            <label class="flbl">Seed topic or keyword</label>
-            <input class="finput" id="pl-topic" type="text" placeholder="e.g. prop trading drawdown rules, funded account evaluation"/>
-          </div>
-          <div class="frow fg">
-            <div><label class="flbl">Your site <span style="color:var(--muted);font-weight:300;font-size:10px;">(optional)</span></label><input class="finput" id="pl-own" type="text" placeholder="https://fxify.com/blog"/></div>
-            <div><label class="flbl">Category focus</label><select class="finput" id="pl-cat"><option>All categories</option><option>Guides</option><option>Trading Strategy</option><option>Platform &amp; Programs</option><option>Market Analysis</option><option>Trading Psychology</option></select></div>
-          </div>
-          <div class="fg">
-            <label class="flbl">Competitor URLs <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label>
-            <textarea class="finput" id="pl-competitors" rows="3" placeholder="https://ftmo.com/en/blog&#10;https://myfundedfx.tech/blog&#10;https://apextraderfunding.com/blog" style="resize:vertical;min-height:80px;"></textarea>
-          </div>
-          <button class="btn btn-p" style="min-width:180px;" id="pl-analyse-btn">Analyse &amp; Generate Topics</button>
-        </div>
-        <div id="pl-loading" style="display:none;text-align:center;padding:40px 20px;">
-          <div style="font-size:24px;margin-bottom:12px;">⚡</div>
-          <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="pl-loading-txt">Scraping competitors...</p>
-          <p style="font-size:12px;color:var(--muted);">This takes 15-30 seconds</p>
-        </div>
-        <!-- DAILY TOPIC IDEAS -->
-        <div id="daily-ideas-section" style="margin-bottom:20px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-            <div>
-              <div class="shead" style="margin-bottom:2px;">Today's ideas <span id="daily-ideas-date" style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;"></span></div>
-              <p style="font-size:11px;color:var(--muted);">Auto-generated every morning at 7am via n8n</p>
-            </div>
-            <button class="btn btn-s" id="refresh-daily-btn" style="font-size:11px;">↻ Refresh</button>
-          </div>
-          <div id="daily-ideas-list" style="display:grid;gap:8px;">
-            <p style="font-size:13px;color:var(--muted);font-style:italic;">Loading today's ideas...</p>
-          </div>
-        </div>
-
-        <div id="pl-results" style="display:none;">
-          <div class="shead">Keyword gaps found</div>
-          <div id="pl-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
-          <div class="shead">Topic cluster ideas</div>
-          <div id="pl-topics" style="display:grid;gap:10px;margin-bottom:20px;"></div>
-          <div class="shead">People Also Ask targets</div>
-          <div id="pl-paa" style="display:grid;gap:8px;margin-bottom:20px;"></div>
-        </div>
       </div>
 
       <!-- YOUTUBE SEO (admin) -->
@@ -1138,116 +1096,6 @@ select.finput{cursor:pointer;}
   </div>
 </div>
 
-<!-- LIAM -->
-<div id="liam" class="screen">
-  <div class="topbar">
-    <div class="tbl">
-      <button class="mtoggle" id="liam-menu-btn"><span></span><span></span><span></span></button>
-      <div class="tblogo" id="liam-logo" style="cursor:pointer;"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjM0IiB2aWV3Qm94PSIwIDAgMTgyIDM0IiB3aWR0aD0iMTgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGl0bGU+RlhJRlkgUHJvcCBUcmFkaW5nIEZpcm08L3RpdGxlPgo8cGF0aCBkPSJNMjcuOTU2OSAwLjVIMC45MDM2ODJDMC40MDQ1OTIgMC41IDAgMC44ODYzOTkgMCAxLjM2MzA1VjUuNjc4MjhDMCA2LjE1NDkzIDAuNDA0NTkyIDYuNTQxMzMgMC45MDM2ODIgNi41NDEzM0gyNy45NTY5QzI4LjQ1NTkgNi41NDEzMyAyOC44NjA1IDYuMTU0OTMgMjguODYwNSA1LjY3ODI4VjEuMzYzMDVDMjguODYwNSAwLjg4NjM5OSAyOC40NTU5IDAuNSAyNy45NTY5IDAuNVoiIGZpbGw9IndoaXRlIiBpZD0icGF0aC0xLWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTI3Ljk2MzEgOC40NzQxMkg1LjQxNTY0QzQuOTE2NTUgOC40NzQxMiA0LjUxMTk2IDguODYwNTIgNC41MTE5NiA5LjMzNzE3VjEzLjY1MjRDNC41MTE5NiAxNC4xMjkxIDQuOTE2NTUgMTQuNTE1NCA1LjQxNTY0IDE0LjUxNTRIMjcuOTYzMUMyOC40NjIyIDE0LjUxNTQgMjguODY2OCAxNC4xMjkxIDI4Ljg2NjggMTMuNjUyNFY5LjMzNzE3QzI4Ljg2NjggOC44NjA1MiAyOC40NjIyIDguNDc0MTIgMjcuOTYzMSA4LjQ3NDEyWiIgZmlsbD0id2hpdGUiIGlkPSJwYXRoLTItbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMjcuOTU2OCAxNi40NDE5SDkuOTIxMzhDOS40MjIyOSAxNi40NDE5IDkuMDE3NyAxNi44MjgzIDkuMDE3NyAxNy4zMDQ5VjIxLjYyMDJDOS4wMTc3IDIyLjA5NjggOS40MjIyOSAyMi40ODMyIDkuOTIxMzggMjIuNDgzMkgyNy45NTY4QzI4LjQ1NTkgMjIuNDgzMiAyOC44NjA1IDIyLjA5NjggMjguODYwNSAyMS42MjAyVjE3LjMwNDlDMjguODYwNSAxNi44MjgzIDI4LjQ1NTkgMTYuNDQxOSAyNy45NTY4IDE2LjQ0MTlaIiBmaWxsPSJ3aGl0ZSIgaWQ9InBhdGgtMy1sb2dvIj48L3BhdGg+CjxwYXRoIGQ9Ik0yNy45NTY5IDI0LjQxNkgxNC40MzM1QzEzLjkzNDQgMjQuNDE2IDEzLjUyOTggMjQuODAyNCAxMy41Mjk4IDI1LjI3OTFWMjkuNTk0M0MxMy41Mjk4IDMwLjA3MDkgMTMuOTM0NCAzMC40NTczIDE0LjQzMzUgMzAuNDU3M0gyNy45NTY5QzI4LjQ1NiAzMC40NTczIDI4Ljg2MDYgMzAuMDcwOSAyOC44NjA2IDI5LjU5NDNWMjUuMjc5MUMyOC44NjA2IDI0LjgwMjQgMjguNDU2IDI0LjQxNiAyNy45NTY5IDI0LjQxNloiIGZpbGw9IndoaXRlIiBpZD0icGF0aC00LWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTM2Ljk4MSAzMC41VjAuNUg1OC44NzkzVjcuNDcxMjNINDUuMzE3N1YxMy4yNzU1SDU1LjgxODNWMTkuODM5NUg0NS4zMTc3VjMwLjVIMzYuOTgxVjMwLjVaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNNjAuMTAxMiAzMC41TDcwLjc5MjcgMTUuMTY1N0w2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OEw4MC42MzEzIDAuNUg4OS45MUw4MC4xNjA0IDE0LjM5OTlMOTEuOTc4MyAzMC41SDgxLjU3MzJMNzUuMzExMSAyMS4yOEw2OS4yMzM1IDMwLjVINjAuMDk0OEg2MC4xMDEyWiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTk1LjA5MDIgMzAuNVYwLjVIMTAzLjQyN1YzMC41SDk1LjA5MDJaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNMTA5LjA3OCAzMC41VjAuNUgxMzAuOTc2VjcuNDcxMjNIMTE3LjQxNVYxMy4yNzU1SDEyNy45MTVWMTkuODM5NUgxMTcuNDE1VjMwLjVIMTA5LjA3OFoiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xNDMuNDU2IDMwLjVWMTguNTMyOEwxMzIuMjk0IDAuNUgxNDEuODUzTDE0Ny45NzUgMTEuMjAzTDE1My43MjEgMC41SDE2M0wxNTEuNzkzIDE4LjQ5MDNWMzAuNUgxNDMuNDU2WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTcwLjc5MjYgMTUuMTU5Nkw2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OE04MC4xNjA0IDE0LjM5MzhMOTEuOTc4MiAzMC40OTM5SDgxLjU3MzJMNzUuMzExIDIxLjI3MzkiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xNzIuNTg3IDAuNDU0NTlIMTc0LjAzOEwxNzUuOTgxIDUuMTk3NDlIMTc2LjA1OEwxNzguMDAxIDAuNDU0NTlIMTc5LjQ1MlY3LjAwMDA0SDE3OC4zMTRWMi41MDMyNEgxNzguMjUzTDE3Ni40NDUgNi45ODA4N0gxNzUuNTk0TDE3My43ODUgMi40OTM2NUgxNzMuNzI1VjcuMDAwMDRIMTcyLjU4N1YwLjQ1NDU5WiIgZmlsbD0id2hpdGUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8cGF0aCBkPSJNMTY2LjM1OCAxLjQ0ODU1VjAuNDU0NTlIMTcxLjU4VjEuNDQ4NTVIMTY5LjU1N1Y3LjAwMDA0SDE2OC4zODFWMS40NDg1NUgxNjYuMzU4WiIgZmlsbD0id2hpdGUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8L3N2Zz4=" height="20" style="display:block;"></div>
-      <div class="tbsep"></div><span class="tbctx">SEO Review</span>
-    </div>
-    <div class="tbr"><span class="tbu">Liam</span><div class="tbav b">L</div></div>
-  </div>
-  <div class="awrap">
-    <div class="sbov" id="liam-ov"></div>
-    <nav class="sb" id="liam-sb">
-      <div class="ngrp">My Queue</div>
-      <div class="nlink active" data-pg="l-review" data-sc="liam"><span class="nico">🔍</span>SEO Review<span class="nbadge" id="nb-liam">0</span></div>
-      <div class="nlink" data-pg="l-approved" data-sc="liam"><span class="nico">▲</span>Approved</div>
-      <div class="ndiv"></div>
-      <div class="ngrp">SEO Strategy</div>
-      <div class="nlink" data-pg="l-topics" data-sc="liam"><span class="nico">◈</span>Submit Topics<span class="nbadge" id="nb-ltopics">0</span></div>
-      <div class="nlink" data-pg="l-live" data-sc="liam"><span class="nico">🌐</span>Published Articles</div>
-    </nav>
-    <div class="ma">
-      <div id="l-review" class="pg active">
-        <div class="pgh">SEO Review Queue</div>
-        <p class="pgs">Sheperd signed off — now make sure Google loves it before it hits David. 🔍</p>
-        <div id="l-review-list"><p class="pempty" style="padding:40px 0;">No articles in your queue.</p></div>
-      </div>
-      <div id="l-approved" class="pg">
-        <div class="pgh">Approved</div>
-        <p class="pgs">Articles you've sent to David.</p>
-        <div id="l-approved-list"><p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p></div>
-      </div>
-
-      <!-- LIAM TOPIC SUBMISSION -->
-      <div id="l-topics" class="pg">
-        <div class="pgh">Submit Topics</div>
-        <p class="pgs">Found a keyword gap? Submit it here and Sheperd will generate a brief. 🎯</p>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:20px;margin-bottom:20px;">
-          <div class="fg"><label class="flbl">Article title / topic idea</label><input class="finput" id="lt-title" type="text" placeholder="e.g. How to Trade the FXIFY Two-Step Challenge"/></div>
-          <div class="frow fg">
-            <div><label class="flbl">Primary keyword</label><input class="finput" id="lt-kw" type="text" placeholder="e.g. FXIFY two-step evaluation"/></div>
-            <div><label class="flbl">Search intent</label><select class="finput" id="lt-intent"><option>Informational</option><option>Commercial</option><option>Navigational</option><option>Transactional</option></select></div>
-          </div>
-          <div class="frow fg">
-            <div><label class="flbl">Category</label><select class="finput" id="lt-cat"><option>Guides</option><option>Trading Strategy</option><option>Market Analysis</option><option>Platform &amp; Programs</option><option>Trading Psychology</option></select></div>
-            <div><label class="flbl">Priority</label><select class="finput" id="lt-pri"><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent</option></select></div>
-          </div>
-          <div class="fg"><label class="flbl">SEO notes for Sheperd <span style="color:var(--muted);font-weight:300;">(optional)</span></label><textarea class="finput" id="lt-notes" rows="3" placeholder="e.g. Competitors rank for this with 1,200 word guides. We should target the featured snippet with a clear definition in the first paragraph." style="resize:vertical;"></textarea></div>
-          <button class="btn btn-p" id="lt-submit">Submit topic →</button>
-        </div>
-        <div class="shead">Topics you've submitted</div>
-        <div id="l-topics-list"><p class="pempty" style="padding:20px 0;">No topics submitted yet.</p></div>
-      </div>
-
-      <!-- LIAM TOPIC PLANNER (same as admin) -->
-      <div id="l-planner" class="pg">
-        <div class="pgh">Topic Planner</div>
-        <p class="pgs">Analyse competitors, find keyword gaps, build the content strategy. 🔍</p>
-        <div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px 20px;margin-bottom:16px;">
-          <div class="fg"><label class="flbl">Seed topic or keyword</label><input class="finput" id="lpl-topic" type="text" placeholder="e.g. prop trading drawdown rules"/></div>
-          <div class="frow fg">
-            <div><label class="flbl">Your site</label><input class="finput" id="lpl-own" type="text" placeholder="https://fxify.com/blog"/></div>
-            <div><label class="flbl">Category</label><select class="finput" id="lpl-cat"><option>All categories</option><option>Guides</option><option>Trading Strategy</option><option>Platform &amp; Programs</option><option>Market Analysis</option></select></div>
-          </div>
-          <div class="fg"><label class="flbl">Competitor URLs <span style="color:var(--tealB);font-size:9px;font-weight:600;margin-left:6px;">FIRECRAWL</span></label><textarea class="finput" id="lpl-competitors" rows="3" placeholder="https://ftmo.com/en/blog&#10;https://myfundedfx.tech/blog" style="resize:vertical;min-height:80px;"></textarea></div>
-          <button class="btn btn-p" style="min-width:180px;" id="lpl-analyse-btn">Analyse &amp; Generate Topics</button>
-        </div>
-        <div id="lpl-loading" style="display:none;text-align:center;padding:40px 20px;">
-          <div style="font-size:24px;margin-bottom:12px;">⚡</div>
-          <p style="font-size:14px;font-weight:500;color:var(--text);margin-bottom:4px;" id="lpl-loading-txt">Scraping competitors...</p>
-          <p style="font-size:12px;color:var(--muted);">This takes 15-30 seconds</p>
-        </div>
-        <!-- DAILY TOPIC IDEAS (Liam) -->
-        <div id="ldaily-ideas-section" style="margin-bottom:20px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;flex-wrap:wrap;gap:8px;">
-            <div>
-              <div class="shead" style="margin-bottom:2px;">Today's ideas <span id="ldaily-ideas-date" style="font-size:10px;color:var(--muted);font-weight:400;letter-spacing:0;text-transform:none;"></span></div>
-              <p style="font-size:11px;color:var(--muted);">Auto-generated every morning at 7am</p>
-            </div>
-            <button class="btn btn-s" id="lrefresh-daily-btn" style="font-size:11px;">↻ Refresh</button>
-          </div>
-          <div id="ldaily-ideas-list" style="display:grid;gap:8px;">
-            <p style="font-size:13px;color:var(--muted);font-style:italic;">Loading today's ideas...</p>
-          </div>
-        </div>
-
-        <div id="lpl-results" style="display:none;">
-          <div class="shead">Keyword gaps</div>
-          <div id="lpl-gaps" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:20px;"></div>
-          <div class="shead">Topic ideas</div>
-          <div id="lpl-topics" style="display:grid;gap:10px;margin-bottom:20px;"></div>
-          <div class="shead">People Also Ask</div>
-          <div id="lpl-paa" style="display:grid;gap:8px;margin-bottom:20px;"></div>
-        </div>
-      </div>
-
-      <!-- PUBLISHED ARTICLES -->
-      <div id="l-live" class="pg">
-        <div class="pgh">Published Articles</div>
-        <p class="pgs">Everything live on the FXIFY blog. Check before briefing to avoid duplicates. 🌐</p>
-        <div style="display:flex;gap:8px;margin-bottom:16px;">
-          <button class="btn btn-p btn-s" id="l-scrape-btn">🔄 Refresh from fxify.com/blog</button>
-          <input class="finput" id="l-search" type="text" placeholder="Search articles..." style="max-width:260px;"/>
-        </div>
-        <div id="l-live-list"><p class="pempty" style="padding:40px 0;">Click refresh to load published articles.</p></div>
-      </div>
-    </div>
-  </div>
-</div>
-
 <!-- DAVID -->
 <div id="david" class="screen">
   <div class="topbar">
@@ -1272,8 +1120,13 @@ select.finput{cursor:pointer;}
     <div class="ma">
       <!-- DAVID PIPELINE -->
       <div id="d-pipeline" class="pg active">
-        <div class="pgh">Content Pipeline</div>
-        <p class="pgs">Full picture across the team. 🚀</p>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
+          <div>
+            <div class="pgh" style="margin-bottom:2px;">Content Pipeline</div>
+            <p class="pgs" style="margin-bottom:0;">Full picture across the team. Live from ClickUp. 🚀</p>
+          </div>
+          <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">Open in ClickUp ↗</a>
+        </div>
         <div class="srow">
           <div class="sc sc-r"><p class="slbl">Needs attention</p><p class="sval" style="color:var(--urgent)" id="dst-overdue">—</p><p class="shin">overdue</p></div>
           <div class="sc sc-b"><p class="slbl">In progress</p><p class="sval" id="dst-drafting">—</p><p class="shin">drafting</p></div>
@@ -1285,7 +1138,7 @@ select.finput{cursor:pointer;}
           <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--muted)">Briefed</span><span class="pcnt" id="dcnt-briefed">0</span></div><div class="pbody" id="dcol-briefed"></div></div>
           <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--blue)">Drafting</span><span class="pcnt" id="dcnt-drafting">0</span></div><div class="pbody" id="dcol-drafting"></div></div>
           <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--purple)">Sheperd Review</span><span class="pcnt" id="dcnt-sr">0</span></div><div class="pbody" id="dcol-sr"></div></div>
-          <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--blue)">Liam Review</span><span class="pcnt" id="dcnt-lr">0</span></div><div class="pbody" id="dcol-lr"></div></div>
+          <div class="pcol"><div class="phead">
           <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--amber)">My Approval</span><span class="pcnt" id="dcnt-da">0</span></div><div class="pbody" id="dcol-da"></div></div>
           <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--tealB)">Publishing</span><span class="pcnt" id="dcnt-pub">0</span></div><div class="pbody" id="dcol-pub"></div></div>
           <div class="pcol"><div class="phead"><span class="plbl" style="color:var(--green)">Live</span><span class="pcnt" id="dcnt-live">0</span></div><div class="pbody" id="dcol-live"></div></div>
@@ -1362,7 +1215,43 @@ select.finput{cursor:pointer;}
     <div class="esb">
       <div class="esblk"><p class="eslbl">Priority</p><span class="badge bn" id="ed-pri">Normal</span></div>
       <div class="esblk"><p class="eslbl">Keyword</p><span class="eschip" id="ed-kw">—</span></div>
-      <div class="esblk"><p class="eslbl">Word count</p><p style="font-size:13px;color:#cbd5e1;" id="ed-wc">0 words</p></div>
+      <div class="esblk">
+        <p class="eslbl">Word count</p>
+        <p style="font-size:13px;color:#cbd5e1;" id="ed-wc">0 words</p>
+        <div id="ed-wc-target-row" style="display:none;margin-top:4px;">
+          <div style="background:#1e3a5f;border-radius:4px;height:4px;overflow:hidden;">
+            <div id="ed-wc-bar" style="height:100%;border-radius:4px;background:var(--tealB);width:0%;transition:width .3s;"></div>
+          </div>
+          <p id="ed-wc-target-label" style="font-size:9px;color:#475569;margin-top:3px;"></p>
+        </div>
+      </div>
+      <div class="esdiv"></div>
+
+      <!-- BRIEF PANEL -->
+      <div class="esblk" style="width:100%;" id="ed-brief-panel" style="display:none;">
+        <p class="eslbl" style="margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+          Brief
+          <span id="ed-brief-toggle" style="font-size:9px;color:var(--tealB);cursor:pointer;">▼ Show</span>
+        </p>
+        <div id="ed-brief-body" style="display:none;">
+          <div id="ed-brief-hook" style="background:rgba(14,196,173,.08);border-left:2px solid var(--tealB);border-radius:0 4px 4px 0;padding:7px 9px;margin-bottom:8px;font-size:11px;color:#94a3b8;line-height:1.5;font-style:italic;"></div>
+          <div id="ed-brief-sections" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
+          <div id="ed-brief-fxify" style="background:rgba(14,196,173,.06);border-radius:4px;padding:6px 8px;font-size:10px;color:var(--tealB);line-height:1.5;display:none;"></div>
+        </div>
+      </div>
+
+      <!-- DUE DATE -->
+      <div class="esblk" style="width:100%;margin-top:4px;" id="ed-due-row" style="display:none;">
+        <p class="eslbl">Due date</p>
+        <p id="ed-due-label" style="font-size:12px;font-weight:600;color:var(--urgent);"></p>
+      </div>
+
+      <!-- SENDBACK REASON -->
+      <div id="ed-sendback-panel" style="display:none;background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:var(--r);padding:8px 10px;width:100%;margin-bottom:4px;">
+        <p style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--urgent);margin-bottom:4px;">Returned — fix needed</p>
+        <p id="ed-sendback-note" style="font-size:11px;color:var(--urgent);line-height:1.5;"></p>
+      </div>
+
       <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
         <p class="eslbl" style="margin-bottom:8px;">SEO Score <span class="snum" style="color:var(--blue);font-size:18px;" id="ed-seo">—</span></p>
@@ -1424,14 +1313,14 @@ select.finput{cursor:pointer;}
       <div class="esblk" style="width:100%;">
         <p class="eslbl" style="margin-bottom:8px;">Before submitting</p>
         <div id="checklist">
-          <div class="chk"><div class="chkb"></div><span>Hook is strong</span></div>
-          <div class="chk"><div class="chkb"></div><span>Keyword used naturally</span></div>
-          <div class="chk"><div class="chkb"></div><span>Key terms defined</span></div>
-          <div class="chk"><div class="chkb"></div><span>Facts verified</span></div>
-          <div class="chk"><div class="chkb"></div><span>CTA is clear</span></div>
-          <div class="chk"><div class="chkb"></div><span>Author experience added</span></div>
-          <div class="chk"><div class="chkb"></div><span>Internal links included</span></div>
-          <div class="chk"><div class="chkb"></div><span>Meta package copied</span></div>
+          <div class="chk"><div class="chkb"></div><span>Facts verified against fxify.com</span></div>
+          <div class="chk"><div class="chkb"></div><span>Hook rewritten in my voice</span></div>
+          <div class="chk"><div class="chkb"></div><span>Experience signal added</span></div>
+          <div class="chk"><div class="chkb"></div><span>Key points &amp; stats bolded</span></div>
+          <div class="chk"><div class="chkb"></div><span>Internal links inserted</span></div>
+          <div class="chk"><div class="chkb"></div><span>Images uploaded</span></div>
+          <div class="chk"><div class="chkb"></div><span>Read aloud — no robotic lines</span></div>
+          <div class="chk"><div class="chkb"></div><span>Meta package copied to Yoast</span></div>
         </div>
       </div>
     </div>
@@ -1499,7 +1388,7 @@ select.finput{cursor:pointer;}
   <div class="dhead"><div class="dtitle" id="d-title">Edit Article</div><button class="dclose" id="d-close">×</button></div>
   <div class="fg"><label class="flbl">Assign to writer</label><select class="finput" id="d-writer"><option value="">— Unassigned —</option><option>Fariha Khan</option><option>Harry Hosking</option><option>Imran Najib</option><option>Mamnun Ahmed</option><option>Roshan Ganesh</option><option>Shatha Altrad</option><option>Sheperd Morena</option></select></div>
   <div class="fg"><label class="flbl">Priority</label><select class="finput" id="d-pri"><option value="Normal">Normal</option><option value="High">High</option><option value="Urgent">Urgent</option><option value="Low">Low</option></select></div>
-  <div class="fg"><label class="flbl">Status</label><select class="finput" id="d-status"><option value="Briefed">Briefed</option><option value="Drafting">Drafting</option><option value="Sheperd Review">Sheperd Review</option><option value="Liam Review">Liam Review</option><option value="David Approval">David Approval</option><option value="Publishing">Publishing</option><option value="Live">Live</option></select></div>
+  <div class="fg"><label class="flbl">Status</label><select class="finput" id="d-status"><option value="Briefed">Briefed</option><option value="Drafting">Drafting</option><option value="Sheperd Review">Sheperd Review</option><option value="David Approval">David Approval</option><option value="Publishing">Publishing</option><option value="Live">Live</option></select></div>
   <div class="fg"><label class="flbl">Due date</label><input class="finput" type="date" id="d-due"/></div>
   <button class="btn btn-p btn-f" id="d-save">Save changes</button>
   <button class="btn btn-d btn-f" id="d-delete" style="margin-top:8px;">Delete article</button>
@@ -1550,7 +1439,6 @@ select.finput{cursor:pointer;}
         <option value="__admin__">⚡ Admin (Sheperd)</option>
         <option value="__writer_self__">✍️ My Writer dashboard</option>
         <option value="__david__">✅ Manager (David)</option>
-        <option value="__liam__">🔍 SEO Review (Liam)</option>
       </optgroup>
       <optgroup label="Writers">
         <option value="fariha.khan@fxify.com">Fariha Khan</option>
@@ -1604,10 +1492,20 @@ var CU = {
     'Briefed':        'to do',
     'Drafting':       'in progress',
     'Sheperd Review': 'in review',
-    'Liam Review':    'seo review',
     'David Approval': 'pending approval',
     'Publishing':     'publishing',
     'Live':           'complete'
+  },
+  // Reverse map for reading ClickUp status back
+  reverseStatusMap: {
+    'to do':           'Briefed',
+    'in progress':     'Drafting',
+    'in review':       'Sheperd Review',
+    'pending approval':'David Approval',
+    'publishing':      'Publishing',
+    'complete':        'Live',
+    'done':            'Live',
+    'closed':          'Live'
   }
 };
 
@@ -1698,6 +1596,34 @@ async function cuGetTasks() {
   return (res && res.tasks) ? res.tasks : [];
 }
 
+// Pull ClickUp statuses and update Supabase articles that have a clickup_id stored
+async function cuSyncFromClickUp() {
+  try {
+    var tasks = await cuGetTasks();
+    if (!tasks.length) return;
+    // Get all articles that have a clickup_id in meta
+    var res = await supa.from('articles').select('id,meta,status').not('meta', 'is', null);
+    if (res.error || !res.data) return;
+    var updates = 0;
+    for (var i = 0; i < res.data.length; i++) {
+      var art = res.data[i];
+      if (!art.meta || !art.meta.clickup_id) continue;
+      var task = tasks.find(function(t){ return t.id === art.meta.clickup_id; });
+      if (!task) continue;
+      var cuStatus = task.status && task.status.status ? task.status.status.toLowerCase() : '';
+      var appStatus = CU.reverseStatusMap[cuStatus];
+      if (appStatus && appStatus !== art.status) {
+        await supa.from('articles').update({ status: appStatus, updated_at: new Date().toISOString() }).eq('id', art.id);
+        updates++;
+      }
+    }
+    if (updates > 0) {
+      toast(updates + ' article' + (updates > 1 ? 's' : '') + ' synced from ClickUp ✓');
+      loadClickUpBoard();
+    }
+  } catch(e) { console.warn('cuSyncFromClickUp error:', e.message); }
+}
+
 // ── STATE ─────────────────────────────────────────────────────────────────
 var activeRole = 'admin';
 var prevScreen = 'admin';
@@ -1752,9 +1678,8 @@ function goPage(sc,pg,navEl){
   if(pg==='a-review') loadReviewQ();
   if(pg==='w-drafts') loadWriterDrafts();
   if(pg==='w-submitted') loadWriterSubmitted();
-  if(pg==='l-review') loadLiamQ();
-  if(pg==='l-approved') loadLiamApproved();
-  if(pg==='l-topics') loadLiamTopics();
+  if(pg==='l-review')
+  
   if(pg==='d-approval') loadDavidQ();
   if(pg==='d-log') loadDavidLog();
   if(pg==='da-approval') loadDavidApprovalAdmin();
@@ -1765,11 +1690,10 @@ function goPage(sc,pg,navEl){
   if(pg==='w-youtube') initYouTubePage('yt');
   if(pg==='a-youtube') initYouTubePage('ayt');
   if(pg==='a-planner') loadDailyIdeas('daily-ideas-list', 'daily-ideas-date');
-  if(pg==='l-planner') loadDailyIdeas('ldaily-ideas-list', 'ldaily-ideas-date');
 }
 
 function closeSB(){
-  ['admin','writer','liam','david'].forEach(function(r){
+  ['admin','writer','david'].forEach(function(r){
     var sb=document.getElementById(r+'-sb');
     var ov=document.getElementById(r+'-ov');
     if(sb) sb.classList.remove('open');
@@ -1925,7 +1849,7 @@ function makeReviewCard(art,opts){
     dbUpdate(art.id,{status:opts.nextStatus}).then(function(){
       c.remove(); toast('Approved → '+opts.nextStatus+' done');
       loadPipeline();
-      if(opts.nextStatus==='Liam Review') loadLiamQ();
+      if(opts.nextStatus==='David Approval')
       if(opts.nextStatus==='David Approval') loadDavidQ();
       checkEmpty(opts.listId);
     });
@@ -1944,43 +1868,8 @@ async function loadReviewQ(){
   if(!l) return;
   if(res.error||!res.data||!res.data.length){l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles in review.</p>';var nb=document.getElementById('nb-review');if(nb)nb.textContent='';return;}
   l.innerHTML='';
-  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'sheperd',fwdLabel:'Approve → Liam',nextStatus:'Liam Review',listId:'a-review-list'}));});
+  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'sheperd',fwdLabel:'Approve → Manager',nextStatus:'David Approval',listId:'a-review-list'}));});
   var nb=document.getElementById('nb-review');if(nb)nb.textContent=res.data.length;
-}
-
-async function loadLiamApproved(){
-  var l = document.getElementById('l-approved-list');
-  if (!l) return;
-  var res = await supa.from('articles').select('*')
-    .in('status',['David Approval','Publishing','Live'])
-    .order('updated_at',{ascending:false});
-  if (res.error || !res.data || !res.data.length) {
-    l.innerHTML = '<p style="font-size:13px;color:var(--muted);padding:20px 0;">No approved articles yet.</p>';
-    return;
-  }
-  l.innerHTML = '';
-  var statusColor = {'David Approval':'var(--amber)','Publishing':'var(--tealB)','Live':'var(--green)'};
-  res.data.forEach(function(a){
-    var c = document.createElement('div');
-    c.className = 'card'; c.style.cursor = 'default';
-    var color = statusColor[a.status] || 'var(--muted)';
-    c.innerHTML =
-      '<div class="cbody"><div class="ctop"><p class="ctitle">'+(a.title||'Untitled')+'</p>' +
-      '<span class="badge" style="background:rgba(0,0,0,.05);color:'+color+';">'+a.status+'</span></div></div>' +
-      '<div class="cmeta"><span class="mkw">'+(a.primary_kw||'')+'</span><span class="mtime">'+(a.word_count||0)+' words</span></div>' +
-      '<div class="cfoot"><span class="cfi">'+(a.category||'')+'</span><span style="font-size:11px;color:var(--muted);">Approved by Liam ✓</span></div>';
-    l.appendChild(c);
-  });
-}
-
-async function loadLiamQ(){
-  var res=await supa.from('articles').select('*').eq('status','Liam Review').order('created_at',{ascending:false});
-  var l=document.getElementById('l-review-list');
-  if(!l) return;
-  if(res.error||!res.data||!res.data.length){l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles in your queue.</p>';var nb=document.getElementById('nb-liam');if(nb)nb.textContent='';return;}
-  l.innerHTML='';
-  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'liam',fwdLabel:'Approve → David',nextStatus:'David Approval',listId:'l-review-list'}));});
-  var nb=document.getElementById('nb-liam');if(nb)nb.textContent=res.data.length;
 }
 
 async function loadDavidPipeline(){
@@ -2218,10 +2107,44 @@ async function loadWriterDrafts(){
       '<div class="cbody"><div class="ctop"><p class="ctitle">'+(art.title||'Untitled')+'</p><div style="display:flex;gap:5px;"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span></div></div>'+
       '<div class="iblock"><p class="itag">Brief</p><p class="itext">Category: '+(art.category||'Guides')+' · Tone: '+(art.tone||'Educational')+' · '+(art.word_count||0)+' words generated</p></div></div>'+
       '<div class="cmeta"><span class="mkw">'+(art.primary_kw||art.title||'')+'</span><span class="mtime">'+(art.word_count||0)+' words</span></div>'+
-      '<div class="cfoot"><span class="cfi">'+(art.category||'Guides')+'</span><button class="btn btn-p btn-s">Open draft →</button></div>';
+      '<div class="cfoot"><span class="cfi">'+(art.category||'Guides')+'</span><div style="display:flex;gap:6px;"><button class="btn btn-s v-brief-btn" data-id="'+art.id+'" style="font-size:11px;">View brief</button><button class="btn btn-p btn-s">Open draft →</button></div></div>';
     var fn=function(){openEditor(art,'writer');};
     c.addEventListener('click',function(e){if(!e.target.closest('button')) fn();});
-    c.querySelector('button').addEventListener('click',function(e){e.stopPropagation();fn();});
+    // Wire open draft button (last button)
+    var btns = c.querySelectorAll('button');
+    btns[btns.length-1].addEventListener('click',function(e){e.stopPropagation();fn();});
+    // Wire view brief button
+    var vbBtn = c.querySelector('.v-brief-btn');
+    if (vbBtn) vbBtn.addEventListener('click', function(e) {
+      e.stopPropagation();
+      try {
+        var brief = JSON.parse(art.content||'{}');
+        if (!brief.hook_angle && !brief.sections) { toast('No brief data yet'); return; }
+        var bHtml = '<div style="max-height:80vh;overflow-y:auto;padding:20px;">' +
+          '<p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;">' + (brief.title||art.title) + '</p>' +
+          (brief.hook_angle ? '<div style="background:var(--tealL);border-left:3px solid var(--tealB);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;font-size:13px;color:var(--teal);font-style:italic;line-height:1.6;">' + brief.hook_angle + '</div>' : '') +
+          (brief.sections ? brief.sections.map(function(s,i){
+            return '<div style="margin-bottom:10px;border-left:2px solid var(--border);padding-left:12px;">' +
+              '<p style="font-size:12px;font-weight:600;color:var(--text);">H2 '+(i+1)+': '+s.h2+'</p>' +
+              '<p style="font-size:12px;color:var(--muted);line-height:1.5;">'+s.angle+'</p>' +
+              '<p style="font-size:11px;color:var(--amber);margin-top:4px;">✓ '+s.what_to_check+'</p>' +
+            '</div>';
+          }).join('') : '') +
+          (brief.fxify_angle ? '<div style="background:rgba(14,196,173,.08);border-radius:6px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--tealB);line-height:1.5;">⚡ '+brief.fxify_angle+'</div>' : '') +
+          '</div>';
+        var dov = document.getElementById('dov');
+        var drawer = document.getElementById('drawer');
+        // Use modal overlay
+        var mov = document.querySelector('.mov');
+        var mbox = document.querySelector('.mbox');
+        if (mov && mbox) {
+                    mbox.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><p class="mtitle">Your brief</p><button id="brief-modal-close" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--muted);">×</button></div>' + bHtml;
+          mov.classList.add('open');
+          var bmc = document.getElementById('brief-modal-close');
+          if (bmc) bmc.addEventListener('click', function(){ mov.classList.remove('open'); });
+        }
+      } catch(e2) { toast('No brief available'); }
+    });
     l.appendChild(c);
   });
   var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent=res.data.length;
@@ -2293,6 +2216,110 @@ function openEditor(art,role){
     initImageUpload();
     wireSuggestionSpans();
     loadInternalLinks();
+
+    // ── BRIEF PANEL ────────────────────────────────────────────────
+    var briefPanel = document.getElementById('ed-brief-panel');
+    var briefBody  = document.getElementById('ed-brief-body');
+    var briefToggle= document.getElementById('ed-brief-toggle');
+    var briefHook  = document.getElementById('ed-brief-hook');
+    var briefSects = document.getElementById('ed-brief-sections');
+    var briefFxify = document.getElementById('ed-brief-fxify');
+    try {
+      var briefData = art.content && art.content.trim().startsWith('{') ? JSON.parse(art.content) : null;
+      if (briefData && briefPanel) {
+        briefPanel.style.display = 'block';
+        if (briefHook && briefData.hook_angle)
+          briefHook.textContent = '🎯 ' + briefData.hook_angle;
+        if (briefSects && briefData.sections) {
+          briefSects.innerHTML = briefData.sections.map(function(s,i) {
+            return '<div style="border-left:2px solid #1e3a5f;padding-left:8px;margin-bottom:4px;">' +
+              '<p style="font-size:10px;font-weight:600;color:var(--tealB);">H2 '+(i+1)+': '+s.h2+'</p>' +
+              '<p style="font-size:10px;color:#475569;line-height:1.4;">'+s.angle+'</p>' +
+              '</div>';
+          }).join('');
+        }
+        if (briefFxify && briefData.fxify_angle) {
+          briefFxify.style.display = 'block';
+          briefFxify.textContent = '⚡ ' + briefData.fxify_angle;
+        }
+        if (briefToggle) {
+          briefToggle.addEventListener('click', function() {
+            var open = briefBody.style.display !== 'none';
+            briefBody.style.display = open ? 'none' : 'block';
+            briefToggle.textContent = open ? '▼ Show' : '▲ Hide';
+          });
+        }
+      }
+    } catch(e) { console.log('No brief data:', e.message); }
+
+    // ── WORD COUNT TARGET ──────────────────────────────────────────
+    var targetWc = 0;
+    try {
+      var briefD2 = art.content && art.content.trim().startsWith('{') ? JSON.parse(art.content) : null;
+      if (briefD2 && briefD2.word_count) {
+        var match = String(briefD2.word_count).match(/\d+/);
+        if (match) targetWc = parseInt(match[0]);
+      }
+    } catch(e) {}
+    if (!targetWc && art.length) {
+      var m2 = String(art.length).match(/\d+/);
+      if (m2) targetWc = parseInt(m2[0]);
+    }
+    window._edTargetWc = targetWc || 0;
+    var wcTargetRow = document.getElementById('ed-wc-target-row');
+    if (targetWc && wcTargetRow) {
+      wcTargetRow.style.display = 'block';
+      var edEl = document.getElementById('tiptap-editor');
+      if (edEl) {
+        var updateWcBar = function() {
+          var words = (edEl.innerText||'').trim().split(/\s+/).filter(Boolean).length;
+          var pct   = Math.min(100, Math.round(words/targetWc*100));
+          var bar   = document.getElementById('ed-wc-bar');
+          var lbl   = document.getElementById('ed-wc-target-label');
+          if (bar) {
+            bar.style.width = pct + '%';
+            bar.style.background = pct >= 90 ? 'var(--green)' : pct >= 60 ? 'var(--tealB)' : 'var(--amber)';
+          }
+          if (lbl) lbl.textContent = words + ' / ' + targetWc + ' words (' + pct + '%)';
+        };
+        updateWcBar();
+        edEl.addEventListener('input', updateWcBar);
+      }
+    }
+
+    // ── DUE DATE ───────────────────────────────────────────────────
+    var dueRow = document.getElementById('ed-due-row');
+    var dueLbl = document.getElementById('ed-due-label');
+    if (art.due_date && dueRow && dueLbl) {
+      dueRow.style.display = 'block';
+      var dueDate = new Date(art.due_date);
+      var daysUntil = Math.ceil((dueDate - Date.now())/(1000*60*60*24));
+      var dueStr = daysUntil < 0  ? '⚠ Overdue by ' + Math.abs(daysUntil) + 'd' :
+                   daysUntil === 0 ? '⚠ Due today' :
+                   daysUntil === 1 ? '⏰ Due tomorrow' :
+                   'Due ' + dueDate.toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      dueLbl.textContent = dueStr;
+      dueLbl.style.color = daysUntil <= 1 ? 'var(--urgent)' : daysUntil <= 3 ? 'var(--amber)' : 'var(--green)';
+    }
+
+    // ── SENDBACK REASON ────────────────────────────────────────────
+    var sbPanel = document.getElementById('ed-sendback-panel');
+    var sbNote  = document.getElementById('ed-sendback-note');
+    if (sbPanel) sbPanel.style.display = 'none';
+    if (art.id && role === 'writer') {
+      supa.from('feedback')
+        .select('note,created_at')
+        .eq('article_id', art.id)
+        .eq('type', 'sendback')
+        .order('created_at', {ascending: false})
+        .limit(1)
+        .then(function(res) {
+          if (res.data && res.data.length && sbPanel && sbNote) {
+            sbPanel.style.display = 'block';
+            sbNote.textContent = res.data[0].note || 'Review the article and resubmit.';
+          }
+        });
+    }
   }, 200);
   var wa=document.getElementById('ed-writer-acts');
   var ra=document.getElementById('ed-rv-acts');
@@ -2307,10 +2334,10 @@ function openEditor(art,role){
   } else {
     wa.style.display='none'; ra.style.display='flex'; rb.style.display='flex';
     if(wic) wic.style.display='none';
-    var labels={sheperd:'Reviewing as Sheperd — 1st review',liam:'SEO Review — Liam',david:'Final Approval — David Xavier'};
+    var labels={sheperd:'Reviewing as Sheperd',david:'Final Approval — David Xavier'};
     if(rl) rl.textContent=labels[role]||'Reviewing';
     var fwd=document.getElementById('ed-fwd-btn');
-    var flabels={sheperd:'Approve → Liam',liam:'Approve → David',david:'Final approval done'};
+    var flabels={sheperd:'Approve → Manager',david:'Final approval done'};
     if(fwd) fwd.textContent=flabels[role]||'Approve';
     // Reviewers can comment and suggest but not edit content freely
     if(role==='david'){
@@ -2734,13 +2761,7 @@ function markdownToHtml(text) {
   var html = '', inUl = false, inOl = false;
 
   function ca() { if(inUl){html+='</ul>';inUl=false;} if(inOl){html+='</ol>';inOl=false;} }
-  function pr(s) {
-    s = s.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-    s = s.replace(/\[INTERNAL LINK: ([^\]]+)\]/g, '<a href="#">$1 ↗</a>');
-    return s;
-  }
-
-  lines.forEach(function(raw) {
+    lines.forEach(function(raw) {
     var l = raw.trim();
     if (!l) { ca(); return; }
     if (l.startsWith('# ')) { ca(); html += '<h1>' + pr(l.slice(2)) + '</h1>'; return; }
@@ -2984,8 +3005,8 @@ async function deleteComment(id, el) {
 
 async function addComment(content, quote) {
   if (!currentArt || !currentArt.id || !content.trim()) return;
-  var roleMap = { admin: 'Admin', writer: 'Writer', liam: 'SEO Reviewer', david: 'Manager' };
-  var nameMap = { admin: 'Sheperd Morena', writer: 'Fariha Khan', liam: 'Liam', david: 'David Xavier' };
+  var roleMap = { admin: 'Admin', writer: 'Writer', david: 'Manager' };
+  var nameMap = { admin: 'Sheperd Morena', writer: 'Fariha Khan', david: 'David Xavier' };
   var res = await supa.from('comments').insert([{
     article_id: currentArt.id,
     author: nameMap[currentRole] || 'Admin',
@@ -3119,16 +3140,7 @@ function calculateScores(content, primaryKw) {
 }
 
 function updateScoreDisplay(scores) {
-  function setScore(type, score) {
-    var n = document.getElementById('ed-' + type);
-    var b = document.getElementById('ed-' + type + '-bar');
-    if (n) n.textContent = score;
-    if (b) {
-      b.style.width = score + '%';
-      b.style.background = score >= 80 ? 'var(--green)' : score >= 60 ? 'var(--amber)' : 'var(--urgent)';
-    }
-  }
-  setScore('seo', scores.seo);
+    setScore('seo', scores.seo);
   setScore('geo', scores.geo);
   setScore('aeo', scores.aeo);
   // Show improve button if SEO score is below 80
@@ -3340,400 +3352,9 @@ function renderLiveColumnFromPublished(articles) {
   }
 }
 
-function renderPublishedArticles(articles, listId, countId, filter) {
-  var list = document.getElementById(listId);
-  if (!list) return;
-  var filtered = filter ? articles.filter(function(a){ return a.title.toLowerCase().includes(filter.toLowerCase()); }) : articles;
-  
-  if (countId) {
-    var countEl = document.getElementById(countId);
-    if (countEl) countEl.textContent = filtered.length + ' articles';
-  }
-
-  if (!filtered.length) {
-    list.innerHTML = filter 
-      ? '<p class="pempty" style="padding:20px 0;">No articles match "' + filter + '"</p>'
-      : '<p class="pempty" style="padding:40px 0;">No published articles found.</p>';
-    return;
-  }
-
-  list.innerHTML = '';
-  filtered.forEach(function(article, idx) {
-    var item = document.createElement('div');
-    item.style.cssText = 'display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--surface);border:1px solid var(--border);border-radius:8px;margin-bottom:6px;gap:12px;';
-    item.innerHTML =
-      '<div style="display:flex;align-items:center;gap:10px;min-width:0;">' +
-        '<span style="font-size:10px;font-weight:600;color:var(--muted);width:24px;flex-shrink:0;">' + (idx+1) + '</span>' +
-        '<p style="font-size:13px;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + article.title + '</p>' +
-      '</div>' +
-      '<div style="display:flex;gap:6px;flex-shrink:0;">' +
-        '<a href="' + article.url + '" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">View ↗</a>' +
-        '<button class="btn btn-s" style="font-size:11px;" onclick="prefillBrief(' + JSON.stringify(article.title).replace(/"/g,"'") + ')">Use as inspo</button>' +
-      '</div>';
-    list.appendChild(item);
-  });
-}
-
-function prefillBrief(title) {
-  var titleEl = document.getElementById('b-title');
-  if (titleEl) titleEl.value = 'Related: ' + title;
-  // Navigate to generate
-  var genLink = document.querySelector('[data-pg="a-generate"]');
-  if (genLink) genLink.click();
-  toast('Title pre-filled — customise before generating');
-}
-
 // ── LIAM TOPIC SUBMISSION ─────────────────────────────────────────────────
-async function submitLiamTopic() {
-  var title = document.getElementById('lt-title').value.trim();
-  var kw = document.getElementById('lt-kw').value.trim();
-  var intent = document.getElementById('lt-intent').value;
-  var cat = document.getElementById('lt-cat').value;
-  var pri = document.getElementById('lt-pri').value;
-  var notes = document.getElementById('lt-notes').value.trim();
-
-  if (!title) { toast('Add a topic title first'); return; }
-
-  var btn = document.getElementById('lt-submit');
-  btn.textContent = 'Submitting...'; btn.disabled = true;
-
-  // Insert as a Briefed article with no content — Sheperd generates it
-  var res = await supa.from('articles').insert([{
-    title: title,
-    category: cat,
-    status: 'Briefed',
-    priority: pri,
-    primary_kw: kw || title.toLowerCase(),
-    assignee: '',
-    content: notes ? 'SEO BRIEF FROM LIAM:\n\n' + notes : '',
-    tone: 'Educational',
-    length: '~900 words',
-    word_count: 0,
-    doc_url: ''
-  }]).select();
-
-  btn.textContent = 'Submit topic →'; btn.disabled = false;
-
-  if (res.error) { toast('Error: ' + res.error.message); return; }
-
-  // Clear form
-  document.getElementById('lt-title').value = '';
-  document.getElementById('lt-kw').value = '';
-  document.getElementById('lt-notes').value = '';
-
-  toast('Topic submitted — Sheperd will see it in the pipeline ✓');
-  loadLiamTopics();
-  loadPipeline();
-
-  var nb = document.getElementById('nb-ltopics');
-  if (nb) nb.textContent = parseInt(nb.textContent || '0') + 1;
-}
-
-async function loadLiamTopics() {
-  var list = document.getElementById('l-topics-list');
-  if (!list) return;
-  var res = await supa.from('articles').select('*')
-    .like('content', 'SEO BRIEF FROM LIAM%')
-    .order('created_at', { ascending: false });
-  
-  if (res.error || !res.data || !res.data.length) {
-    list.innerHTML = '<p class="pempty" style="padding:20px 0;">No topics submitted yet.</p>';
-    return;
-  }
-  list.innerHTML = '';
-  res.data.forEach(function(a) {
-    var item = document.createElement('div');
-    item.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;';
-    var statusColor = a.status === 'Briefed' ? 'var(--amber)' : a.status === 'Live' ? 'var(--green)' : 'var(--blue)';
-    item.innerHTML =
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
-        '<p style="font-size:13px;font-weight:500;color:var(--text);">' + (a.title||'Untitled') + '</p>' +
-        '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(0,0,0,.05);color:' + statusColor + ';">' + (a.status||'Briefed') + '</span>' +
-      '</div>' +
-      '<p style="font-size:11px;color:var(--muted);margin-top:4px;">' + (a.primary_kw ? '🔑 ' + a.primary_kw : '') + '</p>';
-    list.appendChild(item);
-  });
-  var nb = document.getElementById('nb-ltopics');
-  if (nb) nb.textContent = res.data.filter(function(a){ return a.status === 'Briefed'; }).length || '';
-}
-
 // ── LIAM PLANNER (mirrors admin planner) ─────────────────────────────────
-async function runLiamPlanner() {
-  var topic = document.getElementById('lpl-topic').value.trim();
-  if (!topic) { toast('Add a topic first'); return; }
-  var competitors = document.getElementById('lpl-competitors').value.trim().split('\n').filter(Boolean);
-  var ownSite = document.getElementById('lpl-own').value.trim();
-  var cat = document.getElementById('lpl-cat').value;
-  var btn = document.getElementById('lpl-analyse-btn');
-  var loading = document.getElementById('lpl-loading');
-  var results = document.getElementById('lpl-results');
-
-  btn.disabled = true; btn.textContent = 'Analysing...';
-  loading.style.display = 'block'; results.style.display = 'none';
-
-  var competitorData = competitors.length ? await scrapeUrls(competitors) : '';
-  var ownData = ownSite ? await scrapeUrls([ownSite]) : '';
-
-  var prompt = 'You are a senior SEO strategist for FXIFY. Generate a complete SEO brief for: "' + topic + '". Return ONLY JSON: {"title":"","primary_keyword":"","secondary_keywords":"","search_intent":"Informational","category":"Guides","geo_angle":"","aeo_question":"","paa_questions":"","key_claim":"","internal_links":"/programs, /rules","word_count":"Standard guide — 800 words","angle":""}. No text outside JSON.';
-
-  try {
-    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt, max_tokens: 3000 })
-    });
-    var data = await r.json();
-    var text = '';
-    if (typeof data === 'string') text = data;
-    else if (Array.isArray(data) && data[0]) {
-      var d0 = data[0];
-      if (typeof d0 === 'string') text = d0;
-      else if (d0.text) text = d0.text;
-      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
-      else if (d0.output) text = d0.output;
-      else if (d0.message) text = d0.message;
-      else text = JSON.stringify(d0);
-    }
-    else if (data.text) text = data.text;
-    else if (data.content && data.content[0]) text = data.content[0].text || '';
-    else if (data.output) text = data.output;
-    else if (data.message) text = data.message;
-    else text = JSON.stringify(data);
-    console.log('n8n raw response type:', typeof data, Array.isArray(data) ? 'array['+data.length+']' : '');
-    console.log('Extracted text start:', text.substring(0,100));
-    var jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('No JSON');
-    var plan = JSON.parse(jsonMatch[0]);
-
-    // Render into liam planner result divs
-    var gapsEl = document.getElementById('lpl-gaps');
-    if (gapsEl && plan.gaps) {
-      gapsEl.innerHTML = '';
-      plan.gaps.forEach(function(g) {
-        var chip = document.createElement('div');
-        chip.style.cssText = 'background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--urgent);font-weight:500;';
-        chip.textContent = g;
-        gapsEl.appendChild(chip);
-      });
-    }
-    var topicsEl = document.getElementById('lpl-topics');
-    if (topicsEl && plan.topics) {
-      topicsEl.innerHTML = '';
-      plan.topics.forEach(function(t) {
-        var card = document.createElement('div');
-        card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;';
-        card.innerHTML =
-          '<p style="font-size:13px;font-weight:500;margin-bottom:6px;">' + t.title + '</p>' +
-          '<p style="font-size:11px;color:var(--muted);margin-bottom:8px;">' + (t.angle||'') + '</p>' +
-          '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">' + (t.keyword||'') + '</span>' +
-            '<button class="btn btn-p btn-s" style="margin-left:auto;font-size:11px;">Submit this topic</button>' +
-          '</div>';
-        card.querySelector('button').addEventListener('click', function() {
-          document.getElementById('lt-title').value = t.title;
-          document.getElementById('lt-kw').value = t.keyword || '';
-          document.getElementById('lt-cat').value = t.category || 'Guides';
-          var topicsNav = document.querySelector('[data-pg="l-topics"]');
-          if (topicsNav) topicsNav.click();
-          toast('Topic pre-filled — add notes and submit');
-        });
-        topicsEl.appendChild(card);
-      });
-    }
-    var paaEl = document.getElementById('lpl-paa');
-    if (paaEl && plan.paa) {
-      paaEl.innerHTML = plan.paa.map(function(q) {
-        return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--text);">❓ ' + q + '</div>';
-      }).join('');
-    }
-
-    loading.style.display = 'none'; results.style.display = 'block';
-    toast('Analysis done ✓');
-  } catch(e) {
-    loading.style.display = 'none';
-    toast('Error: ' + e.message);
-  }
-  btn.disabled = false; btn.textContent = 'Analyse & Generate Topics';
-}
-
 // ── READ MODE ─────────────────────────────────────────────────────────────
-function openReadMode() {
-  if (!currentArt) return;
-  var art = currentArt;
-  var edEl = document.getElementById('tiptap-editor');
-  var rawContent = edEl ? edEl.innerHTML : (art.content || '');
-
-  // Build author info
-  // Auto-set author based on logged in user
-  var authorKey = art.authorKey || (currentUser && currentUser.email ? 
-    (currentUser.email.split('.')[0] === 'sheperd' ? 'sheperd' :
-     currentUser.email.split('.')[0] === 'fariha' ? 'fariha' :
-     currentUser.email.split('.')[0] === 'harrison' ? 'harry' :
-     currentUser.email.split('.')[0] === 'imran' ? 'imran' :
-     'sheperd') : 'sheperd');
-  var authorMap = {
-    fariha: {name:'Fariha Khan', title:'Senior Content Writer', initials:'FK'},
-    harry:  {name:'Harry Hosking', title:'Markets Analyst', initials:'HH'},
-    imran:  {name:'Imran Najib', title:'Trading Educator', initials:'IN'},
-    sheperd:{name:'Sheperd Morena', title:'Content Lead', initials:'SM'}
-  };
-  var author = authorMap[authorKey] || authorMap.sheperd;
-
-  // Word count & reading time
-  var text = rawContent.replace(/<[^>]+>/g, ' ');
-  var wc = text.trim().split(/\s+/).filter(Boolean).length;
-  var readTime = Math.max(1, Math.ceil(wc / 200));
-
-  // Date
-  var now = new Date();
-  var dateStr = now.toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
-
-  // Clean content for blog view — make links real and clickable
-  var blogContent = rawContent
-    .replace(/<a class="int-link"([^>]*)>/g, '<a$1 target="_blank" rel="noopener">')
-    .replace(/class="kw-hl"/g, '')
-    .replace(/class="img-placeholder"[^>]*>/g, 'class="blog-img-ph">');
-
-  // Build the article HTML
-  var meta = art.meta || {};
-  var category = art.category || 'Guides';
-  var title = art.title || 'Draft';
-  var deck = meta.EXCERPT || '';
-
-  var articleHtml = 
-    '<div class="blog-article">' +
-    
-    // Header
-    '<div class="blog-header">' +
-      '<span class="blog-category-tag">' + category + '</span>' +
-      '<h1 class="blog-h1">' + title + '</h1>' +
-      (deck ? '<p class="blog-deck">' + deck + '</p>' : '') +
-      '<div class="blog-meta">' +
-        '<div class="blog-author-av">' + author.initials + '</div>' +
-        '<div><p class="blog-author-name">' + author.name + '</p><p class="blog-author-role">' + author.title + ' · FXIFY</p></div>' +
-        '<div class="blog-meta-sep"></div>' +
-        '<div class="blog-meta-item">' + dateStr + '</div>' +
-        '<div class="blog-meta-sep"></div>' +
-        '<div class="blog-meta-item"><strong>' + readTime + ' min</strong> read</div>' +
-        '<div class="blog-meta-sep"></div>' +
-        '<div class="blog-meta-item"><strong>' + wc.toLocaleString() + '</strong> words</div>' +
-      '</div>' +
-    '</div>' +
-
-    // Featured image
-    '<div class="blog-feat-img">Featured image</div>' +
-
-    // Body
-    '<div class="blog-body" id="rm-blog-body">' + blogContent + '</div>' +
-
-    // Author block
-    '<div class="blog-author-block">' +
-      '<div class="blog-author-block-av">' + author.initials + '</div>' +
-      '<div>' +
-        '<p class="blog-author-block-name">' + author.name + '</p>' +
-        '<p class="blog-author-block-title">' + author.title + ' at FXIFY</p>' +
-        '<p class="blog-author-block-bio">This article was written by ' + author.name + ', ' + author.title.toLowerCase() + ' at FXIFY. Our content team specialises in prop trading education, funded account strategies and market analysis.</p>' +
-      '</div>' +
-    '</div>' +
-
-    // No CTA block — FXIFY blog already has a global CTA
-
-    '</div>';
-
-  // Set title and body
-  var rmTitle = document.getElementById('rm-title');
-  var rmBody = document.getElementById('rm-body');
-  if (rmTitle) rmTitle.textContent = title;
-  if (rmBody) rmBody.innerHTML = articleHtml;
-
-  // Show overlay
-  document.getElementById('read-mode').classList.add('active');
-  document.getElementById('read-mode').scrollTop = 0;
-}
-
-function closeReadMode() {
-  document.getElementById('read-mode').classList.remove('active');
-}
-
-async function checkLinks() {
-  var body = document.getElementById('rm-blog-body');
-  if (!body) return;
-  var links = body.querySelectorAll('a[href]');
-  if (!links.length) { toast('No links found in article'); return; }
-
-  var status = document.getElementById('rm-link-status');
-  if (status) { status.style.display = 'block'; status.textContent = 'Checking ' + links.length + ' links...'; }
-
-  var ok = 0, broken = 0;
-  var checks = Array.from(links).map(async function(link) {
-    var href = link.getAttribute('href');
-    if (!href || href.startsWith('#') || href.startsWith('mailto:')) return;
-    link.classList.add('link-checking');
-    try {
-      // Use fetch with no-cors to check — will succeed for valid URLs
-      var res = await fetch(href, { method: 'HEAD', mode: 'no-cors', signal: AbortSignal.timeout(5000) });
-      link.classList.remove('link-checking');
-      link.classList.add('link-ok');
-      link.title = '✓ Link OK: ' + href;
-      ok++;
-    } catch(e) {
-      link.classList.remove('link-checking');
-      // no-cors fetch always "succeeds" — check if it's a relative link
-      if (href.startsWith('/') || href.startsWith('http')) {
-        link.classList.add('link-ok');
-        link.title = '✓ ' + href;
-        ok++;
-      } else {
-        link.classList.add('link-broken');
-        link.title = '✗ Check this link: ' + href;
-        broken++;
-      }
-    }
-  });
-
-  await Promise.allSettled(checks);
-  if (status) {
-    status.textContent = ok + ' OK' + (broken ? ' · ' + broken + ' to check' : ' · all good ✓');
-    status.style.background = broken ? 'rgba(239,68,68,.15)' : 'rgba(5,150,105,.15)';
-    status.style.color = broken ? 'var(--urgent)' : 'var(--green)';
-  }
-  toast(ok + ' links checked' + (broken ? ' — ' + broken + ' need attention' : ' — all good ✓'));
-}
-
-function wireReadMode() {
-  // Preview button in toolbar
-  var previewBtn = document.getElementById('tb-preview');
-  if (previewBtn) previewBtn.addEventListener('click', function(e) {
-    e.preventDefault();
-    openReadMode();
-  });
-
-  // Close button
-  var closeBtn = document.getElementById('rm-close');
-  if (closeBtn) closeBtn.addEventListener('click', closeReadMode);
-
-  // Check links button
-  var checkBtn = document.getElementById('rm-check-links');
-  if (checkBtn) checkBtn.addEventListener('click', checkLinks);
-
-  // Keyboard shortcut Cmd+Shift+P
-  document.addEventListener('keydown', function(e) {
-    if ((e.metaKey || e.ctrlKey) && e.shiftKey && e.key === 'p') {
-      e.preventDefault();
-      var rm = document.getElementById('read-mode');
-      if (rm.classList.contains('active')) {
-        closeReadMode();
-      } else if (currentArt) {
-        openReadMode();
-      }
-    }
-    // Escape to close
-    if (e.key === 'Escape') {
-      var rm = document.getElementById('read-mode');
-      if (rm.classList.contains('active')) closeReadMode();
-    }
-  });
-}
-
 // ── META PACKAGE ──────────────────────────────────────────────────────────
 function parseMeta(text) {
   var meta = {};
@@ -3873,192 +3494,8 @@ function renderPublishedArticles(articles, listId, countId, filter) {
   });
 }
 
-function prefillBrief(title) {
-  var titleEl = document.getElementById('b-title');
-  if (titleEl) titleEl.value = 'Related: ' + title;
-  // Navigate to generate
-  var genLink = document.querySelector('[data-pg="a-generate"]');
-  if (genLink) genLink.click();
-  toast('Title pre-filled — customise before generating');
-}
-
 // ── LIAM TOPIC SUBMISSION ─────────────────────────────────────────────────
-async function submitLiamTopic() {
-  var title = document.getElementById('lt-title').value.trim();
-  var kw = document.getElementById('lt-kw').value.trim();
-  var intent = document.getElementById('lt-intent').value;
-  var cat = document.getElementById('lt-cat').value;
-  var pri = document.getElementById('lt-pri').value;
-  var notes = document.getElementById('lt-notes').value.trim();
-
-  if (!title) { toast('Add a topic title first'); return; }
-
-  var btn = document.getElementById('lt-submit');
-  btn.textContent = 'Submitting...'; btn.disabled = true;
-
-  // Insert as a Briefed article with no content — Sheperd generates it
-  var res = await supa.from('articles').insert([{
-    title: title,
-    category: cat,
-    status: 'Briefed',
-    priority: pri,
-    primary_kw: kw || title.toLowerCase(),
-    assignee: '',
-    content: notes ? 'SEO BRIEF FROM LIAM:\n\n' + notes : '',
-    tone: 'Educational',
-    length: '~900 words',
-    word_count: 0,
-    doc_url: ''
-  }]).select();
-
-  btn.textContent = 'Submit topic →'; btn.disabled = false;
-
-  if (res.error) { toast('Error: ' + res.error.message); return; }
-
-  // Clear form
-  document.getElementById('lt-title').value = '';
-  document.getElementById('lt-kw').value = '';
-  document.getElementById('lt-notes').value = '';
-
-  toast('Topic submitted — Sheperd will see it in the pipeline ✓');
-  loadLiamTopics();
-  loadPipeline();
-
-  var nb = document.getElementById('nb-ltopics');
-  if (nb) nb.textContent = parseInt(nb.textContent || '0') + 1;
-}
-
-async function loadLiamTopics() {
-  var list = document.getElementById('l-topics-list');
-  if (!list) return;
-  var res = await supa.from('articles').select('*')
-    .like('content', 'SEO BRIEF FROM LIAM%')
-    .order('created_at', { ascending: false });
-  
-  if (res.error || !res.data || !res.data.length) {
-    list.innerHTML = '<p class="pempty" style="padding:20px 0;">No topics submitted yet.</p>';
-    return;
-  }
-  list.innerHTML = '';
-  res.data.forEach(function(a) {
-    var item = document.createElement('div');
-    item.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;';
-    var statusColor = a.status === 'Briefed' ? 'var(--amber)' : a.status === 'Live' ? 'var(--green)' : 'var(--blue)';
-    item.innerHTML =
-      '<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">' +
-        '<p style="font-size:13px;font-weight:500;color:var(--text);">' + (a.title||'Untitled') + '</p>' +
-        '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px;background:rgba(0,0,0,.05);color:' + statusColor + ';">' + (a.status||'Briefed') + '</span>' +
-      '</div>' +
-      '<p style="font-size:11px;color:var(--muted);margin-top:4px;">' + (a.primary_kw ? '🔑 ' + a.primary_kw : '') + '</p>';
-    list.appendChild(item);
-  });
-  var nb = document.getElementById('nb-ltopics');
-  if (nb) nb.textContent = res.data.filter(function(a){ return a.status === 'Briefed'; }).length || '';
-}
-
 // ── LIAM PLANNER (mirrors admin planner) ─────────────────────────────────
-async function runLiamPlanner() {
-  var topic = document.getElementById('lpl-topic').value.trim();
-  if (!topic) { toast('Add a topic first'); return; }
-  var competitors = document.getElementById('lpl-competitors').value.trim().split('\n').filter(Boolean);
-  var ownSite = document.getElementById('lpl-own').value.trim();
-  var cat = document.getElementById('lpl-cat').value;
-  var btn = document.getElementById('lpl-analyse-btn');
-  var loading = document.getElementById('lpl-loading');
-  var results = document.getElementById('lpl-results');
-
-  btn.disabled = true; btn.textContent = 'Analysing...';
-  loading.style.display = 'block'; results.style.display = 'none';
-
-  var competitorData = competitors.length ? await scrapeUrls(competitors) : '';
-  var ownData = ownSite ? await scrapeUrls([ownSite]) : '';
-
-  var prompt = 'You are a senior SEO strategist for prop trading / fintech.\n\n' +
-    'SEED TOPIC: ' + topic + '\nCATEGORY: ' + cat + '\n' +
-    (ownData ? 'OWN SITE:\n' + ownData + '\n\n' : '') +
-    (competitorData ? 'COMPETITORS:\n' + competitorData + '\n\n' : '') +
-    'Respond ONLY with valid JSON: {"gaps":[],"topics":[{"title":"","keyword":"","intent":"","angle":"","priority":"","category":"","geo_angle":"","aeo_snippet":""}],"paa":[],"geo_topics":[],"backlink_angles":[{"angle":"","target_type":"","content_hook":""}]}\n' +
-    'Generate 5 gaps, 6 topics, 5 PAA, 3 GEO topics, 2 backlink angles. No other text.';
-
-  try {
-    var r = await fetch('https://sheperd.app.n8n.cloud/webhook/generate-draft', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: prompt, max_tokens: 3000 })
-    });
-    var data = await r.json();
-    var text = '';
-    if (typeof data === 'string') text = data;
-    else if (Array.isArray(data) && data[0]) {
-      var d0 = data[0];
-      if (typeof d0 === 'string') text = d0;
-      else if (d0.text) text = d0.text;
-      else if (d0.content && d0.content[0]) text = d0.content[0].text || '';
-      else if (d0.output) text = d0.output;
-      else if (d0.message) text = d0.message;
-      else text = JSON.stringify(d0);
-    }
-    else if (data.text) text = data.text;
-    else if (data.content && data.content[0]) text = data.content[0].text || '';
-    else if (data.output) text = data.output;
-    else if (data.message) text = data.message;
-    else text = JSON.stringify(data);
-    console.log('n8n raw response type:', typeof data, Array.isArray(data) ? 'array['+data.length+']' : '');
-    console.log('Extracted text start:', text.substring(0,100));
-    var jsonMatch = text.match(/\{[\s\S]*\}/);
-    if (!jsonMatch) throw new Error('No JSON');
-    var plan = JSON.parse(jsonMatch[0]);
-
-    // Render into liam planner result divs
-    var gapsEl = document.getElementById('lpl-gaps');
-    if (gapsEl && plan.gaps) {
-      gapsEl.innerHTML = '';
-      plan.gaps.forEach(function(g) {
-        var chip = document.createElement('div');
-        chip.style.cssText = 'background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:20px;padding:5px 12px;font-size:12px;color:var(--urgent);font-weight:500;';
-        chip.textContent = g;
-        gapsEl.appendChild(chip);
-      });
-    }
-    var topicsEl = document.getElementById('lpl-topics');
-    if (topicsEl && plan.topics) {
-      topicsEl.innerHTML = '';
-      plan.topics.forEach(function(t) {
-        var card = document.createElement('div');
-        card.style.cssText = 'background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;';
-        card.innerHTML =
-          '<p style="font-size:13px;font-weight:500;margin-bottom:6px;">' + t.title + '</p>' +
-          '<p style="font-size:11px;color:var(--muted);margin-bottom:8px;">' + (t.angle||'') + '</p>' +
-          '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<span style="font-size:11px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);">' + (t.keyword||'') + '</span>' +
-            '<button class="btn btn-p btn-s" style="margin-left:auto;font-size:11px;">Submit this topic</button>' +
-          '</div>';
-        card.querySelector('button').addEventListener('click', function() {
-          document.getElementById('lt-title').value = t.title;
-          document.getElementById('lt-kw').value = t.keyword || '';
-          document.getElementById('lt-cat').value = t.category || 'Guides';
-          var topicsNav = document.querySelector('[data-pg="l-topics"]');
-          if (topicsNav) topicsNav.click();
-          toast('Topic pre-filled — add notes and submit');
-        });
-        topicsEl.appendChild(card);
-      });
-    }
-    var paaEl = document.getElementById('lpl-paa');
-    if (paaEl && plan.paa) {
-      paaEl.innerHTML = plan.paa.map(function(q) {
-        return '<div style="background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;font-size:13px;color:var(--text);">❓ ' + q + '</div>';
-      }).join('');
-    }
-
-    loading.style.display = 'none'; results.style.display = 'block';
-    toast('Analysis done ✓');
-  } catch(e) {
-    loading.style.display = 'none';
-    toast('Error: ' + e.message);
-  }
-  btn.disabled = false; btn.textContent = 'Analyse & Generate Topics';
-}
-
 // ── READ MODE ─────────────────────────────────────────────────────────────
 function openReadMode() {
   if (!currentArt) return;
@@ -4665,8 +4102,7 @@ async function loadAnalytics() {
   var seoArts = arts.filter(function(a){ return a.seo_score; });
   var avgSeo = seoArts.length ? Math.round(seoArts.reduce(function(s,a){ return s+(a.seo_score||0);},0)/seoArts.length) : 0;
 
-  function set(id, val) { var e = document.getElementById(id); if(e) e.textContent = val; }
-  set('an-total', total);
+    set('an-total', total);
   set('an-total-sub', total + ' articles created');
   set('an-live', live);
   set('an-pipeline', pipeline);
@@ -5048,7 +4484,7 @@ async function seedSampleArticles() {
   await supa.from('articles').insert([{
     title: '[SAMPLE] Best Forex Pairs for Prop Trading in 2026',
     category: 'Trading Strategy',
-    status: 'Liam Review',
+    status: 'David Approval',
     priority: 'Normal',
     primary_kw: 'best forex pairs prop trading',
     assignee: 'Imran Najib',
@@ -5094,7 +4530,7 @@ async function seedSampleArticles() {
     doc_url: ''
   }]);
   toast('Sample articles seeded ✓ — visible across all role dashboards');
-  loadPipeline(); loadReviewQ(); loadLiamQ(); loadDavidQ(); loadWriterDrafts();
+  loadPipeline(); loadReviewQ(); loadDavidQ(); loadWriterDrafts();
 }
 
 // ── QUEUE HEALTH CHECK ───────────────────────────────────────────────────
@@ -5108,7 +4544,7 @@ async function checkQueueHealth() {
     briefed: arts.filter(function(a){ return a.status === 'Briefed'; }).length,
     drafting: arts.filter(function(a){ return a.status === 'Drafting'; }).length,
     sheperdReview: arts.filter(function(a){ return a.status === 'Sheperd Review'; }).length,
-    liamReview: arts.filter(function(a){ return a.status === 'Liam Review'; }).length,
+
     davidApproval: arts.filter(function(a){ return a.status === 'David Approval'; }).length,
     publishing: arts.filter(function(a){ return a.status === 'Publishing'; }).length,
   };
@@ -5123,7 +4559,6 @@ async function checkQueueHealth() {
   if (counts.briefed === 0) empty.push('Briefed');
   if (counts.drafting === 0) empty.push('Drafting');
   if (counts.sheperdReview === 0) empty.push('Sheperd Review');
-  if (counts.liamReview === 0) empty.push('Liam Review');
   if (counts.davidApproval === 0) empty.push('David Approval');
 
   if (empty.length >= 4) {
@@ -6211,7 +5646,6 @@ async function doGoogleLogin() {
 var USERS = {
   'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
   'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
-  'liam@quirkydigital.com':      { role:'liam',   name:'Liam',            screen:'liam',   initials:'L',  av:'b' },
   'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
   'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
   'imran.najib@fxify.com':       { role:'writer', name:'Imran Najib',     screen:'writer', initials:'IN', av:''  },
@@ -6280,7 +5714,7 @@ function init(){
     currentBriefData = null; currentOutline = '';
 
     goScreen(user.screen);
-    loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadLiamQ(); loadDavidQ();
+    loadPipeline(); loadReviewQ(); loadWriterDrafts(); loadDavidQ();
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
@@ -6331,7 +5765,7 @@ function init(){
     }
 
     // Add sign out button to topbar
-    ['admin','writer','liam','david'].forEach(function(sc) {
+    ['admin','writer','david'].forEach(function(sc) {
       var tbr = document.querySelector('#' + sc + ' .tbr');
       if (tbr && !tbr.querySelector('.signout-btn')) {
         var sob = document.createElement('button');
@@ -6358,7 +5792,7 @@ function init(){
 
   function updateTopbars(user) {
     // Update each screen's topbar
-    var screens = ['admin','writer','liam','david'];
+    var screens = ['admin','writer','david'];
     screens.forEach(function(sc) {
       var nameEl = document.querySelector('#' + sc + ' .tbu');
       var avEl = document.querySelector('#' + sc + ' .tbav');
@@ -6418,7 +5852,7 @@ function init(){
 
   function resolveUserFromEmail(email) {
     var errEl = document.getElementById('login-error');
-    var isApproved = email.endsWith('@fxify.com') || email === 'liam@quirkydigital.com';
+    var isApproved = email.endsWith('@fxify.com') || email === 'david.xavier@fxify.com';
     if (!isApproved) {
       if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
       supa.auth.signOut();
@@ -6498,11 +5932,7 @@ function init(){
         });
       }
       goScreen('admin'); loadPipeline(); loadDavidApprovalAdmin();
-    } else if (sel === '__liam__') {
-      targetScreen = 'liam'; bannerLabel = '🔍 Viewing SEO dashboard';
-      impersonating = '__liam__'; activeRole = 'liam';
-      updateTopbars({ name: 'Liam (viewing)', initials: 'L', av: 'b' });
-      goScreen('liam'); loadLiamQ();
+    
     } else {
       // Writer view
       var writerDef = USERS[sel];
@@ -6533,7 +5963,6 @@ function init(){
         goScreen(currentUser.screen);
         if (currentUser.role === 'admin') { loadPipeline(); loadReviewQ(); }
         if (currentUser.role === 'david') loadDavidQ();
-        if (currentUser.role === 'liam') loadLiamQ();
       });
     }
   });
@@ -6541,7 +5970,7 @@ function init(){
 
 
   // Logos → login
-  ['admin','writer','liam','david'].forEach(function(r){
+  ['admin','writer','david'].forEach(function(r){
     var logo=document.getElementById(r+'-logo');
     if(logo) logo.addEventListener('click',function(){
       if(confirm('Sign out?')){
@@ -6648,6 +6077,7 @@ function init(){
   // ClickUp refresh button
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'cu-refresh-btn') { loadClickUpBoard(); return; }
+    if (e.target && e.target.id === 'cu-sync-btn') { cuSyncFromClickUp(); return; }
     var card = e.target.closest('[data-cuurl]');
     if (card) window.open(card.getAttribute('data-cuurl'), '_blank');
   });
@@ -6681,12 +6111,12 @@ function init(){
   // Reviewer forward
   document.getElementById('ed-fwd-btn').addEventListener('click',function(){
     if(!currentArt||!currentArt.id) return;
-    var map={sheperd:'Liam Review',liam:'David Approval',david:'Publishing'};
+    var map={sheperd:'David Approval',david:'Publishing'};
     var next=map[currentRole];
     if(!next) return;
     dbUpdate(currentArt.id,{status:next}).then(function(){
       toast("Approved and moving — let's go! ");
-      loadPipeline(); loadReviewQ(); loadLiamQ(); loadDavidQ();
+      loadPipeline(); loadReviewQ(); loadDavidQ();
       setTimeout(function(){goScreen(prevScreen);},1800);
     });
   });
@@ -6713,7 +6143,7 @@ function init(){
     if (res.error) { toast('Delete failed'); return; }
     closeDrawer();
     toast('Gone. Deleted. Never existed. ');
-    loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadLiamQ(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadDavidQ();
   });
   document.getElementById('d-save').addEventListener('click',async function(){
     if(!drawerArt) return;
@@ -6723,7 +6153,7 @@ function init(){
     var due=document.getElementById('d-due')?document.getElementById('d-due').value||null:null;
     await dbUpdate(drawerArt.id,{assignee:assignee,priority:priority,status:status,due_date:due});
     closeDrawer(); toast('Updated — looking good ');
-    loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadLiamQ(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts(); loadReviewQ(); loadDavidQ();
   });
 
   // Sendback modal
@@ -6783,20 +6213,8 @@ function init(){
     if (publishedCache) renderPublishedArticles(publishedCache, 'a-live-list', 'a-live-count', aSearch.value);
   });
 
-  // Published articles — liam
-  var lScrapeBtn = document.getElementById('l-scrape-btn');
-  if (lScrapeBtn) lScrapeBtn.addEventListener('click', function(){
-    scrapePublishedArticles('l-live-list', null);
-  });
-  var lSearch = document.getElementById('l-search');
-  if (lSearch) lSearch.addEventListener('input', function(){
-    if (publishedCache) renderPublishedArticles(publishedCache, 'l-live-list', null, lSearch.value);
-  });
 
   // Liam topic submission
-  var ltSubmit = document.getElementById('lt-submit');
-  if (ltSubmit) ltSubmit.addEventListener('click', submitLiamTopic);
-  loadLiamTopics();
 
   // v2 Topic Intelligence Hub init
   v2WireCredentials();
@@ -6804,8 +6222,6 @@ function init(){
   setTimeout(v2UpdateStatus, 800);
 
   // Liam planner
-  var lplBtn = document.getElementById('lpl-analyse-btn');
-  if (lplBtn) lplBtn.addEventListener('click', runLiamPlanner);
 
   // Daily ideas refresh buttons
   var refreshDaily = document.getElementById('refresh-daily-btn');
