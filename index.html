@@ -456,6 +456,7 @@ select.finput option{background:var(--bg2);color:var(--text);}
             <button class="btn btn-s" id="cu-sync-btn" style="color:var(--teal);border-color:rgba(0,212,170,0.3);">⇅ Sync</button>
             <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">Blog ↗</a>
             <a href="https://app.clickup.com/9005041798/v/li/901603213575" target="_blank" class="btn btn-s" style="text-decoration:none;">Video ↗</a>
+            <button class="btn btn-s" id="cu-export-btn" style="font-size:11px;">Export CSV</button>
           </div>
         </div>
 
@@ -557,6 +558,18 @@ select.finput option{background:var(--bg2);color:var(--text);}
             <button class="btn btn-p" id="ct-submit-btn" style="min-width:200px;">Create in ClickUp + Supabase →</button>
             <p id="ct-status-msg" style="font-size:11px;color:var(--text3);font-family:DM Mono,monospace;"></p>
           </div>
+        </div>
+
+        <!-- Search + filter bar -->
+        <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap;">
+          <input class="finput" id="cu-search" type="text" placeholder="Search tasks by title or assignee..." style="max-width:320px;font-size:12px;"/>
+          <select class="finput" id="cu-assignee-filter" style="max-width:180px;font-size:12px;">
+            <option value="">All assignees</option>
+          </select>
+          <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;white-space:nowrap;">
+            <input type="checkbox" id="cu-overdue-filter" style="accent-color:var(--urgent);"> <span style="color:var(--urgent);">⚠ Overdue only</span>
+          </label>
+          <span id="cu-task-count" style="font-size:11px;color:var(--text3);font-family:'DM Mono',monospace;margin-left:auto;"></span>
         </div>
 
         <!-- Board -->
@@ -719,28 +732,153 @@ select.finput option{background:var(--bg2);color:var(--text);}
 
       <!-- ANALYTICS -->
       <div id="a-analytics" class="pg">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:4px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
           <div>
             <div class="pgh" style="margin-bottom:2px;">Analytics</div>
-            <p class="pgs" style="margin-bottom:0;">Live pipeline data — ClickUp + Supabase</p>
+            <p class="pgs" style="margin-bottom:0;">Live from ClickUp (blog + video) and Supabase article data.</p>
           </div>
-          <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">View in ClickUp ↗</a>
+          <div style="display:flex;gap:6px;flex-wrap:wrap;">
+            <button class="btn btn-s" id="an-refresh-btn">↻ Refresh</button>
+            <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">Blog ↗</a>
+            <a href="https://app.clickup.com/9005041798/v/li/901603213575" target="_blank" class="btn btn-s" style="text-decoration:none;">Video ↗</a>
+          </div>
         </div>
-        <div class="agrid">
-          <div class="acard"><p class="albl">Total articles</p><p class="aval" id="an-total">—</p><p class="ach" id="an-total-sub"></p></div>
-          <div class="acard"><p class="albl">Live & published</p><p class="aval cu" id="an-live">—</p><p class="ach" id="an-live-sub"></p></div>
-          <div class="acard"><p class="albl">In pipeline</p><p class="aval" id="an-pipeline">—</p><p class="ach" id="an-pipeline-sub"></p></div>
-          <div class="acard"><p class="albl">In review</p><p class="aval" id="an-review">—</p><p class="ach" id="an-review-sub"></p></div>
-          <div class="acard"><p class="albl">Avg. word count</p><p class="aval" id="an-wc">—</p><p class="ach" id="an-wc-sub"></p></div>
-          <div class="acard"><p class="albl">Avg. SEO score</p><p class="aval" id="an-seo">—</p><p class="ach" id="an-seo-sub"></p></div>
+
+        <!-- PIPELINE STATS — from ClickUp (both lists) -->
+        <div class="shead">Pipeline — ClickUp live</div>
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;" id="an-pipeline-grid">
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;grid-column:span 2;">
+            <!-- Blog row -->
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);"></div>
+              <p style="font-size:9px;color:var(--teal);font-family:'DM Mono',monospace;font-weight:600;margin-bottom:4px;">✦ BLOG</p>
+              <p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;">Total tasks</p>
+              <p style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--text);line-height:1;" id="an-blog-total">—</p>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);"></div>
+              <p style="font-size:9px;color:var(--teal);font-family:'DM Mono',monospace;font-weight:600;margin-bottom:4px;">✦ BLOG</p>
+              <p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;">In progress</p>
+              <p style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--blue);line-height:1;" id="an-blog-prog">—</p>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);"></div>
+              <p style="font-size:9px;color:var(--teal);font-family:'DM Mono',monospace;font-weight:600;margin-bottom:4px;">✦ BLOG</p>
+              <p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;">In review</p>
+              <p style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--amber);line-height:1;" id="an-blog-review">—</p>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);"></div>
+              <p style="font-size:9px;color:var(--teal);font-family:'DM Mono',monospace;font-weight:600;margin-bottom:4px;">✦ BLOG</p>
+              <p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;">Published</p>
+              <p style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--green);line-height:1;" id="an-blog-done">—</p>
+            </div>
+            <!-- Video row -->
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--urgent);"></div>
+              <p style="font-size:9px;color:var(--urgent);font-family:'DM Mono',monospace;font-weight:600;margin-bottom:4px;">▶ VIDEO</p>
+              <p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;">Total tasks</p>
+              <p style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--text);line-height:1;" id="an-video-total">—</p>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);"></div>
+              <p style="font-size:9px;color:var(--urgent);font-family:'DM Mono',monospace;font-weight:600;margin-bottom:4px;">▶ VIDEO</p>
+              <p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;">In production</p>
+              <p style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--blue);line-height:1;" id="an-video-prog">—</p>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);"></div>
+              <p style="font-size:9px;color:var(--urgent);font-family:'DM Mono',monospace;font-weight:600;margin-bottom:4px;">▶ VIDEO</p>
+              <p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;">In review</p>
+              <p style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--amber);line-height:1;" id="an-video-review">—</p>
+            </div>
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
+              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);"></div>
+              <p style="font-size:9px;color:var(--urgent);font-family:'DM Mono',monospace;font-weight:600;margin-bottom:4px;">▶ VIDEO</p>
+              <p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:6px;">Published</p>
+              <p style="font-family:'DM Mono',monospace;font-size:22px;font-weight:700;color:var(--green);line-height:1;" id="an-video-done">—</p>
+            </div>
+          </div>
         </div>
-        <div class="shead">Articles by writer</div>
-        <div class="twrap" style="margin-bottom:20px;"><table class="dtable" id="an-by-writer"><thead><tr><th>Writer</th><th>Total</th><th>Live</th><th>In Progress</th><th>Avg. Words</th></tr></thead><tbody><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;"></td></tr></tbody></table></div>
+
+        <!-- CONTENT STATS — from Supabase -->
+        <div class="shead" style="margin-top:20px;">Content stats — Supabase</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;">
+          <div class="sc sc-t"><p class="slbl">Total articles</p><p class="sval" id="an-total">—</p></div>
+          <div class="sc sc-g"><p class="slbl">Live & published</p><p class="sval" style="color:var(--green);" id="an-live">—</p></div>
+          <div class="sc sc-b"><p class="slbl">Avg. word count</p><p class="sval" id="an-wc">—</p></div>
+        </div>
+
+        <!-- BY WRITER -->
+        <div class="shead">By writer</div>
+        <div class="twrap" style="margin-bottom:20px;">
+          <table class="dtable" id="an-by-writer">
+            <thead><tr>
+              <th>Writer</th>
+              <th>Blog tasks</th>
+              <th>Video tasks</th>
+              <th>Live</th>
+              <th>In progress</th>
+              <th>Avg. words</th>
+            </tr></thead>
+            <tbody><tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;font-family:'DM Mono',monospace;font-size:11px;">Loading...</td></tr></tbody>
+          </table>
+        </div>
+
+        <!-- LIVE API DATA SLOTS -->
+        <div class="shead">Live performance data</div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
+          <!-- GA4 slot -->
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--amberL);color:var(--amber);border:1px solid rgba(251,191,36,0.2);font-family:'DM Mono',monospace;font-weight:600;">Google Analytics 4</span>
+              <span id="ga4-status" style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;">Not connected</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="ga4-stats">
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Sessions (30d)</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="ga4-sessions">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Organic users</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="ga4-organic">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Avg. duration</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="ga4-duration">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Bounce rate</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="ga4-bounce">—</p></div>
+            </div>
+            <p style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5;">Connect GA4 via the Measurement Protocol API or a service account. Pulls sessions, organic users, and engagement per article.</p>
+          </div>
+          <!-- GSC slot -->
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:'DM Mono',monospace;font-weight:600;">Search Console</span>
+              <span id="gsc-status" style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;">Not connected</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Impressions</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="gsc-impressions">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Clicks</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="gsc-clicks">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Avg. position</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="gsc-position">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">CTR</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="gsc-ctr">—</p></div>
+            </div>
+            <p style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5;">Connect via Google Search Console API (OAuth or service account). Shows impressions, clicks, and average ranking per keyword.</p>
+          </div>
+          <!-- YouTube slot -->
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+              <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--urgentL);color:var(--urgent);border:1px solid rgba(248,113,113,0.2);font-family:'DM Mono',monospace;font-weight:600;">YouTube Analytics</span>
+              <span id="yt-an-status" style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;">Not connected</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Views (30d)</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="yt-views">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Watch time</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="yt-watchtime">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Subscribers</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="yt-subs">—</p></div>
+              <div><p style="font-size:9px;color:var(--text3);font-family:'DM Mono',monospace;margin-bottom:2px;">Avg. view %</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:'DM Mono',monospace;" id="yt-retention">—</p></div>
+            </div>
+            <p style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5;">Connect via YouTube Data API v3 with a service account. Pulls views, watch time, and retention per video.</p>
+          </div>
+        </div>
+
+        <!-- RECENT ARTICLES -->
         <div class="shead">Recent articles</div>
-        <div class="twrap"><table class="dtable" id="an-recent"><thead><tr><th>Article</th><th>Writer</th><th>Status</th><th>Words</th><th>SEO</th></tr></thead><tbody><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;"></td></tr></tbody></table></div>
-        <div style="margin-top:20px;padding:16px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);">
-          <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:6px;">Connect traffic data</p>
-          <p style="font-size:12px;color:var(--text3);line-height:1.6;">For sessions, rankings and conversion data, connect Google Analytics 4 or Google Search Console via their APIs. Shoperd can set this up — it'll pull real organic traffic per article automatically.</p>
+        <div class="twrap">
+          <table class="dtable" id="an-recent">
+            <thead><tr><th>Article</th><th>Writer</th><th>Status</th><th>Words</th><th>SEO</th></tr></thead>
+            <tbody><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;"></td></tr></tbody>
+          </table>
         </div>
       </div>
 
@@ -1773,7 +1911,7 @@ function goPage(sc,pg,navEl){
   if(pg==='da-log') loadDavidLogAdmin();
   if(pg==='d-pipeline') loadDavidPipeline();
   if(pg==='d-analytics') loadDavidAnalytics();
-  if(pg==='a-analytics') loadAnalytics();
+  if(pg==='a-analytics') { loadAnalytics(); }
   if(pg==='w-youtube') initYouTubePage('yt');
   if(pg==='a-youtube') initYouTubePage('ayt');
   if(pg==='a-planner') loadDailyIdeas('daily-ideas-list', 'daily-ideas-date');
@@ -1975,6 +2113,167 @@ async function loadClickUpBoard(listFilter){
       if (task) openTaskPanel(task, listType);
     });
   });
+
+  // Populate assignee filter
+  var assigneeSel = document.getElementById('cu-assignee-filter');
+  if (assigneeSel && assigneeSel.options.length <= 1) {
+    var allAssignees = {};
+    tasks.forEach(function(t) {
+      (t.assignees||[]).forEach(function(a) {
+        if (a.username) allAssignees[a.username] = true;
+      });
+    });
+    Object.keys(allAssignees).sort().forEach(function(name) {
+      var opt = document.createElement('option');
+      opt.value = name; opt.textContent = name;
+      assigneeSel.appendChild(opt);
+    });
+  }
+
+  // Update task count
+  var countEl = document.getElementById('cu-task-count');
+  if (countEl) countEl.textContent = tasks.length + ' tasks';
+
+  // Apply any active search/filter immediately
+  cuApplyFilter();
+}
+
+function cuApplyFilter() {
+  var searchVal  = ((document.getElementById('cu-search')||{}).value || '').toLowerCase().trim();
+  var assigneeVal= ((document.getElementById('cu-assignee-filter')||{}).value || '').toLowerCase();
+  var overdueOnly= document.getElementById('cu-overdue-filter') && document.getElementById('cu-overdue-filter').checked;
+  var tasks      = window._cuAllTasks || [];
+  var countEl    = document.getElementById('cu-task-count');
+
+  var filtered = tasks.filter(function(t) {
+    if (searchVal) {
+      var title     = (t.name || '').toLowerCase();
+      var assignees = (t.assignees||[]).map(function(a){ return (a.username||'').toLowerCase(); }).join(' ');
+      if (!title.includes(searchVal) && !assignees.includes(searchVal)) return false;
+    }
+    if (assigneeVal) {
+      var assignees = (t.assignees||[]).map(function(a){ return (a.username||'').toLowerCase(); });
+      if (!assignees.includes(assigneeVal)) return false;
+    }
+    if (overdueOnly) {
+      var status = (t.status && t.status.status) || '';
+      var done = ['approved','scheduled','published','completed','canceled'].includes(status);
+      if (done || !t.due_date || parseInt(t.due_date) >= Date.now()) return false;
+    }
+    return true;
+  });
+
+  if (countEl) countEl.textContent = filtered.length + ' of ' + tasks.length + ' tasks';
+
+  // Re-render board with filtered tasks
+  var board = document.getElementById('cu-board');
+  if (!board) return;
+
+  // Group filtered tasks by status
+  var columns = {};
+  CU.statuses.forEach(function(s){ columns[s.status] = []; });
+  filtered.forEach(function(t) {
+    var s = (t.status && t.status.status) ? t.status.status.toLowerCase() : 'to do';
+    if (columns[s]) columns[s].push(t);
+    else columns[s] = [t];
+  });
+
+  var coreStatuses = ['to do','in progress','copy draft','review','revisions','editing','final review','approved','scheduled','published'];
+  var visibleStatuses = CU.statuses.filter(function(s){
+    return coreStatuses.includes(s.status) || (columns[s.status] && columns[s.status].length > 0);
+  });
+
+  var boardHtml = '<div style="display:grid;grid-template-columns:repeat(' + Math.min(visibleStatuses.length, 7) + ',minmax(160px,1fr));gap:8px;">';
+
+  visibleStatuses.forEach(function(statusObj) {
+    var status   = statusObj.status;
+    var colTasks = columns[status] || [];
+    var colColor = statusObj.color || '#475569';
+    var label    = status.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
+
+    boardHtml += '<div class="pcol"><div class="phead"><span class="plbl" style="color:' + colColor + ';text-transform:none;">' + label + '</span><span class="pcnt">' + colTasks.length + '</span></div><div class="pbody">';
+
+    colTasks.slice(0,25).forEach(function(t) {
+      var isVideo  = t._listType === 'video';
+      var priority = t.priority && t.priority.priority ? t.priority.priority.toLowerCase() : '';
+      var priColor = priority === 'urgent' ? '#f87171' : priority === 'high' ? '#fb923c' : 'transparent';
+      var assignees = (t.assignees||[]).map(function(a){ return a.username||''; }).filter(Boolean);
+      var initials  = assignees.map(function(n){ var p=n.split(' '); return (p[0][0]||'')+(p[1]?p[1][0]:''); });
+      var memberColors = assignees.map(function(name){
+        var m = CU.members.find(function(m){ return m.username === name; });
+        return m && m.color ? m.color : '#00d4aa';
+      });
+      var due = t.due_date ? new Date(parseInt(t.due_date)).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+      var isOverdue = t.due_date && parseInt(t.due_date) < Date.now() && !['published','completed','approved','canceled'].includes(status);
+      var subline = '';
+      (t.custom_fields||[]).forEach(function(cf){
+        if (!isVideo && cf.id === CU.fields.primaryKeyword.id && cf.value) subline = cf.value;
+        if (isVideo  && cf.id === CU.videoFields.shootDate.id && cf.value) subline = 'Shoot: ' + new Date(parseInt(cf.value)).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+      });
+
+      boardHtml +=
+        '<div class="pcard" data-taskid="' + t.id + '" data-listtype="' + (t._listType||'blog') + '" style="border-left:2px solid ' + priColor + ';' + (isOverdue ? 'box-shadow:inset 0 0 0 1px rgba(248,113,113,0.3);' : '') + '">' +
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">' +
+            '<span style="font-size:8px;font-weight:700;padding:1px 6px;border-radius:3px;font-family:DM Mono,monospace;' + (isVideo ? 'background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.2);' : 'background:var(--tealL);color:var(--teal);border:1px solid rgba(0,212,170,0.2);') + '">' + (isVideo ? '▶ VIDEO' : '✦ BLOG') + '</span>' +
+            (isOverdue ? '<span style="font-size:8px;color:var(--urgent);font-family:DM Mono,monospace;">⚠ OVERDUE</span>' : (priority ? '<span style="font-size:8px;color:' + priColor + ';font-family:DM Mono,monospace;">' + priority.toUpperCase() + '</span>' : '')) +
+          '</div>' +
+          '<p class="pct">' + (t.name||'Untitled') + '</p>' +
+          (subline ? '<p style="font-size:9px;color:var(--teal);font-family:DM Mono,monospace;margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + subline + '</p>' : '') +
+          '<div class="pcm">' +
+            '<div style="display:flex;gap:3px;">' +
+              initials.slice(0,2).map(function(ini,idx){ var mc=memberColors[idx]||'#00d4aa'; return '<span style="width:18px;height:18px;border-radius:50%;background:'+mc+'22;color:'+mc+';font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid '+mc+'44;font-family:DM Mono,monospace;" title="'+(assignees[idx]||'')+'">'+ini.toUpperCase()+'</span>'; }).join('') +
+            '</div>' +
+            (due ? '<span style="font-size:9px;color:' + (isOverdue?'var(--urgent)':'var(--text3)') + ';font-family:DM Mono,monospace;">' + (isOverdue?'⚠ ':'') + due + '</span>' : '') +
+          '</div>' +
+        '</div>';
+    });
+
+    if (!colTasks.length) boardHtml += '<p class="pempty">Empty</p>';
+    boardHtml += '</div></div>';
+  });
+
+  boardHtml += '</div>';
+  board.innerHTML = boardHtml;
+
+  // Re-wire card clicks
+  board.querySelectorAll('.pcard').forEach(function(card) {
+    card.addEventListener('click', function() {
+      var taskId   = card.dataset.taskid;
+      var listType = card.dataset.listtype;
+      var task     = (window._cuAllTasks||[]).find(function(t){ return t.id === taskId; });
+      if (task) openTaskPanel(task, listType);
+    });
+  });
+}
+
+function cuExportCSV() {
+  var tasks = window._cuAllTasks || [];
+  if (!tasks.length) { toast('No tasks loaded — open Pipeline first'); return; }
+  var rows = [['Type','Title','Status','Priority','Assignees','Due Date','Primary Keyword','List']];
+  tasks.forEach(function(t) {
+    var status    = (t.status && t.status.status) || '';
+    var priority  = (t.priority && t.priority.priority) || '';
+    var assignees = (t.assignees||[]).map(function(a){ return a.username||''; }).filter(Boolean).join('; ');
+    var due       = t.due_date ? new Date(parseInt(t.due_date)).toLocaleDateString('en-GB') : '';
+    var pkw       = '';
+    (t.custom_fields||[]).forEach(function(cf){ if (cf.id === CU.fields.primaryKeyword.id && cf.value) pkw = cf.value; });
+    rows.push([
+      t._listType === 'video' ? 'Video' : 'Blog',
+      '"' + (t.name||'').replace(/"/g,'""') + '"',
+      status,
+      priority,
+      '"' + assignees + '"',
+      due,
+      '"' + pkw.replace(/"/g,'""') + '"',
+      t._listType === 'video' ? 'Video' : 'Blog',
+    ].join(','));
+  });
+  var blob = new Blob([rows.join('\n')], {type:'text/csv'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'fxify-pipeline-' + new Date().toISOString().split('T')[0] + '.csv';
+  a.click();
+  toast('Pipeline exported ✓');
 }
 
 
@@ -4323,86 +4622,135 @@ function wireSuggestionSpans() {
 
 // ── ANALYTICS ─────────────────────────────────────────────────────────────
 async function loadAnalytics() {
-  var res = await supa.from('articles').select('*').order('created_at', {ascending: false});
-  if (res.error || !res.data) return;
-  var arts = res.data;
-  var total = arts.length;
-  var live = arts.filter(function(a){ return a.status === 'Live' || a.status === 'Publishing'; }).length;
-  var pipeline = arts.filter(function(a){ return a.status === 'Briefed' || a.status === 'Drafting'; }).length;
-  var inReview = arts.filter(function(a){ return ['Sheperd Review','David Approval'].includes(a.status); }).length;
-  var totalWc = arts.reduce(function(s,a){ return s + (a.word_count||0); }, 0);
-  var avgWc = total ? Math.round(totalWc / total) : 0;
-  var seoArts = arts.filter(function(a){ return a.seo_score; });
-  var avgSeo = seoArts.length ? Math.round(seoArts.reduce(function(s,a){ return s+(a.seo_score||0);},0)/seoArts.length) : 0;
-
   function set(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; }
 
-  // Also pull ClickUp task counts for pipeline stats
-  try {
-    var cuTasks = await cuGetTasks();
-    if (cuTasks && cuTasks.length) {
-      var cuByStatus = {};
-      cuTasks.forEach(function(t) {
-        var s = (t.status && t.status.status) ? t.status.status : 'unknown';
-        cuByStatus[s] = (cuByStatus[s] || 0) + 1;
-      });
-      var cuInProgress = (cuByStatus['in progress'] || 0) + (cuByStatus['drafting'] || 0);
-      var cuReview = (cuByStatus['sheperd review'] || 0) + (cuByStatus['david approval'] || 0);
-      var cuDone = cuByStatus['live'] || 0;
-      var cuTodo = cuByStatus['briefed'] || cuByStatus['to do'] || 0;
-      // Update ClickUp stat cards if they exist
-      var cuTodoEl = document.getElementById('cu-st-todo');
-      var cuProgEl = document.getElementById('cu-st-inprog');
-      var cuRevEl  = document.getElementById('cu-st-review');
-      var cuDoneEl = document.getElementById('cu-st-done');
-      if (cuTodoEl) cuTodoEl.textContent = cuTodo;
-      if (cuProgEl) cuProgEl.textContent = cuInProgress;
-      if (cuRevEl)  cuRevEl.textContent  = cuReview;
-      if (cuDoneEl) cuDoneEl.textContent = cuDone;
-    }
-  } catch(e) { console.warn('ClickUp analytics:', e.message); }
+  // Pull blog tasks, video tasks, and Supabase articles in parallel
+  var results = await Promise.allSettled([
+    cuGetTasks(),
+    cuGetVideoTasks(),
+    supa.from('articles').select('*').order('created_at', {ascending: false}),
+  ]);
+
+  var blogTasks  = results[0].status === 'fulfilled' ? results[0].value : [];
+  var videoTasks = results[1].status === 'fulfilled' ? results[1].value : [];
+  var arts       = (results[2].status === 'fulfilled' && results[2].value.data) ? results[2].value.data : [];
+
+  // ── BLOG ClickUp stats ──────────────────────────────────────────────────
+  var bTodo    = blogTasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['to do','assigned to agency','ready to start'].includes(s); }).length;
+  var bProg    = blogTasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['ideation & research','in progress','copy draft','production','post-production'].includes(s); }).length;
+  var bReview  = blogTasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['review','revisions','editing','final review','adaptation'].includes(s); }).length;
+  var bDone    = blogTasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['approved','scheduled','published','completed'].includes(s); }).length;
+
+  set('an-blog-total',  blogTasks.length);
+  set('an-blog-prog',   bProg + bTodo);
+  set('an-blog-review', bReview);
+  set('an-blog-done',   bDone);
+
+  // ── VIDEO ClickUp stats ─────────────────────────────────────────────────
+  var vTodo    = videoTasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['to do','assigned to agency','ready to start','ideation & research'].includes(s); }).length;
+  var vProg    = videoTasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['in progress','copy draft','production','post-production'].includes(s); }).length;
+  var vReview  = videoTasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['review','revisions','editing','final review','adaptation'].includes(s); }).length;
+  var vDone    = videoTasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['approved','scheduled','published','completed'].includes(s); }).length;
+
+  set('an-video-total',  videoTasks.length);
+  set('an-video-prog',   vProg + vTodo);
+  set('an-video-review', vReview);
+  set('an-video-done',   vDone);
+
+  // Update pipeline nav badge
+  var nb = document.getElementById('nb-pipeline');
+  if (nb) nb.textContent = (blogTasks.length + videoTasks.length) || '';
+
+  // ── Supabase content stats ──────────────────────────────────────────────
+  var total    = arts.length;
+  var live     = arts.filter(function(a){ return ['Live','Publishing'].includes(a.status); }).length;
+  var totalWc  = arts.reduce(function(s,a){ return s + (a.word_count||0); }, 0);
+  var avgWc    = total ? Math.round(totalWc / total) : 0;
 
   set('an-total', total);
-  set('an-total-sub', total + ' articles created');
-  set('an-live', live);
-  set('an-pipeline', pipeline);
-  set('an-review', inReview);
-  set('an-wc', avgWc ? avgWc.toLocaleString() : '—');
-  set('an-seo', avgSeo ? avgSeo + '/100' : '—');
+  set('an-live',  live);
+  set('an-wc',    avgWc ? avgWc.toLocaleString() + ' words' : '—');
 
-  // By writer table
+  // ── By writer — merge ClickUp + Supabase ───────────────────────────────
   var byWriter = {};
+
+  // Blog tasks by assignee
+  blogTasks.forEach(function(t) {
+    var assignees = (t.assignees||[]).map(function(a){ return a.username||''; }).filter(Boolean);
+    var w = assignees[0] || 'Unassigned';
+    if (!byWriter[w]) byWriter[w] = { blogTasks:0, videoTasks:0, live:0, inProgress:0, wc:0, arts:0 };
+    byWriter[w].blogTasks++;
+    var s = (t.status&&t.status.status)||'';
+    if (['approved','published','completed'].includes(s)) byWriter[w].live++;
+    if (['in progress','copy draft','review','editing','final review'].includes(s)) byWriter[w].inProgress++;
+  });
+
+  // Video tasks by assignee
+  videoTasks.forEach(function(t) {
+    var assignees = (t.assignees||[]).map(function(a){ return a.username||''; }).filter(Boolean);
+    var w = assignees[0] || 'Unassigned';
+    if (!byWriter[w]) byWriter[w] = { blogTasks:0, videoTasks:0, live:0, inProgress:0, wc:0, arts:0 };
+    byWriter[w].videoTasks++;
+  });
+
+  // Supabase word counts per writer
   arts.forEach(function(a) {
     var w = a.assignee || 'Unassigned';
-    if (!byWriter[w]) byWriter[w] = { total:0, live:0, inProgress:0, wc:0 };
-    byWriter[w].total++;
-    if (a.status === 'Live' || a.status === 'Publishing') byWriter[w].live++;
-    if (a.status === 'Briefed' || a.status === 'Drafting') byWriter[w].inProgress++;
+    if (!byWriter[w]) byWriter[w] = { blogTasks:0, videoTasks:0, live:0, inProgress:0, wc:0, arts:0 };
+    byWriter[w].arts++;
     byWriter[w].wc += (a.word_count||0);
   });
+
   var writerTable = document.querySelector('#an-by-writer tbody');
   if (writerTable) {
     writerTable.innerHTML = '';
-    Object.keys(byWriter).sort().forEach(function(w) {
+    var writersSorted = Object.keys(byWriter).filter(function(w){ return w !== 'Unassigned'; }).sort();
+    if (byWriter['Unassigned']) writersSorted.push('Unassigned');
+    writersSorted.forEach(function(w) {
       var d = byWriter[w];
+      var avgW = d.arts ? Math.round(d.wc/d.arts) : 0;
       var tr = document.createElement('tr');
-      tr.innerHTML = '<td style="font-weight:500;">' + w + '</td><td>' + d.total + '</td><td style="color:var(--green);">' + d.live + '</td><td>' + d.inProgress + '</td><td>' + (d.total ? Math.round(d.wc/d.total).toLocaleString() : '—') + '</td>';
+      // Find member colour
+      var mem = CU.members.find(function(m){ return m.username === w; });
+      var mc = mem && mem.color ? mem.color : '#00d4aa';
+      var ini = w.split(' ').map(function(p){ return p[0]||''; }).join('').toUpperCase().substring(0,2);
+      tr.innerHTML =
+        '<td style="font-weight:500;">' +
+          '<div style="display:flex;align-items:center;gap:8px;">' +
+            '<span style="width:24px;height:24px;border-radius:50%;background:'+mc+'22;color:'+mc+';font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid '+mc+'44;font-family:DM Mono,monospace;flex-shrink:0;">'+ini+'</span>' +
+            w +
+          '</div>' +
+        '</td>' +
+        '<td style="font-family:DM Mono,monospace;color:var(--teal);">' + (d.blogTasks||'—') + '</td>' +
+        '<td style="font-family:DM Mono,monospace;color:var(--urgent);">' + (d.videoTasks||'—') + '</td>' +
+        '<td style="color:var(--green);font-family:DM Mono,monospace;">'  + (d.live||'—') + '</td>' +
+        '<td style="color:var(--blue);font-family:DM Mono,monospace;">'   + (d.inProgress||'—') + '</td>' +
+        '<td style="font-family:DM Mono,monospace;">' + (avgW ? avgW.toLocaleString() : '—') + '</td>';
       writerTable.appendChild(tr);
     });
+    if (!writersSorted.length) {
+      writerTable.innerHTML = '<tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;font-family:DM Mono,monospace;font-size:11px;">No data yet</td></tr>';
+    }
   }
 
-  // Recent articles
+  // ── Recent articles ─────────────────────────────────────────────────────
   var recentTable = document.querySelector('#an-recent tbody');
   if (recentTable) {
     recentTable.innerHTML = '';
-    arts.slice(0, 10).forEach(function(a) {
-      var statusColor = a.status==='Live'?'var(--green)':a.status==='Drafting'?'var(--blue)':'var(--text3)';
+    arts.slice(0, 12).forEach(function(a) {
+      var sc = {'Live':'var(--green)','Drafting':'var(--blue)','Sheperd Review':'var(--purple)','David Approval':'var(--amber)'}[a.status] || 'var(--text3)';
       var tr = document.createElement('tr');
-      tr.innerHTML = '<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(a.title||'Untitled')+'</td><td>'+(a.assignee||'—')+'</td><td><span style="font-size:11px;font-weight:600;color:'+statusColor+';">'+(a.status||'—')+'</span></td><td>'+((a.word_count||0).toLocaleString())+'</td><td>'+(a.seo_score?a.seo_score+'/100':'—')+'</td>';
+      tr.innerHTML =
+        '<td style="font-weight:500;max-width:240px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">'+(a.title||'Untitled')+'</td>' +
+        '<td style="color:var(--text2);">'+(a.assignee||'—')+'</td>' +
+        '<td><span style="font-size:11px;font-weight:600;font-family:DM Mono,monospace;color:'+sc+';">'+(a.status||'—')+'</span></td>' +
+        '<td style="font-family:DM Mono,monospace;">'+((a.word_count||0).toLocaleString())+'</td>' +
+        '<td style="font-family:DM Mono,monospace;">'+(a.seo_score?a.seo_score+'/100':'—')+'</td>';
       recentTable.appendChild(tr);
     });
   }
 }
+
 
 // ── TOPIC PLANNER ─────────────────────────────────────────────────────────
 function renderPlannerResults(plan) {
@@ -5499,11 +5847,7 @@ function generateOutline() { toast('Outline feature removed — use Content Hub'
 function generate() { toast('Use Content Hub → Build brief'); }
 function runSEOOptimizer() { toast('Use Content Hub for SEO research'); }
 function runPlanner() { toast('Use Content Hub for topic planning'); }
-function loadDailyIdeas() {}
-function loadLiamTopics() {}
-
-
-// ── CROSS-POLLINATE: Blog ↔ YouTube ─────────────────────────────────────────
+function loadDailyIdeas() {}// ── CROSS-POLLINATE: Blog ↔ YouTube ─────────────────────────────────────────
 async function runCrossPost(direction) {
   var input, outputEl, prompt;
   if (direction === 'blog-to-yt') {
@@ -6351,6 +6695,14 @@ function init(){
     });
   });
 
+  // Wire pipeline search/filter/overdue
+  var cuSearch = document.getElementById('cu-search');
+  if (cuSearch) cuSearch.addEventListener('input', cuApplyFilter);
+  var cuAssigneeFil = document.getElementById('cu-assignee-filter');
+  if (cuAssigneeFil) cuAssigneeFil.addEventListener('change', cuApplyFilter);
+  var cuOverdueFil = document.getElementById('cu-overdue-filter');
+  if (cuOverdueFil) cuOverdueFil.addEventListener('change', cuApplyFilter);
+
   // Wire trending discovery button
   var trendingBtn = document.getElementById('trending-btn');
   if (trendingBtn) trendingBtn.addEventListener('click', runTrendingDiscovery);
@@ -6600,6 +6952,7 @@ function init(){
   // ClickUp refresh button
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'cu-refresh-btn') { loadClickUpBoard(); return; }
+    if (e.target && e.target.id === 'an-refresh-btn') { loadAnalytics(); toast('Analytics refreshed ✓'); return; }
     if (e.target && e.target.classList.contains('pipeline-list-btn')) {
       document.querySelectorAll('.pipeline-list-btn').forEach(function(b){
         b.style.background = 'transparent'; b.style.color = 'var(--text3)';
@@ -6609,6 +6962,7 @@ function init(){
       return;
     }
     if (e.target && e.target.id === 'cu-sync-btn') { cuSyncFromClickUp(); return; }
+    if (e.target && e.target.id === 'cu-export-btn') { cuExportCSV(); return; }
     if (e.target && e.target.id === 'cu-new-task-btn') {
       var cp = document.getElementById('cu-create-panel');
       if (cp) {
@@ -7209,6 +7563,7 @@ async function runTopicIdeas() {
   var acBlock = autocomplete.length ? autocomplete.join(' | ') : '';
 
   var prompt =
+    (feedbackRules ? 'REVIEWER FEEDBACK RULES (apply to all content suggestions):\n' + feedbackRules + '\n\n' : '') +
     'You are a Senior SEO Strategist for FXIFY. Every topic must be provably different from competitor content. Every FXIFY angle must cite a specific product feature with verifiable data. Generic output is a failure.\n\n' +
     'SEED KEYWORD: '+seed+'\n' +
     'CATEGORY: '+cat+'\n\n' +
@@ -7447,6 +7802,7 @@ async function runBriefResearch(topicObj) {
     'Why now: '           + (topicObj.why_now || '') + '\n\n' : '';
 
   var prompt =
+    (feedbackRules ? 'LEARNED RULES FROM REVIEWER FEEDBACK — apply these strictly in this brief:\n' + feedbackRules + '\n\n' : '') +
     'You are a Senior Content Strategist at FXIFY. You write briefs that writers can execute without coming back with questions. Every field must be specific enough that a writer who has never heard of this topic knows exactly what argument to make, what facts to use, and how FXIFY wins.\n\n'+
 
     'TOPIC: '+topic+'\n'+
