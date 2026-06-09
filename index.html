@@ -450,7 +450,7 @@ select.finput option{background:var(--bg2);color:var(--text);}
     .sval { font-size: 22px !important; }
   }
 
-
+</style>
 </head>
 <body>
 
@@ -1695,6 +1695,40 @@ select.finput option{background:var(--bg2);color:var(--text);}
 </div>
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
+
+
+
+
+<!-- IMPERSONATE MODAL (Admin/Manager view any writer) -->
+<div class="mov" id="imp-modal">
+  <div class="mbox" style="max-width:380px;">
+    <p class="mtitle">Switch view</p>
+    <p class="msub">View any role or writer dashboard.</p>
+    <select class="finput" id="imp-select" style="margin-bottom:14px;">
+      <option value="">— Select view —</option>
+      <optgroup label="Other roles">
+        <option value="__admin__">⚡ Admin (Sheperd)</option>
+        <option value="__writer_self__">✍️ My Writer dashboard</option>
+        <option value="__david__">✅ Manager (David)</option>
+      </optgroup>
+      <optgroup label="Managers">
+        <option value="chris@fxify.com">Chris</option>
+      </optgroup>
+      <optgroup label="Writers">
+        <option value="fariha.khan@fxify.com">Fariha Khan</option>
+        <option value="harrison.hosking@fxify.com">Harry Hosking</option>
+        <option value="imran.najib@fxify.com">Imran Najib</option>
+        <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
+        <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
+        <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
+      </optgroup>
+    </select>
+    <div class="macts">
+      <button class="btn" id="imp-cancel">Cancel</button>
+      <button class="btn btn-p" id="imp-confirm">View dashboard →</button>
+    </div>
+  </div>
+</div>
 
 <script>
 (function(){
@@ -8851,37 +8885,5 @@ init();
 
 })();
 </script>
-
-
-<!-- IMPERSONATE MODAL (Admin/Manager view any writer) -->
-<div class="mov" id="imp-modal">
-  <div class="mbox" style="max-width:380px;">
-    <p class="mtitle">Switch view</p>
-    <p class="msub">View any role or writer dashboard.</p>
-    <select class="finput" id="imp-select" style="margin-bottom:14px;">
-      <option value="">— Select view —</option>
-      <optgroup label="Other roles">
-        <option value="__admin__">⚡ Admin (Sheperd)</option>
-        <option value="__writer_self__">✍️ My Writer dashboard</option>
-        <option value="__david__">✅ Manager (David)</option>
-      </optgroup>
-      <optgroup label="Managers">
-        <option value="chris@fxify.com">Chris</option>
-      </optgroup>
-      <optgroup label="Writers">
-        <option value="fariha.khan@fxify.com">Fariha Khan</option>
-        <option value="harrison.hosking@fxify.com">Harry Hosking</option>
-        <option value="imran.najib@fxify.com">Imran Najib</option>
-        <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
-        <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
-        <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
-      </optgroup>
-    </select>
-    <div class="macts">
-      <button class="btn" id="imp-cancel">Cancel</button>
-      <button class="btn btn-p" id="imp-confirm">View dashboard →</button>
-    </div>
-  </div>
-</div>
 </body>
 </html>
