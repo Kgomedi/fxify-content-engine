@@ -25,14 +25,14 @@ input,select,textarea,button{font-family:inherit;}
   --green:#00ba7c;--greenL:rgba(0,186,124,0.10);
   --amber:#ffd400;--amberL:rgba(255,212,0,0.10);
   --purple:#794bc4;--purpleL:rgba(121,75,196,0.10);
-  --r:4px;--rl:12px;--topH:53px;--sbW:240px;
+  --r:4px;--rl:12px;--topH:53px;--sbW:220px;
   --font:'Inter',system-ui,-apple-system,sans-serif;
   --mono:'IBM Plex Mono',monospace;
 }
 ::-webkit-scrollbar{width:3px;height:3px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#1e293b;border-radius:2px;}
-.screen{display:none;flex-direction:column;min-height:100vh;}
+.screen{display:none;flex-direction:column;height:100vh;overflow:hidden;}
 .screen.active{display:flex;}
 #login{background:var(--bg);align-items:center;justify-content:center;padding:20px;position:relative;overflow:hidden;}
 #login::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 60% 40% at 20% 50%,rgba(29,155,240,0.08) 0%,transparent 70%),radial-gradient(ellipse 40% 60% at 80% 20%,rgba(59,130,246,0.04) 0%,transparent 70%);}
@@ -57,7 +57,7 @@ input,select,textarea,button{font-family:inherit;}
 .mtoggle{display:flex;flex-direction:column;gap:4px;width:30px;height:30px;border:1px solid var(--border);border-radius:var(--r);background:transparent;cursor:pointer;align-items:center;justify-content:center;}
 .mtoggle span{display:block;width:12px;height:1.5px;background:var(--text2);border-radius:1px;}
 
-.awrap{display:flex;flex:1;overflow:hidden;}
+.awrap{display:flex;flex:1;min-height:0;}
 .sb{width:var(--sbW);background:var(--bg1);border-right:1px solid var(--border);overflow-y:auto;position:fixed;top:var(--topH);bottom:0;left:0;z-index:150;padding:8px 0 24px;transition:transform .25s ease;transform:translateX(-100%);}
 .sb.open{transform:translateX(0);}
 
@@ -65,7 +65,7 @@ input,select,textarea,button{font-family:inherit;}
 .sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:140;}
 .sbov.show{display:block;}
 
-.ma{flex:1;overflow-y:auto;background:var(--bg);margin-left:0;min-width:0;transition:margin-left .25s ease;}
+.ma{flex:1;overflow-y:auto;background:var(--bg);margin-left:0;min-width:0;width:0;transition:margin-left .25s ease;}
 .ngrp{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);padding:14px 14px 5px;font-family:var(--mono);}
 .nlink{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:14px;font-weight:400;color:var(--text2);cursor:pointer;transition:all .12s;border-left:2px solid transparent;letter-spacing:-0.01em;}
 .nlink:hover{color:var(--text2);background:rgba(255,255,255,0.03);}
@@ -74,7 +74,7 @@ input,select,textarea,button{font-family:inherit;}
 .nlink.active .nico{opacity:1;}
 .nbadge{margin-left:auto;background:var(--teal);color:var(--bg);font-size:9px;font-weight:700;padding:1px 5px;border-radius:20px;font-family:var(--mono);}
 .ndiv{height:1px;background:var(--border);margin:6px 10px;}
-.pg{display:none;padding:20px 24px;max-width:1400px;}
+.pg{display:none;padding:24px 28px;width:100%;box-sizing:border-box;}
 .pg.active{display:block;animation:fadeIn .15s ease;}
 .pgh{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-0.03em;margin-bottom:4px;line-height:1.2;}
 .pgs{font-size:12px;color:var(--text3);margin-bottom:20px;line-height:1.5;}
@@ -450,7 +450,7 @@ select.finput option{background:var(--bg2);color:var(--text);}
     .sval { font-size: 22px !important; }
   }
 
-</style>
+
 </head>
 <body>
 
@@ -494,10 +494,7 @@ select.finput option{background:var(--bg2);color:var(--text);}
       <div class="ngrp">Insights</div>
       <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico">▲</span>Analytics</div>
       <div class="nlink" data-pg="a-competitors" data-sc="admin"><span class="nico">◎</span>Competitors</div>
-      <div class="ndiv"></div>
-      <div class="ngrp">Approvals</div>
-      <div class="nlink" data-pg="da-approval" data-sc="admin"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>
-      <div class="nlink" data-pg="da-log" data-sc="admin"><span class="nico">▲</span>Approved Log</div>
+
       <div class="ndiv"></div>
       <div class="ngrp">Settings</div>
       <div class="nlink" data-pg="a-writers" data-sc="admin"><span class="nico">≡</span>Team</div>
@@ -1683,34 +1680,6 @@ select.finput option{background:var(--bg2);color:var(--text);}
 
 <!-- IMAGE UPLOAD INPUT -->
 <input type="file" id="img-upload" accept="image/*" style="display:none;">
-
-<!-- IMPERSONATE MODAL (Admin/Manager view any writer) -->
-<div class="mov" id="imp-modal">
-  <div class="mbox" style="max-width:380px;">
-    <p class="mtitle">Switch view</p>
-    <p class="msub">View any role or writer dashboard.</p>
-    <select class="finput" id="imp-select" style="margin-bottom:14px;">
-      <option value="">— Select view —</option>
-      <optgroup label="Other roles">
-        <option value="__admin__">⚡ Admin (Sheperd)</option>
-        <option value="__writer_self__">✍️ My Writer dashboard</option>
-        <option value="__david__">✅ Manager (David)</option>
-      </optgroup>
-      <optgroup label="Writers">
-        <option value="fariha.khan@fxify.com">Fariha Khan</option>
-        <option value="harrison.hosking@fxify.com">Harry Hosking</option>
-        <option value="imran.najib@fxify.com">Imran Najib</option>
-        <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
-        <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
-        <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
-      </optgroup>
-    </select>
-    <div class="macts">
-      <button class="btn" id="imp-cancel">Cancel</button>
-      <button class="btn btn-p" id="imp-confirm">View dashboard →</button>
-    </div>
-  </div>
-</div>
 
 <!-- READ MODE -->
 <div class="read-mode-overlay" id="read-mode">
@@ -6028,6 +5997,8 @@ var USERS = {
   'mamnun.ahmed@fxify.com':      { role:'writer', name:'Mamnun Ahmed',    screen:'writer', initials:'MA', av:''  },
   'roshan.ganesh@fxify.com':     { role:'writer', name:'Roshan Ganesh',   screen:'writer', initials:'RG', av:''  },
   'shatha.altrad@fxify.com':     { role:'writer', name:'Shatha Altrad',   screen:'writer', initials:'SA', av:''  },
+  'chris@fxify.com':             { role:'admin',  name:'Chris',           screen:'admin',  initials:'CH', av:''  },
+  'shepherdmorena2@gmail.com':   { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
   };
 
 
@@ -7388,7 +7359,7 @@ function init(){
       targetScreen = 'admin'; bannerLabel = '✅ Viewing as David Xavier (Manager)';
       impersonating = '__david__'; activeRole = 'admin';
       updateTopbars({ name: 'David Xavier (viewing)', initials: 'DX', av: 'a' });
-      goScreen('admin'); loadPipeline(); loadDavidApprovalAdmin();
+      goScreen('admin'); loadPipeline();
     } else {
       // Writer view
       var writerDef = USERS[sel];
@@ -8735,7 +8706,7 @@ function v2WireCustomBtn() {
     currentBriefData = null; currentOutline = '';
 
     goScreen(user.screen);
-    loadPipeline(); loadWriterDrafts(); loadDavidApprovalAdmin();
+    loadPipeline(); loadWriterDrafts();
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
@@ -8811,25 +8782,24 @@ function v2WireCustomBtn() {
   }
 
   function showImpersonateBtn() {
-    // Add "Switch view" button to both admin and david topbars
-    [['admin','imp-btn'],['david','imp-btn-d']].forEach(function(pair) {
-      var sc = pair[0], btnId = pair[1];
-      var tbr = document.querySelector('#' + sc + ' .tbr');
-      if (tbr && !document.getElementById(btnId)) {
-        var btn = document.createElement('button');
-        btn.id = btnId;
-        btn.className = 'btn btn-s';
-        btn.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#94a3b8;background:transparent;';
-        btn.textContent = '👁 Switch view';
-        btn.addEventListener('click', function(){ document.getElementById('imp-modal').classList.add('open'); });
-        tbr.insertBefore(btn, tbr.firstChild);
-      }
-    });
+    var tbr = document.querySelector('#admin .tbr');
+    if (tbr && !document.getElementById('imp-btn')) {
+      var btn = document.createElement('button');
+      btn.id = 'imp-btn';
+      btn.className = 'btn btn-s';
+      btn.style.cssText = 'font-size:12px;padding:5px 14px;';
+      btn.textContent = '👁 Switch view';
+      btn.addEventListener('click', function(){
+        var modal = document.getElementById('imp-modal');
+        if (modal) modal.classList.add('open');
+      });
+      tbr.insertBefore(btn, tbr.firstChild);
+    }
   }
 
   function resolveUserFromEmail(email) {
     var errEl = document.getElementById('login-error');
-    var isApproved = email.endsWith('@fxify.com') || email === 'david.xavier@fxify.com' || email === 'shepherdmorena2@gmail.com';
+    var isApproved = email.endsWith('@fxify.com') || email === 'shepherdmorena2@gmail.com';
     if (!isApproved) {
       if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
       supa.auth.signOut();
@@ -8881,5 +8851,37 @@ init();
 
 })();
 </script>
+
+
+<!-- IMPERSONATE MODAL (Admin/Manager view any writer) -->
+<div class="mov" id="imp-modal">
+  <div class="mbox" style="max-width:380px;">
+    <p class="mtitle">Switch view</p>
+    <p class="msub">View any role or writer dashboard.</p>
+    <select class="finput" id="imp-select" style="margin-bottom:14px;">
+      <option value="">— Select view —</option>
+      <optgroup label="Other roles">
+        <option value="__admin__">⚡ Admin (Sheperd)</option>
+        <option value="__writer_self__">✍️ My Writer dashboard</option>
+        <option value="__david__">✅ Manager (David)</option>
+      </optgroup>
+      <optgroup label="Managers">
+        <option value="chris@fxify.com">Chris</option>
+      </optgroup>
+      <optgroup label="Writers">
+        <option value="fariha.khan@fxify.com">Fariha Khan</option>
+        <option value="harrison.hosking@fxify.com">Harry Hosking</option>
+        <option value="imran.najib@fxify.com">Imran Najib</option>
+        <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
+        <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
+        <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
+      </optgroup>
+    </select>
+    <div class="macts">
+      <button class="btn" id="imp-cancel">Cancel</button>
+      <button class="btn btn-p" id="imp-confirm">View dashboard →</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
