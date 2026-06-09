@@ -431,6 +431,10 @@ select.finput option{background:var(--bg2);color:var(--text);}
       <div class="ngrp">Insights</div>
       <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico">▲</span>Analytics</div>
       <div class="ndiv"></div>
+      <div class="ngrp">Approvals</div>
+      <div class="nlink" data-pg="da-approval" data-sc="admin"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>
+      <div class="nlink" data-pg="da-log" data-sc="admin"><span class="nico">▲</span>Approved Log</div>
+      <div class="ndiv"></div>
       <div class="ngrp">Settings</div>
       <div class="nlink" data-pg="a-writers" data-sc="admin"><span class="nico">≡</span>Team</div>
       <div class="nlink" data-pg="a-prompts" data-sc="admin"><span class="nico">⚙</span>AI Config</div>
@@ -1900,17 +1904,14 @@ function goPage(sc,pg,navEl){
   document.getElementById(pg).classList.add('active');
   window.scrollTo(0,0); closeSB();
   if(pg==='a-pipeline') loadPipeline();
-  if(pg==='a-review')
   if(pg==='w-drafts') loadWriterDrafts();
   if(pg==='w-submitted') loadWriterSubmitted();
-  if(pg==='l-review')
-  
   if(pg==='d-approval') loadDavidQ();
   if(pg==='d-log') loadDavidLog();
-  if(pg==='da-approval') loadDavidApprovalAdmin();
-  if(pg==='da-log') loadDavidLogAdmin();
-  if(pg==='d-pipeline') loadDavidPipeline();
-  if(pg==='d-analytics') loadDavidAnalytics();
+  if(pg==='da-approval') { loadDavidApprovalAdmin(); }
+  if(pg==='da-log')      { loadDavidLogAdmin ? loadDavidLogAdmin() : (loadDavidLog && loadDavidLog()); }
+  if(pg==='d-pipeline')  { loadDavidPipeline(); }
+  if(pg==='d-analytics') { loadDavidAnalytics(); }
   if(pg==='a-analytics') { loadAnalytics(); }
   if(pg==='w-youtube') initYouTubePage('yt');
   if(pg==='a-youtube') initYouTubePage('ayt');
@@ -5831,7 +5832,7 @@ async function doGoogleLogin() {
 
 var USERS = {
   'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
-  'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
+  'david.xavier@fxify.com':      { role:'admin',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
   'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
   'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
   'imran.najib@fxify.com':       { role:'writer', name:'Imran Najib',     screen:'writer', initials:'IN', av:''  },
@@ -6805,26 +6806,9 @@ function init(){
       updateTopbars({ name: 'Sheperd Morena (viewing)', initials: 'SM', av: 'b' });
       goScreen('admin'); loadPipeline();
     } else if (sel === '__david__') {
-      targetScreen = 'admin'; bannerLabel = '✅ Viewing Manager (David) dashboard';
-      impersonating = '__david__'; activeRole = 'david';
+      targetScreen = 'admin'; bannerLabel = '✅ Viewing as David Xavier (Manager)';
+      impersonating = '__david__'; activeRole = 'admin';
       updateTopbars({ name: 'David Xavier (viewing)', initials: 'DX', av: 'a' });
-      // Inject David nav if not already there
-      var adminSbImp = document.getElementById('admin-sb');
-      if (adminSbImp && !document.getElementById('david-nav-items')) {
-        var davidNavImp = document.createElement('div');
-        davidNavImp.id = 'david-nav-items';
-        davidNavImp.innerHTML =
-          '<div class="ndiv"></div>' +
-          '<div class="ngrp">My Approvals</div>' +
-          '<div class="nlink" data-pg="da-approval" data-sc="admin"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>' +
-          '<div class="nlink" data-pg="da-log" data-sc="admin"><span class="nico">▲</span>Approved Log</div>';
-        adminSbImp.appendChild(davidNavImp);
-        davidNavImp.querySelectorAll('.nlink[data-pg]').forEach(function(lnk){
-          lnk.addEventListener('click', function(){
-            goPage('admin', lnk.getAttribute('data-pg'), lnk);
-          });
-        });
-      }
       goScreen('admin'); loadPipeline(); loadDavidApprovalAdmin();
     } else {
       // Writer view
@@ -8170,51 +8154,21 @@ function v2WireCustomBtn() {
     currentBriefData = null; currentOutline = '';
 
     goScreen(user.screen);
-    loadPipeline(); loadWriterDrafts(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts(); loadDavidApprovalAdmin();
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
-    // David: inject his approval links into the admin sidebar
-    if (user.role === 'david') {
-      var adminSb = document.getElementById('admin-sb');
-      if (adminSb && !document.getElementById('david-nav-items')) {
-        var davidNav = document.createElement('div');
-        davidNav.id = 'david-nav-items';
-        davidNav.innerHTML =
-          '<div class="ndiv"></div>' +
-          '<div class="ngrp">My Approvals</div>' +
-          '<div class="nlink" data-pg="da-approval" data-sc="admin" id="david-approval-link"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>' +
-          '<div class="nlink" data-pg="da-log" data-sc="admin" id="david-log-link"><span class="nico">▲</span>Approved Log</div>';
-        adminSb.appendChild(davidNav);
-        // Wire these links — they load David pages but show in admin screen
-        davidNav.querySelectorAll('.nlink[data-pg]').forEach(function(link){
-          link.addEventListener('click', function(){
-            // Show david pages inside admin screen
-            document.querySelectorAll('#admin .pg').forEach(function(p){ p.classList.remove('active'); });
-            document.querySelectorAll('#admin .nlink').forEach(function(n){ n.classList.remove('active'); });
-            link.classList.add('active');
-            // Mount david pages into admin main area if not already there
-            var pg = link.getAttribute('data-pg');
-            var existing = document.getElementById(pg);
-            if (existing) {
-              existing.classList.add('active');
-              if(pg==='d-approval') loadDavidQ();
-              if(pg==='d-log') loadDavidLog();
-            }
-          });
-        });
-      }
-    }
+
 
     // David greeting
-    if (user.role === 'david') {
+    if (user.name && user.name.includes('David')) {
       var davidGreetings = [
-        "The boss is in. Liam did his part — now it\'s your call. 👔",
-        "Morning, David. The pipeline awaits your signature. ✍️",
+        "The boss is in. Let\'s see what the team built. 👔",
+        "Morning, David. The pipeline is live — full access awaits. ✍️",
         "Articles are queued up. One tap from you and they\'re off to publish. 💼",
         "The SEO is clean, the copy is tight. Just need the big boss stamp. 🏆",
-        "Good to see you, David. Liam says these are ready. He\'s usually right. 👀",
-        "The team delivered. Now the final word is yours, as always. 🎯",
+        "Good to see you, David. The team delivered — now it\'s your call. 👀",
+        "Full pipeline at your fingertips. The final word is yours. 🎯",
       ];
       var dg = document.getElementById('david-greeting');
       if (dg) dg.textContent = davidGreetings[Math.floor(Math.random() * davidGreetings.length)];
@@ -8241,7 +8195,7 @@ function v2WireCustomBtn() {
     });
 
     // Show impersonate button for admin and david
-    if (user.role === 'admin' || user.role === 'david') {
+    if (user.role === 'admin') {
       showImpersonateBtn();
     }
   }
