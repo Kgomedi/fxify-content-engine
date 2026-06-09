@@ -65,7 +65,7 @@ input,select,textarea,button{font-family:inherit;}
 .sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:140;}
 .sbov.show{display:block;}
 @media(min-width:768px){.sbov{display:none !important;}}
-.ma{flex:1;overflow-y:auto;background:var(--bg);}
+.ma{flex:1;overflow-y:auto;background:var(--bg);margin-left:var(--sbW);min-width:0;}
 .ngrp{font-size:9px;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--text3);padding:14px 14px 5px;font-family:var(--mono);}
 .nlink{display:flex;align-items:center;gap:10px;padding:9px 16px;font-size:14px;font-weight:400;color:var(--text2);cursor:pointer;transition:all .12s;border-left:2px solid transparent;letter-spacing:-0.01em;}
 .nlink:hover{color:var(--text2);background:rgba(255,255,255,0.03);}
@@ -391,39 +391,57 @@ select.finput option{background:var(--bg2);color:var(--text);}
 @keyframes fadeIn{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
 .pg.active{animation:fadeIn .15s ease;}
 
-  /* ── MOBILE RESPONSIVE ─────────────────────────────────── */
-  @media (max-width: 768px) {
-    .screen.active { flex-direction: column; }
-    .sidebar { position: fixed; left: -260px; top: 0; bottom: 0; width: 260px; z-index: 180; transition: left .2s ease; background: var(--bg1); border-right: 1px solid var(--border); overflow-y: auto; }
-    .sidebar.open { left: 0; }
-    .main { margin-left: 0 !important; width: 100% !important; }
-    .pg { padding: 14px 16px; }
-    .pgh { font-size: 18px; }
-    .srow { grid-template-columns: repeat(2, 1fr) !important; }
-    .frow { flex-direction: column; }
-    .srow.four-col { grid-template-columns: repeat(2, 1fr) !important; }
-    #cu-board { overflow-x: scroll; -webkit-overflow-scrolling: touch; }
-    #cu-board > div { grid-template-columns: repeat(4, minmax(160px,1fr)) !important; min-width: 640px; }
-    .cu-task-panel { max-width: 100% !important; width: 100% !important; }
-    .cu-overlay-panel { max-width: 100% !important; right: 0; left: 0; }
+
+  /* ══ RESPONSIVE LAYOUT ══════════════════════════════════════════ */
+
+  /* Desktop: sidebar always visible */
+  @media (min-width: 768px) {
+    .sb { transform: translateX(0) !important; }
+    .sbov { display: none !important; }
+    .mtoggle { display: none !important; }
+  }
+
+  /* Mobile: sidebar off-canvas */
+  @media (max-width: 767px) {
+    .sb { transform: translateX(-100%); }
+    .sb.open { transform: translateX(0); }
+    .sbov.show { display: block !important; }
+    .ma { margin-left: 0 !important; }
+    .pg { padding: 14px 16px !important; }
+    .pgh { font-size: 18px !important; }
+    .topbar { padding: 0 14px !important; }
+    /* Prevent iOS auto-zoom on focus */
+    .finput { font-size: 16px !important; }
+    /* Stat grids */
+    .srow { grid-template-columns: 1fr 1fr !important; }
+    /* Pipeline board — horizontal scroll */
+    #cu-board { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+    #cu-board > div { grid-template-columns: repeat(5, minmax(155px,1fr)) !important; min-width: 775px; }
+    /* Task panel full width */
     #cu-task-panel { max-width: 100% !important; width: 100% !important; }
+    /* Tables */
+    .twrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
     .dtable { font-size: 13px; }
     .dtable th, .dtable td { padding: 8px 10px; }
-    .twrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-    .mbox { margin: 8px; width: calc(100% - 16px) !important; max-width: none !important; }
-    .btn { padding: 6px 14px; font-size: 13px; }
-    .finput { font-size: 16px; } /* prevent iOS zoom */
-    .topbar { padding: 0 14px; }
-    .mtoggle { display: flex !important; }
-    /* Pipeline column grid on mobile */
-    #an-pipeline-grid > div { grid-column: span 2; grid-template-columns: repeat(2,1fr) !important; }
-  }
-  @media (max-width: 480px) {
-    .srow { grid-template-columns: 1fr 1fr !important; }
-    .pgh { font-size: 17px; }
-    .sval { font-size: 22px !important; }
+    /* Modal full width */
+    .mbox { margin: 10px !important; width: calc(100% - 20px) !important; max-width: none !important; }
+    /* Analytics pipeline grid */
     #an-pipeline-grid > div { grid-template-columns: 1fr 1fr !important; }
+    /* Competitor cards */
+    .comp-grid { grid-template-columns: 1fr !important; }
+    .comp-detail-grid { grid-template-columns: 1fr !important; }
+    /* Flex rows */
+    .frow { flex-direction: column !important; }
+    .btn-row { flex-wrap: wrap; gap: 6px; }
+    /* Buttons */
+    .btn { font-size: 13px; }
   }
+
+  @media (max-width: 480px) {
+    .sval { font-size: 24px !important; }
+    .pgh { font-size: 17px !important; }
+  }
+
 </style>
 </head>
 <body>
@@ -467,6 +485,7 @@ select.finput option{background:var(--bg2);color:var(--text);}
       <div class="ndiv"></div>
       <div class="ngrp">Insights</div>
       <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico">▲</span>Analytics</div>
+      <div class="nlink" data-pg="a-competitors" data-sc="admin"><span class="nico">◎</span>Competitors</div>
       <div class="ndiv"></div>
       <div class="ngrp">Approvals</div>
       <div class="nlink" data-pg="da-approval" data-sc="admin"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>
@@ -997,7 +1016,131 @@ select.finput option{background:var(--bg2);color:var(--text);}
       
 
       <!-- DAVID APPROVAL (accessible when David uses admin screen) -->
-      <div id="da-approval" class="pg">
+      
+      <!-- COMPETITOR ANALYSIS PAGE -->
+      <div id="a-competitors" class="pg">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+          <div>
+            <div class="pgh">Competitor Analysis</div>
+            <p class="pgs" style="margin-bottom:0;">Live intelligence on FTMO, FundedNext, Apex, Topstep and others — content strategy, keywords, gaps, and what they're doing right now.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-p btn-s" id="comp-run-btn" style="font-size:13px;">⚡ Run analysis</button>
+            <button class="btn btn-s" id="comp-refresh-btn">↻ Refresh data</button>
+          </div>
+        </div>
+
+        <!-- COMPETITOR CARDS -->
+        <div class="shead">Tracked competitors</div>
+        <div class="comp-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px;" id="comp-cards">
+          <!-- Populated by JS -->
+          <div style="text-align:center;padding:40px;color:var(--text3);font-size:13px;grid-column:1/-1;" id="comp-cards-loading">
+            Click <strong style="color:var(--text);">Run analysis</strong> to pull live competitor data.
+          </div>
+        </div>
+
+        <!-- DETAIL TABS -->
+        <div id="comp-detail" style="display:none;">
+
+          <!-- Tab bar -->
+          <div style="display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;overflow-x:auto;">
+            <button class="comp-tab active" data-tab="content" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text);border-bottom:2px solid var(--blue);cursor:pointer;white-space:nowrap;font-family:var(--font);">Content strategy</button>
+            <button class="comp-tab" data-tab="keywords" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">Top keywords</button>
+            <button class="comp-tab" data-tab="gaps" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">Content gaps</button>
+            <button class="comp-tab" data-tab="recent" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">Recent articles</button>
+            <button class="comp-tab" data-tab="social" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">Social & YouTube</button>
+            <button class="comp-tab" data-tab="ai" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">AI opportunities</button>
+          </div>
+
+          <!-- Tab: Content strategy -->
+          <div id="comp-tab-content" class="comp-tab-pane">
+            <div class="comp-detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="comp-strategy-grid">
+              <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
+                <p style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;font-family:var(--mono);">Content volume</p>
+                <div id="comp-volume-list" style="display:grid;gap:8px;"></div>
+              </div>
+              <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
+                <p style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;font-family:var(--mono);">Publishing cadence</p>
+                <div id="comp-cadence-list" style="display:grid;gap:8px;"></div>
+              </div>
+              <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;grid-column:span 2;">
+                <p style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;font-family:var(--mono);">Topic breakdown</p>
+                <div id="comp-topics-list" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Keywords -->
+          <div id="comp-tab-keywords" class="comp-tab-pane" style="display:none;">
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
+              <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
+                <p style="font-size:13px;font-weight:600;color:var(--text);">Keywords competitors rank for — FXIFY doesn't</p>
+                <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--urgentL);color:var(--urgent);font-family:var(--mono);">Opportunity gaps</span>
+              </div>
+              <div class="twrap"><table class="dtable" id="comp-kw-table">
+                <thead><tr><th>Keyword</th><th>Competitor</th><th>Est. volume</th><th>Difficulty</th><th>Action</th></tr></thead>
+                <tbody id="comp-kw-body"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text3);">Run analysis to populate</td></tr></tbody>
+              </table></div>
+            </div>
+          </div>
+
+          <!-- Tab: Gaps -->
+          <div id="comp-tab-gaps" class="comp-tab-pane" style="display:none;">
+            <div style="display:grid;gap:10px;" id="comp-gaps-list">
+              <p style="color:var(--text3);font-size:13px;padding:24px 0;text-align:center;">Run analysis to find content gaps.</p>
+            </div>
+          </div>
+
+          <!-- Tab: Recent articles -->
+          <div id="comp-tab-recent" class="comp-tab-pane" style="display:none;">
+            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
+              <div class="twrap"><table class="dtable" id="comp-recent-table">
+                <thead><tr><th>Title</th><th>Competitor</th><th>Topic area</th><th>Est. traffic</th><th>FXIFY angle</th></tr></thead>
+                <tbody id="comp-recent-body"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text3);">Run analysis to populate</td></tr></tbody>
+              </table></div>
+            </div>
+          </div>
+
+          <!-- Tab: Social & YouTube -->
+          <div id="comp-tab-social" class="comp-tab-pane" style="display:none;">
+            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;" id="comp-social-grid">
+              <p style="color:var(--text3);font-size:13px;padding:24px 0;text-align:center;grid-column:1/-1;">Run analysis to populate social data.</p>
+            </div>
+          </div>
+
+          <!-- Tab: AI opportunities -->
+          <div id="comp-tab-ai" class="comp-tab-pane" style="display:none;">
+            <div style="display:grid;gap:10px;" id="comp-ai-list">
+              <p style="color:var(--text3);font-size:13px;padding:24px 0;text-align:center;">Run analysis to generate AI-powered opportunities.</p>
+            </div>
+          </div>
+
+        </div><!-- end comp-detail -->
+
+        <!-- FULL COMPARISON TABLE -->
+        <div class="shead" style="margin-top:8px;">Side-by-side comparison</div>
+        <div class="twrap" style="margin-bottom:24px;">
+          <table class="dtable" id="comp-table">
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th style="color:var(--blue);">FXIFY</th>
+                <th>FTMO</th>
+                <th>FundedNext</th>
+                <th>Apex</th>
+                <th>Topstep</th>
+                <th>The5ers</th>
+              </tr>
+            </thead>
+            <tbody id="comp-table-body">
+              <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text3);">Run analysis to populate comparison data.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div><!-- end a-competitors -->
+
+<div id="da-approval" class="pg">
         <div class="pgh">Final Approval</div>
         <p class="pgs" id="david-greeting-2"></p>
         <div id="da-approval-list"><p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p></div>
@@ -1949,7 +2092,8 @@ function goPage(sc,pg,navEl){
   if(pg==='da-log')      { loadDavidLogAdmin ? loadDavidLogAdmin() : (loadDavidLog && loadDavidLog()); }
   if(pg==='d-pipeline')  { loadDavidPipeline(); }
   if(pg==='d-analytics') { loadDavidAnalytics(); }
-  if(pg==='a-analytics') { loadAnalytics(); }
+  if(pg==='a-analytics')   { loadAnalytics(); }
+  if(pg==='a-competitors') { loadCompetitorAnalysis(); }
   if(pg==='w-youtube') initYouTubePage('yt');
   if(pg==='a-youtube') initYouTubePage('ayt');
   if(pg==='a-planner') loadDailyIdeas('daily-ideas-list', 'daily-ideas-date');
@@ -6702,6 +6846,382 @@ function openWriterSubmitModal(wc, scores) {
 }
 
 
+// ── COMPETITOR ANALYSIS ──────────────────────────────────────────────────────
+
+var COMPETITORS = [
+  { id:'ftmo',        name:'FTMO',         url:'https://ftmo.com',              blog:'https://ftmo.com/en/blog/',        color:'#f97316', yt:'FTMO' },
+  { id:'fundednext',  name:'FundedNext',   url:'https://fundednext.com',         blog:'https://fundednext.com/blog/',     color:'#8b5cf6', yt:'FundedNext' },
+  { id:'apex',        name:'Apex',         url:'https://apextraderfunding.com',  blog:'https://apextraderfunding.com/blog/', color:'#3b82f6', yt:'Apex Trader Funding' },
+  { id:'topstep',     name:'Topstep',      url:'https://www.topstep.com',        blog:'https://www.topstep.com/blog/',    color:'#10b981', yt:'Topstep' },
+  { id:'the5ers',     name:'The5ers',      url:'https://the5ers.com',            blog:'https://the5ers.com/blog/',        color:'#f59e0b', yt:'The 5%ers' },
+  { id:'e8',          name:'E8 Funding',   url:'https://e8funding.com',          blog:'https://e8funding.com/blog/',      color:'#ec4899', yt:'E8 Funding' },
+];
+
+var _compData = {};
+var _activeComp = null;
+
+async function loadCompetitorAnalysis() {
+  var cards = document.getElementById('comp-cards');
+  var loading = document.getElementById('comp-cards-loading');
+  if (loading) loading.style.display = 'block';
+
+  // Render competitor cards with skeleton state
+  if (cards) {
+    if (loading) loading.style.display = 'none';
+    cards.innerHTML = COMPETITORS.map(function(c) {
+      return '<div class="comp-card" data-comp="' + c.id + '" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;cursor:pointer;transition:all .12s;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+          '<span style="width:10px;height:10px;border-radius:50%;background:' + c.color + ';flex-shrink:0;"></span>' +
+          '<p style="font-size:14px;font-weight:600;color:var(--text);">' + c.name + '</p>' +
+        '</div>' +
+        '<p style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px;">' + c.url.replace('https://','') + '</p>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
+          '<a href="' + c.blog + '" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;" onclick="event.stopPropagation()">Blog ↗</a>' +
+        '</div>' +
+        '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' +
+          '<p style="font-size:11px;color:var(--text3);font-family:var(--mono);" id="comp-stat-' + c.id + '">Click to analyse</p>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+
+    // Wire card clicks
+    cards.querySelectorAll('.comp-card').forEach(function(card) {
+      card.addEventListener('click', function() {
+        cards.querySelectorAll('.comp-card').forEach(function(c){ c.style.borderColor = 'var(--border)'; });
+        var comp = COMPETITORS.find(function(c){ return c.id === card.dataset.comp; });
+        if (comp) {
+          card.style.borderColor = comp.color;
+          runCompetitorDeepDive(comp);
+        }
+      });
+    });
+  }
+}
+
+async function runFullCompetitorAnalysis() {
+  var btn = document.getElementById('comp-run-btn');
+  if (btn) { btn.textContent = 'Analysing...'; btn.disabled = true; }
+
+  // Scrape all competitor blogs in parallel
+  var scrapePromises = COMPETITORS.map(async function(c) {
+    try {
+      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer fc-918ef0f7ffac439caca532272347e770' },
+        body: JSON.stringify({ url: c.blog, formats: ['markdown'], onlyMainContent: true })
+      });
+      var data = await res.json();
+      return { id: c.id, name: c.name, content: data.data && data.data.markdown ? data.data.markdown.substring(0, 3000) : '', url: c.blog };
+    } catch(e) {
+      return { id: c.id, name: c.name, content: '', url: c.blog };
+    }
+  });
+
+  var scraped = await Promise.allSettled(scrapePromises);
+  var scrapedData = scraped.map(function(r){ return r.status === 'fulfilled' ? r.value : { id:'?', name:'?', content:'' }; });
+
+  // DataForSEO for keyword gaps
+  var kw_data = [];
+  try {
+    var dfsRes = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + btoa('sheperd.morena@fxify.com:953542a6e47cca32') },
+      body: JSON.stringify([{ keywords: ['ftmo review', 'funded next review', 'apex trader review', 'topstep review', 'prop firm review', 'best prop firm 2026', 'funded trader', 'prop trading challenge', 'funded account trading'] }])
+    });
+    var dfsData = await dfsRes.json();
+    if (dfsData.tasks && dfsData.tasks[0] && dfsData.tasks[0].result) {
+      kw_data = dfsData.tasks[0].result;
+    }
+  } catch(e) { console.warn('DataForSEO error:', e.message); }
+
+  // Build Claude prompt with all scraped data
+  var contextStr = scrapedData.map(function(d){
+    return '=== ' + d.name.toUpperCase() + ' ('+d.url+') ===\n' + (d.content || 'Could not scrape.') + '\n';
+  }).join('\n');
+
+  var kwStr = kw_data.length ? kw_data.map(function(k){ return k.keyword + ' (' + (k.search_volume||0) + '/mo)'; }).join(', ') : 'DataForSEO unavailable';
+
+  var prompt = 'You are a content strategist analysing prop trading firm competitors for FXIFY.\n\n' +
+    'FXIFY FACTS: One Phase (no consistency rule), Instant Funding from $19, broker-backed via FXPIG, 90% performance split, $40M+ paid out, targets serious traders.\n\n' +
+    'COMPETITOR BLOG CONTENT:\n' + contextStr + '\n' +
+    'KEYWORD DATA: ' + kwStr + '\n\n' +
+    'Analyse deeply and return ONLY valid JSON:\n' +
+    '{\n' +
+    '  "overview": [\n' +
+    '    {"competitor":"FTMO","articles_per_month":8,"top_topics":["challenge tips","trading psychology","funded trader stories"],"avg_word_count":1200,"content_quality":"high","unique_angle":"Education-first, very detailed how-to content"},\n' +
+    '    ... one object per competitor\n' +
+    '  ],\n' +
+    '  "keyword_gaps": [\n' +
+    '    {"keyword":"ftmo vs fxify","monthly_searches":1200,"ranking_competitor":"FTMO","difficulty":"medium","fxify_angle":"We offer One Phase — no consistency rule, they have strict rules"},\n' +
+    '    ... 10-15 gaps FXIFY should own\n' +
+    '  ],\n' +
+    '  "content_gaps": [\n' +
+    '    {"gap":"No competitor has a good \'Instant Funding\' explainer","opportunity":"FXIFY is the only firm with $19 instant funding — massive SEO and conversion play","priority":"high","suggested_title":"FXIFY Instant Funding: The $19 Path to a Funded Account"},\n' +
+    '    ... 8-10 gaps\n' +
+    '  ],\n' +
+    '  "recent_articles": [\n' +
+    '    {"title":"Article title","competitor":"FTMO","topic_area":"Challenge tips","est_traffic":"high","fxify_angle":"How FXIFY does this differently"},\n' +
+    '    ... 10 recent articles worth responding to\n' +
+    '  ],\n' +
+    '  "comparison_table": [\n' +
+    '    {"metric":"Blog posts/month","fxify":"?","ftmo":"8","fundednext":"6","apex":"4","topstep":"5","the5ers":"3"},\n' +
+    '    {"metric":"Avg word count","fxify":"1200","ftmo":"1400","fundednext":"1100","apex":"900","topstep":"1300","the5ers":"1000"},\n' +
+    '    {"metric":"Content focus","fxify":"SEO + conversion","ftmo":"Education","fundednext":"Community","apex":"Quick tips","topstep":"Futures","the5ers":"Psychology"},\n' +
+    '    {"metric":"Social presence","fxify":"Strong","ftmo":"Very strong","fundednext":"Growing","apex":"Moderate","topstep":"Strong","the5ers":"Niche"},\n' +
+    '    {"metric":"YouTube","fxify":"Active","ftmo":"Large channel","fundednext":"Growing","apex":"Small","topstep":"Established","the5ers":"Small"},\n' +
+    '    {"metric":"SEO strength","fxify":"Building","ftmo":"Very high","fundednext":"High","apex":"Medium","topstep":"High","the5ers":"Medium"},\n' +
+    '    {"metric":"Unique content angle","fxify":"One Phase + Instant Funding","ftmo":"Education depth","fundednext":"Community","apex":"Simple rules","topstep":"Futures-only","the5ers":"Long-term focus"}\n' +
+    '  ],\n' +
+    '  "ai_opportunities": [\n' +
+    '    {"opportunity":"Competitor comparison hub","description":"Build the definitive \'FXIFY vs [every competitor]\' page cluster — high intent, high conversion","effort":"medium","impact":"high"},\n' +
+    '    ... 5-7 opportunities\n' +
+    '  ]\n' +
+    '}';
+
+  try {
+    var result = await v2Fetch(prompt, 4000);
+    var data = parseJSON(result);
+    _compData = data;
+    renderCompetitorData(data);
+    updateCompCards(data);
+  } catch(e) {
+    toast('Analysis error: ' + e.message);
+    console.error(e);
+  }
+
+  if (btn) { btn.textContent = '⚡ Run analysis'; btn.disabled = false; }
+}
+
+async function runCompetitorDeepDive(comp) {
+  var detail = document.getElementById('comp-detail');
+  if (detail) detail.style.display = 'block';
+
+  // If we already have data, just render for this comp
+  if (_compData.overview) {
+    renderCompetitorData(_compData, comp.id);
+    return;
+  }
+
+  // Otherwise scrape this one competitor and get quick analysis
+  var statEl = document.getElementById('comp-stat-' + comp.id);
+  if (statEl) statEl.textContent = 'Scraping...';
+
+  try {
+    var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer fc-918ef0f7ffac439caca532272347e770' },
+      body: JSON.stringify({ url: comp.blog, formats: ['markdown'], onlyMainContent: true })
+    });
+    var data = await res.json();
+    var content = data.data && data.data.markdown ? data.data.markdown.substring(0, 4000) : '';
+
+    var prompt = 'Analyse this competitor blog content for FXIFY. Return ONLY valid JSON.\n\n' +
+      'COMPETITOR: ' + comp.name + ' (' + comp.url + ')\n' +
+      'FXIFY DIFFERENTIATOR: One Phase (no consistency rule), Instant Funding $19, 90% split, $40M+ paid.\n\n' +
+      'CONTENT:\n' + content + '\n\n' +
+      '{"articles_per_month":6,"top_topics":["topic1","topic2","topic3","topic4"],"avg_word_count":1200,"content_quality":"high/medium/low","unique_angle":"what makes their content stand out","keyword_gaps":["keyword gap 1","keyword gap 2","keyword gap 3","keyword gap 4","keyword gap 5"],"content_gaps":[{"gap":"gap description","fxify_angle":"how FXIFY wins this","priority":"high/medium"}],"recent_articles":[{"title":"article title","topic_area":"area","fxify_angle":"angle"}],"social_channels":{"youtube":"channel name or none","twitter":"@handle or none","instagram":"@handle or none"},"overall_threat":"high/medium/low","summary":"2 sentence summary of their content strategy"}';
+
+    var result = await v2Fetch(prompt, 2000);
+    var parsed = parseJSON(result);
+
+    if (statEl) statEl.textContent = (parsed.articles_per_month || '?') + ' posts/mo · ' + (parsed.overall_threat || '?') + ' threat';
+
+    renderSingleCompetitor(comp, parsed);
+  } catch(e) {
+    if (statEl) statEl.textContent = 'Error — check Firecrawl key';
+    toast('Error: ' + e.message);
+  }
+}
+
+function renderSingleCompetitor(comp, data) {
+  var detail = document.getElementById('comp-detail');
+  if (detail) detail.style.display = 'block';
+
+  // Content strategy tab
+  var volumeList = document.getElementById('comp-volume-list');
+  if (volumeList) {
+    volumeList.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;">' +
+      '<span style="font-size:13px;color:var(--text);">' + comp.name + '</span>' +
+      '<span style="font-size:20px;font-weight:700;color:' + comp.color + ';font-family:var(--mono);">' + (data.articles_per_month || '?') + '/mo</span>' +
+    '</div>';
+  }
+
+  var cadenceList = document.getElementById('comp-cadence-list');
+  if (cadenceList) {
+    cadenceList.innerHTML = '<p style="font-size:13px;color:var(--text2);">~' + (data.avg_word_count || '1200') + ' words avg</p>' +
+      '<p style="font-size:12px;color:var(--text3);margin-top:4px;">' + (data.unique_angle || '') + '</p>';
+  }
+
+  var topicsList = document.getElementById('comp-topics-list');
+  if (topicsList && data.top_topics) {
+    topicsList.innerHTML = data.top_topics.map(function(t){
+      return '<span style="font-size:12px;padding:4px 10px;border-radius:4px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);">' + t + '</span>';
+    }).join('');
+  }
+
+  // Keywords tab
+  var kwBody = document.getElementById('comp-kw-body');
+  if (kwBody && data.keyword_gaps) {
+    kwBody.innerHTML = data.keyword_gaps.map(function(kw) {
+      return '<tr><td style="font-weight:500;color:var(--text);">' + kw + '</td>' +
+        '<td><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(' + hexToRgb(comp.color) + ',0.12);color:' + comp.color + ';font-family:var(--mono);">' + comp.name + '</span></td>' +
+        '<td style="font-family:var(--mono);color:var(--text3);">—</td>' +
+        '<td style="font-family:var(--mono);color:var(--text3);">—</td>' +
+        '<td><button class="btn btn-s" style="font-size:11px;padding:3px 10px;" onclick="prefillBrief(\'' + kw.replace(/'/g,"\\'") + '\')">Build brief</button></td></tr>';
+    }).join('');
+  }
+
+  // Gaps tab
+  var gapsList = document.getElementById('comp-gaps-list');
+  if (gapsList && data.content_gaps) {
+    gapsList.innerHTML = data.content_gaps.map(function(g) {
+      var priColor = g.priority === 'high' ? 'var(--urgent)' : g.priority === 'medium' ? 'var(--amber)' : 'var(--text3)';
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">' +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">' +
+          '<p style="font-size:14px;font-weight:500;color:var(--text);">' + (g.gap || '') + '</p>' +
+          '<span style="font-size:10px;font-weight:600;color:' + priColor + ';font-family:var(--mono);flex-shrink:0;text-transform:uppercase;">' + (g.priority || '') + '</span>' +
+        '</div>' +
+        '<p style="font-size:13px;color:var(--blue);">FXIFY angle: ' + (g.fxify_angle || '') + '</p>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Recent articles tab
+  var recentBody = document.getElementById('comp-recent-body');
+  if (recentBody && data.recent_articles) {
+    recentBody.innerHTML = data.recent_articles.map(function(a) {
+      return '<tr>' +
+        '<td style="font-weight:500;color:var(--text);max-width:200px;">' + (a.title || '') + '</td>' +
+        '<td><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(' + hexToRgb(comp.color) + ',0.12);color:' + comp.color + ';font-family:var(--mono);">' + comp.name + '</span></td>' +
+        '<td style="color:var(--text2);">' + (a.topic_area || '') + '</td>' +
+        '<td style="font-family:var(--mono);color:var(--text3);">—</td>' +
+        '<td style="color:var(--blue);font-size:12px;">' + (a.fxify_angle || '') + '</td>' +
+      '</tr>';
+    }).join('');
+  }
+  
+  toast(comp.name + ' analysis complete ✓');
+}
+
+function renderCompetitorData(data, filterComp) {
+  var detail = document.getElementById('comp-detail');
+  if (detail) detail.style.display = 'block';
+
+  // Comparison table
+  if (data.comparison_table) {
+    var tbody = document.getElementById('comp-table-body');
+    if (tbody) {
+      tbody.innerHTML = data.comparison_table.map(function(row) {
+        return '<tr>' +
+          '<td style="font-weight:500;color:var(--text2);white-space:nowrap;">' + row.metric + '</td>' +
+          '<td style="color:var(--blue);font-weight:600;">' + (row.fxify || '—') + '</td>' +
+          '<td>' + (row.ftmo || '—') + '</td>' +
+          '<td>' + (row.fundednext || '—') + '</td>' +
+          '<td>' + (row.apex || '—') + '</td>' +
+          '<td>' + (row.topstep || '—') + '</td>' +
+          '<td>' + (row.the5ers || '—') + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+  }
+
+  // Keyword gaps table
+  if (data.keyword_gaps) {
+    var kwBody = document.getElementById('comp-kw-body');
+    if (kwBody) {
+      kwBody.innerHTML = data.keyword_gaps.map(function(g) {
+        var comp = COMPETITORS.find(function(c){ return c.id === (g.ranking_competitor||'').toLowerCase().replace(' ',''); }) || { color:'var(--text3)', name: g.ranking_competitor };
+        return '<tr>' +
+          '<td style="font-weight:500;color:var(--text);">' + (g.keyword || '') + '</td>' +
+          '<td><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--text2);font-family:var(--mono);">' + (g.ranking_competitor || '—') + '</span></td>' +
+          '<td style="font-family:var(--mono);color:var(--text3);">' + (g.monthly_searches ? g.monthly_searches.toLocaleString() : '—') + '</td>' +
+          '<td style="font-family:var(--mono);color:' + (g.difficulty==='low'?'var(--green)':g.difficulty==='high'?'var(--urgent)':'var(--amber)') + ';">' + (g.difficulty || '—') + '</td>' +
+          '<td><button class="btn btn-s" style="font-size:11px;padding:3px 10px;" onclick="prefillBrief(\'' + (g.keyword||'').replace(/'/g,"\\'") + '\')">Build brief</button></td>' +
+        '</tr>';
+      }).join('');
+    }
+  }
+
+  // Content gaps
+  if (data.content_gaps) {
+    var gapsList = document.getElementById('comp-gaps-list');
+    if (gapsList) {
+      gapsList.innerHTML = data.content_gaps.map(function(g) {
+        var priColor = g.priority === 'high' ? 'var(--urgent)' : g.priority === 'medium' ? 'var(--amber)' : 'var(--text3)';
+        return '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ' + (g.priority==='high'?'var(--urgent)':g.priority==='medium'?'var(--amber)':'var(--border)') + ';border-radius:var(--rl);padding:14px 16px;">' +
+          '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;">' +
+            '<p style="font-size:14px;font-weight:600;color:var(--text);">' + (g.gap || '') + '</p>' +
+            '<span style="font-size:10px;font-weight:700;color:' + priColor + ';font-family:var(--mono);text-transform:uppercase;flex-shrink:0;padding:2px 8px;border-radius:4px;background:var(--bg3);">' + (g.priority || '') + '</span>' +
+          '</div>' +
+          '<p style="font-size:13px;color:var(--blue);margin-bottom:8px;">FXIFY angle: ' + (g.opportunity || g.fxify_angle || '') + '</p>' +
+          (g.suggested_title ? '<p style="font-size:12px;color:var(--text3);">Suggested: <em>' + g.suggested_title + '</em></p>' : '') +
+        '</div>';
+      }).join('');
+    }
+  }
+
+  // Recent articles
+  if (data.recent_articles) {
+    var recentBody = document.getElementById('comp-recent-body');
+    if (recentBody) {
+      recentBody.innerHTML = data.recent_articles.map(function(a) {
+        return '<tr>' +
+          '<td style="font-weight:500;color:var(--text);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (a.title || '') + '</td>' +
+          '<td style="font-family:var(--mono);color:var(--text2);">' + (a.competitor || '') + '</td>' +
+          '<td style="color:var(--text2);">' + (a.topic_area || '') + '</td>' +
+          '<td style="font-family:var(--mono);color:var(--text3);">' + (a.est_traffic || '—') + '</td>' +
+          '<td style="color:var(--blue);font-size:12px;max-width:180px;">' + (a.fxify_angle || '') + '</td>' +
+        '</tr>';
+      }).join('');
+    }
+  }
+
+  // AI opportunities
+  if (data.ai_opportunities) {
+    var aiList = document.getElementById('comp-ai-list');
+    if (aiList) {
+      aiList.innerHTML = data.ai_opportunities.map(function(o, i) {
+        return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;display:flex;gap:14px;align-items:flex-start;">' +
+          '<span style="font-size:22px;font-weight:700;color:var(--blue);font-family:var(--mono);min-width:32px;opacity:0.4;">' + String(i+1).padStart(2,'0') + '</span>' +
+          '<div style="flex:1;min-width:0;">' +
+            '<p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">' + (o.opportunity || '') + '</p>' +
+            '<p style="font-size:13px;color:var(--text2);margin-bottom:8px;">' + (o.description || '') + '</p>' +
+            '<div style="display:flex;gap:8px;">' +
+              '<span style="font-size:11px;font-family:var(--mono);color:var(--text3);">Effort: ' + (o.effort || '—') + '</span>' +
+              '<span style="font-size:11px;font-family:var(--mono);color:' + (o.impact==='high'?'var(--green)':'var(--amber)') + ';">Impact: ' + (o.impact || '—') + '</span>' +
+            '</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }
+  }
+}
+
+function updateCompCards(data) {
+  if (!data.overview) return;
+  data.overview.forEach(function(c) {
+    var id = c.competitor ? c.competitor.toLowerCase().replace(/\s+/g,'') : '';
+    var statEl = document.getElementById('comp-stat-' + id);
+    if (statEl) statEl.textContent = (c.articles_per_month || '?') + ' posts/mo · ' + (c.content_quality || '?');
+  });
+}
+
+function hexToRgb(hex) {
+  var r = parseInt(hex.slice(1,3),16);
+  var g = parseInt(hex.slice(3,5),16);
+  var b = parseInt(hex.slice(5,7),16);
+  return r + ',' + g + ',' + b;
+}
+
+function prefillBrief(keyword) {
+  var hubInput = document.getElementById('hub-seed');
+  if (!hubInput) hubInput = document.getElementById('v2-seed');
+  if (hubInput) { hubInput.value = keyword; }
+  goPage('admin', 'a-generate', document.querySelector('.nlink[data-pg="a-generate"]'));
+  toast('Keyword loaded → build your brief');
+}
+
+
 function init(){
   // Wire brief modal
   var briefModalClose = document.getElementById('brief-modal-close');
@@ -6731,6 +7251,20 @@ function init(){
       var panel = document.getElementById('hub-' + tab);
       if (panel) panel.style.display = 'block';
     });
+  });
+
+  // Wire competitor tabs
+  document.addEventListener('click', function(e) {
+    if (e.target && e.target.classList.contains('comp-tab')) {
+      document.querySelectorAll('.comp-tab').forEach(function(t){
+        t.style.borderBottomColor = 'transparent'; t.style.color = 'var(--text3)';
+      });
+      e.target.style.borderBottomColor = 'var(--blue)'; e.target.style.color = 'var(--text)';
+      var tab = e.target.dataset.tab;
+      document.querySelectorAll('.comp-tab-pane').forEach(function(p){ p.style.display = 'none'; });
+      var pane = document.getElementById('comp-tab-' + tab);
+      if (pane) pane.style.display = 'block';
+    }
   });
 
   // Wire pipeline search/filter/overdue
@@ -6973,6 +7507,8 @@ function init(){
   // ClickUp refresh button
   document.addEventListener('click', function(e) {
     if (e.target && e.target.id === 'cu-refresh-btn') { loadClickUpBoard(); return; }
+    if (e.target && e.target.id === 'comp-run-btn')    { runFullCompetitorAnalysis(); return; }
+    if (e.target && e.target.id === 'comp-refresh-btn'){ loadCompetitorAnalysis(); return; }
     if (e.target && e.target.id === 'an-refresh-btn') { loadAnalytics(); toast('Analytics refreshed ✓'); return; }
     if (e.target && e.target.classList.contains('pipeline-list-btn')) {
       document.querySelectorAll('.pipeline-list-btn').forEach(function(b){
