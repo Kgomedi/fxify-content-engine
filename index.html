@@ -484,6 +484,7 @@ select.finput option{background:var(--bg2);color:var(--text);}
     <div class="sbov" id="admin-ov"></div>
     <nav class="sb" id="admin-sb">
       <div class="ngrp">Workflow</div>
+      <div class="nlink" data-pg="w-drafts" data-sc="admin" id="hybrid-drafts-link" style="display:none;"><span class="nico">✦</span>My Drafts<span class="nbadge" id="nb-hybrid"></span></div>
       <div class="nlink active" data-pg="a-pipeline" data-sc="admin"><span class="nico">◈</span>Pipeline<span class="nbadge" id="nb-pipeline">0</span></div>
       <div class="ndiv"></div>
       <div class="ngrp">Content Engine</div>
@@ -1176,6 +1177,9 @@ select.finput option{background:var(--bg2);color:var(--text);}
       <div class="ngrp">My Work</div>
       <div class="nlink active" data-pg="w-drafts" data-sc="writer"><span class="nico">✦</span>My Drafts<span class="nbadge" id="nb-wdrafts">0</span></div>
       <div class="nlink" data-pg="w-submitted" data-sc="writer"><span class="nico">◎</span>Submitted</div>
+      <div class="ndiv"></div>
+      <div class="ngrp" id="hybrid-content-grp" style="display:none;">Content Engine</div>
+      <div class="nlink" data-pg="a-generate" data-sc="admin" id="hybrid-content-link" style="display:none;"><span class="nico">⚡</span>Content Hub</div>
       <div class="ndiv"></div>
       <div class="ngrp">Resources</div>
       <div class="nlink" data-pg="w-style" data-sc="writer"><span class="nico">≡</span>Style Guide</div>
@@ -2058,7 +2062,11 @@ function goPage(sc,pg,navEl){
   document.getElementById(pg).classList.add('active');
   window.scrollTo(0,0); closeSB();
   if(pg==='a-pipeline') loadPipeline();
-  if(pg==='w-drafts') loadWriterDrafts();
+  if(pg==='w-drafts') {
+    // Works from both writer screen and admin screen (hybrid users)
+    activeRole = (activeRole === 'admin' && currentUser && currentUser.role === 'hybrid') ? 'writer' : activeRole;
+    loadWriterDrafts();
+  }
   if(pg==='w-submitted') loadWriterSubmitted();
   if(pg==='d-approval') loadDavidQ();
   if(pg==='d-log') loadDavidLog();
@@ -2068,6 +2076,13 @@ function goPage(sc,pg,navEl){
   if(pg==='d-analytics') { loadDavidAnalytics(); }
   if(pg==='a-analytics')   { loadAnalytics(); }
   if(pg==='a-competitors') { loadCompetitorAnalysis(); }
+  if(pg==='a-generate' && activeRole === 'writer') {
+    // Hybrid user — switch to admin screen for Content Hub
+    goScreen('admin');
+    document.querySelectorAll('#admin .pg').forEach(function(p){ p.classList.remove('active'); });
+    var genPg = document.getElementById('a-generate');
+    if (genPg) genPg.classList.add('active');
+  }
   if(pg==='w-youtube') initYouTubePage('yt');
   if(pg==='a-youtube') initYouTubePage('ayt');
   if(pg==='a-planner') loadDailyIdeas('daily-ideas-list', 'daily-ideas-date');
@@ -5178,7 +5193,7 @@ async function runYouTubeDiscovery() {
 
   if (!topic.trim()) { toast('Enter a seed topic first'); return; }
 
-  var btn     = document.getElementById('yt-research-btn');
+  var btn     = document.getElementById('ayt-research-btn') || document.getElementById('yt-research-btn');
   var results = document.getElementById('yt-results');
   btn.disabled = true; btn.textContent = 'Researching...';
   results.style.display = 'none';
@@ -6019,7 +6034,7 @@ var USERS = {
   'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
   'david.xavier@fxify.com':      { role:'admin',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
   'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
-  'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
+  'harrison.hosking@fxify.com':  { role:'hybrid', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
   'imran.najib@fxify.com':       { role:'writer', name:'Imran Muhd Najib', screen:'writer', initials:'IN', av:''  },
   'mamnun.ahmed@fxify.com':      { role:'writer', name:'Mamnun Ahmed',    screen:'writer', initials:'MA', av:''  },
   'roshan.ganesh@fxify.com':     { role:'writer', name:'Roshan Ganesh',   screen:'writer', initials:'RG', av:''  },
@@ -8232,10 +8247,20 @@ function v2WireCredentials() {
 // ── CUSTOM TOPIC BRIEF ────────────────────────────────────────────────
 function v2WireCustomBtn() {
   document.addEventListener('click', function(e) {
-    if (e.target.closest('#v2-research-btn')) {
+    if (e.target.closest('#v2-run-btn') || e.target.closest('#v2-research-btn')) {
       var seed = (document.getElementById('v2-seed')||{}).value || '';
       if (!seed.trim()) { v2Toast('Enter a seed keyword first'); return; }
       runTopicIdeas();
+      return;
+    }
+    if (e.target.closest('#trending-btn')) {
+      runTrendingDiscovery();
+      return;
+    }
+    if (e.target.closest('#ayt-research-btn')) {
+      var ytTopic = (document.getElementById('yt-topic')||{}).value || '';
+      if (!ytTopic.trim()) { v2Toast('Enter a YouTube topic first'); return; }
+      runYouTubePage(ytTopic);
       return;
     }
     if (e.target.closest('#v2-custom-btn')) {
@@ -8313,6 +8338,15 @@ function v2WireCustomBtn() {
     // Show impersonate button for admin and david
     if (user.role === 'admin') {
       showImpersonateBtn();
+    }
+    if (user.role === 'hybrid') {
+      // Harry: writer screen + Content Hub access
+      // Show Content Hub link in writer sidebar
+      var hcg = document.getElementById('hybrid-content-grp');
+      var hcl = document.getElementById('hybrid-content-link');
+      if (hcg) hcg.style.display = 'block';
+      if (hcl) hcl.style.display = 'flex';
+      currentWriterEmail = user.email;
     }
   }
 
