@@ -1182,44 +1182,39 @@ select.finput option{background:var(--bg2);color:var(--text);}
     </nav>
     <div class="ma">
       <div id="w-drafts" class="pg active">
-        <p style="font-size:10px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;font-family:var(--mono);" id="greet">Good morning</p>
-        <h1 style="font-family:var(--mono);font-size:26px;font-weight:700;color:var(--text);margin-bottom:16px;letter-spacing:.02em;" id="writer-greeting">Here's your plate. 👊</h1>
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+          <div>
+            <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;font-family:var(--mono);" id="greet">Good morning</p>
+            <h1 style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:0;letter-spacing:-0.02em;" id="writer-greeting">Your assignments</h1>
+          </div>
+          <button class="btn btn-s" onclick="loadWriterDrafts()">↻ Refresh</button>
+        </div>
 
-        <!-- WRITER INSTRUCTION CARD -->
-        <div style="background:var(--bg2);border:1px solid rgba(29,155,240,0.2);border-radius:var(--rl);padding:16px 20px;margin-bottom:20px;">
-          <p style="font-size:9px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--teal);margin-bottom:10px;font-family:var(--mono);">How this works</p>
-          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;">
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <span style="width:20px;height:20px;border-radius:50%;background:var(--tealL);color:var(--teal);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;border:1px solid rgba(29,155,240,0.2);font-family:var(--mono);">1</span>
-              <div><p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">Pick your brief</p><p style="font-size:11px;color:var(--text3);line-height:1.5;">Open any assigned brief below. Read it fully before writing.</p></div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <span style="width:20px;height:20px;border-radius:50%;background:var(--tealL);color:var(--teal);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;border:1px solid rgba(29,155,240,0.2);font-family:var(--mono);">2</span>
-              <div><p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">Copy brief to Google Docs</p><p style="font-size:11px;color:var(--text3);line-height:1.5;">Use "Copy brief" to get the full structure. Paste into a new Doc.</p></div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-              <span style="width:20px;height:20px;border-radius:50%;background:var(--tealL);color:var(--teal);font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;border:1px solid rgba(29,155,240,0.2);font-family:var(--mono);">3</span>
-              <div><p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:2px;">Write in the editor</p><p style="font-size:11px;color:var(--text3);line-height:1.5;">Hit "Open in editor" to write and submit directly in the app.</p></div>
-            </div>
+        <!-- HOW IT WORKS — simple 3 step -->
+        <div style="background:var(--bg2);border:1px solid rgba(29,155,240,0.15);border-radius:var(--rl);padding:14px 18px;margin-bottom:20px;display:flex;gap:24px;flex-wrap:wrap;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+            <span style="font-size:13px;color:var(--text2);">Open your brief below</span>
+          </div>
+          <span style="color:var(--text3);font-size:16px;">→</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+            <span style="font-size:13px;color:var(--text2);">Copy it to Google Docs &amp; write</span>
+          </div>
+          <span style="color:var(--text3);font-size:16px;">→</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+            <span style="font-size:13px;color:var(--text2);">Submit your Doc link when done</span>
           </div>
         </div>
 
-        <div id="w-drafts-list"><p style="font-size:13px;color:var(--text3);padding:20px 0;">Loading your assignments...</p></div>
-
-        <!-- BRIEF MODAL — shows full brief for copy-paste -->
-        <div id="brief-modal-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.7);z-index:400;align-items:flex-start;justify-content:center;padding:40px 20px;overflow-y:auto;backdrop-filter:blur(4px);">
-          <div style="background:var(--bg2);border:1px solid var(--border2);border-radius:12px;width:100%;max-width:680px;overflow:hidden;box-shadow:0 24px 64px rgba(0,0,0,0.5);">
-            <div style="padding:16px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg3);">
-              <p style="font-size:14px;font-weight:600;color:var(--text);" id="brief-modal-title">Brief</p>
-              <div style="display:flex;gap:8px;">
-                <button class="btn btn-p btn-s" id="brief-copy-btn">Copy brief for Google Docs</button>
-                <button class="btn btn-s" id="brief-open-editor-btn">Open in editor →</button>
-                <button style="background:none;border:none;font-size:20px;color:var(--text3);cursor:pointer;line-height:1;" id="brief-modal-close">×</button>
-              </div>
-            </div>
-            <div id="brief-modal-body" style="padding:24px;max-height:70vh;overflow-y:auto;"></div>
-          </div>
+        <!-- TASK LIST — from ClickUp -->
+        <div id="w-drafts-list" style="display:grid;gap:10px;">
+          <p style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center;">Loading your tasks...</p>
         </div>
+
+</div>
+
       </div>
       <div id="w-submitted" class="pg">
         <div class="pgh">Submitted</div>
@@ -2915,13 +2910,49 @@ async function loadDavidLog(){
 }
 
 async function loadDavidQ(){
-  var res=await supa.from('articles').select('*').eq('status','David Approval').order('created_at',{ascending:false});
-  var l=document.getElementById('d-approval-list');
-  if(!l) return;
-  if(res.error||!res.data||!res.data.length){l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p>';var nb=document.getElementById('nb-david');if(nb)nb.textContent='';return;}
-  l.innerHTML='';
-  res.data.forEach(function(a){l.appendChild(makeReviewCard(a,{role:'david',fwdLabel:'Final approval done',nextStatus:'Publishing',listId:'d-approval-list'}));});
-  var nb=document.getElementById('nb-david');if(nb)nb.textContent=res.data.length;
+  var res = await supa.from('articles').select('*').eq('status','David Approval').order('created_at',{ascending:false});
+  var l = document.getElementById('d-approval-list');
+  if (!l) return;
+  var nb = document.getElementById('nb-david');
+  if (res.error||!res.data||!res.data.length) {
+    l.innerHTML = '<p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p>';
+    if (nb) nb.textContent = '';
+    return;
+  }
+  if (nb) nb.textContent = res.data.length;
+  l.innerHTML = res.data.map(function(a) {
+    return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;margin-bottom:8px;">' +
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">' +
+        '<div style="flex:1;min-width:0;">' +
+          '<p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">' + (a.title||'Untitled') + '</p>' +
+          '<div style="display:flex;gap:12px;flex-wrap:wrap;">' +
+            '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">✦ ' + (a.category||'—') + '</span>' +
+            '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">By ' + (a.assignee||'—') + '</span>' +
+            (a.word_count ? '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">' + a.word_count.toLocaleString() + ' words</span>' : '') +
+            (a.seo_score ? '<span style="font-size:11px;color:var(--blue);font-family:var(--mono);">SEO ' + a.seo_score + '/100</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0;">' +
+          (a.content_url ? '<a href="' + a.content_url + '" target="_blank" class="btn btn-s" style="font-size:11px;text-decoration:none;">Read ↗</a>' : '') +
+          '<button class="btn btn-p btn-s" style="font-size:11px;" onclick="approveDavidArticle(' + a.id + ')">✅ Approve</button>' +
+          '<button class="btn btn-d btn-s" style="font-size:11px;" onclick="rejectDavidArticle(' + a.id + ')">✗ Revisions</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function approveDavidArticle(id) {
+  if (!confirm('Approve and move to Publishing?')) return;
+  supa.from('articles').update({status:'Publishing'}).eq('id',id).then(function(){
+    toast('Approved ✓'); loadDavidQ();
+  });
+}
+
+function rejectDavidArticle(id) {
+  supa.from('articles').update({status:'Revisions'}).eq('id',id).then(function(){
+    toast('Sent back for revisions'); loadDavidQ();
+  });
 }
 
 async function loadWriterSubmitted(){
@@ -2971,126 +3002,112 @@ async function loadWriterSubmitted(){
   });
 }
 
-async function loadWriterDrafts(){
-  // Filter by writer name when in writer role
-  var writerName = null;
-  if (activeRole === 'writer') {
-    // Try email lookup first (most reliable)
-    if (currentWriterEmail && USERS[currentWriterEmail]) {
-      writerName = USERS[currentWriterEmail].name;
-    } else if (currentUser && currentUser.email && USERS[currentUser.email]) {
-      writerName = USERS[currentUser.email].name;
-    } else if (currentUser) {
-      writerName = currentUser.name;
-    }
-    console.log('Writer filter — email:', currentWriterEmail || (currentUser && currentUser.email), '| resolved name:', writerName);
+async function loadWriterDrafts() {
+  var list = document.getElementById('w-drafts-list');
+  if (!list) return;
+  list.innerHTML = '<p style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center;">Loading tasks from ClickUp...</p>';
+
+  // Determine which member ID to filter by
+  var email = currentWriterEmail || (currentUser && currentUser.email) || '';
+  var member = CU.members.find(function(m){ return m.email.toLowerCase() === email.toLowerCase(); });
+
+  if (!member) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center;">No ClickUp member found for ' + email + '</p>';
+    return;
   }
-  var query = supa.from('articles').select('*').in('status',['Briefed','Drafting']).order('created_at',{ascending:false});
-  if (writerName) {
-    query = query.eq('assignee', writerName);
-  }
-  var res = await query;
-  console.log('Writer filter — activeRole:', activeRole, '| name:', writerName, '| currentUser:', currentUser ? currentUser.name : 'null', '| results:', res.data ? res.data.length : 0);
-  var l=document.getElementById('w-drafts-list');
-  if(!l) return;
-  if(res.error||!res.data||!res.data.length){l.innerHTML="<p style='font-size:13px;color:var(--text3);padding:20px 0;'>No briefs assigned yet.</p>";var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent='';return;}
-  l.innerHTML='';
-  // Wire brief modal buttons via event delegation
-  l.addEventListener('click', function(e) {
-    var modalBtn = e.target.closest('.v-brief-modal-btn');
-    if (modalBtn) {
-      var artId = modalBtn.dataset.id;
-      var art = res.data.find(function(a){ return String(a.id) === String(artId); });
-      if (art) openBriefModal(art);
-    }
+
+  // Pull all blog tasks, filter to this writer
+  var allTasks = await cuGetTasks();
+  var tasks = allTasks.filter(function(t) {
+    return (t.assignees||[]).some(function(a){ return a.id === member.id; }) &&
+           !['published','completed','canceled'].includes((t.status&&t.status.status)||'');
   });
 
-  res.data.forEach(function(art){
-    var c=document.createElement('div');
-    c.className='card'+(art.priority==='Urgent'?' pu':art.priority==='High'?' ph':'');
-    c.style.cursor='pointer';
-    c.innerHTML=
-      '<div class="cbody"><div class="ctop"><p class="ctitle">'+(art.title||'Untitled')+'</p><div style="display:flex;gap:5px;align-items:center;"><span class="badge '+pclass(art.priority)+'">'+(art.priority||'Normal')+'</span><span class="badge bl" style="font-size:9px;">'+(art.status||'Briefed')+'</span>'+( art.due_date && new Date(art.due_date) < new Date() ? '<span style="font-size:9px;color:var(--urgent);">⚠ Overdue</span>' : '' )+'</div></div>'+
-      '<div class="iblock"><p class="itag">Brief</p><p class="itext">Category: '+(art.category||'Guides')+' · Target: '+(art.length||'Standard')+' · Primary KW: '+(art.primary_kw||'TBC')+'</p></div></div>'+
-      '<div class="cmeta"><span class="mkw">'+(art.primary_kw||art.title||'')+'</span><span class="mtime">'+(art.word_count||0)+' words</span></div>'+
-      '<div class="cfoot"><span class="cfi">'+(art.category||'Guides')+'</span><div style="display:flex;gap:6px;"><button class="btn btn-s v-brief-btn" data-id="'+art.id+'" style="font-size:11px;">View brief</button><button class="btn btn-p btn-s">Open draft →</button></div></div>';
-    var fn=function(){openEditor(art,'writer');};
-    c.addEventListener('click',function(e){if(!e.target.closest('button')) fn();});
-    // Check for sendback feedback and mark card
-    if (art.id) {
-      supa.from('feedback').select('id').eq('article_id',art.id).eq('type','sendback').limit(1)
-        .then(function(res){
-          if (res.data && res.data.length) {
-            var dot = document.createElement('span');
-            dot.style.cssText='display:inline-block;width:7px;height:7px;border-radius:50%;background:var(--urgent);margin-left:6px;flex-shrink:0;';
-            dot.title='Returned — needs fixes';
-            var titleEl = c.querySelector('.ctitle');
-            if (titleEl) titleEl.parentElement.appendChild(dot);
-          }
-        });
-    }
-    // Wire open draft button (last button)
-    var btns = c.querySelectorAll('button');
-    btns[btns.length-1].addEventListener('click',function(e){e.stopPropagation();fn();});
-    // Wire view brief button
-    var vbBtn = c.querySelector('.v-brief-btn');
-    if (vbBtn) vbBtn.addEventListener('click', function(e) {
-      e.stopPropagation();
-      try {
-        var brief = JSON.parse(art.content||'{}');
-        if (!brief.hook_angle && !brief.sections) { toast('No brief data yet'); return; }
-        var bHtml = '<div style="max-height:80vh;overflow-y:auto;padding:20px;">' +
-          '<p style="font-size:14px;font-weight:700;color:var(--text);margin-bottom:14px;">' + (brief.title||art.title) + '</p>' +
-          (brief.hook_angle ? '<div style="background:var(--tealL);border-left:3px solid var(--teal);padding:10px 14px;border-radius:0 6px 6px 0;margin-bottom:14px;font-size:13px;color:var(--teal);font-style:italic;line-height:1.6;">' + brief.hook_angle + '</div>' : '') +
-          (brief.sections ? brief.sections.map(function(s,i){
-            return '<div style="margin-bottom:10px;border-left:2px solid var(--border);padding-left:12px;">' +
-              '<p style="font-size:12px;font-weight:600;color:var(--text);">H2 '+(i+1)+': '+s.h2+'</p>' +
-              '<p style="font-size:12px;color:var(--text3);line-height:1.5;">'+s.angle+'</p>' +
-              '<p style="font-size:11px;color:var(--amber);margin-top:4px;">✓ '+s.what_to_check+'</p>' +
-            '</div>';
-          }).join('') : '') +
-          (brief.fxify_angle ? '<div style="background:rgba(14,196,173,.08);border-radius:6px;padding:10px 12px;margin-top:10px;font-size:12px;color:var(--teal);line-height:1.5;">⚡ '+brief.fxify_angle+'</div>' : '') +
-          '</div>';
-        var dov = document.getElementById('dov');
-        var drawer = document.getElementById('drawer');
-        // Use modal overlay
-        var mov = document.querySelector('.mov');
-        var mbox = document.querySelector('.mbox');
-        if (mov && mbox) {
-                    mbox.innerHTML = '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;"><p class="mtitle">Your brief</p><button id="brief-modal-close" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text3);">×</button></div>' + bHtml;
-          mov.classList.add('open');
-          var bmc = document.getElementById('brief-modal-close');
-          if (bmc) bmc.addEventListener('click', function(){ mov.classList.remove('open'); });
-        }
-      } catch(e2) { toast('No brief available'); }
+  var nb = document.getElementById('nb-wdrafts');
+  if (nb) nb.textContent = tasks.length || '';
+
+  if (!tasks.length) {
+    list.innerHTML = '<p style="font-size:13px;color:var(--text3);padding:40px 0;text-align:center;">No active tasks assigned to you in ClickUp.</p>';
+    return;
+  }
+
+  window._writerTasks = tasks;
+
+  list.innerHTML = tasks.map(function(t) {
+    var status     = (t.status && t.status.status) || 'to do';
+    var statusColor = (CU.statuses.find(function(s){ return s.status === status; })||{}).color || '#475569';
+    var due        = t.due_date ? new Date(parseInt(t.due_date)).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+    var isOverdue  = t.due_date && parseInt(t.due_date) < Date.now();
+
+    // Get primary keyword from custom fields
+    var pkw = '';
+    (t.custom_fields||[]).forEach(function(cf){
+      if (cf.id === CU.fields.primaryKeyword.id && cf.value) pkw = cf.value;
     });
-    l.appendChild(c);
+
+    // Get draft URL if already saved
+    var draftUrl = '';
+    (t.custom_fields||[]).forEach(function(cf){
+      if (cf.id === CU.fields.draft.id && cf.value) draftUrl = cf.value;
+    });
+
+    // Does this task have brief data in Supabase?
+    var hasBrief = false;
+
+    return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;" data-taskid="' + t.id + '">' +
+
+      // Header row
+      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">' +
+        '<div style="flex:1;min-width:0;">' +
+          '<p style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3;">' + (t.name||'Untitled') + '</p>' +
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+            '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:' + statusColor + '22;color:' + statusColor + ';font-family:var(--mono);">' + status.toUpperCase() + '</span>' +
+            (pkw ? '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">🔑 ' + pkw + '</span>' : '') +
+            (due ? '<span style="font-size:11px;color:' + (isOverdue?'var(--urgent)':'var(--text3)') + ';font-family:var(--mono);">' + (isOverdue?'⚠ ':'📅 ') + due + '</span>' : '') +
+          '</div>' +
+        '</div>' +
+        '<a href="' + (t.url||'https://app.clickup.com') + '" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;white-space:nowrap;flex-shrink:0;">View in ClickUp ↗</a>' +
+      '</div>' +
+
+      // Action buttons
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+        '<button class="btn btn-s w-brief-btn" data-taskid="' + t.id + '" style="font-size:12px;">📋 Brief</button>' +
+        (draftUrl
+          ? '<a href="' + draftUrl + '" target="_blank" class="btn btn-p btn-s" style="font-size:12px;text-decoration:none;">📝 Open Google Doc ↗</a>'
+          : '<span style="font-size:12px;color:var(--text3);padding:6px 0;font-family:var(--mono);">No doc linked yet</span>') +
+        '<button class="btn btn-s w-submit-btn" data-taskid="' + t.id + '" style="font-size:12px;color:var(--green);border-color:rgba(0,186,124,0.3);">✓ Set for review</button>' +
+      '</div>' +
+
+    '</div>';
+  }).join('');
+
+  // Wire brief buttons
+  list.querySelectorAll('.w-brief-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var taskId = btn.dataset.taskid;
+      var task = (window._writerTasks||[]).find(function(t){ return t.id === taskId; });
+      if (task) openWriterBriefModal(task);
+    });
   });
-  var nb=document.getElementById('nb-wdrafts');if(nb)nb.textContent=res.data.length;
 
-  // Update writer goal box with real data
-  var total = res.data.length;
-  var drafting = res.data.filter(function(a){ return a.status === 'Drafting'; }).length;
-  var goalLabel = document.getElementById('writer-goal-label');
-  var goalBar = document.getElementById('writer-goal-bar');
-  var goalVal = document.getElementById('writer-goal-val');
-  if (goalLabel) goalLabel.textContent = total + ' article' + (total !== 1 ? 's' : '') + ' assigned';
-  if (goalBar) goalBar.style.width = Math.min(100, total * 20) + '%';
-  if (goalVal) goalVal.textContent = total;
+  // Wire new doc buttons
+  list.querySelectorAll('.w-new-doc-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      window.open('https://docs.google.com/document/create', '_blank');
+    });
+  });
 
-  // Also load in-review count for this writer
-  if (writerName) {
-    supa.from('articles').select('id').eq('assignee', writerName)
-      .in('status', ['Sheperd Review','David Approval','Publishing','Live'])
-      .then(function(rev) {
-        var revCount = rev.data ? rev.data.length : 0;
-        var revBar = document.getElementById('writer-review-bar');
-        var revVal = document.getElementById('writer-review-val');
-        if (revBar) revBar.style.width = Math.min(100, revCount * 25) + '%';
-        if (revVal) revVal.textContent = revCount + ' in review';
-      });
-  }
+  // Wire submit buttons
+  list.querySelectorAll('.w-submit-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      var taskId = btn.dataset.taskid;
+      var task = (window._writerTasks||[]).find(function(t){ return t.id === taskId; });
+      if (task) openWriterSubmit(task);
+    });
+  });
 }
+
+
 
 // ── EDITOR ────────────────────────────────────────────────────────────────
 function openEditor(art,role){
@@ -7212,6 +7229,7 @@ function openSwitchViewModal() {
   var writers = [
     { val: '__writer_self__', label: '✍️ My writer dashboard' },
     { val: '__david__',        label: '✅ Manager view (David)' },
+    { val: '__chris__',        label: '✅ Manager view (Chris)' },
     { val: 'fariha.khan@fxify.com',      label: 'Fariha Khan' },
     { val: 'harrison.hosking@fxify.com', label: 'Harry Hosking' },
     { val: 'imran.najib@fxify.com',      label: 'Imran Muhd Najib' },
@@ -7300,6 +7318,10 @@ function doSwitchView(sel) {
     targetScreen = 'admin'; label = '✅ Manager view (David)';
     impersonating = sel; activeRole = 'admin';
     updateTopbars({ name: 'David Xavier (viewing)', initials: 'DX', av: 'a' });
+  } else if (sel === '__chris__') {
+    targetScreen = 'admin'; label = '✅ Manager view (Chris)';
+    impersonating = sel; activeRole = 'admin';
+    updateTopbars({ name: 'Chris (viewing)', initials: 'CH', av: '' });
   } else {
     var def = USERS[sel];
     if (!def) { toast('Writer not found'); return; }
@@ -8380,6 +8402,281 @@ if (window.location.hash && window.location.hash.indexOf('access_token') !== -1)
   }, 200);
 }
 
+// ── WRITER BRIEF MODAL ──────────────────────────────────────────────────────
+async function openWriterBriefModal(task) {
+  // Try to get brief from Supabase first (has the full structured brief)
+  var brief = null;
+  var artData = null;
+  try {
+    var res = await supa.from('articles').select('*').ilike('title', task.name).limit(1);
+    if (res.data && res.data[0] && res.data[0].content) {
+      artData = res.data[0];
+      brief = JSON.parse(res.data[0].content);
+    }
+  } catch(e) {}
+
+  // Build modal
+  var overlay = document.createElement('div');
+  overlay.id = 'wb-modal';
+  overlay.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:9999;overflow-y:auto;padding:20px;font-family:var(--font);display:flex;align-items:flex-start;justify-content:center;';
+
+  var status = (task.status && task.status.status) || '';
+  var statusColor = (CU.statuses.find(function(s){ return s.status === status; })||{}).color || '#475569';
+
+  // Get custom field values
+  var cfVals = {};
+  (task.custom_fields||[]).forEach(function(cf){ cfVals[cf.id] = cf.value; });
+  var pkw      = cfVals[CU.fields.primaryKeyword.id] || (brief && brief.primary_keyword) || '';
+  var draftUrl = cfVals[CU.fields.draft.id] || '';
+  var category = '';
+  var catOptId = cfVals[CU.fields.category.id];
+  if (catOptId) {
+    Object.keys(CU.fieldOptions.category).forEach(function(name) {
+      if (CU.fieldOptions.category[name] === catOptId) category = name;
+    });
+  }
+
+  var html = '<div style="background:var(--bg1);border:1px solid var(--border2);border-radius:16px;width:100%;max-width:720px;margin:0 auto;overflow:hidden;">' +
+
+    // Header
+    '<div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:16px 20px;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">' +
+      '<div style="flex:1;min-width:0;">' +
+        '<div style="display:flex;gap:8px;align-items:center;margin-bottom:6px;">' +
+          '<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;background:' + statusColor + '22;color:' + statusColor + ';font-family:var(--mono);">' + status.toUpperCase() + '</span>' +
+          (category ? '<span style="font-size:9px;font-weight:600;color:var(--text3);font-family:var(--mono);">' + category + '</span>' : '') +
+        '</div>' +
+        '<p style="font-size:16px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:4px;">' + (task.name||'Untitled') + '</p>' +
+        (pkw ? '<p style="font-size:12px;color:var(--blue);font-family:var(--mono);">🔑 ' + pkw + '</p>' : '') +
+      '</div>' +
+      '<button id="wb-close" style="background:none;border:none;font-size:22px;color:var(--text3);cursor:pointer;flex-shrink:0;line-height:1;">×</button>' +
+    '</div>' +
+
+    // Action bar
+    '<div style="background:var(--bg2);border-bottom:1px solid var(--border);padding:10px 20px;display:flex;gap:8px;flex-wrap:wrap;">' +
+      '<button id="wb-copy-btn" class="btn btn-p btn-s" style="font-size:12px;">📋 Copy brief for Google Docs</button>' +
+      (draftUrl
+        ? '<a href="' + draftUrl + '" target="_blank" class="btn btn-s" style="font-size:12px;text-decoration:none;">📝 Open your Google Doc ↗</a>'
+        : '<button id="wb-new-doc-btn" class="btn btn-s" style="font-size:12px;">📝 Create Google Doc</button>') +
+      '<a href="' + (task.url||'#') + '" target="_blank" class="btn btn-s" style="font-size:12px;text-decoration:none;">ClickUp ↗</a>' +
+    '</div>' +
+
+    '<div style="padding:20px;">' +
+    (brief ? buildBriefHTML(brief, task) : buildRawBriefHTML(task, cfVals)) +
+    '</div>' +
+
+  '</div>';
+
+  overlay.innerHTML = html;
+  document.body.appendChild(overlay);
+
+  overlay.addEventListener('click', function(e){ if (e.target === overlay) overlay.remove(); });
+  document.getElementById('wb-close').addEventListener('click', function(){ overlay.remove(); });
+  document.getElementById('wb-copy-btn').addEventListener('click', function() {
+    var text = buildBriefText(brief, task, cfVals);
+    navigator.clipboard.writeText(text).then(function(){
+      toast('Brief copied — paste into Google Docs ✓');
+      var btn = document.getElementById('wb-copy-btn');
+      if (btn) { btn.textContent = '✓ Copied!'; setTimeout(function(){ btn.textContent = '📋 Copy brief for Google Docs'; }, 2000); }
+    }).catch(function(){
+      // Fallback
+      var ta = document.createElement('textarea');
+      ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta); ta.select();
+      document.execCommand('copy'); ta.remove();
+      toast('Brief copied ✓');
+    });
+  });
+  var newDocBtn = document.getElementById('wb-new-doc-btn');
+  if (newDocBtn) newDocBtn.addEventListener('click', function(){ window.open('https://docs.google.com/document/create', '_blank'); });
+}
+
+function buildBriefHTML(brief, task) {
+  var html = '';
+
+  // H1 + meta
+  if (brief.h1_title) {
+    html += '<div style="background:rgba(29,155,240,0.06);border:1px solid rgba(29,155,240,0.15);border-radius:8px;padding:12px 14px;margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--blue);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;">H1 Title</p>' +
+      '<p style="font-size:15px;font-weight:600;color:var(--text);line-height:1.4;">' + brief.h1_title + '</p>' +
+    '</div>';
+  }
+
+  // Meta desc
+  if (brief.meta_description) {
+    html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;">Meta Description</p>' +
+      '<p style="font-size:13px;color:var(--text2);line-height:1.5;">' + brief.meta_description + '</p>' +
+    '</div>';
+  }
+
+  // Keywords row
+  var kwHtml = '';
+  if (brief.primary_keyword) kwHtml += '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Primary KW</p><p style="font-size:13px;color:var(--blue);font-weight:600;">' + brief.primary_keyword + '</p></div>';
+  if (brief.secondary_keywords && brief.secondary_keywords.length) kwHtml += '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Secondary KWs</p><p style="font-size:12px;color:var(--text2);">' + brief.secondary_keywords.join(', ') + '</p></div>';
+  if (brief.word_count) kwHtml += '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Target words</p><p style="font-size:13px;color:var(--text);font-weight:600;font-family:var(--mono);">' + brief.word_count + '</p></div>';
+  if (brief.search_intent) kwHtml += '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Intent</p><p style="font-size:12px;color:var(--text2);">' + brief.search_intent + '</p></div>';
+  if (kwHtml) {
+    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:16px;">' + kwHtml + '</div>';
+  }
+
+  // Hook
+  if (brief.hook_angle) {
+    html += '<div style="margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Opening Hook</p>' +
+      '<div style="border-left:3px solid var(--blue);padding:10px 14px;background:rgba(29,155,240,0.04);border-radius:0 6px 6px 0;">' +
+        '<p style="font-size:13px;color:var(--text2);line-height:1.6;font-style:italic;">' + brief.hook_angle + '</p>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // FXIFY angle
+  if (brief.fxify_angle) {
+    html += '<div style="background:rgba(0,186,124,0.06);border:1px solid rgba(0,186,124,0.2);border-radius:8px;padding:12px 14px;margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--green);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;">⚡ FXIFY Angle</p>' +
+      '<p style="font-size:13px;color:var(--text2);line-height:1.5;">' + brief.fxify_angle + '</p>' +
+    '</div>';
+  }
+
+  // Sections
+  if (brief.sections && brief.sections.length) {
+    html += '<div style="margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Article Structure</p>' +
+      '<div style="display:grid;gap:8px;">' +
+      brief.sections.map(function(s, i) {
+        return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">' +
+          '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">' +
+            '<span style="font-size:10px;font-weight:700;color:var(--text3);font-family:var(--mono);flex-shrink:0;">H2 ' + (i+1) + '</span>' +
+            '<p style="font-size:13px;font-weight:600;color:var(--text);">' + (s.heading||s.h2||s) + '</p>' +
+            (s.word_count ? '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:auto;flex-shrink:0;">~' + s.word_count + ' words</span>' : '') +
+          '</div>' +
+          (s.angle ? '<p style="font-size:12px;color:var(--text3);line-height:1.5;padding-left:32px;">' + s.angle + '</p>' : '') +
+        '</div>';
+      }).join('') +
+      '</div></div>';
+  }
+
+  // Competitor gap
+  if (brief.competitor_gaps) {
+    html += '<div style="margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Competitor Gap</p>' +
+      '<p style="font-size:13px;color:var(--text2);line-height:1.5;">' + brief.competitor_gaps + '</p>' +
+    '</div>';
+  }
+
+  // FAQs
+  if (brief.faqs && brief.faqs.length) {
+    html += '<div style="margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">FAQs to Address</p>' +
+      '<div style="display:grid;gap:6px;">' +
+      brief.faqs.map(function(q) {
+        var question = typeof q === 'string' ? q : q.question;
+        var answer   = typeof q === 'object' ? q.answer : '';
+        return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;">' +
+          '<p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:' + (answer?'4px':'0') + ';">Q: ' + question + '</p>' +
+          (answer ? '<p style="font-size:12px;color:var(--text3);line-height:1.4;">A: ' + answer + '</p>' : '') +
+        '</div>';
+      }).join('') +
+      '</div></div>';
+  }
+
+  // Voice rules
+  html += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">' +
+    '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Voice Rules</p>' +
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">' +
+      '<p style="font-size:11px;color:var(--green);">✓ One idea per sentence. Full stop.</p>' +
+      '<p style="font-size:11px;color:var(--urgent);">✗ Never: delve into / dive into</p>' +
+      '<p style="font-size:11px;color:var(--green);">✓ Hook = trader scenario, not a definition</p>' +
+      '<p style="font-size:11px;color:var(--urgent);">✗ Never: sentences over 25 words</p>' +
+      '<p style="font-size:11px;color:var(--green);">✓ Every FXIFY fact must be verifiable</p>' +
+      '<p style="font-size:11px;color:var(--urgent);">✗ Never: "profit split" → use "performance split"</p>' +
+    '</div>' +
+  '</div>';
+
+  return html;
+}
+
+function buildRawBriefHTML(task, cfVals) {
+  // No Supabase brief — show ClickUp task data
+  var pkw = cfVals[CU.fields.primaryKeyword.id] || '';
+  var kwLink = cfVals[CU.fields.kwToLink.id] || '';
+  var desc = task.description || '';
+  return '<div style="display:grid;gap:12px;">' +
+    (pkw ? '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Primary Keyword</p><p style="font-size:14px;font-weight:600;color:var(--blue);">' + pkw + '</p></div>' : '') +
+    (kwLink ? '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">KW to Link</p><p style="font-size:13px;color:var(--text2);">' + kwLink + '</p></div>' : '') +
+    (desc ? '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Brief from ClickUp</p><pre style="font-size:12px;color:var(--text2);white-space:pre-wrap;line-height:1.6;font-family:var(--font);background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:12px;">' + desc.substring(0, 2000) + '</pre></div>' : '<p style="color:var(--text3);font-size:13px;">No brief content yet — check ClickUp for details.</p>') +
+  '</div>';
+}
+
+function buildBriefText(brief, task, cfVals) {
+  // Plain text for Google Docs paste
+  var t = '===== FXIFY CONTENT BRIEF =====\n\n';
+  t += 'ARTICLE: ' + (task.name||'') + '\n';
+
+  var pkw = cfVals[CU.fields.primaryKeyword.id] || (brief && brief.primary_keyword) || '';
+  if (pkw) t += 'PRIMARY KEYWORD: ' + pkw + '\n';
+
+  if (brief) {
+    if (brief.secondary_keywords) t += 'SECONDARY KEYWORDS: ' + brief.secondary_keywords.join(', ') + '\n';
+    if (brief.search_intent) t += 'SEARCH INTENT: ' + brief.search_intent + '\n';
+    if (brief.word_count) t += 'TARGET WORD COUNT: ' + brief.word_count + ' words\n';
+    t += '\n';
+
+    if (brief.h1_title) t += '--- H1 TITLE ---\n' + brief.h1_title + '\n\n';
+    if (brief.meta_description) t += '--- META DESCRIPTION ---\n' + brief.meta_description + '\n\n';
+    if (brief.hook_angle) t += '--- OPENING HOOK ---\n' + brief.hook_angle + '\n\n';
+    if (brief.fxify_angle) t += '--- FXIFY ANGLE ---\n' + brief.fxify_angle + '\n\n';
+
+    if (brief.sections && brief.sections.length) {
+      t += '--- ARTICLE STRUCTURE ---\n';
+      brief.sections.forEach(function(s, i) {
+        t += '\nH2 ' + (i+1) + ': ' + (s.heading||s.h2||s) + '\n';
+        if (s.angle) t += 'Angle: ' + s.angle + '\n';
+        if (s.word_count) t += 'Words: ~' + s.word_count + '\n';
+      });
+      t += '\n';
+    }
+
+    if (brief.competitor_gaps) t += '--- COMPETITOR GAP ---\n' + brief.competitor_gaps + '\n\n';
+
+    if (brief.faqs && brief.faqs.length) {
+      t += '--- FAQs ---\n';
+      brief.faqs.forEach(function(q) {
+        t += 'Q: ' + (typeof q === 'string' ? q : q.question) + '\n';
+        if (q.answer) t += 'A: ' + q.answer + '\n';
+        t += '\n';
+      });
+    }
+  }
+
+  t += '--- VOICE RULES ---\n';
+  t += '✓ One idea per sentence. Full stop. Next.\n';
+  t += '✓ Hook = trader scenario, not a definition\n';
+  t += '✓ Every FXIFY mention cites a specific verified fact\n';
+  t += '✗ Never: delve into, dive into, in this article we will...\n';
+  t += '✗ Never: sentences over 25 words\n';
+  t += '✗ Never: profit split → always "performance split"\n\n';
+
+  t += 'ClickUp task: ' + (task.url||'') + '\n';
+  return t;
+}
+
+// ── WRITER SUBMIT ──────────────────────────────────────────────────────────
+async function openWriterSubmit(task) {
+  if (!confirm('Set "' + task.name + '" for review?\n\nThis will move the task to Review in ClickUp and notify Sheperd.')) return;
+
+  try {
+    // Move ClickUp task to review
+    await cuFetch('/task/' + task.id, 'PUT', { status: 'review' });
+    // Update Supabase
+    try { await supa.from('articles').update({ status: 'Sheperd Review' }).ilike('title', task.name); } catch(e) {}
+    toast('✓ Set for review — Sheperd has been notified');
+    loadWriterDrafts();
+  } catch(e) {
+    toast('Error: ' + e.message);
+  }
+}
+
+
 function init(){
   // Dynamic friendly greeting
   var hr=new Date().getHours();
@@ -8923,12 +9220,18 @@ function init(){
 
   // goPage triggers
   var origGoPage = goPage;
+
+
 }
 
 init();
 
 // Expose functions called from inline onclick attributes
-window.openSwitchViewModal = openSwitchViewModal;
+window.openSwitchViewModal  = openSwitchViewModal;
+window.openWriterBriefModal = openWriterBriefModal;
+window.openWriterSubmit     = openWriterSubmit;
+window.approveDavidArticle  = approveDavidArticle;
+window.rejectDavidArticle   = rejectDavidArticle;
 window.doSwitchView        = doSwitchView;
 window.doExitSwitchView    = doExitSwitchView;
 window.prefillBrief        = prefillBrief;
