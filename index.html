@@ -8927,6 +8927,12 @@ function init(){
 
 init();
 
+// Expose functions called from inline onclick attributes
+window.openSwitchViewModal = openSwitchViewModal;
+window.doSwitchView        = doSwitchView;
+window.doExitSwitchView    = doExitSwitchView;
+window.prefillBrief        = prefillBrief;
+
 })();
 </script>
 
