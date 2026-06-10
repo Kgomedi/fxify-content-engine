@@ -1696,36 +1696,6 @@ select.finput option{background:var(--bg2);color:var(--text);}
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-
-
-
-<!-- SWITCH VIEW MODAL -->
-<div id="imp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;">
-  <div style="background:#16181c;border:1px solid rgba(255,255,255,0.12);border-radius:16px;width:100%;max-width:360px;padding:24px;">
-    <p style="font-size:16px;font-weight:700;color:#e7e9ea;margin-bottom:6px;">Switch view</p>
-    <p style="font-size:13px;color:#536471;margin-bottom:16px;">Preview any role or writer dashboard.</p>
-    <select id="imp-select" style="width:100%;padding:10px 12px;background:#1e2028;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e7e9ea;font-size:14px;margin-bottom:16px;outline:none;">
-      <option value="">— Select view —</option>
-      <optgroup label="Roles">
-        <option value="__writer_self__">✍️ My writer dashboard</option>
-        <option value="__david__">✅ Manager view (David)</option>
-      </optgroup>
-      <optgroup label="Writers">
-        <option value="fariha.khan@fxify.com">Fariha Khan</option>
-        <option value="harrison.hosking@fxify.com">Harry Hosking</option>
-        <option value="imran.najib@fxify.com">Imran Najib</option>
-        <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
-        <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
-        <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
-      </optgroup>
-    </select>
-    <div style="display:flex;gap:8px;">
-      <button onclick="document.getElementById('imp-modal').style.display='none';" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:9999px;color:#8b98a5;font-size:14px;cursor:pointer;">Cancel</button>
-      <button onclick="doSwitchView();" style="flex:1;padding:10px;background:#e7e9ea;border:none;border-radius:9999px;color:#000;font-size:14px;font-weight:700;cursor:pointer;">View →</button>
-    </div>
-  </div>
-</div>
-
 <script>
 (function(){
 
@@ -8897,5 +8867,36 @@ init();
 
 })();
 </script>
+
+
+
+
+
+<!-- SWITCH VIEW MODAL -->
+<div id="imp-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.75);z-index:9999;align-items:center;justify-content:center;padding:20px;">
+  <div style="background:#16181c;border:1px solid rgba(255,255,255,0.12);border-radius:16px;width:100%;max-width:360px;padding:24px;">
+    <p style="font-size:16px;font-weight:700;color:#e7e9ea;margin-bottom:6px;">Switch view</p>
+    <p style="font-size:13px;color:#536471;margin-bottom:16px;">Preview any role or writer dashboard.</p>
+    <select id="imp-select" style="width:100%;padding:10px 12px;background:#1e2028;border:1px solid rgba(255,255,255,0.12);border-radius:8px;color:#e7e9ea;font-size:14px;margin-bottom:16px;outline:none;">
+      <option value="">— Select view —</option>
+      <optgroup label="Roles">
+        <option value="__writer_self__">✍️ My writer dashboard</option>
+        <option value="__david__">✅ Manager view (David)</option>
+      </optgroup>
+      <optgroup label="Writers">
+        <option value="fariha.khan@fxify.com">Fariha Khan</option>
+        <option value="harrison.hosking@fxify.com">Harry Hosking</option>
+        <option value="imran.najib@fxify.com">Imran Najib</option>
+        <option value="mamnun.ahmed@fxify.com">Mamnun Ahmed</option>
+        <option value="roshan.ganesh@fxify.com">Roshan Ganesh</option>
+        <option value="shatha.altrad@fxify.com">Shatha Altrad</option>
+      </optgroup>
+    </select>
+    <div style="display:flex;gap:8px;">
+      <button onclick="document.getElementById('imp-modal').style.display='none';" style="flex:1;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:9999px;color:#8b98a5;font-size:14px;cursor:pointer;">Cancel</button>
+      <button onclick="doSwitchView();" style="flex:1;padding:10px;background:#e7e9ea;border:none;border-radius:9999px;color:#000;font-size:14px;font-weight:700;cursor:pointer;">View →</button>
+    </div>
+  </div>
+</div>
 </body>
 </html>
