@@ -3011,8 +3011,16 @@ async function loadWriterDrafts() {
   var email = currentWriterEmail || (currentUser && currentUser.email) || '';
   var member = CU.members.find(function(m){ return m.email.toLowerCase() === email.toLowerCase(); });
 
+  // Fallback: try matching by name if email not found
+  if (!member && currentUser && currentUser.name) {
+    var nameLower = currentUser.name.toLowerCase();
+    member = CU.members.find(function(m){
+      return m.username.toLowerCase() === nameLower ||
+             m.username.toLowerCase().includes(nameLower.split(' ')[0]);
+    });
+  }
   if (!member) {
-    list.innerHTML = '<p style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center;">No ClickUp member found for ' + email + '</p>';
+    list.innerHTML = '<p style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center;">No ClickUp account found for ' + email + '</p>';
     return;
   }
 
@@ -6012,11 +6020,12 @@ var USERS = {
   'david.xavier@fxify.com':      { role:'admin',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
   'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
   'harrison.hosking@fxify.com':  { role:'writer', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
-  'imran.najib@fxify.com':       { role:'writer', name:'Imran Najib',     screen:'writer', initials:'IN', av:''  },
+  'imran.najib@fxify.com':       { role:'writer', name:'Imran Muhd Najib', screen:'writer', initials:'IN', av:''  },
   'mamnun.ahmed@fxify.com':      { role:'writer', name:'Mamnun Ahmed',    screen:'writer', initials:'MA', av:''  },
   'roshan.ganesh@fxify.com':     { role:'writer', name:'Roshan Ganesh',   screen:'writer', initials:'RG', av:''  },
   'shatha.altrad@fxify.com':     { role:'writer', name:'Shatha Altrad',   screen:'writer', initials:'SA', av:''  },
-  'chris@fxify.com':             { role:'admin',  name:'Chris',           screen:'admin',  initials:'CH', av:''  },
+  'chris@fxify.com':             { role:'admin',  name:'Christopher Small', screen:'admin',  initials:'CH', av:''  },
+  'chris@fxpig.com':             { role:'admin',  name:'Christopher Small', screen:'admin',  initials:'CH', av:''  },
   'shepherdmorena2@gmail.com':   { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
   };
 
