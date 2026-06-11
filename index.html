@@ -745,6 +745,23 @@ select.finput option{background:var(--bg2);color:var(--text);}
                   <option>Challenge walkthrough</option>
                 </select>
               </div>
+              <div>
+                <label class="flbl">Format</label>
+                <div style="display:flex;gap:6px;margin-top:6px;">
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 12px;flex:1;justify-content:center;">
+                    <input type="radio" name="yt-format" value="short" style="accent-color:var(--teal);"> 
+                    <span>Short<br><span style="font-size:10px;color:var(--text3);">&lt;60s · Hooks, tips</span></span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 12px;flex:1;justify-content:center;">
+                    <input type="radio" name="yt-format" value="long" checked style="accent-color:var(--teal);">
+                    <span>Long<br><span style="font-size:10px;color:var(--text3);">5–15min · Deep dives</span></span>
+                  </label>
+                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 12px;flex:1;justify-content:center;">
+                    <input type="radio" name="yt-format" value="both" style="accent-color:var(--teal);">
+                    <span>Both<br><span style="font-size:10px;color:var(--text3);">Ideas for both</span></span>
+                  </label>
+                </div>
+              </div>
             </div>
             <div style="margin-bottom:14px;">
               <p class="flbl" style="margin-bottom:8px;">Active signals</p>
@@ -5186,6 +5203,13 @@ function ytShowLoader(steps) {
 async function runYouTubeDiscovery() {
   var topic    = (document.getElementById('yt-topic')||{}).value || '';
   var vidType  = (document.getElementById('yt-type')||{}).value || 'Tutorial / How-to';
+  var formatEl = document.querySelector('input[name="yt-format"]:checked');
+  var formatVal = formatEl ? formatEl.value : 'long';
+  var formatInstr = formatVal === 'short'
+    ? 'FORMAT: SHORT FORM ONLY (<60s Shorts/Reels). Hook in first 3 words. One single tip or stat per video.'
+    : formatVal === 'both'
+    ? 'FORMAT: Generate ideas for BOTH [SHORT] (<60s Shorts) AND [LONG] (5-15min). Label each clearly.'
+    : 'FORMAT: LONG FORM (5-15 minutes). Tutorial/walkthrough. Searchable title.';
   var useSEO   = document.getElementById('sig-seo') && document.getElementById('sig-seo').checked;
   var useX     = document.getElementById('sig-x') && document.getElementById('sig-x').checked;
   var useReddit= document.getElementById('sig-reddit') && document.getElementById('sig-reddit').checked;
@@ -5338,10 +5362,23 @@ async function runYouTubeDiscovery() {
     return '- ' + v.title + (v.views ? ' (' + v.views + ' views)' : '') + (v.channel ? ' — ' + v.channel : '');
   }).join('\n') : '';
 
+  var format = document.querySelector('input[name="yt-format"]:checked');
+  var formatVal = format ? format.value : 'long';
+  var formatInstr = formatVal === 'short'
+    ? 'Format: SHORT FORM (<60 seconds). Hook in first 3 words. Single tip or stat. Punchy. Think Reels/Shorts.'
+    : formatVal === 'both'
+    ? 'Format: Generate ideas for BOTH short form (<60s) and long form (5-15min). Mark each clearly.'
+    : 'Format: LONG FORM (5-15 minutes). Deep walkthrough. Tutorial style. Searchable title.';
+
   var prompt =
-    'You are a YouTube content strategist for FXIFY — a broker-backed prop trading firm.\n\n' +
+    'You are a YouTube content strategist for FXIFY — a broker-backed prop trading firm. Today is ' + nowStr() + '.\n\n' +
+    'TONE: Straight-talking prop trader mentor. ESL Grade 5-6. Short punchy sentences. No hype. Sound like a knowledgeable friend, not a corporate marketer.\n\n' +
+    'BANNED TITLE WORDS: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Journey, Elevate, Transform, Revolutionize\n\n' +
+    'GOOD TITLE EXAMPLES: "FXIFY vs FTMO 2026: Which One Paid Me More?" | "I Blew 3 FXIFY Challenges — Here\'s Why" | "FXIFY One Phase Rules Explained in 5 Minutes"\n\n' +
+    'ALL DATES AND REFERENCES MUST BE 2026. Never suggest 2024 or 2025 content.\n\n' +
     'SEED TOPIC: ' + topic + '\n' +
-    'VIDEO TYPE: ' + vidType + '\n\n' +
+    'VIDEO TYPE: ' + vidType + '\n' +
+    formatInstr + '\n\n' +
 
     'FXIFY FACTS:\n' +
     '- One Phase: no consistency rule, payout on demand\n' +
@@ -7661,21 +7698,29 @@ async function runTopicIdeas() {
 
   var prompt =
     (feedbackRules ? 'REVIEWER FEEDBACK RULES (apply to all content suggestions):\n' + feedbackRules + '\n\n' : '') +
-    'You are an SEO and content strategist who writes for real traders. Your job is to find topics that people are actively searching for RIGHT NOW — not generic educational content, not AI-sounding title patterns. Real search queries. Real trader problems.\n\n' +
-    'BANNED PATTERNS — if a topic title contains these words, reject it:\n' +
-    '"Mastering", "Ultimate Guide", "Everything You Need", "Deep Dive", "Unlocking", "Comprehensive", "Navigating", "Powerful", "Transform", "Elevate"\n\n' +
-    'USE THESE CONTENT STRATEGIES — assign one per topic:\n' +
-    '- TRANSACTIONAL: "FXIFY vs FTMO", "FXIFY discount code", "FXIFY $50k challenge cost"\n' +
-    '- INFORMATIONAL: "what happens if you fail FXIFY", "FXIFY drawdown rules explained"\n' +
-    '- COMPARISON: "FXIFY One Phase vs Two Phase", "FXIFY vs Topstep", "FXIFY vs MyFundedFX"\n' +
-    '- REVIEW/SOCIAL PROOF: "FXIFY review 2026", "is FXIFY legit", "FXIFY payout proof"\n' +
-    '- PROBLEM/SOLUTION: "how to not blow FXIFY challenge", "FXIFY max drawdown calculator"\n' +
-    '- HOW-TO: "how to pass FXIFY One Phase in 30 days", "how to request FXIFY payout"\n' +
-    '- DATA/STATS: "FXIFY success rate", "FXIFY payout statistics 2026"\n' +
-    '- VERSUS: "FXIFY instant funding vs challenge", "prop firm instant funding comparison 2026"\n\n' +
-    'TITLE FORMAT — keyword-first, specific, sounds like a real person typed it into Google:\n' +
-    'GOOD: "FXIFY One Phase Review: Is No Consistency Rule Worth It?" | "FXIFY vs FTMO 2026: Which Prop Firm Actually Pays?" | "How to Pass FXIFY Two Phase in Under 14 Days"\n' +
-    'BAD: "Mastering Your Trading Journey with FXIFY" | "Comprehensive Guide to Prop Trading Success"\n\n' +
+    'You are the content strategist for FXIFY, a prop trading firm backed by FXPIG. Today is ' + nowStr() + '. The prop trading space is moving fast — FTMO changed payout rules in early 2026, the FIFA World Cup is happening in ' + nowStr() + ' (traders are watching markets), US election cycle is affecting forex volatility. These are your content signals.\n\n' +
+    'TONE — FXIFY writes like a straight-talking trading mentor. Not a corporate blog, not hype. Short sentences. Direct. Trader-first. ESL Grade 5-6 (readers are global traders, not native English academics). When in doubt, write how a trader would say it in a WhatsApp message.\n\n' +
+    'BANNED WORDS IN TITLES (instant reject):\n' +
+    'Mastering, Ultimate Guide, Deep Dive, Unlocking, Comprehensive, Navigating, Elevate, Transform, Powerful, Journey, Landscape, Robust, Seamlessly, Synergy, Leverage (as a metaphor), Revolutionize, Game-changer\n\n' +
+    'USE THESE CONTENT STRATEGIES — one per topic:\n' +
+    '- TRANSACTIONAL: "FXIFY discount code ' + nowStr() + '", "FXIFY $50k challenge cost", "FXIFY promo code"\n' +
+    '- COMPARISON: "FXIFY vs FTMO 2026", "FXIFY One Phase vs Two Phase", "FXIFY vs Topstep futures"\n' +
+    '- REVIEW: "FXIFY review 2026", "is FXIFY legit", "FXIFY payout proof ' + nowStr() + '"\n' +
+    '- PROBLEM/SOLUTION: "why did I fail FXIFY", "FXIFY daily drawdown reset time", "FXIFY weekend positions"\n' +
+    '- HOW-TO: "how to pass FXIFY One Phase", "how to withdraw from FXIFY", "how to set stop loss on FXIFY"\n' +
+    '- DATA/STATS: "FXIFY payout stats 2026", "FXIFY pass rate", "best prop firm payout speed 2026"\n' +
+    '- VERSUS: "prop firm instant funding vs challenge 2026", "FXIFY FXPIG vs other brokers"\n' +
+    '- NEWS/TIMELY: "FXIFY World Cup challenge 2026", "prop firm rule changes 2026", "FTMO vs FXIFY new rules"\n\n' +
+    'TITLE RULES:\n' +
+    '1. Year must be 2026 if included — never 2024 or 2025\n' +
+    '2. Keyword-first — the search term comes before any punctuation\n' +
+    '3. Sounds like a Google search, not a blog post headline\n' +
+    '4. Max 65 characters including spaces\n' +
+    'GOOD: "FXIFY vs FTMO 2026: Which One Actually Pays?" | "How to Pass FXIFY One Phase (No Consistency Rule)" | "FXIFY Drawdown Rules Explained Simply"\n' +
+    'BAD: "Why FXIFY Is Revolutionizing the Prop Trading Landscape" | "Mastering Your Journey to Funded Trading"\n\n' +
+    'why_now FIELD: Must be a specific, real trigger in 2026. Not vague statements.\n' +
+    'GOOD: "FTMO changed payout policy Feb 2026 — traders comparing alternatives" | "FIFA World Cup ' + nowStr() + ' — forex volatility content spike" | "US Fed rate decision Q2 2026 — traders searching drawdown strategies"\n' +
+    'BAD: "traders are always interested" | "growing interest in prop firms" | "relevant to current market"\n\n' +
     'SEED KEYWORD: '+seed+'\n' +
     'CATEGORY: '+cat+'\n\n' +
     (kwBlock ? 'KEYWORD DATA (DataForSEO — cite these exact numbers in your output):\n'+kwBlock+'\n\n' : '') +
@@ -7836,7 +7881,7 @@ function renderTopicGrid(topics, isStub, publishedCount) {
               return '<span style="font-size:10px;background:var(--blueL);color:var(--blue);padding:1px 7px;border-radius:20px;">' + k + '</span>';
             }).join('') +
           '</div>' +
-          '<button class="btn btn-p btn-s v2-brief-btn" data-idx="' + i + '">Build brief →</button>' +
+          '<button class="btn btn-p v2-brief-btn" data-idx="' + i + '" style="font-size:13px;padding:8px 20px;">⚡ Build brief →</button>' +
         '</div>' +
       '</div>';
   });
@@ -8245,6 +8290,118 @@ function v2WireCredentials() {
 // ── CUSTOM TOPIC BRIEF ────────────────────────────────────────────────
 function v2WireCustomBtn() {
   document.addEventListener('click', function(e) {
+
+    // ── Hub tab switching ──────────────────────────────────────
+    var hubTab = e.target.closest('.hub-tab');
+    if (hubTab) {
+      var tab = hubTab.dataset.tab;
+      document.querySelectorAll('.hub-tab').forEach(function(b) {
+        var active = b.dataset.tab === tab;
+        b.style.background = active ? 'var(--bg3)' : 'transparent';
+        b.style.color = active ? 'var(--teal)' : 'var(--text3)';
+        if (active) b.classList.add('active'); else b.classList.remove('active');
+      });
+      document.querySelectorAll('.hub-panel').forEach(function(p) { p.style.display='none'; p.classList.remove('active'); });
+      // hub-blog doesn't have class hub-panel — handle separately
+      var panels = { blog:'hub-blog', youtube:'hub-youtube', crosspost:'hub-crosspost' };
+      var panelId = panels[tab] || ('hub-' + tab);
+      var panel = document.getElementById(panelId);
+      if (panel) { panel.style.display='block'; panel.classList.add('active'); }
+      return;
+    }
+
+    // ── Cross-pollinate buttons ────────────────────────────────
+    if (e.target.closest('#cp-blog-btn')) {
+      var cpTopic = (document.getElementById('cp-yt-topic')||{}).value || '';
+      if (!cpTopic.trim()) { v2Toast('Enter a YouTube topic to convert'); return; }
+      runCrossPostYTtoBlog(cpTopic); return;
+    }
+    if (e.target.closest('#cp-yt-btn')) {
+      var cpBlog = (document.getElementById('cp-blog-topic')||{}).value || '';
+      if (!cpBlog.trim()) { v2Toast('Enter a blog topic to convert'); return; }
+      runCrossPostBlogToYT(cpBlog); return;
+    }
+
+    // ── Pipeline board ─────────────────────────────────────────
+    if (e.target.closest('#cu-refresh-btn'))    { loadClickUpBoard(); return; }
+    if (e.target.closest('#cu-sync-btn'))        { cuSyncFromClickUp(); return; }
+    if (e.target.closest('#cu-export-btn'))      { cuExportCSV(); return; }
+    if (e.target.closest('#an-refresh-btn'))     { loadAnalytics(); return; }
+    if (e.target.closest('#comp-run-btn'))       { runFullCompetitorAnalysis(); return; }
+    if (e.target.closest('#comp-refresh-btn'))   { loadCompetitorAnalysis(); return; }
+
+    // ── Pipeline list toggle ───────────────────────────────────
+    if (e.target.classList.contains('pipeline-list-btn')) {
+      document.querySelectorAll('.pipeline-list-btn').forEach(function(b){
+        b.style.background='transparent'; b.style.color='var(--text3)';
+      });
+      e.target.style.background='var(--teal)'; e.target.style.color='var(--bg)';
+      loadClickUpBoard(e.target.dataset.list); return;
+    }
+
+    // ── New task toggle ────────────────────────────────────────
+    if (e.target.closest('#cu-new-task-btn')) {
+      var cp2 = document.getElementById('cu-create-panel');
+      if (cp2) cp2.style.display = cp2.style.display==='none'?'block':'none'; return;
+    }
+    if (e.target.closest('#cu-create-close')) {
+      var cp3 = document.getElementById('cu-create-panel'); if(cp3) cp3.style.display='none'; return;
+    }
+    if (e.target.id === 'ct-submit-btn') {
+      (async function() {
+        var btn = e.target;
+        var title = (document.getElementById('ct-title')||{}).value||'';
+        if (!title.trim()) { toast('Enter a task title first'); return; }
+        btn.textContent='Creating...'; btn.disabled=true;
+        var assignee=(document.getElementById('ct-assignee')||{}).value||'';
+        var priority=(document.getElementById('ct-priority')||{}).value||'Normal';
+        var due=(document.getElementById('ct-due')||{}).value||'';
+        var keyword=(document.getElementById('ct-keyword')||{}).value||'';
+        var notes=(document.getElementById('ct-notes')||{}).value||'';
+        var targetList=(window._newTaskList==='video')?CU.videoList:CU.list;
+        var assigneeMem=assignee?CU.members.find(function(m){return String(m.id)===String(assignee);}):null;
+        var assigneeName=assigneeMem?assigneeMem.username:'';
+        var appStatus=assignee?'Drafting':'Briefed';
+        var sbRes=await supa.from('articles').insert([{title:title,status:appStatus,priority:priority,primary_kw:keyword,assignee:assigneeName,content:notes?JSON.stringify({primary_keyword:keyword,notes:notes}):'',due_date:due||null}]).select();
+        var artId=sbRes.data&&sbRes.data[0]&&sbRes.data[0].id;
+        var cuBody={name:title,description:notes||'',status:'to do',priority:3,assignees:assignee?[parseInt(assignee)]:[]};
+        if(due) cuBody.due_date=new Date(due).getTime();
+        if(keyword) cuBody.custom_fields=[{id:CU.fields.primaryKeyword.id,value:keyword}];
+        var cuTask=await cuFetch('/list/'+targetList+'/task','POST',cuBody);
+        if(cuTask&&cuTask.id&&artId) await supa.from('articles').update({meta:JSON.stringify({clickup_id:cuTask.id})}).eq('id',artId);
+        btn.textContent='Create in ClickUp + Supabase →'; btn.disabled=false;
+        ['ct-title','ct-keyword','ct-notes','ct-due'].forEach(function(id){var el=document.getElementById(id);if(el)el.value='';});
+        var cp=document.getElementById('cu-create-panel');if(cp)cp.style.display='none';
+        loadClickUpBoard(); toast('Task created ✓');
+      })(); return;
+    }
+
+    // ── New task list toggle ───────────────────────────────────
+    if (e.target.classList.contains('new-task-list-btn')) {
+      document.querySelectorAll('.new-task-list-btn').forEach(function(b){
+        b.style.background='transparent'; b.style.color='var(--text3)';
+      });
+      e.target.style.background='var(--teal)'; e.target.style.color='var(--bg)';
+      window._newTaskList = e.target.dataset.list; return;
+    }
+
+    // ── Task panel overlay close ───────────────────────────────
+    if (e.target.id === 'cu-task-overlay') { closeTaskPanel(); return; }
+
+    // ── Competitor tabs ────────────────────────────────────────
+    if (e.target.classList.contains('comp-tab')) {
+      document.querySelectorAll('.comp-tab').forEach(function(t){
+        t.style.borderBottomColor='transparent'; t.style.color='var(--text3)';
+      });
+      e.target.style.borderBottomColor='var(--blue)'; e.target.style.color='var(--text)';
+      document.querySelectorAll('.comp-tab-pane').forEach(function(p){ p.style.display='none'; });
+      var pane = document.getElementById('comp-tab-' + e.target.dataset.tab);
+      if (pane) pane.style.display='block'; return;
+    }
+
+    // ── Writer submit overlay close ────────────────────────────
+    if (e.target.id === 'ws-overlay') { e.target.style.display='none'; return; }
+
     if (e.target.closest('#v2-run-btn') || e.target.closest('#v2-research-btn')) {
       var seed = (document.getElementById('v2-seed')||{}).value || '';
       if (!seed.trim()) { v2Toast('Enter a seed keyword first'); return; }
@@ -8257,8 +8414,8 @@ function v2WireCustomBtn() {
     }
     if (e.target.closest('#ayt-research-btn')) {
       var ytTopic = (document.getElementById('yt-topic')||{}).value || '';
-      if (!ytTopic.trim()) { v2Toast('Enter a YouTube topic first'); return; }
-      runYouTubePage(ytTopic);
+      if (!ytTopic.trim()) { v2Toast('Enter a YouTube topic or keyword first'); return; }
+      runYouTubeDiscovery();
       return;
     }
     if (e.target.closest('#v2-custom-btn')) {
@@ -9178,42 +9335,17 @@ function init(){
   if (aScrapeBtn) aScrapeBtn.addEventListener('click', function(){
     scrapePublishedArticles('a-live-list', 'a-live-count');
   });
-  var aSeedBtn = document.getElementById('a-seed-btn');
-  if (aSeedBtn) aSeedBtn.addEventListener('click', seedSampleArticles);
+
 
   // Test save button — saves 1 row and reports exact result
-  var aTestSave = document.getElementById('a-test-save');
-  if (aTestSave) aTestSave.addEventListener('click', async function(){
-    aTestSave.textContent = 'Testing...';
-    aTestSave.disabled = true;
-    var testRow = { title: 'TEST - ' + new Date().toISOString(), url: 'https://fxify.com/blog/test-' + Date.now() + '/', scraped_at: new Date().toISOString() };
-    var res = await supa.from('published_articles').insert([testRow]);
-    aTestSave.textContent = '🧪 Test save';
-    aTestSave.disabled = false;
-    if (res.error) {
-      alert('SAVE FAILED:\n\nCode: ' + res.error.code + '\nMessage: ' + res.error.message + '\nDetails: ' + JSON.stringify(res.error.details));
-    } else {
-      alert('SAVE WORKED ✓\n\nRow saved to Supabase successfully.\nNow hit Refresh to scrape and save all articles.');
-    }
-  });
   var aSearch = document.getElementById('a-live-search');
   if (aSearch) aSearch.addEventListener('input', function(){
     if (publishedCache) renderPublishedArticles(publishedCache, 'a-live-list', 'a-live-count', aSearch.value);
   });
 
-  // Published articles — liam
-  var lScrapeBtn = document.getElementById('l-scrape-btn');
-  if (lScrapeBtn) lScrapeBtn.addEventListener('click', function(){
-    scrapePublishedArticles('l-live-list', null);
-  });
-  var lSearch = document.getElementById('l-search');
-  if (lSearch) lSearch.addEventListener('input', function(){
-    if (publishedCache) renderPublishedArticles(publishedCache, 'l-live-list', null, lSearch.value);
-  });
 
   // Liam topic submission
-  var ltSubmit = document.getElementById('lt-submit');
-  if (ltSubmit) ltSubmit.addEventListener('click', submitLiamTopic);
+
   // v2 Topic Intelligence Hub init
   v2WireCredentials();
   v2WireCustomBtn();
