@@ -5371,47 +5371,108 @@ async function runYouTubeDiscovery() {
     : 'Format: LONG FORM (5-15 minutes). Deep walkthrough. Tutorial style. Searchable title.';
 
   var prompt =
-    'You are a YouTube content strategist for FXIFY — a broker-backed prop trading firm. Today is ' + nowStr() + '.\n\n' +
-    'TONE: Straight-talking prop trader mentor. ESL Grade 5-6. Short punchy sentences. No hype. Sound like a knowledgeable friend, not a corporate marketer.\n\n' +
-    'BANNED TITLE WORDS: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Journey, Elevate, Transform, Revolutionize\n\n' +
-    'GOOD TITLE EXAMPLES: "FXIFY vs FTMO 2026: Which One Paid Me More?" | "I Blew 3 FXIFY Challenges — Here\'s Why" | "FXIFY One Phase Rules Explained in 5 Minutes"\n\n' +
-    'ALL DATES AND REFERENCES MUST BE 2026. Never suggest 2024 or 2025 content.\n\n' +
-    'SEED TOPIC: ' + topic + '\n' +
-    'VIDEO TYPE: ' + vidType + '\n' +
+    // ── STEP 1: FORCE processing of scraped data ──────────────────
+    'TASK: YouTube content gap analysis for FXIFY. Work through 3 strict steps.\n\n' +
+
+    'STEP 1 — READ THE SCRAPED DATA BELOW LINE BY LINE.\n' +
+    'For each signal source (competitor channels, Reddit, X), identify:\n' +
+    '  a) What topics are being covered heavily (oversaturated)\n' +
+    '  b) What questions keep appearing that nobody has answered well\n' +
+    '  c) What angles competitors take that FXIFY could directly counter\n' +
+    '  d) What trader frustrations come up repeatedly in Reddit/X\n' +
+    'Do NOT skip this step. Every topic in your output must trace back to something in the data below.\n\n' +
+
+    'STEP 2 — IDENTIFY REAL GAPS.\n' +
+    'A real gap is:\n' +
+    '- A question that appears 3+ times in Reddit/X with no satisfying answer\n' +
+    '- A video topic a competitor covered that got huge views but FXIFY has a better angle on\n' +
+    '- A comparison video (FXIFY vs X) that does not exist on YouTube yet\n' +
+    '- A trader pain point (failed challenge, drawdown confusion, payout issues) with no clear video tutorial\n\n' +
+
+    'STEP 3 — BUILD VIDEO IDEAS FROM GAPS ONLY.\n' +
+    'Every idea must cite the specific signal that justified it.\n' +
+    'No generic "prop trading tips" or "how to be a better trader" content.\n\n' +
+
+    // ── YOUTUBE-SPECIFIC RULES ────────────────────────────────────
+    'VIDEO TITLE RULES:\n' +
+    '- Click-worthy without being clickbait. States the value clearly.\n' +
+    '- First-person when appropriate: "I Blew 3 FXIFY Challenges Before I Figured This Out"\n' +
+    '- Controversy/comparison works: "FTMO Told Me This. FXIFY Proved Them Wrong."\n' +
+    '- Numbers work: "5 Reasons Traders Fail FXIFY Phase 1 (And How to Fix Them)"\n' +
+    '- Under 60 characters for mobile display\n' +
+    '- BANNED: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Journey, Elevate, Transform\n\n' +
+
+    'HOOK RULES (critical — this is what stops the scroll):\n' +
+    '- Must open with a trader\'s specific situation or a punchy claim\n' +
+    '- NOT: "In this video, I will explain..." or "Today we are talking about..."\n' +
+    '- YES: "I lost $3,400 on a prop challenge because I misread one rule." or "FTMO has 14-day payout cycles. FXIFY doesn\'t. Here\'s what that means for your account."\n' +
+    '- 2 sentences max. Creates tension or curiosity immediately.\n\n' +
+
     formatInstr + '\n\n' +
 
-    'FXIFY FACTS:\n' +
-    '- One Phase: no consistency rule, payout on demand\n' +
-    '- Instant Funding Lite: from $19 — lowest entry in category\n' +
-    '- Broker-backed via FXPIG (since 2010)\n' +
-    '- Performance split up to 90%, $40M+ paid out\n\n' +
+    // ── FXIFY ANGLES (must cite these specifically) ───────────────
+    'FXIFY FACTS — use exact numbers, do not vague-ify:\n' +
+    '- ONE PHASE: No consistency rule. Payout on demand. No 14-day cycle. Only firm with this.\n' +
+    '- TWO PHASE CLASSIC: Static drawdown, floor never moves. Better for swing/position traders.\n' +
+    '- TWO PHASE STANDARD: Trailing drawdown, floor rises with profit.\n' +
+    '- INSTANT FUNDING LITE: From $19. $2,500 funded account. Lowest entry in the market.\n' +
+    '- BROKER-BACKED: FXPIG since 2010. Regulated. Only prop firm with real broker behind it.\n' +
+    '- $40M+ paid out. 250K+ traders. Up to 90% performance split.\n\n' +
 
-    (kwBlock ? 'KEYWORD DATA (DataForSEO):\n' + kwBlock + '\n\n' : '') +
-    (ytBlock ? 'TOP YOUTUBE VIDEOS ON THIS TOPIC:\n' + ytBlock + '\n\n' : '') +
-    (xData ? 'X (TWITTER) SIGNALS — trader takes & viral angles:\n' + xData.substring(0,1500) + '\n\n' : '') +
-    (redditData ? 'REDDIT PAIN POINTS & QUESTIONS:\n' + redditData.substring(0,1500) + '\n\n' : '') +
-    (compData ? 'COMPETITOR YOUTUBE CHANNELS:\n' + compData.substring(0,2000) + '\n\n' : '') +
+    // ── SEED + DATA ───────────────────────────────────────────────
+    'SEED TOPIC: ' + topic + '\n' +
+    'VIDEO TYPE: ' + vidType + '\n' +
+    'TODAY: ' + nowStr() + '. All references must be current. No 2024/2025 content.\n\n' +
 
-    'SCORING CRITERIA (combined opportunity score 1-100):\n' +
-    '- Search demand (25%): YouTube keyword volume + autocomplete signals\n' +
-    '- Social momentum (25%): X virality, Reddit question frequency this week\n' +
-    '- Competitor gap (25%): what FTMO/FundedNext/Apex haven\'t covered or covered poorly\n' +
-    '- FXIFY angle (25%): how specifically FXIFY wins this topic with a verifiable fact\n\n' +
+    (kwBlock ?
+      '── YOUTUBE KEYWORD DATA (DataForSEO — use exact volumes) ──\n' + kwBlock + '\n\n'
+    : '') +
 
-    'Generate 8 ranked YouTube topics. Return ONLY valid JSON:\n' +
+    (ytBlock ?
+      '── TOP VIDEOS CURRENTLY RANKING ON THIS TOPIC ──\n' +
+      'These are what traders are watching. Identify what angle is missing or what could be done better.\n' +
+      ytBlock + '\n\n'
+    : '') +
+
+    (redditData ?
+      '── REDDIT — REAL TRADER QUESTIONS AND PAIN POINTS ──\n' +
+      'These are real questions from real traders. Each one is a potential video title.\n' +
+      'Look for questions that appear repeatedly or have high engagement but no good answer.\n' +
+      redditData.substring(0,2000) + '\n\n'
+    : '') +
+
+    (xData ?
+      '── X/TWITTER — TRADER TAKES AND VIRAL ANGLES ──\n' +
+      'These are real trader opinions circulating right now.\n' +
+      'Hot takes, complaints, and controversial opinions here = high-engagement video angles.\n' +
+      xData.substring(0,2000) + '\n\n'
+    : '') +
+
+    (compData ?
+      '── COMPETITOR YOUTUBE CHANNELS — READ EVERY TITLE ──\n' +
+      'These are the actual videos your competitors have published.\n' +
+      'Identify: what they cover obsessively, what they never touch, what they get wrong.\n' +
+      'Every gap you find here is a video FXIFY should make.\n\n' +
+      compData.substring(0,3000) + '\n\n'
+    : '⚠ No competitor YouTube data scraped — base gaps on Reddit/X signals and keyword data only.\n\n') +
+
+    // ── OUTPUT ────────────────────────────────────────────────────
+    'Generate 8 YouTube video ideas ranked by opportunity score.\n' +
+    'CRITICAL: Every idea must cite which signal justified it (Reddit question / competitor gap / X trend / keyword).\n' +
+    'Return ONLY valid JSON — no markdown, no preamble:\n' +
     '{"topics":[{' +
-    '"title":"Exact YouTube title under 60 chars — keyword first, click-worthy",' +
+    '"title":"Click-worthy YouTube title under 60 chars",' +
     '"score":85,' +
-    '"keyword":"primary search phrase",' +
-    '"yt_volume":"number or TBC",' +
-    '"reddit_signals":"number of Reddit questions found or None",' +
-    '"x_momentum":"Hot|Rising|Steady|None",' +
-    '"competitor_gap":"What FTMO/FundedNext/Apex miss or got wrong on this",' +
-    '"fxify_angle":"Specific FXIFY program or fact that wins this",' +
-    '"hook":"First 2 sentences of the video script — trader situation, not an intro",' +
-    '"why_now":"One sentence: why this week specifically",' +
-    '"thumbnail":"Thumbnail concept in 10 words",' +
-    '"video_type":"Tutorial|Explainer|Comparison|News|Opinion",' +
+    '"keyword":"primary search term from keyword data",' +
+    '"yt_volume":"number from DataForSEO or TBC",' +
+    '"signal_source":"Reddit: [question text] | X: [take] | Competitor: [channel - video title] | Keyword: [term]",' +
+    '"competitor_gap":"[Channel] posted [title] but never addressed [specific angle]. Views: [X]. FXIFY wins because [specific fact].",' +
+    '"fxify_angle":"[Exact FXIFY product] + [verifiable number]. One sentence. Specific.",' +
+    '"hook":"2 sentences. Opens with trader situation or punchy claim. No intro phrases.",' +
+    '"why_now":"Specific event or signal from the data above — not a generic statement.",' +
+    '"thumbnail":"[Emotion/reaction] face + [text overlay in 4 words] + [visual element]",' +
+    '"video_type":"Tutorial|Comparison|Reaction|Walkthrough|Opinion|News",' +
+    '"format":"Short (<60s)|Long (5-15min)",' +
     '"priority":"High|Normal|Low"' +
     '}]}';
 
@@ -5494,11 +5555,17 @@ function renderYouTubeDiscovery(topics, signals) {
           '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">' +
             '<span class="mkw">' + (t.keyword||'') + '</span>' +
             '<span class="badge bl">📊 ' + (t.yt_volume||'TBC') + ' searches</span>' +
+            (t.format ? '<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(29,155,240,0.12);color:var(--blue);font-family:var(--mono);">' + t.format + '</span>' : '') +
             '<span class="badge" style="background:rgba(0,0,0,.04);color:'+xc+';">X: ' + (t.x_momentum||'—') + '</span>' +
             (t.reddit_signals && t.reddit_signals !== 'None' ? '<span class="badge" style="background:var(--highL);color:var(--high);">Reddit: ' + t.reddit_signals + '</span>' : '') +
             '<span class="badge" style="color:'+pc+';background:var(--bg2);">' + (t.priority||'Normal') + '</span>' +
             '<span class="badge bl">' + (t.video_type||'Tutorial') + '</span>' +
           '</div>' +
+          // Signal source — shows EXACTLY what data justified this idea
+          (t.signal_source ? '<div style="background:var(--bg3);border-radius:4px;padding:6px 10px;margin-bottom:8px;border-left:2px solid var(--text3);">' +
+            '<p style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:2px;font-family:var(--mono);">Signal source</p>' +
+            '<p style="font-size:11px;color:var(--text2);line-height:1.4;">' + t.signal_source + '</p>' +
+          '</div>' : '') +
 
           // Hook
           '<div style="background:var(--tealL);border-left:3px solid var(--teal);border-radius:0 6px 6px 0;padding:10px 12px;margin-bottom:8px;">' +
@@ -7697,66 +7764,104 @@ async function runTopicIdeas() {
   var acBlock = autocomplete.length ? autocomplete.join(' | ') : '';
 
   var prompt =
-    (feedbackRules ? 'REVIEWER FEEDBACK RULES (apply to all content suggestions):\n' + feedbackRules + '\n\n' : '') +
-    'You are the content strategist for FXIFY, a prop trading firm backed by FXPIG. Today is ' + nowStr() + '. The prop trading space is moving fast — FTMO changed payout rules in early 2026, the FIFA World Cup is happening in ' + nowStr() + ' (traders are watching markets), US election cycle is affecting forex volatility. These are your content signals.\n\n' +
-    'TONE — FXIFY writes like a straight-talking trading mentor. Not a corporate blog, not hype. Short sentences. Direct. Trader-first. ESL Grade 5-6 (readers are global traders, not native English academics). When in doubt, write how a trader would say it in a WhatsApp message.\n\n' +
-    'BANNED WORDS IN TITLES (instant reject):\n' +
-    'Mastering, Ultimate Guide, Deep Dive, Unlocking, Comprehensive, Navigating, Elevate, Transform, Powerful, Journey, Landscape, Robust, Seamlessly, Synergy, Leverage (as a metaphor), Revolutionize, Game-changer\n\n' +
-    'USE THESE CONTENT STRATEGIES — one per topic:\n' +
-    '- TRANSACTIONAL: "FXIFY discount code ' + nowStr() + '", "FXIFY $50k challenge cost", "FXIFY promo code"\n' +
-    '- COMPARISON: "FXIFY vs FTMO 2026", "FXIFY One Phase vs Two Phase", "FXIFY vs Topstep futures"\n' +
-    '- REVIEW: "FXIFY review 2026", "is FXIFY legit", "FXIFY payout proof ' + nowStr() + '"\n' +
-    '- PROBLEM/SOLUTION: "why did I fail FXIFY", "FXIFY daily drawdown reset time", "FXIFY weekend positions"\n' +
-    '- HOW-TO: "how to pass FXIFY One Phase", "how to withdraw from FXIFY", "how to set stop loss on FXIFY"\n' +
-    '- DATA/STATS: "FXIFY payout stats 2026", "FXIFY pass rate", "best prop firm payout speed 2026"\n' +
-    '- VERSUS: "prop firm instant funding vs challenge 2026", "FXIFY FXPIG vs other brokers"\n' +
-    '- NEWS/TIMELY: "FXIFY World Cup challenge 2026", "prop firm rule changes 2026", "FTMO vs FXIFY new rules"\n\n' +
-    'TITLE RULES:\n' +
-    '1. Year must be 2026 if included — never 2024 or 2025\n' +
-    '2. Keyword-first — the search term comes before any punctuation\n' +
-    '3. Sounds like a Google search, not a blog post headline\n' +
-    '4. Max 65 characters including spaces\n' +
-    'GOOD: "FXIFY vs FTMO 2026: Which One Actually Pays?" | "How to Pass FXIFY One Phase (No Consistency Rule)" | "FXIFY Drawdown Rules Explained Simply"\n' +
-    'BAD: "Why FXIFY Is Revolutionizing the Prop Trading Landscape" | "Mastering Your Journey to Funded Trading"\n\n' +
-    'why_now FIELD: Must be a specific, real trigger in 2026. Not vague statements.\n' +
-    'GOOD: "FTMO changed payout policy Feb 2026 — traders comparing alternatives" | "FIFA World Cup ' + nowStr() + ' — forex volatility content spike" | "US Fed rate decision Q2 2026 — traders searching drawdown strategies"\n' +
-    'BAD: "traders are always interested" | "growing interest in prop firms" | "relevant to current market"\n\n' +
-    'SEED KEYWORD: '+seed+'\n' +
-    'CATEGORY: '+cat+'\n\n' +
-    (kwBlock ? 'KEYWORD DATA (DataForSEO — cite these exact numbers in your output):\n'+kwBlock+'\n\n' : '') +
-    (acBlock ? 'GOOGLE AUTOCOMPLETE SIGNALS:\n'+acBlock+'\n\n' : '') +
-    (compBlock ? 'COMPETITOR ARTICLES WITH URLS (identify exact gaps):\n'+compBlock+'\n\n' : '') +
-    (fxifyBlock ? 'FXIFY ALREADY PUBLISHED — DO NOT REPEAT ANY OF THESE:\n'+fxifyBlock+'\n\n' : '') +
-    'FXIFY VERIFIED FACTS (use exact numbers — no vague claims):\n' +
-    '- ONE PHASE: No consistency rule. Payout on demand. No payout cycle. Only firm in category.\n' +
-    '- TWO PHASE STANDARD: Trailing drawdown. Floor rises as you profit.\n' +
-    '- TWO PHASE CLASSIC: Static drawdown. Floor stays fixed. Better for swing traders.\n' +
-    '- INSTANT FUNDING LITE: From $19 for $2,500 account. Lowest entry point in the market.\n' +
-    '- BROKER-BACKED: Parent FXPIG (operating since 2010). Only prop firm with real broker backing.\n' +
+    (feedbackRules ? 'REVIEWER FEEDBACK (enforce in every topic):\n' + feedbackRules + '\n\n' : '') +
+
+    // ── STEP 1: FORCE Claude to process scraped data FIRST ──────────
+    'TASK: You are doing competitive content gap analysis for FXIFY. Work through this in 3 strict steps.\n\n' +
+
+    'STEP 1 — READ THE COMPETITOR ARTICLES BELOW.\n' +
+    'For each competitor domain, identify:\n' +
+    '  a) What topics they cover most (their content pillars)\n' +
+    '  b) What angle they use (educational? review? how-to?)\n' +
+    '  c) What they NEVER cover or cover badly (the gap)\n' +
+    'Do this for every domain in the scraped data. Do not skip any.\n\n' +
+
+    'STEP 2 — CROSS-REFERENCE WITH FXIFY PUBLISHED LIST.\n' +
+    'Remove any topic FXIFY already covers. Only surface genuine gaps.\n\n' +
+
+    'STEP 3 — BUILD TOPICS FROM THE GAPS.\n' +
+    'Every topic must come directly from a gap you identified in Step 1.\n' +
+    'NO topic can be invented from general knowledge.\n' +
+    'Every topic needs a specific competitor URL that proves the gap exists.\n\n' +
+
+    // ── CONVERSION FOCUS ────────────────────────────────────────────
+    'CONVERSION PRIORITY — rank topics by commercial value:\n' +
+    '1. HIGH-INTENT TRANSACTIONAL: "FXIFY vs [competitor]", "[competitor] alternative", "best prop firm [year]"\n' +
+    '   → These convert. Someone comparing is ready to buy.\n' +
+    '2. PROBLEM/SOLUTION: "why did I fail [firm]", "how to not blow [challenge]", "[firm] drawdown calculator"\n' +
+    '   → Captures traders mid-frustration — high switch intent.\n' +
+    '3. REVIEW + PROOF: "is [firm] legit", "[firm] payout proof", "[firm] review [year]"\n' +
+    '   → Late funnel. They want validation before buying.\n' +
+    '4. HOW-TO: "how to pass [firm] challenge", "how to withdraw from [firm]"\n' +
+    '   → Useful + builds trust. Mid-funnel.\n' +
+    '5. INFORMATIONAL: general education, trading tips\n' +
+    '   → Lowest conversion. Use sparingly.\n\n' +
+
+    // ── FXIFY CONTEXT ────────────────────────────────────────────────
+    'FXIFY FACTS (cite these specifically in fxify_angle — no vague claims):\n' +
+    '- ONE PHASE: No consistency rule. Instant payout on demand. No payout cycle. Only firm in category.\n' +
+    '- TWO PHASE CLASSIC: Static 10% max drawdown. Floor never moves. Better for swing traders.\n' +
+    '- TWO PHASE STANDARD: Trailing drawdown — floor rises with profit.\n' +
+    '- INSTANT FUNDING LITE: From $19 for $2,500 funded. Lowest entry in the market.\n' +
+    '- BROKER-BACKED: FXPIG since 2010. Only prop firm with real regulated broker behind it.\n' +
     '- PAYOUTS: $40M+ paid. 250K+ traders. Up to 90% performance split.\n' +
-    '- DRAWDOWN: 5% daily, 10% max. No payout cycle vs FTMO 14-day cycle.\n\n' +
-    'REQUIREMENTS — each topic must pass all 4:\n' +
-    '1. NOT in the FXIFY published list\n' +
-    '2. competitor_gap cites the competitor firm by name + their article URL from the scraped data\n' +
-    '3. fxify_angle names ONE exact program + ONE verifiable claim with a number\n' +
-    '4. search_volume uses the DataForSEO figure if available\n\n' +
-    'Return ONLY valid JSON:\n' +
+    '- DRAWDOWN: 5% daily, 10% max. FTMO has 14-day payout cycle — FXIFY does not.\n\n' +
+
+    // ── TONE ────────────────────────────────────────────────────────
+    'TITLE RULES:\n' +
+    '- Keyword-first. Search term before any colon or punctuation.\n' +
+    '- Sounds like a real Google search, not a blog headline.\n' +
+    '- ESL Grade 5-6. Short. Direct. No fluff.\n' +
+    '- Max 65 characters.\n' +
+    '- Year = ' + nowStr() + ' if year is included.\n\n' +
+    'BANNED TITLE WORDS (auto-reject): Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, ' +
+    'Navigating, Elevate, Transform, Powerful, Journey, Landscape, Robust, Seamlessly, Revolutionize\n\n' +
+    'GOOD TITLES: "FXIFY vs FTMO ' + nowStr() + ': Which One Pays Faster?" | "FXIFY One Phase Review: No Consistency Rule Explained" | "How to Pass FXIFY Two Phase in 14 Days"\n' +
+    'BAD TITLES: "Mastering the Art of Prop Trading" | "Unlocking Your Trading Potential with FXIFY"\n\n' +
+
+    // ── DATA ────────────────────────────────────────────────────────
+    'SEED KEYWORD: ' + seed + '\n' +
+    'CATEGORY: ' + cat + '\n\n' +
+
+    (kwBlock ? '── DATAFORSEO KEYWORD DATA (use these exact numbers in your output — do not invent) ──\n' + kwBlock + '\n\n' : '') +
+    (acBlock ? '── GOOGLE AUTOCOMPLETE (real searches happening right now) ──\n' + acBlock + '\n\n' : '') +
+
+    (compBlock ?
+      '── SCRAPED COMPETITOR ARTICLES (work from THIS data — do not invent gaps) ──\n' +
+      'These are the actual titles competitors published. Read them carefully.\n' +
+      'Your gaps must reference specific articles from this list.\n\n' +
+      compBlock + '\n\n'
+    : '⚠ No competitor data scraped — Firecrawl may be unavailable. Generate from keyword data only.\n\n') +
+
+    (fxifyBlock ?
+      '── FXIFY ALREADY PUBLISHED (exclude these completely) ──\n' +
+      fxifyBlock + '\n\n'
+    : '') +
+
+    // ── OUTPUT FORMAT ────────────────────────────────────────────────
+    'Return ONLY valid JSON. No markdown. No preamble. No explanation outside the JSON.\n\n' +
+    'CRITICAL RULES FOR EACH TOPIC:\n' +
+    '- competitor_gap MUST cite a real competitor name + article title from the scraped data above\n' +
+    '- competitor_gap format: "[Firm] published \'[exact title]\' but never addresses [specific gap]. FXIFY can own [angle]."\n' +
+    '- fxify_angle MUST name one specific FXIFY product + one verifiable number\n' +
+    '- why_now MUST be a specific 2026 event or market trigger — not "growing interest"\n' +
+    '- opportunity_score: 90+ = high-intent commercial topic, 70-89 = solid SEO play, <70 = informational only\n\n' +
     '{"topics":[{' +
-    '"title":"Keyword-first H1 under 65 chars",' +
-    '"primary_keyword":"exact phrase from keyword data",' +
-    '"secondary_keywords":["kw2","kw3"],' +
+    '"title":"Keyword-first, under 65 chars",' +
+    '"primary_keyword":"exact phrase matching DataForSEO data",' +
+    '"secondary_keywords":["kw2","kw3","kw4"],' +
     '"search_volume":"number from DataForSEO or TBC",' +
     '"kd_score":"0-100 or TBC",' +
     '"cpc":"$X.XX or TBC",' +
     '"competition_level":"Low|Medium|High",' +
-    '"category":"Guides",' +
-    '"content_strategy":"TRANSACTIONAL|INFORMATIONAL|COMPARISON|REVIEW|PROBLEM_SOLUTION|HOW_TO|DATA_STATS|VERSUS",' +
+    '"category":"Guides|Strategies|Comparisons|Reviews",' +
+    '"content_strategy":"TRANSACTIONAL|COMPARISON|REVIEW|PROBLEM_SOLUTION|HOW_TO|DATA_STATS|VERSUS|NEWS",' +
     '"search_intent":"Informational|Commercial|Transactional",' +
-    '"word_count":"1200",' +
-    '"competitor_gap":"[FirmName] covers [topic] at [URL] but misses [specific angle]. Gap: [exact weakness].",' +
-    '"competitor_urls":["https://exact-url-from-scraped-data.com/article"],' +
-    '"fxify_angle":"[Exact program name] wins because [specific verifiable claim with number]",' +
-    '"why_now":"[Specific 2026 trigger — not generic]",' +
+    '"word_count":"800-1500 based on intent",' +
+    '"competitor_gap":"[Firm] published \'[exact scraped title]\' but never addresses [gap]. URL: [exact url].",' +
+    '"competitor_urls":["https://exact-url-from-scraped-data"],' +
+    '"fxify_angle":"[Exact product] wins because [specific fact with number from FXIFY facts above]",' +
+    '"why_now":"[Specific 2026 trigger — real event, not vague]",' +
     '"opportunity_score":85,' +
     '"priority":"High|Normal|Low"' +
     '}]}';
