@@ -712,6 +712,18 @@ select.finput option{background:var(--bg2);color:var(--text);}
                   <option>Platform Tutorials</option>
                 </select>
               </div>
+              <div>
+                <label class="flbl">Competitor focus</label>
+                <select class="finput" id="v2-comp-focus">
+                  <option value="all">All 6 competitors</option>
+                  <option value="ftmo">FTMO only</option>
+                  <option value="fundednext">FundedNext only</option>
+                  <option value="apex">Apex only</option>
+                  <option value="topstep">Topstep only</option>
+                  <option value="the5ers">The5ers only</option>
+                  <option value="e8">E8 Funding only</option>
+                </select>
+              </div>
             </div>
             <div style="margin-bottom:14px;">
               <p class="flbl" style="margin-bottom:8px;">Research signals</p>
@@ -7498,7 +7510,14 @@ var V2_CONFIG = {
   dfsLogin:  'sheperd.morena@fxify.com',
   dfsPass:   '953542a6e47cca32',
   competitors: {
-    all:        ['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://apextraderfunding.com/blog/'],
+    all:        [
+      'https://ftmo.com/en/blog/',
+      'https://fundednext.com/blog/',
+      'https://apextraderfunding.com/blog/',
+      'https://www.topstep.com/blog/',
+      'https://the5ers.com/blog/',
+      'https://e8funding.com/blog/'
+    ],
     ftmo:       ['https://ftmo.com/en/blog/'],
     fundednext: ['https://fundednext.com/blog/'],
     apex:       ['https://apextraderfunding.com/blog/']
@@ -7639,48 +7658,80 @@ async function dfsAutocomplete(kw) {
 async function v2ScrapeCompetitors(compKey) {
   var urls = V2_CONFIG.competitors[compKey || 'all'] || V2_CONFIG.competitors.all;
   var results = [];
+
   for (var i = 0; i < urls.length; i++) {
+    var blogUrl = urls[i];
+    var domain  = blogUrl.replace(/https?:\/\//, '').split('/')[0];
     try {
+      // Step 1: scrape the blog index to get article links
       var r = await fetch('https://api.firecrawl.dev/v1/scrape', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-        body: JSON.stringify({ url: urls[i], formats: ['markdown'], onlyMainContent: true })
+        body: JSON.stringify({ url: blogUrl, formats: ['markdown'], onlyMainContent: true })
       });
       var d = await r.json();
-      if (d.success && d.data && d.data.markdown) {
-        var md = d.data.markdown;
-        var articles = [];
-        var linkRe = /\[([^\]]{15,120})\]\((https?:\/\/[^)]+)\)/g;
-        var match;
-        while ((match = linkRe.exec(md)) !== null && articles.length < 40) {
-          var title = match[1].trim();
-          var url   = match[2].trim();
-          if (url.includes('/category/') || url.includes('/page/') || url.includes('/tag/')) continue;
-          if (title.length < 12 || title.match(/^(Read More|Blog|Home|About|Contact|Subscribe)/i)) continue;
-          articles.push({ title: title, url: url });
-        }
-        var headRe = /^#{1,2}\s+(.{12,100})$/gm;
-        while ((match = headRe.exec(md)) !== null && articles.length < 50) {
-          var t = match[1].replace(/\[|\]|\(.*?\)/g, '').trim();
-          if (t.length > 12 && !articles.find(function(a){ return a.title === t; })) {
-            articles.push({ title: t, url: null });
-          }
-        }
-        if (articles.length) {
-          results.push({
-            source: urls[i],
-            domain: urls[i].replace(/https?:\/\//, '').split('/')[0],
-            articles: articles
-          });
-        }
+      if (!d.success || !d.data || !d.data.markdown) continue;
+
+      var md = d.data.markdown;
+
+      // Extract article links from index
+      var articleLinks = [];
+      var linkRe = /\[([^\]]{15,120})\]\((https?:\/\/[^)]+)\)/g;
+      var match;
+      while ((match = linkRe.exec(md)) !== null && articleLinks.length < 8) {
+        var title = match[1].trim();
+        var url   = match[2].trim();
+        if (url.includes('/category/') || url.includes('/page/') || url.includes('/tag/') ||
+            url.includes('/author/') || url.includes('#') || url === blogUrl) continue;
+        if (title.length < 12 || title.match(/^(Read More|Blog|Home|About|Contact|Subscribe|Menu)/i)) continue;
+        // Must be on the same domain
+        if (!url.includes(domain)) continue;
+        articleLinks.push({ title: title, url: url });
       }
-    } catch(e) { console.warn('Scrape failed:', urls[i]); }
+
+      // Step 2: scrape 3 actual articles for real content
+      var articles = [];
+      var toScrape = articleLinks.slice(0, 3);
+
+      for (var j = 0; j < toScrape.length; j++) {
+        try {
+          var ar = await fetch('https://api.firecrawl.dev/v1/scrape', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
+            body: JSON.stringify({ url: toScrape[j].url, formats: ['markdown'], onlyMainContent: true })
+          });
+          var ad = await ar.json();
+          if (ad.success && ad.data && ad.data.markdown) {
+            var content = ad.data.markdown.substring(0, 1200);
+            articles.push({
+              title:   toScrape[j].title,
+              url:     toScrape[j].url,
+              content: content,
+              // Extract H2s as topic coverage signals
+              subtopics: (content.match(/^##\s+(.+)$/mg) || []).map(function(h2){ return h2.replace(/^##\s+/, '').trim(); }).slice(0, 6)
+            });
+          }
+        } catch(e) { /* skip failed article */ }
+      }
+
+      // Also add remaining index titles (without content) for coverage mapping
+      var indexOnly = articleLinks.slice(3, 20).map(function(a){ return { title: a.title, url: a.url, content: null }; });
+
+      if (articles.length || indexOnly.length) {
+        results.push({
+          source:      blogUrl,
+          domain:      domain,
+          articles:    articles.concat(indexOnly),
+          fullArticles: articles.length
+        });
+      }
+
+    } catch(e) { console.warn('Scrape failed:', blogUrl, e.message); }
   }
   return results;
 }
 
 
-// Load FXIFY published articles from Supabase (already in pipeline)
 async function v2LoadFxifyPublished() {
   try {
     var res = await supa.from('published_articles').select('title,url').order('scraped_at', { ascending: false });
@@ -7744,10 +7795,19 @@ async function runTopicIdeas() {
   window._v2KwData   = kwData;
   var compBlock = compData.map(function(c) {
     var arts = c.articles || [];
-    var lines = arts.slice(0,25).map(function(a){
-      return '- ' + a.title + (a.url ? ' [' + a.url + ']' : '');
+    var lines = arts.slice(0, 20).map(function(a) {
+      var line = '- ' + a.title + (a.url ? ' [' + a.url + ']' : '');
+      if (a.subtopics && a.subtopics.length) {
+        line += '\n  Covers: ' + a.subtopics.join(' | ');
+      }
+      if (a.content) {
+        // First 200 chars of content as a signal of their angle
+        var snippet = a.content.substring(0, 400).replace(/\s+/g, ' ').trim().substring(0, 200);
+        line += '\n  Angle: ' + snippet;
+      }
+      return line;
     });
-    return 'SOURCE: ' + (c.domain || c.source) + '\n' + lines.join('\n');
+    return '=== ' + (c.domain || c.source) + ' (' + (c.fullArticles||0) + ' articles fully scraped) ===\n' + lines.join('\n');
   }).join('\n\n');
 
   var fxifyBlock = fxifyArticles.slice(0,40).map(function(a){ return a.title; }).join(' | ');
