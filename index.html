@@ -7047,107 +7047,70 @@ function renderCompetitorIntelligence(data) {
 
 async function runFullCompetitorAnalysis() {
   var btn = document.getElementById('comp-run-btn');
-  if (btn) { btn.textContent = 'Researching (20-30s)...'; btn.disabled = true; }
+  if (btn) { btn.textContent = 'Analysing...'; btn.disabled = true; }
 
   var FIRMS = ['FTMO','FundedNext','Apex Trader Funding','Topstep','The5ers','E8 Funding'];
 
-  // Helper with timeout
-  async function withTimeout(promise, ms) {
-    var timer;
-    var timeout = new Promise(function(_, reject){
-      timer = setTimeout(function(){ reject(new Error('timeout')); }, ms);
+  try {
+    // Single comprehensive call — Claude knows these firms from training data
+    var prompt =
+      'You are a content strategist analysing prop firm competitors for FXIFY in June 2026.\n\n' +
+      'FXIFY unique advantages:\n' +
+      '- ONE PHASE: No consistency rule. Payout on demand. Static drawdown.\n' +
+      '- INSTANT FUNDING LITE: $19. Lowest entry price in market.\n' +
+      '- BROKER-BACKED: FXPIG regulated since 2010.\n' +
+      '- $40M+ paid out. 250,000+ traders. Up to 90% performance split.\n\n' +
+      'For each competitor (' + FIRMS.join(', ') + '), analyse:\n' +
+      '1. Their top 5 content topics\n' +
+      '2. Keywords they rank for\n' +
+      '3. Topics they NEVER cover that FXIFY could own\n' +
+      '4. Their publishing frequency and content angle\n\n' +
+      'Then identify:\n' +
+      '- Top 5 keyword gaps (searches where competitors rank but FXIFY does not)\n' +
+      '- Top 5 strategic opportunities for FXIFY content\n\n' +
+      'Return ONLY valid JSON no markdown:\n' +
+      '{"firms":[{"firm":"FTMO","top_topics":["t1","t2","t3"],"keywords_they_own":["kw1","kw2"],"content_gaps":["gap1","gap2","gap3"],"content_angle":"one sentence","publish_frequency":"X/month","traffic_est":"high"}],' +
+      '"keyword_gaps":[{"keyword":"search term","monthly_vol":"1000","kd":"20","intent":"Commercial","competitors_ranking":["FTMO"],"fxify_angle":"how FXIFY wins this","priority":"High"}],' +
+      '"opportunities":[{"title":"opportunity","why":"why this is urgent now","action":"specific piece to create","priority":"High"}]}';
+
+    var result = await v2Fetch(prompt, 3000);
+    var data   = JSON.parse(result.replace(/```json|```/g, '').trim());
+
+    var firmData = (data.firms || []).map(function(f) {
+      return {
+        domain: f.firm, source: f.firm,
+        articles: (f.top_topics || []).map(function(t) { return { title: t, url: '', subtopics: [], content: null }; }),
+        fullArticles: (f.top_topics || []).length,
+        missing: f.content_gaps || [],
+        content_angle: f.content_angle || '',
+        publish_frequency: f.publish_frequency || '',
+        traffic_est: f.traffic_est || 'unknown'
+      };
     });
-    return Promise.race([promise, timeout]).finally(function(){ clearTimeout(timer); });
+
+    var kwGaps = data.keyword_gaps || [];
+    var opps   = data.opportunities || [];
+
+    _compData = {
+      firms: firmData,
+      kwGaps: kwGaps,
+      recentMoves: [],
+      synthesis: { top_opportunities: opps }
+    };
+    renderCompetitorIntelligence(_compData);
+
+  } catch(e) {
+    toast('Analysis error: ' + e.message);
+    console.error('Competitor analysis error:', e);
+    var oppOut = document.getElementById('comp-tab-opportunities');
+    if (oppOut) oppOut.innerHTML = '<p style="color:var(--urgent);padding:16px;">Error: ' + e.message + '. Check console for details.</p>';
+    var det = document.getElementById('comp-detail');
+    if (det) det.style.display = 'block';
   }
 
-  // Research firms in parallel — 12s timeout each
-  var firmPromises = FIRMS.map(function(firm) {
-    return withTimeout(
-      fetch(V2_CONFIG.webhook, {
-        method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          max_tokens: 600, web_search: true,
-          prompt: 'Research ' + firm + ' prop firm content June 2026. Search their blog and YouTube. ' +
-            'Return ONLY valid JSON no markdown: {"firm":"' + firm + '",' +
-            '"top_topics":["t1","t2","t3","t4","t5"],' +
-            '"keywords_they_own":["kw1","kw2","kw3"],' +
-            '"content_gaps":["gap1","gap2","gap3"],' +
-            '"publish_frequency":"X per month",' +
-            '"content_angle":"one sentence on their strategy",' +
-            '"traffic_est":"high|medium|low"}'
-        })
-      }).then(function(r){ return r.json(); }).then(function(d){
-        var t = d.text || (d.content && d.content[0] && d.content[0].text) || '';
-        return JSON.parse(t.replace(/```json|```/g,'').trim());
-      }),
-      12000
-    ).catch(function(){ return { firm: firm, top_topics:[], content_gaps:[], keywords_they_own:[], publish_frequency:'?', content_angle:'Research timed out', traffic_est:'unknown' }; });
-  });
-
-  // Keyword gaps — parallel with firm research
-  var kwPromise = withTimeout(
-    fetch(V2_CONFIG.webhook, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        max_tokens: 800, web_search: true,
-        prompt: 'Find prop firm keywords June 2026 where FTMO, FundedNext or Apex rank but FXIFY does not appear in top results. ' +
-          'Focus on Commercial and Transactional intent: comparison, review, vs, best, instant funding, payout. ' +
-          'Return ONLY valid JSON no markdown: {"gaps":[{"keyword":"term","monthly_vol":"number","kd":"0-100","intent":"Commercial|Transactional|Informational","competitors_ranking":["firm"],"fxify_angle":"how FXIFY wins this","priority":"High|Medium|Low"}]}'
-      })
-    }).then(function(r){ return r.json(); }).then(function(d){
-      var t = d.text || (d.content && d.content[0] && d.content[0].text) || '';
-      var p = JSON.parse(t.replace(/```json|```/g,'').trim());
-      return p.gaps || [];
-    }),
-    15000
-  ).catch(function(){ return []; });
-
-  // Recent moves — parallel
-  var movesPromise = withTimeout(
-    fetch(V2_CONFIG.webhook, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        max_tokens: 500, web_search: true,
-        prompt: 'What have FTMO, FundedNext, Apex, Topstep, The5ers published on their blogs or YouTube in June 2026? ' +
-          'Return ONLY valid JSON no markdown: {"moves":[{"firm":"name","title":"exact title","type":"Blog|YouTube","topic_area":"3 words","significance":"why this matters for FXIFY in one sentence"}]}'
-      })
-    }).then(function(r){ return r.json(); }).then(function(d){
-      var t = d.text || (d.content && d.content[0] && d.content[0].text) || '';
-      var p = JSON.parse(t.replace(/```json|```/g,'').trim());
-      return p.moves || [];
-    }),
-    12000
-  ).catch(function(){ return []; });
-
-  // Run all in parallel
-  var [firmResults, kwGaps, moves] = await Promise.all([
-    Promise.all(firmPromises),
-    kwPromise,
-    movesPromise
-  ]);
-
-  // Synthesis from firm data
-  var synthesis = {};
-  if (firmResults.length) {
-    try {
-      var summary = firmResults.map(function(f){
-        return (f.firm||'?') + ': gaps = ' + (f.content_gaps||[]).join(', ');
-      }).join('\n');
-      var synthText = await v2Fetch(
-        'Content strategist for FXIFY. Competitor gaps found:\n\n' + summary + '\n\n' +
-        'FXIFY advantages: $19 Instant Funding, One Phase no consistency rule, broker-backed FXPIG 2010, on-demand payouts, $40M+ paid.\n\n' +
-        'Identify 5 top strategic content opportunities. Return ONLY valid JSON no markdown: ' +
-        '{"top_opportunities":[{"title":"opportunity title","why":"why urgent for FXIFY now","action":"specific piece to create","priority":"High|Medium"}]}',
-        1000
-      );
-      synthesis = JSON.parse(synthText.replace(/```json|```/g,'').trim());
-    } catch(e) { console.warn('Synthesis failed:', e.message); }
-  }
-
-  _compData = { firms: firmResults, kwGaps: kwGaps, recentMoves: moves, synthesis: synthesis };
-  renderCompetitorIntelligence(_compData);
   if (btn) { btn.textContent = '⚡ Run analysis'; btn.disabled = false; }
 }
+
 
 
 
@@ -7701,76 +7664,65 @@ async function dfsAutocomplete(kw) {
 async function v2ScrapeCompetitors(compKey) {
   var competitorMap = {
     all:       ['FTMO','FundedNext','Apex Trader Funding','Topstep','The5ers','E8 Funding'],
-    ftmo:      ['FTMO'],
-    fundednext:['FundedNext'],
-    apex:      ['Apex Trader Funding'],
-    topstep:   ['Topstep'],
-    the5ers:   ['The5ers'],
-    e8:        ['E8 Funding'],
+    ftmo:      ['FTMO'], fundednext:['FundedNext'], apex:['Apex Trader Funding'],
+    topstep:   ['Topstep'], the5ers:['The5ers'], e8:['E8 Funding'],
   };
   var firms = competitorMap[compKey || 'all'] || competitorMap.all;
 
-  // Helper: single firm research with 12s timeout
-  async function researchFirm(firm) {
-    var controller = new AbortController();
-    var timer = setTimeout(function(){ controller.abort(); }, 12000);
-    try {
-      var resp = await fetch(V2_CONFIG.webhook, {
-        method: 'POST',
-        signal: controller.signal,
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          max_tokens: 600,
-          web_search: true,
-          prompt:
-            'Research ' + firm + ' prop firm blog and content June 2026. ' +
-            'What topics do they publish most? What keywords do they target? What content gaps exist? ' +
-            'Return ONLY valid JSON no markdown: {"firm":"' + firm + '",' +
-            '"top_topics":["topic1","topic2","topic3","topic4","topic5"],' +
-            '"keywords_they_own":["kw1","kw2","kw3"],' +
-            '"content_gaps":["gap they never cover 1","gap 2","gap 3"],' +
-            '"publish_frequency":"X per month",' +
-            '"content_angle":"one sentence",' +
-            '"traffic_est":"high|medium|low"}'
-        })
-      });
-      clearTimeout(timer);
-      var d = await resp.json();
-      var t = d.text || (d.content && d.content[0] && d.content[0].text) || '';
-      var clean = t.replace(/```json|```/g, '').trim();
-      var parsed = JSON.parse(clean);
-      // Format as articles array for compBlock builder
-      var articles = (parsed.top_topics || []).map(function(topic, i) {
+  // Single batched call — ask Claude about ALL firms at once (no web search needed,
+  // Claude knows these firms well from training data)
+  try {
+    var resp = await fetch(V2_CONFIG.webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        max_tokens: 2000,
+        prompt:
+          'You are a content strategist. Based on your knowledge of prop trading firms, ' +
+          'describe the content strategy of each of these firms: ' + firms.join(', ') + '.\n\n' +
+          'For EACH firm return what topics they publish, what keywords they target, ' +
+          'and critically — what topics they NEVER cover or cover badly that FXIFY could own.\n\n' +
+          'FXIFY advantages to consider for gaps: $19 Instant Funding (cheapest in market), ' +
+          'One Phase no consistency rule, broker-backed via FXPIG since 2010, on-demand payouts, $40M+ paid.\n\n' +
+          'Return ONLY valid JSON, no markdown:\n' +
+          '{"competitors":[{"firm":"FTMO","top_topics":["topic1","topic2","topic3"],' +
+          '"keywords_they_own":["kw1","kw2","kw3"],' +
+          '"content_gaps":["topic FXIFY can own that FTMO misses 1","gap 2","gap 3"],' +
+          '"content_angle":"one sentence describing their overall strategy"}]}'
+      })
+    });
+    var d = await resp.json();
+    var t = d.text || (d.content && d.content[0] && d.content[0].text) || '';
+    var parsed = JSON.parse(t.replace(/```json|```/g, '').trim());
+    var competitors = parsed.competitors || [];
+
+    // Format for compBlock builder
+    return competitors.map(function(c) {
+      var articles = (c.top_topics || []).map(function(topic, i) {
         return {
           title: topic,
           url: '',
-          subtopics: i === 0 ? (parsed.keywords_they_own || []) : [],
-          content: i === 0 ? ('Angle: ' + (parsed.content_angle || '') + ' | Missing: ' + (parsed.content_gaps || []).join(', ')) : null
+          subtopics: i === 0 ? (c.keywords_they_own || []) : [],
+          content: i === 0 ? ('Angle: ' + (c.content_angle || '') + ' | Gaps: ' + (c.content_gaps || []).join(', ')) : null
         };
       });
       return {
-        domain: firm,
-        source: firm,
+        domain: c.firm,
+        source: c.firm,
         articles: articles,
         fullArticles: articles.length,
-        missing: parsed.content_gaps || [],
-        publish_frequency: parsed.publish_frequency || '',
-        content_angle: parsed.content_angle || '',
-        traffic_est: parsed.traffic_est || 'unknown'
+        missing: c.content_gaps || [],
+        content_angle: c.content_angle || '',
+        traffic_est: 'unknown'
       };
-    } catch(e) {
-      clearTimeout(timer);
-      return { domain: firm, source: firm, articles: [], fullArticles: 0, missing: [], publish_frequency: '', content_angle: '', traffic_est: 'unknown' };
-    }
+    });
+  } catch(e) {
+    console.warn('Competitor research failed:', e.message);
+    return [];
   }
-
-  // Run ALL firms in PARALLEL (not sequential)
-  var promises = firms.map(function(firm) { return researchFirm(firm); });
-  var results  = await Promise.allSettled(promises);
-  return results.map(function(r) {
-    return r.status === 'fulfilled' ? r.value : { domain: '?', source: '?', articles: [], fullArticles: 0, missing: [] };
-  }).filter(function(r) { return r.domain !== '?'; });
 }
+
+
 
 
 
@@ -7806,32 +7758,29 @@ async function v2UpdateStatus() {
 
 // ── SERP RESEARCH — what is ranking right now for a keyword ──────────────
 async function v2SerpResearch(keyword) {
-  var controller = new AbortController();
-  var timer = setTimeout(function(){ controller.abort(); }, 12000);
+  // Ask Claude what typically ranks for this keyword in prop trading
+  // Works without web search — Claude knows the competitive landscape
   try {
     var resp = await fetch(V2_CONFIG.webhook, {
       method: 'POST',
-      signal: controller.signal,
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        max_tokens: 600,
-        web_search: true,
+        max_tokens: 500,
         prompt:
-          'Search Google for: ' + keyword + ' prop firm 2026. ' +
-          'List the top 6 organic results. For each: title, URL snippet, angle they take. ' +
-          'Return ONLY valid JSON no markdown: {"results":[{"title":"page title","url":"https://...","description":"their angle in one sentence"}]}'
+          'For the search query "' + keyword + '" in prop trading, what types of pages typically rank in Google? ' +
+          'Based on your knowledge, what angle do the top ranking pages take on this topic? ' +
+          'What intent is the searcher showing? ' +
+          'Return ONLY valid JSON no markdown: {"results":[{"title":"typical ranking page title","url":"example.com","description":"the angle they take"}]}'
       })
     });
-    clearTimeout(timer);
     var d = await resp.json();
     var t = d.text || (d.content && d.content[0] && d.content[0].text) || '';
     var p = JSON.parse(t.replace(/```json|```/g, '').trim());
     return p.results || [];
-  } catch(e) {
-    clearTimeout(timer);
-    return [];
-  }
+  } catch(e) { return []; }
 }
+
+
 
 
 
@@ -7846,9 +7795,8 @@ async function runTopicIdeas() {
 
   btn.disabled = true; btn.textContent = 'Researching...';
   v2ShowLoader(output, [
-    'Pulling keyword data from DataForSEO...',
-    'Searching what ranks for this keyword...',
-    'Researching 6 competitor content strategies (15-20s)...',
+    'Pulling keyword data...',
+    'Researching competitor content strategies...',
     'Loading FXIFY published articles...',
     'Claude analysing gaps and building topics...'
   ]);
