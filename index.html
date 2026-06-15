@@ -1056,121 +1056,43 @@ select.finput option{background:var(--bg2);color:var(--text);}
       <div id="a-competitors" class="pg">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
           <div>
-            <div class="pgh">Competitor Analysis</div>
-            <p class="pgs" style="margin-bottom:0;">Live intelligence on FTMO, FundedNext, Apex, Topstep and others — content strategy, keywords, gaps, and what they're doing right now.</p>
+            <div class="pgh">Competitor Intelligence</div>
+            <p class="pgs" style="margin-bottom:0;">Live research on FTMO, FundedNext, Apex, Topstep, The5ers and E8. Content gaps, keyword gaps, recent moves, strategic opportunities. Powered by Claude web search.</p>
           </div>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-p btn-s" id="comp-run-btn" style="font-size:13px;">⚡ Run analysis</button>
-            <button class="btn btn-s" id="comp-refresh-btn">↻ Refresh data</button>
+          <button class="btn btn-p btn-s" id="comp-run-btn" style="font-size:13px;">⚡ Run analysis</button>
+        </div>
+
+        <!-- COMPETITOR OVERVIEW CARDS -->
+        <div class="shead" style="margin-bottom:10px;">Tracked competitors</div>
+        <div id="comp-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:24px;">
+          <div id="comp-cards-loading" style="text-align:center;padding:40px;color:var(--text3);font-size:13px;grid-column:1/-1;">
+            Click <strong style="color:var(--text);">Run analysis</strong> to pull live competitor intelligence via web search.
           </div>
         </div>
 
-        <!-- COMPETITOR CARDS -->
-        <div class="shead">Tracked competitors</div>
-        <div class="comp-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:10px;margin-bottom:24px;" id="comp-cards">
-          <!-- Populated by JS -->
-          <div style="text-align:center;padding:40px;color:var(--text3);font-size:13px;grid-column:1/-1;" id="comp-cards-loading">
-            Click <strong style="color:var(--text);">Run analysis</strong> to pull live competitor data.
-          </div>
-        </div>
-
-        <!-- DETAIL TABS -->
+        <!-- INTELLIGENCE TABS -->
         <div id="comp-detail" style="display:none;">
-
-          <!-- Tab bar -->
-          <div style="display:flex;gap:2px;margin-bottom:16px;border-bottom:1px solid var(--border);padding-bottom:0;overflow-x:auto;">
-            <button class="comp-tab active" data-tab="content" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text);border-bottom:2px solid var(--blue);cursor:pointer;white-space:nowrap;font-family:var(--font);">Content strategy</button>
-            <button class="comp-tab" data-tab="keywords" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">Top keywords</button>
-            <button class="comp-tab" data-tab="gaps" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">Content gaps</button>
-            <button class="comp-tab" data-tab="recent" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">Recent articles</button>
-            <button class="comp-tab" data-tab="social" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">Social & YouTube</button>
-            <button class="comp-tab" data-tab="ai" style="padding:8px 16px;font-size:13px;font-weight:500;background:none;border:none;color:var(--text3);border-bottom:2px solid transparent;cursor:pointer;white-space:nowrap;font-family:var(--font);">AI opportunities</button>
+          <div style="display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:20px;">
+            <button class="comp-tab active" data-tab="opportunities" style="padding:6px 14px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg3);color:var(--teal);">Strategic Opportunities</button>
+            <button class="comp-tab" data-tab="gaps" style="padding:6px 14px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">Content Gaps</button>
+            <button class="comp-tab" data-tab="keywords" style="padding:6px 14px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">Keyword Gaps</button>
+            <button class="comp-tab" data-tab="recent" style="padding:6px 14px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">Recent Moves</button>
           </div>
 
-          <!-- Tab: Content strategy -->
-          <div id="comp-tab-content" class="comp-tab-pane">
-            <div class="comp-detail-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px;" id="comp-strategy-grid">
-              <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-                <p style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;font-family:var(--mono);">Content volume</p>
-                <div id="comp-volume-list" style="display:grid;gap:8px;"></div>
-              </div>
-              <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-                <p style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;font-family:var(--mono);">Publishing cadence</p>
-                <div id="comp-cadence-list" style="display:grid;gap:8px;"></div>
-              </div>
-              <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;grid-column:span 2;">
-                <p style="font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;font-family:var(--mono);">Topic breakdown</p>
-                <div id="comp-topics-list" style="display:flex;flex-wrap:wrap;gap:6px;"></div>
-              </div>
-            </div>
+          <div id="comp-tab-opportunities" class="comp-tab-pane">
+            <p style="color:var(--text3);font-size:13px;padding:20px 0;">Run analysis to generate strategic opportunities.</p>
           </div>
-
-          <!-- Tab: Keywords -->
-          <div id="comp-tab-keywords" class="comp-tab-pane" style="display:none;">
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
-              <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;">
-                <p style="font-size:13px;font-weight:600;color:var(--text);">Keywords competitors rank for — FXIFY doesn't</p>
-                <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--urgentL);color:var(--urgent);font-family:var(--mono);">Opportunity gaps</span>
-              </div>
-              <div class="twrap"><table class="dtable" id="comp-kw-table">
-                <thead><tr><th>Keyword</th><th>Competitor</th><th>Est. volume</th><th>Difficulty</th><th>Action</th></tr></thead>
-                <tbody id="comp-kw-body"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text3);">Run analysis to populate</td></tr></tbody>
-              </table></div>
-            </div>
-          </div>
-
-          <!-- Tab: Gaps -->
           <div id="comp-tab-gaps" class="comp-tab-pane" style="display:none;">
-            <div style="display:grid;gap:10px;" id="comp-gaps-list">
-              <p style="color:var(--text3);font-size:13px;padding:24px 0;text-align:center;">Run analysis to find content gaps.</p>
-            </div>
+            <p style="color:var(--text3);font-size:13px;padding:20px 0;">No content gap data yet.</p>
           </div>
-
-          <!-- Tab: Recent articles -->
+          <div id="comp-tab-keywords" class="comp-tab-pane" style="display:none;">
+            <p style="color:var(--text3);font-size:13px;padding:20px 0;">No keyword gaps yet.</p>
+          </div>
           <div id="comp-tab-recent" class="comp-tab-pane" style="display:none;">
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
-              <div class="twrap"><table class="dtable" id="comp-recent-table">
-                <thead><tr><th>Title</th><th>Competitor</th><th>Topic area</th><th>Est. traffic</th><th>FXIFY angle</th></tr></thead>
-                <tbody id="comp-recent-body"><tr><td colspan="5" style="text-align:center;padding:24px;color:var(--text3);">Run analysis to populate</td></tr></tbody>
-              </table></div>
-            </div>
+            <p style="color:var(--text3);font-size:13px;padding:20px 0;">No recent moves yet.</p>
           </div>
+        </div>
 
-          <!-- Tab: Social & YouTube -->
-          <div id="comp-tab-social" class="comp-tab-pane" style="display:none;">
-            <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px;" id="comp-social-grid">
-              <p style="color:var(--text3);font-size:13px;padding:24px 0;text-align:center;grid-column:1/-1;">Run analysis to populate social data.</p>
-            </div>
-          </div>
-
-          <!-- Tab: AI opportunities -->
-          <div id="comp-tab-ai" class="comp-tab-pane" style="display:none;">
-            <div style="display:grid;gap:10px;" id="comp-ai-list">
-              <p style="color:var(--text3);font-size:13px;padding:24px 0;text-align:center;">Run analysis to generate AI-powered opportunities.</p>
-            </div>
-          </div>
-
-        </div><!-- end comp-detail -->
-
-        <!-- FULL COMPARISON TABLE -->
-        <div class="shead" style="margin-top:8px;">Side-by-side comparison</div>
-        <div class="twrap" style="margin-bottom:24px;">
-          <table class="dtable" id="comp-table">
-            <thead>
-              <tr>
-                <th>Metric</th>
-                <th style="color:var(--blue);">FXIFY</th>
-                <th>FTMO</th>
-                <th>FundedNext</th>
-                <th>Apex</th>
-                <th>Topstep</th>
-                <th>The5ers</th>
-              </tr>
-            </thead>
-            <tbody id="comp-table-body">
-              <tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text3);">Run analysis to populate comparison data.</td></tr>
-            </tbody>
-          </table>
         </div>
 
       </div><!-- end a-competitors -->
@@ -5383,111 +5305,127 @@ async function runYouTubeDiscovery() {
     : 'Format: LONG FORM (5-15 minutes). Deep walkthrough. Tutorial style. Searchable title.';
 
   var prompt =
-    // ── STEP 1: FORCE processing of scraped data ──────────────────
-    'TASK: YouTube content gap analysis for FXIFY. Work through 3 strict steps.\n\n' +
+    // ── TASK ──────────────────────────────────────────────────────────
+    'TASK: YouTube video gap analysis for FXIFY. Work through 3 strict steps.\n\n' +
 
-    'STEP 1 — READ THE SCRAPED DATA BELOW LINE BY LINE.\n' +
-    'For each signal source (competitor channels, Reddit, X), identify:\n' +
-    '  a) What topics are being covered heavily (oversaturated)\n' +
-    '  b) What questions keep appearing that nobody has answered well\n' +
-    '  c) What angles competitors take that FXIFY could directly counter\n' +
-    '  d) What trader frustrations come up repeatedly in Reddit/X\n' +
-    'Do NOT skip this step. Every topic in your output must trace back to something in the data below.\n\n' +
+    'STEP 1 — READ ALL SCRAPED DATA BELOW LINE BY LINE.\n' +
+    'For each source (competitor YouTube channels, Reddit, X/Twitter), identify:\n' +
+    '  a) What topics are oversaturated — covered by everyone\n' +
+    '  b) What trader questions keep appearing with no good answer\n' +
+    '  c) What competitor videos got big views but FXIFY has a better or opposite angle\n' +
+    '  d) What trader frustrations and pain points appear repeatedly\n' +
+    'Do NOT skip any source. Every video idea must trace back to something in the data.\n\n' +
 
-    'STEP 2 — IDENTIFY REAL GAPS.\n' +
+    'STEP 2 — IDENTIFY REAL GAPS ONLY.\n' +
     'A real gap is:\n' +
-    '- A question that appears 3+ times in Reddit/X with no satisfying answer\n' +
-    '- A video topic a competitor covered that got huge views but FXIFY has a better angle on\n' +
-    '- A comparison video (FXIFY vs X) that does not exist on YouTube yet\n' +
-    '- A trader pain point (failed challenge, drawdown confusion, payout issues) with no clear video tutorial\n\n' +
+    '- A question appearing 3+ times in Reddit/X with no satisfying video answer\n' +
+    '- A competitor video with big views where FXIFY has a direct counter-angle\n' +
+    '- A comparison video (FXIFY vs X) that does not exist on YouTube\n' +
+    '- A trader pain point with no clear video tutorial covering it\n\n' +
 
     'STEP 3 — BUILD VIDEO IDEAS FROM GAPS ONLY.\n' +
-    'Every idea must cite the specific signal that justified it.\n' +
+    'Cite the specific signal that justified each idea.\n' +
     'No generic "prop trading tips" or "how to be a better trader" content.\n\n' +
 
-    // ── YOUTUBE-SPECIFIC RULES ────────────────────────────────────
-    'VIDEO TITLE RULES:\n' +
-    '- Click-worthy without being clickbait. States the value clearly.\n' +
-    '- First-person when appropriate: "I Blew 3 FXIFY Challenges Before I Figured This Out"\n' +
-    '- Controversy/comparison works: "FTMO Told Me This. FXIFY Proved Them Wrong."\n' +
-    '- Numbers work: "5 Reasons Traders Fail FXIFY Phase 1 (And How to Fix Them)"\n' +
-    '- Under 60 characters for mobile display\n' +
-    '- BANNED: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Journey, Elevate, Transform\n\n' +
+    // ── OUTPUT FORMAT — LOCKED ────────────────────────────────────────
+    'OUTPUT FORMAT — every video topic must follow this exactly:\n\n' +
 
-    'HOOK RULES (critical — this is what stops the scroll):\n' +
-    '- Must open with a trader\'s specific situation or a punchy claim\n' +
-    '- NOT: "In this video, I will explain..." or "Today we are talking about..."\n' +
-    '- YES: "I lost $3,400 on a prop challenge because I misread one rule." or "FTMO has 14-day payout cycles. FXIFY doesn\'t. Here\'s what that means for your account."\n' +
+    'TITLE: Write as a statement or hook. Brand voice. Not a YouTube-style clickbait title.\n' +
+    'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
+    'GOOD: "There is a rule that can fail your account on your best trading day."\n' +
+    'GOOD: "One of our traders just received a single payout of $117,000."\n' +
+    'GOOD: "You can get a funded trading account for $19."\n' +
+    'BAD: "Top 5 Reasons FXIFY Is Better Than FTMO"\n' +
+    'BAD: "How I Made $10,000 with FXIFY in 30 Days"\n' +
+    'BAD: "Mastering Prop Trading in 2026"\n\n' +
+
+    'TONE — every field must:\n' +
+    '- Sound like a straight-talking trading mentor, not a content creator\n' +
+    '- ESL Grade 5-6. Short sentences. One idea. Full stop. Next sentence.\n' +
+    '- Brand voice: we/our — FXIFY is speaking, not a third-party trader\n' +
+    '- No buzzwords, no hype, no urgency tricks\n\n' +
+
+    'HOOK: Must stop the scroll in 3 seconds.\n' +
+    '- Opens with a trader\'s specific situation OR a punchy verifiable claim\n' +
+    '- NOT: "In this video we will..." or "Today we are talking about..."\n' +
+    '- YES: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
+    '- YES: "There is a rule that can fail your account on your best trading day."\n' +
     '- 2 sentences max. Creates tension or curiosity immediately.\n\n' +
 
+    'SIGNAL SOURCE: cite exactly what data justified this idea.\n' +
+    '"Reddit: [question text]" | "Competitor: [channel — video title + views]" | "X: [take/trend]" | "Keyword: [term + volume]"\n\n' +
+
+    'COMPETITOR GAP: be specific.\n' +
+    '"[Channel] posted [title] but never addressed [specific angle]. FXIFY wins because [one specific fact with a number]."\n\n' +
+
+    'WHY NOW: specific 2026 event or market trigger. Not vague.\n' +
+    'GOOD: "FTMO acquired OANDA Dec 2025 — traders now asking what broker-backed means"\n' +
+    'BAD: "traders are always interested in funded accounts"\n\n' +
+
+    // ── FORMAT ────────────────────────────────────────────────────────
     formatInstr + '\n\n' +
 
-    // ── FXIFY ANGLES (must cite these specifically) ───────────────
-    'FXIFY FACTS — use exact numbers, do not vague-ify:\n' +
-    '- ONE PHASE: No consistency rule. Payout on demand. No 14-day cycle. Only firm with this.\n' +
-    '- TWO PHASE CLASSIC: Static drawdown, floor never moves. Better for swing/position traders.\n' +
-    '- TWO PHASE STANDARD: Trailing drawdown, floor rises with profit.\n' +
-    '- INSTANT FUNDING LITE: From $19. $2,500 funded account. Lowest entry in the market.\n' +
-    '- BROKER-BACKED: FXPIG since 2010. Regulated. Only prop firm with real broker behind it.\n' +
-    '- $40M+ paid out. 250K+ traders. Up to 90% performance split.\n\n' +
+    // ── FXIFY FACTS ───────────────────────────────────────────────────
+    'FXIFY FACTS — cite these exactly:\n' +
+    '- ONE PHASE: No consistency rule. Payout on demand after first profitable trade. Static drawdown.\n' +
+    '- TWO PHASE CLASSIC: Static drawdown, floor never moves. 25% consistency on funded stage only.\n' +
+    '- INSTANT FUNDING LITE: $19. Live account same day. No challenge.\n' +
+    '- BROKER-BACKED: FXPIG since 2010. Regulated. Real market infrastructure.\n' +
+    '- $40M+ paid out. 250,000+ traders. Highest single payout: $117,000. One trader: 40+ payouts, all on time.\n' +
+    '- Up to 90% performance split. Evaluation fee refunded with first payout on 1/2/3 Phase.\n\n' +
 
-    // ── SEED + DATA ───────────────────────────────────────────────
     'SEED TOPIC: ' + topic + '\n' +
     'VIDEO TYPE: ' + vidType + '\n' +
-    'TODAY: ' + nowStr() + '. All references must be current. No 2024/2025 content.\n\n' +
+    'TODAY: ' + nowStr() + '. All content must be current. No 2024/2025 references.\n\n' +
 
     (kwBlock ?
-      '── YOUTUBE KEYWORD DATA (DataForSEO — use exact volumes) ──\n' + kwBlock + '\n\n'
+      '── YOUTUBE KEYWORD DATA ──\n' + kwBlock + '\n\n'
     : '') +
 
     (ytBlock ?
-      '── TOP VIDEOS CURRENTLY RANKING ON THIS TOPIC ──\n' +
-      'These are what traders are watching. Identify what angle is missing or what could be done better.\n' +
+      '── TOP VIDEOS CURRENTLY RANKING ──\n' +
+      'These are what traders are watching. What angle is missing? What could be done better?\n' +
       ytBlock + '\n\n'
     : '') +
 
     (redditData ?
-      '── REDDIT — REAL TRADER QUESTIONS AND PAIN POINTS ──\n' +
-      'These are real questions from real traders. Each one is a potential video title.\n' +
-      'Look for questions that appear repeatedly or have high engagement but no good answer.\n' +
-      redditData.substring(0,2000) + '\n\n'
+      '── REDDIT — REAL TRADER QUESTIONS ──\n' +
+      'Each question here is a potential video title. Look for ones with no good answer.\n' +
+      redditData.substring(0, 2000) + '\n\n'
     : '') +
 
     (xData ?
-      '── X/TWITTER — TRADER TAKES AND VIRAL ANGLES ──\n' +
-      'These are real trader opinions circulating right now.\n' +
-      'Hot takes, complaints, and controversial opinions here = high-engagement video angles.\n' +
-      xData.substring(0,2000) + '\n\n'
+      '── X/TWITTER — TRADER TAKES ──\n' +
+      'Hot takes and complaints = high-engagement video angles.\n' +
+      xData.substring(0, 2000) + '\n\n'
     : '') +
 
     (compData ?
       '── COMPETITOR YOUTUBE CHANNELS — READ EVERY TITLE ──\n' +
-      'These are the actual videos your competitors have published.\n' +
-      'Identify: what they cover obsessively, what they never touch, what they get wrong.\n' +
-      'Every gap you find here is a video FXIFY should make.\n\n' +
-      compData.substring(0,3000) + '\n\n'
-    : '⚠ No competitor YouTube data scraped — base gaps on Reddit/X signals and keyword data only.\n\n') +
+      'What do they cover obsessively? What do they never touch? What do they get wrong?\n' +
+      compData.substring(0, 3000) + '\n\n'
+    : '') +
 
-    // ── OUTPUT ────────────────────────────────────────────────────
-    'Generate 8 YouTube video ideas ranked by opportunity score.\n' +
-    'CRITICAL: Every idea must cite which signal justified it (Reddit question / competitor gap / X trend / keyword).\n' +
-    'Return ONLY valid JSON — no markdown, no preamble:\n' +
-    '{"topics":[{' +
-    '"title":"Click-worthy YouTube title under 60 chars",' +
-    '"score":85,' +
-    '"keyword":"primary search term from keyword data",' +
-    '"yt_volume":"number from DataForSEO or TBC",' +
-    '"signal_source":"Reddit: [question text] | X: [take] | Competitor: [channel - video title] | Keyword: [term]",' +
-    '"competitor_gap":"[Channel] posted [title] but never addressed [specific angle]. Views: [X]. FXIFY wins because [specific fact].",' +
-    '"fxify_angle":"[Exact FXIFY product] + [verifiable number]. One sentence. Specific.",' +
-    '"hook":"2 sentences. Opens with trader situation or punchy claim. No intro phrases.",' +
-    '"why_now":"Specific event or signal from the data above — not a generic statement.",' +
-    '"thumbnail":"[Emotion/reaction] face + [text overlay in 4 words] + [visual element]",' +
-    '"video_type":"Tutorial|Comparison|Reaction|Walkthrough|Opinion|News",' +
-    '"format":"Short (<60s)|Long (5-15min)",' +
-    '"priority":"High|Normal|Low"' +
+    // ── OUTPUT SCHEMA ─────────────────────────────────────────────────
+    'Generate 8 video ideas ranked by opportunity score.\n' +
+    'Every idea must cite the signal that justified it.\n' +
+    'Return ONLY valid JSON. No markdown. No preamble.\n\n' +
+    '{"topics":[{\n' +
+    '"title":"Statement/hook. Brand voice. ESL Grade 5. Under 60 chars.",\n' +
+    '"score":85,\n' +
+    '"keyword":"primary search term",\n' +
+    '"yt_volume":"number or TBC",\n' +
+    '"signal_source":"Reddit: [question] | Competitor: [channel — title] | X: [take] | Keyword: [term]",\n' +
+    '"competitor_gap":"[Channel/site] covers [topic] but misses [specific angle]. FXIFY wins because [fact with number].",\n' +
+    '"fxify_angle":"[Exact FXIFY product] + [verifiable number]. One sentence.",\n' +
+    '"hook":"2 sentences. Brand voice. Opens with trader situation or punchy claim. No intro phrases.",\n' +
+    '"why_now":"Specific 2026 event or data. Not vague.",\n' +
+    '"thumbnail":"[Emotion] face + [4-word text overlay] + [visual element]",\n' +
+    '"video_type":"Tutorial|Comparison|Explainer|Proof|Reaction|Walkthrough",\n' +
+    '"format":"Short (<60s)|Long (5-15min)",\n' +
+    '"conversion_tier":"1|2|3",\n' +
+    '"priority":"High|Normal|Low"\n' +
     '}]}';
-
   try {
     var text = await v2Fetch(prompt, 4000);
     var result = parseJSON(text);
@@ -7018,99 +6956,191 @@ async function loadCompetitorAnalysis() {
   }
 }
 
-async function runFullCompetitorAnalysis() {
-  var btn = document.getElementById('comp-run-btn');
-  if (btn) { btn.textContent = 'Analysing...'; btn.disabled = true; }
+function renderCompetitorIntelligence(data) {
+  var firms  = data.firms || [];
+  var kwGaps = data.kwGaps || [];
+  var moves  = data.recentMoves || [];
+  var synth  = data.synthesis || {};
 
-  // Scrape all competitor blogs in parallel
-  var scrapePromises = COMPETITORS.map(async function(c) {
-    try {
-      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer fc-918ef0f7ffac439caca532272347e770' },
-        body: JSON.stringify({ url: c.blog, formats: ['markdown'], onlyMainContent: true })
-      });
-      var data = await res.json();
-      return { id: c.id, name: c.name, content: data.data && data.data.markdown ? data.data.markdown.substring(0, 3000) : '', url: c.blog };
-    } catch(e) {
-      return { id: c.id, name: c.name, content: '', url: c.blog };
-    }
-  });
-
-  var scraped = await Promise.allSettled(scrapePromises);
-  var scrapedData = scraped.map(function(r){ return r.status === 'fulfilled' ? r.value : { id:'?', name:'?', content:'' }; });
-
-  // DataForSEO for keyword gaps
-  var kw_data = [];
-  try {
-    var dfsRes = await fetch('https://api.dataforseo.com/v3/keywords_data/google_ads/search_volume/live', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Basic ' + btoa('sheperd.morena@fxify.com:953542a6e47cca32') },
-      body: JSON.stringify([{ keywords: ['ftmo review', 'funded next review', 'apex trader review', 'topstep review', 'prop firm review', 'best prop firm 2026', 'funded trader', 'prop trading challenge', 'funded account trading'] }])
-    });
-    var dfsData = await dfsRes.json();
-    if (dfsData.tasks && dfsData.tasks[0] && dfsData.tasks[0].result) {
-      kw_data = dfsData.tasks[0].result;
-    }
-  } catch(e) { console.warn('DataForSEO error:', e.message); }
-
-  // Build Claude prompt with all scraped data
-  var contextStr = scrapedData.map(function(d){
-    return '=== ' + d.name.toUpperCase() + ' ('+d.url+') ===\n' + (d.content || 'Could not scrape.') + '\n';
-  }).join('\n');
-
-  var kwStr = kw_data.length ? kw_data.map(function(k){ return k.keyword + ' (' + (k.search_volume||0) + '/mo)'; }).join(', ') : 'DataForSEO unavailable';
-
-  var prompt = 'You are a content strategist analysing prop trading firm competitors for FXIFY.\n\n' +
-    'FXIFY FACTS: One Phase (no consistency rule), Instant Funding from $19, broker-backed via FXPIG, 90% performance split, $40M+ paid out, targets serious traders.\n\n' +
-    'COMPETITOR BLOG CONTENT:\n' + contextStr + '\n' +
-    'KEYWORD DATA: ' + kwStr + '\n\n' +
-    'Analyse deeply and return ONLY valid JSON:\n' +
-    '{\n' +
-    '  "overview": [\n' +
-    '    {"competitor":"FTMO","articles_per_month":8,"top_topics":["challenge tips","trading psychology","funded trader stories"],"avg_word_count":1200,"content_quality":"high","unique_angle":"Education-first, very detailed how-to content"},\n' +
-    '    ... one object per competitor\n' +
-    '  ],\n' +
-    '  "keyword_gaps": [\n' +
-    '    {"keyword":"ftmo vs fxify","monthly_searches":1200,"ranking_competitor":"FTMO","difficulty":"medium","fxify_angle":"We offer One Phase — no consistency rule, they have strict rules"},\n' +
-    '    ... 10-15 gaps FXIFY should own\n' +
-    '  ],\n' +
-    '  "content_gaps": [\n' +
-    '    {"gap":"No competitor has a good \'Instant Funding\' explainer","opportunity":"FXIFY is the only firm with $19 instant funding — massive SEO and conversion play","priority":"high","suggested_title":"FXIFY Instant Funding: The $19 Path to a Funded Account"},\n' +
-    '    ... 8-10 gaps\n' +
-    '  ],\n' +
-    '  "recent_articles": [\n' +
-    '    {"title":"Article title","competitor":"FTMO","topic_area":"Challenge tips","est_traffic":"high","fxify_angle":"How FXIFY does this differently"},\n' +
-    '    ... 10 recent articles worth responding to\n' +
-    '  ],\n' +
-    '  "comparison_table": [\n' +
-    '    {"metric":"Blog posts/month","fxify":"?","ftmo":"8","fundednext":"6","apex":"4","topstep":"5","the5ers":"3"},\n' +
-    '    {"metric":"Avg word count","fxify":"1200","ftmo":"1400","fundednext":"1100","apex":"900","topstep":"1300","the5ers":"1000"},\n' +
-    '    {"metric":"Content focus","fxify":"SEO + conversion","ftmo":"Education","fundednext":"Community","apex":"Quick tips","topstep":"Futures","the5ers":"Psychology"},\n' +
-    '    {"metric":"Social presence","fxify":"Strong","ftmo":"Very strong","fundednext":"Growing","apex":"Moderate","topstep":"Strong","the5ers":"Niche"},\n' +
-    '    {"metric":"YouTube","fxify":"Active","ftmo":"Large channel","fundednext":"Growing","apex":"Small","topstep":"Established","the5ers":"Small"},\n' +
-    '    {"metric":"SEO strength","fxify":"Building","ftmo":"Very high","fundednext":"High","apex":"Medium","topstep":"High","the5ers":"Medium"},\n' +
-    '    {"metric":"Unique content angle","fxify":"One Phase + Instant Funding","ftmo":"Education depth","fundednext":"Community","apex":"Simple rules","topstep":"Futures-only","the5ers":"Long-term focus"}\n' +
-    '  ],\n' +
-    '  "ai_opportunities": [\n' +
-    '    {"opportunity":"Competitor comparison hub","description":"Build the definitive \'FXIFY vs [every competitor]\' page cluster — high intent, high conversion","effort":"medium","impact":"high"},\n' +
-    '    ... 5-7 opportunities\n' +
-    '  ]\n' +
-    '}';
-
-  try {
-    var result = await v2Fetch(prompt, 4000);
-    var data = parseJSON(result);
-    _compData = data;
-    renderCompetitorData(data);
-    updateCompCards(data);
-  } catch(e) {
-    toast('Analysis error: ' + e.message);
-    console.error(e);
+  var cards   = document.getElementById('comp-cards');
+  var loading = document.getElementById('comp-cards-loading');
+  if (loading) loading.style.display = 'none';
+  if (cards) {
+    cards.innerHTML = firms.map(function(f) {
+      var tc = f.traffic_est === 'high' ? 'var(--urgent)' : f.traffic_est === 'medium' ? 'var(--high)' : 'var(--text3)';
+      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);padding:12px;">' +
+        '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">' + (f.firm||'') + '</p>' +
+        '<p style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.4;">' + (f.content_angle||'').substring(0,90) + '</p>' +
+        '<p style="font-size:10px;color:var(--text3);font-family:var(--mono);">Freq: ' + (f.publish_frequency||'?') + '</p>' +
+        '<p style="font-size:10px;color:' + tc + ';font-family:var(--mono);font-weight:600;">Traffic est: ' + (f.traffic_est||'?') + '</p>' +
+      '</div>';
+    }).join('');
   }
 
-  if (btn) { btn.textContent = '⚡ Run analysis'; btn.disabled = false; }
+  var detail = document.getElementById('comp-detail');
+  if (detail) detail.style.display = 'block';
+
+  var gapOut = document.getElementById('comp-tab-gaps');
+  var kwOut  = document.getElementById('comp-tab-keywords');
+  var movOut = document.getElementById('comp-tab-recent');
+  var oppOut = document.getElementById('comp-tab-opportunities');
+
+  if (gapOut) {
+    var allGaps = [];
+    firms.forEach(function(f){ (f.content_gaps||[]).forEach(function(g){ allGaps.push({firm:f.firm,gap:g}); }); });
+    gapOut.innerHTML = allGaps.length ? allGaps.map(function(g){
+      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;">' +
+        '<span style="font-size:10px;font-weight:700;color:var(--blue);background:var(--blueL);border-radius:4px;padding:2px 7px;white-space:nowrap;flex-shrink:0;">' + g.firm + '</span>' +
+        '<p style="font-size:13px;color:var(--text);margin:0;">' + g.gap + '</p>' +
+      '</div>';
+    }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No content gaps found.</p>';
+  }
+
+  if (kwOut) {
+    kwOut.innerHTML = kwGaps.length ? '<div style="display:grid;gap:8px;">' + kwGaps.map(function(k){
+      var ic = k.intent==='Transactional'?'var(--urgent)':k.intent==='Commercial'?'var(--high)':'var(--text3)';
+      var pc = k.priority==='High'?'var(--teal)':k.priority==='Medium'?'var(--high)':'var(--text3)';
+      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">' +
+          '<p style="font-size:13px;font-weight:600;color:var(--text);margin:0;flex:1;">' + (k.keyword||'') + '</p>' +
+          '<span style="font-size:9px;font-weight:700;color:' + ic + ';font-family:var(--mono);">' + (k.intent||'') + '</span>' +
+          '<span style="font-size:9px;font-weight:700;color:' + pc + ';font-family:var(--mono);">' + (k.priority||'') + '</span>' +
+        '</div>' +
+        '<div style="display:flex;gap:12px;margin-bottom:5px;">' +
+          '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">Vol: ' + (k.monthly_vol||'?') + '</span>' +
+          '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">KD: ' + (k.kd||'?') + '</span>' +
+        '</div>' +
+        '<p style="font-size:12px;color:var(--teal);margin:0;">→ ' + (k.fxify_angle||'') + '</p>' +
+      '</div>';
+    }).join('') + '</div>'
+    : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No keyword gaps found.</p>';
+  }
+
+  if (movOut) {
+    movOut.innerHTML = moves.length ? moves.map(function(m){
+      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;">' +
+        '<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">' +
+          '<span style="font-size:10px;font-weight:700;color:var(--blue);background:var(--blueL);border-radius:4px;padding:2px 7px;">' + (m.firm||'') + '</span>' +
+          '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">' + (m.type||'') + '</span>' +
+        '</div>' +
+        '<p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">' + (m.title||'') + '</p>' +
+        '<p style="font-size:12px;color:var(--text3);">' + (m.significance||'') + '</p>' +
+      '</div>';
+    }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No recent moves found.</p>';
+  }
+
+  if (oppOut) {
+    var opps = synth.top_opportunities || [];
+    oppOut.innerHTML = opps.length ? opps.map(function(o){
+      var pc = o.priority==='High'?'var(--teal)':'var(--high)';
+      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-left:3px solid ' + pc + ';border-radius:8px;padding:12px 14px;margin-bottom:10px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+          '<p style="font-size:13px;font-weight:600;color:var(--text);margin:0;flex:1;">' + (o.title||'') + '</p>' +
+          '<span style="font-size:9px;font-weight:700;color:' + pc + ';font-family:var(--mono);">' + (o.priority||'') + '</span>' +
+        '</div>' +
+        '<p style="font-size:12px;color:var(--text3);margin-bottom:6px;">' + (o.why||'') + '</p>' +
+        '<p style="font-size:12px;color:var(--teal);">→ ' + (o.action||'') + '</p>' +
+      '</div>';
+    }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">Run analysis to generate strategic opportunities.</p>';
+  }
 }
+
+async function runFullCompetitorAnalysis() {
+  var btn = document.getElementById('comp-run-btn');
+  if (btn) { btn.textContent = 'Researching...'; btn.disabled = true; }
+
+  var FIRMS = ['FTMO','FundedNext','Apex Trader Funding','Topstep','The5ers','E8 Funding'];
+
+  // Step 1: Research each competitor via Claude web search in parallel
+  var researchPromises = FIRMS.map(async function(firm) {
+    try {
+      var resp = await fetch(V2_CONFIG.webhook, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          max_tokens: 800, web_search: true,
+          prompt: 'Research ' + firm + ' prop firm content strategy June 2026. Search their blog, YouTube and social channels. ' +
+            'Return ONLY valid JSON: {"firm":"' + firm + '",' +
+            '"top_topics":["topic1","topic2","topic3","topic4","topic5"],' +
+            '"recent_articles":[{"title":"title","url":"url"}],' +
+            '"keywords_they_own":["kw1","kw2","kw3"],' +
+            '"content_gaps":["gap1","gap2","gap3"],' +
+            '"publish_frequency":"X per month",' +
+            '"content_angle":"one sentence on their strategy",' +
+            '"traffic_est":"high|medium|low"}'
+        })
+      });
+      var d = await resp.json();
+      var t = d.text || (d.content&&d.content[0]&&d.content[0].text) || '';
+      try { return JSON.parse(t.replace(/```json|```/g,'').trim()); }
+      catch(e) { return {firm:firm,top_topics:[],content_gaps:[],keywords_they_own:[],publish_frequency:'Unknown',content_angle:'Research failed',traffic_est:'unknown'}; }
+    } catch(e) { return {firm:firm,top_topics:[],content_gaps:[],keywords_they_own:[],publish_frequency:'Unknown',content_angle:'Failed',traffic_est:'unknown'}; }
+  });
+
+  // Step 2: Keyword gap analysis
+  var kwGapPromise = (async function(){
+    try {
+      var resp = await fetch(V2_CONFIG.webhook, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          max_tokens:800, web_search:true,
+          prompt:'Find prop firm keywords in 2026 where FTMO, FundedNext, Apex or Topstep rank but FXIFY does not appear in top results. ' +
+            'Focus on Commercial and Transactional intent: comparison, review, vs, best, price, instant funding. ' +
+            'Return ONLY valid JSON: {"gaps":[{"keyword":"term","monthly_vol":"number","kd":"0-100","intent":"Commercial|Transactional|Informational","competitors_ranking":["firm"],"fxify_angle":"how FXIFY wins this","priority":"High|Medium|Low"}]}'
+        })
+      });
+      var d = await resp.json();
+      var t = d.text||(d.content&&d.content[0]&&d.content[0].text)||'';
+      var p = JSON.parse(t.replace(/```json|```/g,'').trim());
+      return p.gaps||[];
+    } catch(e){ return []; }
+  })();
+
+  // Step 3: Recent competitor moves (last 30 days)
+  var movesPromise = (async function(){
+    try {
+      var resp = await fetch(V2_CONFIG.webhook, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({
+          max_tokens:600, web_search:true,
+          prompt:'Search for prop firm blog articles, YouTube videos and announcements published in June 2026. ' +
+            'What have FTMO, FundedNext, Apex, Topstep, The5ers published most recently? ' +
+            'Return ONLY valid JSON: {"moves":[{"firm":"name","title":"exact title","type":"Blog|YouTube|Social","topic_area":"3 words","significance":"why this matters for FXIFY"}]}'
+        })
+      });
+      var d = await resp.json();
+      var t = d.text||(d.content&&d.content[0]&&d.content[0].text)||'';
+      var p = JSON.parse(t.replace(/```json|```/g,'').trim());
+      return p.moves||[];
+    } catch(e){ return []; }
+  })();
+
+  // Wait for all
+  var results = await Promise.allSettled(researchPromises);
+  var firmData = results.map(function(r){ return r.status==='fulfilled'?r.value:null; }).filter(Boolean);
+  var kwGaps   = await kwGapPromise;
+  var moves    = await movesPromise;
+
+  // Step 4: Synthesis — strategic opportunities
+  var synthesis = {};
+  try {
+    var summary = firmData.map(function(f){
+      return f.firm + ': covers ' + (f.top_topics||[]).join(', ') + '. Gaps: ' + (f.content_gaps||[]).join(', ');
+    }).join('\n');
+    var synthResp = await v2Fetch(
+      'Content strategist for FXIFY. Based on this competitor research, identify top 5 strategic opportunities.\n\n' +
+      'FXIFY ADVANTAGES: $19 Instant Funding (cheapest), One Phase no consistency rule, broker-backed FXPIG 2010, on-demand payouts, $40M+ paid.\n\n' +
+      'COMPETITOR SUMMARY:\n' + summary + '\n\n' +
+      'Return ONLY valid JSON: {"top_opportunities":[{"title":"opp title","why":"why urgent for FXIFY","action":"specific content piece to create","priority":"High|Medium"}]}',
+      1500
+    );
+    synthesis = JSON.parse(synthResp.replace(/```json|```/g,'').trim());
+  } catch(e){ console.warn('Synthesis failed:', e.message); }
+
+  _compData = { firms:firmData, kwGaps:kwGaps, recentMoves:moves, synthesis:synthesis };
+  renderCompetitorIntelligence(_compData);
+  if (btn) { btn.textContent='⚡ Run analysis'; btn.disabled=false; }
+}
+
 
 async function runCompetitorDeepDive(comp) {
   var detail = document.getElementById('comp-detail');
@@ -7563,11 +7593,15 @@ function parseJSON(text) {
 
 function v2Toast(msg) { toast(msg); }
 
-async function v2Fetch(prompt, max_tokens) {
+async function v2Fetch(prompt, max_tokens, useWebSearch) {
   var r = await fetch(V2_CONFIG.webhook, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ prompt: prompt, max_tokens: max_tokens || 3000 })
+    body: JSON.stringify({
+      prompt: prompt,
+      max_tokens: max_tokens || 3000,
+      web_search: useWebSearch || false
+    })
   });
   var data = await r.json();
   var text = '';
@@ -7656,80 +7690,99 @@ async function dfsAutocomplete(kw) {
 
 // ── FIRECRAWL COMPETITOR SCRAPER ──────────────────────────────────────
 async function v2ScrapeCompetitors(compKey) {
-  var urls = V2_CONFIG.competitors[compKey || 'all'] || V2_CONFIG.competitors.all;
+  // Web-search based competitor research — no Firecrawl needed
+  // Uses Claude via n8n webhook with web_search tool enabled
+  var competitors = {
+    all:       ['FTMO','FundedNext','Apex Trader Funding','Topstep','The5ers','E8 Funding'],
+    ftmo:      ['FTMO'],
+    fundednext:['FundedNext'],
+    apex:      ['Apex Trader Funding'],
+    topstep:   ['Topstep'],
+    the5ers:   ['The5ers'],
+    e8:        ['E8 Funding'],
+  };
+  var firms = competitors[compKey || 'all'] || competitors.all;
   var results = [];
 
-  for (var i = 0; i < urls.length; i++) {
-    var blogUrl = urls[i];
-    var domain  = blogUrl.replace(/https?:\/\//, '').split('/')[0];
+  for (var fi = 0; fi < firms.length; fi++) {
+    var firm = firms[fi];
     try {
-      // Step 1: scrape the blog index to get article links
-      var r = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      // Ask Claude to search and summarise what this competitor publishes
+      var searchPrompt =
+        'Use web search to research ' + firm + ' prop firm blog and YouTube content. ' +
+        'Search for: site:' + firm.toLowerCase().replace(/\s/g,'') + '.com blog, ' +
+        firm + ' prop trading blog 2026, ' +
+        firm + ' YouTube channel videos 2026. ' +
+        'Return ONLY valid JSON in this exact format — no markdown, no preamble: ' +
+        '{"firm":"' + firm + '",' +
+        '"blog_topics":["exact article title 1","exact article title 2","exact article title 3","exact article title 4","exact article title 5"],' +
+        '"youtube_topics":["video title 1","video title 2","video title 3"],' +
+        '"content_pillars":["main theme 1","main theme 2","main theme 3"],' +
+        '"missing":["topic they never cover 1","topic they never cover 2"],' +
+        '"latest_url":"https://most-recent-article-url"}';
+
+      var resp = await fetch(V2_CONFIG.webhook, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-        body: JSON.stringify({ url: blogUrl, formats: ['markdown'], onlyMainContent: true })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: searchPrompt,
+          max_tokens: 800,
+          web_search: true
+        })
       });
-      var d = await r.json();
-      if (!d.success || !d.data || !d.data.markdown) continue;
-
-      var md = d.data.markdown;
-
-      // Extract article links from index
-      var articleLinks = [];
-      var linkRe = /\[([^\]]{15,120})\]\((https?:\/\/[^)]+)\)/g;
-      var match;
-      while ((match = linkRe.exec(md)) !== null && articleLinks.length < 8) {
-        var title = match[1].trim();
-        var url   = match[2].trim();
-        if (url.includes('/category/') || url.includes('/page/') || url.includes('/tag/') ||
-            url.includes('/author/') || url.includes('#') || url === blogUrl) continue;
-        if (title.length < 12 || title.match(/^(Read More|Blog|Home|About|Contact|Subscribe|Menu)/i)) continue;
-        // Must be on the same domain
-        if (!url.includes(domain)) continue;
-        articleLinks.push({ title: title, url: url });
+      var data = await resp.json();
+      var text = '';
+      if (Array.isArray(data) && data[0]) {
+        text = data[0].text || (data[0].content && data[0].content[0] && data[0].content[0].text) || '';
+      } else {
+        text = data.text || (data.content && data.content[0] && data.content[0].text) || '';
       }
 
-      // Step 2: scrape 3 actual articles for real content
-      var articles = [];
-      var toScrape = articleLinks.slice(0, 3);
-
-      for (var j = 0; j < toScrape.length; j++) {
-        try {
-          var ar = await fetch('https://api.firecrawl.dev/v1/scrape', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-            body: JSON.stringify({ url: toScrape[j].url, formats: ['markdown'], onlyMainContent: true })
-          });
-          var ad = await ar.json();
-          if (ad.success && ad.data && ad.data.markdown) {
-            var content = ad.data.markdown.substring(0, 1200);
-            articles.push({
-              title:   toScrape[j].title,
-              url:     toScrape[j].url,
-              content: content,
-              // Extract H2s as topic coverage signals
-              subtopics: (content.match(/^##\s+(.+)$/mg) || []).map(function(h2){ return h2.replace(/^##\s+/, '').trim(); }).slice(0, 6)
-            });
-          }
-        } catch(e) { /* skip failed article */ }
+      // Parse JSON response
+      var clean = text.replace(/```json|```/g, '').trim();
+      var parsed;
+      try { parsed = JSON.parse(clean); } catch(e) {
+        // If JSON fails, extract what we can from text
+        parsed = {
+          firm: firm,
+          blog_topics: text.match(/"([^"]{15,100})"/g) ? text.match(/"([^"]{15,100})"/g).slice(0,5).map(function(s){return s.replace(/"/g,'');}) : [],
+          content_pillars: [],
+          missing: []
+        };
       }
 
-      // Also add remaining index titles (without content) for coverage mapping
-      var indexOnly = articleLinks.slice(3, 20).map(function(a){ return { title: a.title, url: a.url, content: null }; });
+      // Format as articles array for compatibility with existing compBlock builder
+      var articles = (parsed.blog_topics || []).map(function(title, idx) {
+        return {
+          title: title,
+          url: parsed.latest_url || '',
+          subtopics: parsed.content_pillars || [],
+          content: idx === 0 ? ('Content pillars: ' + (parsed.content_pillars || []).join(', ') + '. Missing topics: ' + (parsed.missing || []).join(', ')) : null
+        };
+      });
 
-      if (articles.length || indexOnly.length) {
-        results.push({
-          source:      blogUrl,
-          domain:      domain,
-          articles:    articles.concat(indexOnly),
-          fullArticles: articles.length
-        });
-      }
+      // Add YouTube topics too
+      (parsed.youtube_topics || []).forEach(function(yt) {
+        articles.push({ title: '[YouTube] ' + yt, url: '', subtopics: [], content: null });
+      });
 
-    } catch(e) { console.warn('Scrape failed:', blogUrl, e.message); }
+      results.push({
+        source: 'https://' + firm.toLowerCase().replace(/\s/g,'') + '.com/blog/',
+        domain: firm,
+        articles: articles,
+        fullArticles: articles.length,
+        missing: parsed.missing || []
+      });
+
+    } catch(e) {
+      console.warn('Competitor research failed for:', firm, e.message);
+      results.push({ source: '', domain: firm, articles: [], fullArticles: 0, missing: [] });
+    }
   }
   return results;
 }
+
+
 
 
 async function v2LoadFxifyPublished() {
@@ -7758,6 +7811,33 @@ async function v2UpdateStatus() {
 }
 
 // ── STAGE 1: TOPIC DISCOVERY ──────────────────────────────────────────
+
+// ── SERP RESEARCH — what is ranking right now for a keyword ──────────────
+async function v2SerpResearch(keyword) {
+  try {
+    var resp = await fetch(V2_CONFIG.webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        prompt: 'Search Google for: ' + keyword + ' prop firm 2026. ' +
+          'List the top 8 organic search results you find. ' +
+          'For each result return: title, URL, and a one-sentence description of the angle they take. ' +
+          'Return ONLY valid JSON: {"results":[{"title":"exact page title","url":"https://...","description":"one sentence about their angle"}]}',
+        max_tokens: 800,
+        web_search: true
+      })
+    });
+    var data = await resp.json();
+    var text = data.text || (data.content && data.content[0] && data.content[0].text) || '';
+    var clean = text.replace(/```json|```/g,'').trim();
+    var parsed = JSON.parse(clean);
+    return parsed.results || [];
+  } catch(e) {
+    console.warn('SERP research failed:', e.message);
+    return [];
+  }
+}
+
 async function runTopicIdeas() {
   var seed    = (document.getElementById('v2-seed')||{}).value || '';
   var cat     = (document.getElementById('v2-cat')||{}).value  || 'All';
@@ -7769,10 +7849,10 @@ async function runTopicIdeas() {
 
   btn.disabled = true; btn.textContent = 'Researching...';
   v2ShowLoader(output, [
-    'Pulling keyword data from DataForSEO...',
-    'Scraping competitor blogs...',
+    'Pulling keyword data...',
+    'Researching competitor content via web search...',
     'Loading FXIFY published articles...',
-    'Claude analysing gaps...'
+    'Analysing gaps and building topics...'
   ]);
 
   // Run all data sources in parallel
@@ -7780,13 +7860,15 @@ async function runTopicIdeas() {
     dfsKeywords(seed),
     v2ScrapeCompetitors(compKey),
     v2LoadFxifyPublished(),
-    dfsAutocomplete(seed)
+    dfsAutocomplete(seed),
+    v2SerpResearch(seed)
   ]);
 
   var kwData        = results[0].status === 'fulfilled' ? results[0].value : [];
   var compData      = results[1].status === 'fulfilled' ? results[1].value : [];
   var fxifyArticles = results[2].status === 'fulfilled' ? results[2].value : [];
   var autocomplete  = results[3].status === 'fulfilled' ? results[3].value : [];
+  var serpData      = results[4].status === 'fulfilled' ? results[4].value : [];
 
   var isStub = kwData.length > 0 && kwData[0].stub;
 
@@ -7801,16 +7883,24 @@ async function runTopicIdeas() {
         line += '\n  Covers: ' + a.subtopics.join(' | ');
       }
       if (a.content) {
-        // First 200 chars of content as a signal of their angle
         var snippet = a.content.substring(0, 400).replace(/\s+/g, ' ').trim().substring(0, 200);
         line += '\n  Angle: ' + snippet;
       }
       return line;
     });
-    return '=== ' + (c.domain || c.source) + ' (' + (c.fullArticles||0) + ' articles fully scraped) ===\n' + lines.join('\n');
+    var block = '=== ' + (c.domain || c.source) + ' ===\n' + lines.join('\n');
+    if (c.missing && c.missing.length) {
+      block += '\nGAPS IDENTIFIED (topics they do not cover): ' + c.missing.join(' | ');
+    }
+    return block;
   }).join('\n\n');
 
   var fxifyBlock = fxifyArticles.slice(0,40).map(function(a){ return a.title; }).join(' | ');
+
+  // SERP data — what is actually ranking for this keyword right now
+  var serpBlock = serpData.length ? serpData.map(function(r, i) {
+    return (i+1) + '. ' + r.title + (r.description ? ' — ' + r.description.substring(0,100) : '');
+  }).join('\n') : '';
 
   var kwBlock = kwData.slice(0,25).map(function(k) {
     if (k.stub) return '- ' + k.keyword + ' (volume: TBC — add DataForSEO credentials)';
@@ -7826,104 +7916,146 @@ async function runTopicIdeas() {
   var prompt =
     (feedbackRules ? 'REVIEWER FEEDBACK (enforce in every topic):\n' + feedbackRules + '\n\n' : '') +
 
-    // ── STEP 1: FORCE Claude to process scraped data FIRST ──────────
-    'TASK: You are doing competitive content gap analysis for FXIFY. Work through this in 3 strict steps.\n\n' +
+    // ── TASK ──────────────────────────────────────────────────────────
+    'TASK: Competitive content gap analysis for FXIFY. Work through 3 strict steps.\n\n' +
 
-    'STEP 1 — READ THE COMPETITOR ARTICLES BELOW.\n' +
+    'STEP 1 — READ THE COMPETITOR ARTICLES BELOW LINE BY LINE.\n' +
     'For each competitor domain, identify:\n' +
     '  a) What topics they cover most (their content pillars)\n' +
-    '  b) What angle they use (educational? review? how-to?)\n' +
-    '  c) What they NEVER cover or cover badly (the gap)\n' +
-    'Do this for every domain in the scraped data. Do not skip any.\n\n' +
+    '  b) What angle they use\n' +
+    '  c) What they NEVER cover or cover badly — the real gap\n' +
+    'Do this for every domain. Do not skip any.\n\n' +
 
     'STEP 2 — CROSS-REFERENCE WITH FXIFY PUBLISHED LIST.\n' +
     'Remove any topic FXIFY already covers. Only surface genuine gaps.\n\n' +
 
-    'STEP 3 — BUILD TOPICS FROM THE GAPS.\n' +
-    'Every topic must come directly from a gap you identified in Step 1.\n' +
-    'NO topic can be invented from general knowledge.\n' +
-    'Every topic needs a specific competitor URL that proves the gap exists.\n\n' +
+    'STEP 3 — BUILD TOPICS FROM THE GAPS ONLY.\n' +
+    'Every topic must trace to a specific gap found in Step 1.\n' +
+    'No topic invented from general knowledge.\n' +
+    'Every topic needs a competitor URL that proves the gap exists.\n\n' +
 
-    // ── CONVERSION FOCUS ────────────────────────────────────────────
-    'CONVERSION PRIORITY — rank topics by commercial value:\n' +
-    '1. HIGH-INTENT TRANSACTIONAL: "FXIFY vs [competitor]", "[competitor] alternative", "best prop firm [year]"\n' +
-    '   → These convert. Someone comparing is ready to buy.\n' +
-    '2. PROBLEM/SOLUTION: "why did I fail [firm]", "how to not blow [challenge]", "[firm] drawdown calculator"\n' +
-    '   → Captures traders mid-frustration — high switch intent.\n' +
-    '3. REVIEW + PROOF: "is [firm] legit", "[firm] payout proof", "[firm] review [year]"\n' +
-    '   → Late funnel. They want validation before buying.\n' +
-    '4. HOW-TO: "how to pass [firm] challenge", "how to withdraw from [firm]"\n' +
-    '   → Useful + builds trust. Mid-funnel.\n' +
-    '5. INFORMATIONAL: general education, trading tips\n' +
-    '   → Lowest conversion. Use sparingly.\n\n' +
+    // ── OUTPUT FORMAT — THIS IS NON-NEGOTIABLE ────────────────────────
+    'OUTPUT FORMAT RULES — every topic must follow this exactly:\n\n' +
 
-    // ── FXIFY CONTEXT ────────────────────────────────────────────────
-    'FXIFY FACTS (cite these specifically in fxify_angle — no vague claims):\n' +
-    '- ONE PHASE: No consistency rule. Instant payout on demand. No payout cycle. Only firm in category.\n' +
-    '- TWO PHASE CLASSIC: Static 10% max drawdown. Floor never moves. Better for swing traders.\n' +
-    '- TWO PHASE STANDARD: Trailing drawdown — floor rises with profit.\n' +
-    '- INSTANT FUNDING LITE: From $19 for $2,500 funded. Lowest entry in the market.\n' +
-    '- BROKER-BACKED: FXPIG since 2010. Only prop firm with real regulated broker behind it.\n' +
-    '- PAYOUTS: $40M+ paid. 250K+ traders. Up to 90% performance split.\n' +
-    '- DRAWDOWN: 5% daily, 10% max. FTMO has 14-day payout cycle — FXIFY does not.\n\n' +
+    'TITLE: Write as a statement or hook, not a blog headline.\n' +
+    'GOOD: "You can get a funded trading account for $19"\n' +
+    'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
+    'GOOD: "There is a rule that can fail your account on your best trading day"\n' +
+    'GOOD: "If you are a swing trader, most prop firm drawdown rules are working against you"\n' +
+    'BAD: "How to Choose the Best Prop Firm in 2026"\n' +
+    'BAD: "A Comprehensive Guide to Prop Trading"\n' +
+    'BAD: "Understanding FXIFY\'s Drawdown Rules"\n\n' +
 
-    // ── TONE ────────────────────────────────────────────────────────
-    'TITLE RULES:\n' +
-    '- Keyword-first. Search term before any colon or punctuation.\n' +
-    '- Sounds like a real Google search, not a blog headline.\n' +
-    '- ESL Grade 5-6. Short. Direct. No fluff.\n' +
-    '- Max 65 characters.\n' +
-    '- Year = ' + nowStr() + ' if year is included.\n\n' +
-    'BANNED TITLE WORDS (auto-reject): Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, ' +
-    'Navigating, Elevate, Transform, Powerful, Journey, Landscape, Robust, Seamlessly, Revolutionize\n\n' +
-    'GOOD TITLES: "FXIFY vs FTMO ' + nowStr() + ': Which One Pays Faster?" | "FXIFY One Phase Review: No Consistency Rule Explained" | "How to Pass FXIFY Two Phase in 14 Days"\n' +
-    'BAD TITLES: "Mastering the Art of Prop Trading" | "Unlocking Your Trading Potential with FXIFY"\n\n' +
+    'TONE — every title and every field must:\n' +
+    '- Sound like a straight-talking trader mentor\n' +
+    '- ESL Grade 5-6. Short sentences. One idea per sentence. Full stop.\n' +
+    '- Read like something a trader would say in a voice note, not a press release\n' +
+    '- No buzzwords: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Navigating, Elevate, Transform, Revolutionize, Game-changer, Seamlessly, Robust\n\n' +
 
-    // ── DATA ────────────────────────────────────────────────────────
+    'CONVERSION TIERS — rank every topic:\n' +
+    '- TIER 1 (score 85+): High intent. Converts directly. Comparison, transactional, problem/solution.\n' +
+    '  Examples: "FXIFY vs [firm] — which pays faster", "$19 funded account", "rule that failed my challenge"\n' +
+    '- TIER 2 (score 70-84): Mid-funnel. Comparing and deciding. Product explainers, how-to, feature breakdowns.\n' +
+    '  Examples: "One Phase vs Two Phase", "how to pass FXIFY challenge", "EA trading rules explained"\n' +
+    '- TIER 3 (score <70): Top of funnel. Awareness. High reach, lower conversion.\n' +
+    '  Examples: "what is a prop firm", "how funded trading works"\n\n' +
+
+    'SHORT-FORM HOOK — write as the brand speaking, not a third party.\n' +
+    'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
+    'GOOD: "One of our traders just received a single payout of $117,000."\n' +
+    'BAD: "I found FXIFY and it changed everything for me"\n' +
+    'BAD: "In this video we will explore prop trading"\n\n' +
+
+    'COMPETITOR GAP — must be specific. Required format:\n' +
+    '"[Firm] published \'[exact title]\' but never addresses [specific gap]. FXIFY wins because [one verifiable fact with a number]."\n\n' +
+
+    'SIGNAL SOURCE — cite the real data that justified this topic:\n' +
+    '"Reddit: [question text]" OR "Competitor: [channel/site — article title]" OR "Keyword: [search term + volume]" OR "Industry data: [specific stat]"\n\n' +
+
+    'WHY NOW — must be a specific 2026 trigger. Not vague.\n' +
+    'GOOD: "FTMO acquired OANDA December 2025 — traders now searching what broker-backed means"\n' +
+    'GOOD: "94% of traders fail their first prop challenge — CFTC-sourced study of 3,000 traders"\n' +
+    'BAD: "traders are always interested in this topic"\n' +
+    'BAD: "growing interest in prop firms"\n\n' +
+
+    // ── CONVERSION FOCUS ──────────────────────────────────────────────
+    'CONVERSION PRIORITY — rank topics in this order:\n' +
+    '1. TRANSACTIONAL: "$19 funded account", "FXIFY discount code", cheapest/fastest path to funded\n' +
+    '2. COMPARISON: "FXIFY vs [firm]", "One Phase vs Two Phase", head-to-head on specific rules\n' +
+    '3. PROBLEM/SOLUTION: "rule that failed my account", "why traders fail challenges", "drawdown explained"\n' +
+    '4. REVIEW/PROOF: "is FXIFY legit", "$117k payout", "payout proof"\n' +
+    '5. HOW-TO: "how to pass FXIFY challenge", "how to request payout"\n' +
+    '6. EDUCATION: explainers, feature guides — useful but lower conversion\n\n' +
+
+    // ── FXIFY FACTS ───────────────────────────────────────────────────
+    'FXIFY FACTS — cite these exactly. Never vague-ify:\n' +
+    '- ONE PHASE: 10% profit target. Static drawdown. No consistency rule. No time limit. Payout after first profitable trade.\n' +
+    '- TWO PHASE CLASSIC: 5%+5% targets. Static drawdown. 25% consistency rule on FUNDED stage only (not evaluation).\n' +
+    '- TWO PHASE STANDARD: 10%+5% targets. Trailing drawdown. No consistency rule.\n' +
+    '- THREE PHASE: 5% targets per phase. Static drawdown. Lowest fee entry after Instant.\n' +
+    '- INSTANT FUNDING LITE: $19. $2,500 live funded account. No challenge. Trailing drawdown. Payout after 14 days.\n' +
+    '- LIGHTNING: 5% target. Static drawdown. 30% consistency rule on both eval and funded. Payout after 7 days. No EAs. Mandatory stop-loss.\n' +
+    '- BROKER-BACKED: FXPIG since 2010. Regulated. Real market infrastructure.\n' +
+    '- PAYOUTS: $40M+ paid. 250,000+ traders. Up to 90% performance split. Evaluation fee refunded with first payout on 1/2/3 Phase.\n' +
+    '- EA TRADING: allowed on MT4/MT5 for One/Two/Three Phase. NOT on Lightning or Instant.\n' +
+    '- NEWS TRADING: fully allowed on One/Two/Three Phase. Restricted on Instant and Lightning (5 min window).\n' +
+    '- WEEKEND HOLDING: allowed on One/Two/Three Phase. Auto-close on Instant accounts.\n' +
+    '- HIGHEST SINGLE PAYOUT: $117,000. One trader has received 40+ payouts, all on time.\n\n' +
+
+    // ── DATA ──────────────────────────────────────────────────────────
     'SEED KEYWORD: ' + seed + '\n' +
-    'CATEGORY: ' + cat + '\n\n' +
+    'CATEGORY: ' + cat + '\n' +
+    'TODAY: ' + nowStr() + '. All topics must be current. Never reference 2024 or 2025 as current.\n\n' +
 
-    (kwBlock ? '── DATAFORSEO KEYWORD DATA (use these exact numbers in your output — do not invent) ──\n' + kwBlock + '\n\n' : '') +
-    (acBlock ? '── GOOGLE AUTOCOMPLETE (real searches happening right now) ──\n' + acBlock + '\n\n' : '') +
-
-    (compBlock ?
-      '── SCRAPED COMPETITOR ARTICLES (work from THIS data — do not invent gaps) ──\n' +
-      'These are the actual titles competitors published. Read them carefully.\n' +
-      'Your gaps must reference specific articles from this list.\n\n' +
-      compBlock + '\n\n'
-    : '⚠ No competitor data scraped — Firecrawl may be unavailable. Generate from keyword data only.\n\n') +
-
-    (fxifyBlock ?
-      '── FXIFY ALREADY PUBLISHED (exclude these completely) ──\n' +
-      fxifyBlock + '\n\n'
+    (kwBlock ?
+      '── DATAFORSEO KEYWORD DATA (use exact volumes — do not invent) ──\n' + kwBlock + '\n\n'
     : '') +
 
-    // ── OUTPUT FORMAT ────────────────────────────────────────────────
-    'Return ONLY valid JSON. No markdown. No preamble. No explanation outside the JSON.\n\n' +
-    'CRITICAL RULES FOR EACH TOPIC:\n' +
-    '- competitor_gap MUST cite a real competitor name + article title from the scraped data above\n' +
-    '- competitor_gap format: "[Firm] published \'[exact title]\' but never addresses [specific gap]. FXIFY can own [angle]."\n' +
-    '- fxify_angle MUST name one specific FXIFY product + one verifiable number\n' +
-    '- why_now MUST be a specific 2026 event or market trigger — not "growing interest"\n' +
-    '- opportunity_score: 90+ = high-intent commercial topic, 70-89 = solid SEO play, <70 = informational only\n\n' +
-    '{"topics":[{' +
-    '"title":"Keyword-first, under 65 chars",' +
-    '"primary_keyword":"exact phrase matching DataForSEO data",' +
-    '"secondary_keywords":["kw2","kw3","kw4"],' +
-    '"search_volume":"number from DataForSEO or TBC",' +
-    '"kd_score":"0-100 or TBC",' +
-    '"cpc":"$X.XX or TBC",' +
-    '"competition_level":"Low|Medium|High",' +
-    '"category":"Guides|Strategies|Comparisons|Reviews",' +
-    '"content_strategy":"TRANSACTIONAL|COMPARISON|REVIEW|PROBLEM_SOLUTION|HOW_TO|DATA_STATS|VERSUS|NEWS",' +
-    '"search_intent":"Informational|Commercial|Transactional",' +
-    '"word_count":"800-1500 based on intent",' +
-    '"competitor_gap":"[Firm] published \'[exact scraped title]\' but never addresses [gap]. URL: [exact url].",' +
-    '"competitor_urls":["https://exact-url-from-scraped-data"],' +
-    '"fxify_angle":"[Exact product] wins because [specific fact with number from FXIFY facts above]",' +
-    '"why_now":"[Specific 2026 trigger — real event, not vague]",' +
-    '"opportunity_score":85,' +
-    '"priority":"High|Normal|Low"' +
+    (acBlock ?
+      '── GOOGLE AUTOCOMPLETE (real searches happening now) ──\n' + acBlock + '\n\n'
+    : '') +
+
+    (serpBlock ?
+      '── WHAT IS CURRENTLY RANKING FOR "' + seed + '" (live SERP research) ──\n' +
+      'These are the pages ranking when traders search this topic right now. ' +
+      'Study what angle each result takes. What are they all saying? What is none of them saying?\n\n' +
+      serpBlock + '\n\n'
+    : '') +
+
+    (compBlock ?
+      '── COMPETITOR CONTENT RESEARCH ──\n' +
+      'These are the topics and content pillars each competitor publishes.\n' +
+      'Every gap must reference a specific competitor and what they miss.\n\n' +
+      compBlock + '\n\n'
+    : '⚠ No competitor data scraped. Generate from keyword data and FXIFY facts only.\n\n') +
+
+    (fxifyBlock ?
+      '── FXIFY ALREADY PUBLISHED (exclude completely) ──\n' + fxifyBlock + '\n\n'
+    : '') +
+
+    // ── OUTPUT SCHEMA ─────────────────────────────────────────────────
+    'Return ONLY valid JSON. No markdown. No preamble.\n\n' +
+    '{"topics":[{\n' +
+    '"title":"Statement or hook — not a blog headline. ESL Grade 5-6. Under 65 chars.",\n' +
+    '"primary_keyword":"exact phrase from keyword data",\n' +
+    '"secondary_keywords":["kw2","kw3"],\n' +
+    '"search_volume":"number from DataForSEO or TBC",\n' +
+    '"kd_score":"0-100 or TBC",\n' +
+    '"cpc":"$X.XX or TBC",\n' +
+    '"competition_level":"Low|Medium|High",\n' +
+    '"category":"Guides|Comparisons|Reviews|How-To|Awareness",\n' +
+    '"content_strategy":"TRANSACTIONAL|COMPARISON|REVIEW|PROBLEM_SOLUTION|HOW_TO|EDUCATION",\n' +
+    '"conversion_tier":"1|2|3",\n' +
+    '"search_intent":"Informational|Commercial|Transactional",\n' +
+    '"word_count":"800-1500 based on intent",\n' +
+    '"competitor_gap":"[Firm] published \'[exact scraped title]\' but never addresses [gap]. FXIFY wins because [specific fact with number].",\n' +
+    '"competitor_urls":["https://exact-url-from-scraped-data"],\n' +
+    '"fxify_angle":"[Exact FXIFY product] + [one verifiable number from facts above]. One sentence.",\n' +
+    '"short_form_hook":"Brand voice. One or two punchy sentences. ESL Grade 5. No intro phrases.",\n' +
+    '"signal_source":"Reddit: [question] | Competitor: [site — title] | Keyword: [term + vol] | Industry: [stat]",\n' +
+    '"why_now":"Specific 2026 event or data point. Not vague.",\n' +
+    '"opportunity_score":85,\n' +
+    '"priority":"High|Normal|Low"\n' +
     '}]}';
   try {
     var text   = await v2Fetch(prompt, 3500);
