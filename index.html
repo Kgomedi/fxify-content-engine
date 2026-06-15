@@ -7565,23 +7565,34 @@ function parseJSON(text) {
 
 function v2Toast(msg) { toast(msg); }
 
-async function v2Fetch(prompt, max_tokens, useWebSearch) {
+async function v2Fetch(prompt, max_tokens) {
   var r = await fetch(V2_CONFIG.webhook, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
       prompt: prompt,
-      max_tokens: max_tokens || 3000,
-      web_search: useWebSearch || false
+      max_tokens: max_tokens || 3000
     })
   });
-  var data = await r.json();
+  var raw = await r.text();
+  console.log('[v2Fetch] raw response (first 500):', raw.substring(0, 500));
+  var data;
+  try { data = JSON.parse(raw); } catch(e) {
+    console.error('[v2Fetch] JSON parse failed on:', raw.substring(0, 200));
+    throw new Error('n8n returned non-JSON: ' + raw.substring(0, 100));
+  }
+  console.log('[v2Fetch] parsed data keys:', Object.keys(data));
   var text = '';
   if (Array.isArray(data) && data[0]) {
     var d = data[0];
     text = d.text || (d.content && d.content[0] && d.content[0].text) || '';
+    console.log('[v2Fetch] array format, text length:', text.length);
   } else {
     text = data.text || (data.content && data.content[0] && data.content[0].text) || '';
+    console.log('[v2Fetch] object format, text length:', text.length);
+  }
+  if (!text) {
+    console.error('[v2Fetch] empty text! Full data:', JSON.stringify(data).substring(0, 300));
   }
   return text;
 }
@@ -7860,149 +7871,60 @@ async function runTopicIdeas() {
   var acBlock = autocomplete.length ? autocomplete.join(' | ') : '';
 
   var prompt =
-    (feedbackRules ? 'REVIEWER FEEDBACK (enforce in every topic):\n' + feedbackRules + '\n\n' : '') +
+    (feedbackRules ? 'REVIEWER FEEDBACK TO ENFORCE:\n' + feedbackRules + '\n\n' : '') +
 
-    // ── TASK ──────────────────────────────────────────────────────────
-    'TASK: Competitive content gap analysis for FXIFY. Work through 3 strict steps.\n\n' +
+    'You are the content strategist for FXIFY, a broker-backed prop trading firm.\n\n' +
 
-    'STEP 1 — READ THE COMPETITOR ARTICLES BELOW LINE BY LINE.\n' +
-    'For each competitor domain, identify:\n' +
-    '  a) What topics they cover most (their content pillars)\n' +
-    '  b) What angle they use\n' +
-    '  c) What they NEVER cover or cover badly — the real gap\n' +
-    'Do this for every domain. Do not skip any.\n\n' +
+    'TASK: Identify the best content and video topics for FXIFY to produce right now.\n\n' +
 
-    'STEP 2 — CROSS-REFERENCE WITH FXIFY PUBLISHED LIST.\n' +
-    'Remove any topic FXIFY already covers. Only surface genuine gaps.\n\n' +
+    'STEP 1 — Study the competitor content below. What do they cover obsessively? ' +
+    'What do they NEVER cover? What angles do they miss completely?\n\n' +
 
-    'STEP 3 — BUILD TOPICS FROM THE GAPS ONLY.\n' +
-    'Every topic must trace to a specific gap found in Step 1.\n' +
-    'No topic invented from general knowledge.\n' +
-    'Every topic needs a competitor URL that proves the gap exists.\n\n' +
+    'STEP 2 — Remove any topic FXIFY already covers (list below).\n\n' +
 
-    // ── OUTPUT FORMAT — THIS IS NON-NEGOTIABLE ────────────────────────
-    'OUTPUT FORMAT RULES — every topic must follow this exactly:\n\n' +
+    'STEP 3 — Build topics ONLY from genuine gaps. Every topic must trace to ' +
+    'a specific gap found in Step 1. No generic topics.\n\n' +
 
-    'TITLE: Write as a statement or hook, not a blog headline.\n' +
+    'TITLE FORMAT — must be a statement or hook, never a blog headline:\n' +
     'GOOD: "You can get a funded trading account for $19"\n' +
     'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
-    'GOOD: "There is a rule that can fail your account on your best trading day"\n' +
-    'GOOD: "If you are a swing trader, most prop firm drawdown rules are working against you"\n' +
     'BAD: "How to Choose the Best Prop Firm in 2026"\n' +
-    'BAD: "A Comprehensive Guide to Prop Trading"\n' +
-    'BAD: "Understanding FXIFY\'s Drawdown Rules"\n\n' +
+    'BAD: "A Comprehensive Guide to Prop Trading"\n\n' +
 
-    'TONE — every title and every field must:\n' +
-    '- Sound like a straight-talking trader mentor\n' +
-    '- ESL Grade 5-6. Short sentences. One idea per sentence. Full stop.\n' +
-    '- Read like something a trader would say in a voice note, not a press release\n' +
-    '- No buzzwords: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Navigating, Elevate, Transform, Revolutionize, Game-changer, Seamlessly, Robust\n\n' +
-
-    'CONVERSION TIERS — rank every topic:\n' +
-    '- TIER 1 (score 85+): High intent. Converts directly. Comparison, transactional, problem/solution.\n' +
-    '  Examples: "FXIFY vs [firm] — which pays faster", "$19 funded account", "rule that failed my challenge"\n' +
-    '- TIER 2 (score 70-84): Mid-funnel. Comparing and deciding. Product explainers, how-to, feature breakdowns.\n' +
-    '  Examples: "One Phase vs Two Phase", "how to pass FXIFY challenge", "EA trading rules explained"\n' +
-    '- TIER 3 (score <70): Top of funnel. Awareness. High reach, lower conversion.\n' +
-    '  Examples: "what is a prop firm", "how funded trading works"\n\n' +
-
-    'SHORT-FORM HOOK — write as the brand speaking, not a third party.\n' +
-    'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
-    'GOOD: "One of our traders just received a single payout of $117,000."\n' +
-    'BAD: "I found FXIFY and it changed everything for me"\n' +
-    'BAD: "In this video we will explore prop trading"\n\n' +
-
-    'COMPETITOR GAP — must be specific. Required format:\n' +
-    '"[Firm] published \'[exact title]\' but never addresses [specific gap]. FXIFY wins because [one verifiable fact with a number]."\n\n' +
-
-    'SIGNAL SOURCE — cite the real data that justified this topic:\n' +
-    '"Reddit: [question text]" OR "Competitor: [channel/site — article title]" OR "Keyword: [search term + volume]" OR "Industry data: [specific stat]"\n\n' +
-
-    'WHY NOW — must be a specific 2026 trigger. Not vague.\n' +
-    'GOOD: "FTMO acquired OANDA December 2025 — traders now searching what broker-backed means"\n' +
-    'GOOD: "94% of traders fail their first prop challenge — CFTC-sourced study of 3,000 traders"\n' +
-    'BAD: "traders are always interested in this topic"\n' +
-    'BAD: "growing interest in prop firms"\n\n' +
-
-    // ── CONVERSION FOCUS ──────────────────────────────────────────────
-    'CONVERSION PRIORITY — rank topics in this order:\n' +
-    '1. TRANSACTIONAL: "$19 funded account", "FXIFY discount code", cheapest/fastest path to funded\n' +
-    '2. COMPARISON: "FXIFY vs [firm]", "One Phase vs Two Phase", head-to-head on specific rules\n' +
-    '3. PROBLEM/SOLUTION: "rule that failed my account", "why traders fail challenges", "drawdown explained"\n' +
-    '4. REVIEW/PROOF: "is FXIFY legit", "$117k payout", "payout proof"\n' +
-    '5. HOW-TO: "how to pass FXIFY challenge", "how to request payout"\n' +
-    '6. EDUCATION: explainers, feature guides — useful but lower conversion\n\n' +
-
-    // ── FXIFY FACTS ───────────────────────────────────────────────────
-    'FXIFY FACTS — cite these exactly. Never vague-ify:\n' +
-    '- ONE PHASE: 10% profit target. Static drawdown. No consistency rule. No time limit. Payout after first profitable trade.\n' +
-    '- TWO PHASE CLASSIC: 5%+5% targets. Static drawdown. 25% consistency rule on FUNDED stage only (not evaluation).\n' +
+    'FXIFY FACTS (cite these exactly — never vague):\n' +
+    '- ONE PHASE: 10% target. Static drawdown. No consistency rule. No time limit. Payout on demand.\n' +
+    '- TWO PHASE CLASSIC: 5%+5% targets. Static drawdown. 25% consistency rule on funded stage only.\n' +
     '- TWO PHASE STANDARD: 10%+5% targets. Trailing drawdown. No consistency rule.\n' +
-    '- THREE PHASE: 5% targets per phase. Static drawdown. Lowest fee entry after Instant.\n' +
-    '- INSTANT FUNDING LITE: $19. $2,500 live funded account. No challenge. Trailing drawdown. Payout after 14 days.\n' +
-    '- LIGHTNING: 5% target. Static drawdown. 30% consistency rule on both eval and funded. Payout after 7 days. No EAs. Mandatory stop-loss.\n' +
-    '- BROKER-BACKED: FXPIG since 2010. Regulated. Real market infrastructure.\n' +
-    '- PAYOUTS: $40M+ paid. 250,000+ traders. Up to 90% performance split. Evaluation fee refunded with first payout on 1/2/3 Phase.\n' +
-    '- EA TRADING: allowed on MT4/MT5 for One/Two/Three Phase. NOT on Lightning or Instant.\n' +
-    '- NEWS TRADING: fully allowed on One/Two/Three Phase. Restricted on Instant and Lightning (5 min window).\n' +
-    '- WEEKEND HOLDING: allowed on One/Two/Three Phase. Auto-close on Instant accounts.\n' +
-    '- HIGHEST SINGLE PAYOUT: $117,000. One trader has received 40+ payouts, all on time.\n\n' +
+    '- THREE PHASE: 5% targets per phase. Static drawdown.\n' +
+    '- INSTANT FUNDING LITE: $19. $2,500 live account. No challenge. Trailing drawdown. Payout after 14 days.\n' +
+    '- LIGHTNING: 5% target. 30% consistency both eval+funded. No EAs. Payout after 7 days.\n' +
+    '- BROKER-BACKED: FXPIG since 2010. Regulated.\n' +
+    '- $40M+ paid out. 250,000+ traders. Up to 90% performance split.\n' +
+    '- Eval fee refunded with first payout on 1/2/3 Phase.\n' +
+    '- Highest single payout: $117,000 to date.\n\n' +
 
-    // ── DATA ──────────────────────────────────────────────────────────
-    'SEED KEYWORD: ' + seed + '\n' +
-    'CATEGORY: ' + cat + '\n' +
-    'TODAY: ' + nowStr() + '. All topics must be current. Never reference 2024 or 2025 as current.\n\n' +
+    'SEED TOPIC: ' + seed + '\n' +
+    'CATEGORY: ' + cat + '\n\n' +
 
-    (kwBlock ?
-      '── DATAFORSEO KEYWORD DATA (use exact volumes — do not invent) ──\n' + kwBlock + '\n\n'
-    : '') +
+    (kwBlock ? '── KEYWORD DATA ──\n' + kwBlock + '\n\n' : '') +
+    (compBlock ? '── COMPETITOR CONTENT (identify gaps from this) ──\n' + compBlock + '\n\n' : '') +
+    (fxifyBlock ? '── FXIFY ALREADY PUBLISHED (exclude these) ──\n' + fxifyBlock + '\n\n' : '') +
 
-    (acBlock ?
-      '── GOOGLE AUTOCOMPLETE (real searches happening now) ──\n' + acBlock + '\n\n'
-    : '') +
-
-    (serpBlock ?
-      '── WHAT IS CURRENTLY RANKING FOR "' + seed + '" (live SERP research) ──\n' +
-      'These are the pages ranking when traders search this topic right now. ' +
-      'Study what angle each result takes. What are they all saying? What is none of them saying?\n\n' +
-      serpBlock + '\n\n'
-    : '') +
-
-    (compBlock ?
-      '── COMPETITOR CONTENT RESEARCH ──\n' +
-      'These are the topics and content pillars each competitor publishes.\n' +
-      'Every gap must reference a specific competitor and what they miss.\n\n' +
-      compBlock + '\n\n'
-    : '⚠ No competitor data scraped. Generate from keyword data and FXIFY facts only.\n\n') +
-
-    (fxifyBlock ?
-      '── FXIFY ALREADY PUBLISHED (exclude completely) ──\n' + fxifyBlock + '\n\n'
-    : '') +
-
-    // ── OUTPUT SCHEMA ─────────────────────────────────────────────────
-    'Return ONLY valid JSON. No markdown. No preamble.\n\n' +
-    '{"topics":[{\n' +
-    '"title":"Statement or hook — not a blog headline. ESL Grade 5-6. Under 65 chars.",\n' +
-    '"primary_keyword":"exact phrase from keyword data",\n' +
-    '"secondary_keywords":["kw2","kw3"],\n' +
-    '"search_volume":"number from DataForSEO or TBC",\n' +
-    '"kd_score":"0-100 or TBC",\n' +
-    '"cpc":"$X.XX or TBC",\n' +
-    '"competition_level":"Low|Medium|High",\n' +
-    '"category":"Guides|Comparisons|Reviews|How-To|Awareness",\n' +
-    '"content_strategy":"TRANSACTIONAL|COMPARISON|REVIEW|PROBLEM_SOLUTION|HOW_TO|EDUCATION",\n' +
-    '"conversion_tier":"1|2|3",\n' +
-    '"search_intent":"Informational|Commercial|Transactional",\n' +
-    '"word_count":"800-1500 based on intent",\n' +
-    '"competitor_gap":"[Firm] published \'[exact scraped title]\' but never addresses [gap]. FXIFY wins because [specific fact with number].",\n' +
-    '"competitor_urls":["https://exact-url-from-scraped-data"],\n' +
-    '"fxify_angle":"[Exact FXIFY product] + [one verifiable number from facts above]. One sentence.",\n' +
-    '"short_form_hook":"Brand voice. One or two punchy sentences. ESL Grade 5. No intro phrases.",\n' +
-    '"signal_source":"Reddit: [question] | Competitor: [site — title] | Keyword: [term + vol] | Industry: [stat]",\n' +
-    '"why_now":"Specific 2026 event or data point. Not vague.",\n' +
-    '"opportunity_score":85,\n' +
-    '"priority":"High|Normal|Low"\n' +
+    'Generate 8 topics. Return ONLY valid JSON, no markdown:\n' +
+    '{"topics":[{' +
+    '"title":"Statement hook under 65 chars",' +
+    '"intent":"Commercial|Informational|Transactional",' +
+    '"conversion_tier":"1|2|3",' +
+    '"primary_keyword":"exact search term",' +
+    '"search_volume":"from keyword data or TBC",' +
+    '"kd_score":"0-100 or TBC",' +
+    '"short_form_hook":"exact first sentence Harry says to camera",' +
+    '"competitor_gap":"[Firm] covers X but never addresses Y. FXIFY wins because [specific fact].",' +
+    '"fxify_angle":"exact FXIFY product + verifiable number. One sentence.",' +
+    '"why_now":"specific 2026 event or stat. Not vague.",' +
+    '"opportunity_score":85' +
     '}]}';
+
   try {
     var text   = await v2Fetch(prompt, 3500);
     var result = parseJSON(text);
@@ -8011,7 +7933,11 @@ async function runTopicIdeas() {
     topics.sort(function(a,b){ return (b.opportunity_score||0) - (a.opportunity_score||0); });
     renderTopicGrid(topics, isStub, fxifyArticles.length);
   } catch(e) {
-    output.innerHTML = '<p style="color:var(--urgent);padding:16px;">Error: ' + e.message + '</p>';
+    console.error('[runTopicIdeas] error:', e);
+    output.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--urgent);border-radius:var(--rl);padding:16px;">' +
+      '<p style="color:var(--urgent);font-weight:600;margin-bottom:6px;">Error: ' + e.message + '</p>' +
+      '<p style="color:var(--text3);font-size:12px;">Open browser console (F12 → Console) to see the full n8n response and diagnose the issue.</p>' +
+    '</div>';
     v2Toast('Error: ' + e.message);
   }
   btn.disabled = false; btn.textContent = '⚡ Find topic gaps →';
