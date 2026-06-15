@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
 <meta charset="UTF-8"/>
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚡</text></svg>">
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
@@ -733,7 +736,7 @@ select.finput option{background:var(--bg2);color:var(--text);}
                 <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-fxify" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--tealL);color:var(--teal);border:1px solid rgba(29,155,240,0.2);font-family:var(--mono);">FXIFY published</span> Dedup check</label>
               </div>
             </div>
-            <button class="btn btn-p" id="v2-run-btn" style="min-width:200px;">⚡ Find topic gaps →</button>
+            <button class="btn btn-p" id="v2-research-btn" style="min-width:200px;">⚡ Find topic gaps →</button>
           </div>
           <div id="v2-brief-output"></div>
         </div>
@@ -1646,7 +1649,23 @@ select.finput option{background:var(--bg2);color:var(--text);}
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script>
+<script>// FXIFY Content Engine v2 — build 2026-06-15-v3
+
+// ── FIRECRAWL DISABLED — key expired, all calls return empty immediately ──────
+var _nativeFetch = window.fetch;
+window.fetch = function(url, opts) {
+  if (typeof url === 'string' && url.includes('firecrawl.dev')) {
+    console.log('[Firecrawl] Intercepted — key expired, returning empty stub');
+    return Promise.resolve({
+      ok: false, status: 403,
+      json: function() { return Promise.resolve({ success: false, data: null }); },
+      text: function() { return Promise.resolve(''); }
+    });
+  }
+  return _nativeFetch.apply(this, arguments);
+};
+
+
 (function(){
 
 'use strict';
@@ -5135,316 +5154,59 @@ function ytShowLoader(steps) {
 }
 
 async function runYouTubeDiscovery() {
-  var topic    = (document.getElementById('yt-topic')||{}).value || '';
-  var vidType  = (document.getElementById('yt-type')||{}).value || 'Tutorial / How-to';
-  var formatEl = document.querySelector('input[name="yt-format"]:checked');
-  var formatVal = formatEl ? formatEl.value : 'long';
-  var formatInstr = formatVal === 'short'
-    ? 'FORMAT: SHORT FORM ONLY (<60s Shorts/Reels). Hook in first 3 words. One single tip or stat per video.'
-    : formatVal === 'both'
-    ? 'FORMAT: Generate ideas for BOTH [SHORT] (<60s Shorts) AND [LONG] (5-15min). Label each clearly.'
-    : 'FORMAT: LONG FORM (5-15 minutes). Tutorial/walkthrough. Searchable title.';
-  var useSEO   = document.getElementById('sig-seo') && document.getElementById('sig-seo').checked;
-  var useX     = document.getElementById('sig-x') && document.getElementById('sig-x').checked;
-  var useReddit= document.getElementById('sig-reddit') && document.getElementById('sig-reddit').checked;
-  var useComp  = document.getElementById('sig-comp') && document.getElementById('sig-comp').checked;
+  var btn    = document.getElementById('ayt-research-btn');
+  var output = document.getElementById('v2-brief-output');
+  var topic  = (document.getElementById('ayt-topic') || {}).value || 'prop trading funded accounts';
+  var vidType = (document.getElementById('ayt-format') || {}).value || 'short';
 
-  if (!topic.trim()) { toast('Enter a seed topic first'); return; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Discovering...'; }
 
-  var btn     = document.getElementById('ayt-research-btn') || document.getElementById('yt-research-btn');
-  var results = document.getElementById('yt-results');
-  btn.disabled = true; btn.textContent = 'Researching...';
-  results.style.display = 'none';
+  v2ShowLoader(output, [
+    'Researching YouTube content gaps for this topic...',
+    'Analysing what competitors are missing...',
+    'Building video topic ideas...'
+  ]);
 
-  var steps = [
-    useSEO    ? 'DataForSEO — YouTube keyword volume & trends...' : null,
-    useX      ? 'Firecrawl — X trader takes & viral angles...'    : null,
-    useReddit ? 'Firecrawl — Reddit pain points & questions...'   : null,
-    useComp   ? 'Firecrawl — Competitor YouTube channels...'      : null,
-    'Claude — scoring & ranking topics...',
-  ].filter(Boolean);
-
-  ytShowLoader(steps);
-
-  var stepIdx = 0;
-
-  // ── SIGNAL 1: DataForSEO YouTube volume ──────────────────────────────
-  var seoData = [];
-  if (useSEO && V2_CONFIG.dfsLogin && V2_CONFIG.dfsPass) {
-    ytSetStep(steps, stepIdx, 'active');
-    try {
-      var creds = btoa(V2_CONFIG.dfsLogin + ':' + V2_CONFIG.dfsPass);
-      // YouTube-specific keyword suggestions
-      var r1 = await fetch('https://api.dataforseo.com/v3/dataforseo_labs/google/keyword_suggestions/live', {
-        method: 'POST',
-        headers: { 'Authorization': 'Basic ' + creds, 'Content-Type': 'application/json' },
-        body: JSON.stringify([{ keyword: topic, language_code: 'en', location_code: 2840, limit: 20 }])
-      });
-      var d1 = await r1.json();
-      var items = (d1.tasks && d1.tasks[0] && d1.tasks[0].result && d1.tasks[0].result[0] && d1.tasks[0].result[0].items) || [];
-      // Also get YouTube-specific autocomplete
-      var r2 = await fetch('https://api.dataforseo.com/v3/serp/youtube/organic/live/advanced', {
-        method: 'POST',
-        headers: { 'Authorization': 'Basic ' + creds, 'Content-Type': 'application/json' },
-        body: JSON.stringify([{ keyword: topic, language_code: 'en', location_code: 2840, depth: 10 }])
-      });
-      var d2 = await r2.json();
-      var ytItems = (d2.tasks && d2.tasks[0] && d2.tasks[0].result && d2.tasks[0].result[0] && d2.tasks[0].result[0].items) || [];
-      seoData = {
-        keywords: items.slice(0,15).map(function(k){ return { keyword: k.keyword, volume: k.keyword_info && k.keyword_info.search_volume, cpc: k.keyword_info && k.keyword_info.cpc }; }),
-        ytVideos: ytItems.slice(0,10).map(function(v){ return { title: v.title, views: v.views_count, channel: v.channel_name }; })
-      };
-    } catch(e) {
-      console.warn('DataForSEO error:', e.message);
-      seoData = { keywords: [], ytVideos: [], error: e.message };
-    }
-    ytSetStep(steps, stepIdx, 'done');
-    stepIdx++;
-  }
-
-  // ── SIGNAL 2: X via Firecrawl ─────────────────────────────────────────
-  var xData = '';
-  if (useX) {
-    ytSetStep(steps, stepIdx, 'active');
-    try {
-      var xUrls = YT_X_SOURCES.map(function(url) {
-        return url.replace('prop+trading', encodeURIComponent(topic)).replace('funded+trader', encodeURIComponent(topic + ' trader'));
-      });
-      var xResults = await Promise.allSettled(xUrls.slice(0,2).map(function(url) {
-        return fetch('https://api.firecrawl.dev/v1/scrape', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
-        }).then(function(r){ return r.json(); });
-      }));
-      xData = xResults
-        .filter(function(r){ return r.status === 'fulfilled' && r.value.success; })
-        .map(function(r){ return r.value.data && r.value.data.markdown ? r.value.data.markdown.substring(0, 1500) : ''; })
-        .join('\n\n');
-    } catch(e) { console.warn('X scrape error:', e.message); }
-    ytSetStep(steps, stepIdx, 'done');
-    stepIdx++;
-  }
-
-  // ── SIGNAL 3: Reddit via Firecrawl ────────────────────────────────────
-  var redditData = '';
-  if (useReddit) {
-    ytSetStep(steps, stepIdx, 'active');
-    try {
-      var redditResults = await Promise.allSettled(YT_REDDIT_SOURCES.map(function(url) {
-        return fetch('https://api.firecrawl.dev/v1/scrape', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
-        }).then(function(r){ return r.json(); });
-      }));
-      redditData = redditResults
-        .filter(function(r){ return r.status === 'fulfilled' && r.value.success; })
-        .map(function(r){
-          var md = r.value.data && r.value.data.markdown ? r.value.data.markdown : '';
-          // Extract post titles only — questions and pain points
-          var lines = md.split('\n').filter(function(l){ return l.length > 20 && l.length < 200 && (l.includes('?') || l.includes('how') || l.includes('why') || l.includes('when')); });
-          return lines.slice(0,15).join('\n');
-        })
-        .filter(Boolean)
-        .join('\n\n');
-    } catch(e) { console.warn('Reddit scrape error:', e.message); }
-    ytSetStep(steps, stepIdx, 'done');
-    stepIdx++;
-  }
-
-  // ── SIGNAL 4: Competitor YouTube channels via Firecrawl ───────────────
-  var compData = '';
-  if (useComp) {
-    ytSetStep(steps, stepIdx, 'active');
-    try {
-      var compResults = await Promise.allSettled(YT_COMPETITOR_CHANNELS.slice(0,3).map(function(ch) {
-        return fetch('https://api.firecrawl.dev/v1/scrape', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-          body: JSON.stringify({ url: ch.url + '/videos', formats: ['markdown'], onlyMainContent: true })
-        }).then(function(r){ return r.json().then(function(d){ return { channel: ch.name, data: d }; }); });
-      }));
-      compData = compResults
-        .filter(function(r){ return r.status === 'fulfilled' && r.value.data.success; })
-        .map(function(r){
-          var md = r.value.data.data && r.value.data.data.markdown ? r.value.data.data.markdown : '';
-          // Extract video titles
-          var titles = [];
-          var re = /^#+\s+(.{10,100})$/gm;
-          var m;
-          while ((m = re.exec(md)) !== null && titles.length < 20) titles.push(m[1].trim());
-          // Also grab linked titles
-          var linkRe = /\[([^\]]{15,100})\]\(https?:\/\/[^)]+\)/g;
-          while ((m = linkRe.exec(md)) !== null && titles.length < 30) titles.push(m[1].trim());
-          return 'CHANNEL: ' + r.value.channel + '\nVideos: ' + titles.slice(0,20).join(' | ');
-        })
-        .join('\n\n');
-    } catch(e) { console.warn('Competitor scrape error:', e.message); }
-    ytSetStep(steps, stepIdx, 'done');
-    stepIdx++;
-  }
-
-  // ── SIGNAL 5: Claude scores and ranks ─────────────────────────────────
-  ytSetStep(steps, stepIdx, 'active');
-
-  var kwBlock = seoData.keywords ? seoData.keywords.map(function(k){
-    return '- ' + k.keyword + (k.volume ? ' | vol: ' + k.volume : '') + (k.cpc ? ' | CPC: $' + Number(k.cpc).toFixed(2) : '');
-  }).join('\n') : '';
-
-  var ytBlock = seoData.ytVideos ? seoData.ytVideos.map(function(v){
-    return '- ' + v.title + (v.views ? ' (' + v.views + ' views)' : '') + (v.channel ? ' — ' + v.channel : '');
-  }).join('\n') : '';
-
-  var format = document.querySelector('input[name="yt-format"]:checked');
-  var formatVal = format ? format.value : 'long';
-  var formatInstr = formatVal === 'short'
-    ? 'Format: SHORT FORM (<60 seconds). Hook in first 3 words. Single tip or stat. Punchy. Think Reels/Shorts.'
-    : formatVal === 'both'
-    ? 'Format: Generate ideas for BOTH short form (<60s) and long form (5-15min). Mark each clearly.'
-    : 'Format: LONG FORM (5-15 minutes). Deep walkthrough. Tutorial style. Searchable title.';
-
-  var prompt =
-    // ── TASK ──────────────────────────────────────────────────────────
-    'TASK: YouTube video gap analysis for FXIFY. Work through 3 strict steps.\n\n' +
-
-    'STEP 1 — READ ALL SCRAPED DATA BELOW LINE BY LINE.\n' +
-    'For each source (competitor YouTube channels, Reddit, X/Twitter), identify:\n' +
-    '  a) What topics are oversaturated — covered by everyone\n' +
-    '  b) What trader questions keep appearing with no good answer\n' +
-    '  c) What competitor videos got big views but FXIFY has a better or opposite angle\n' +
-    '  d) What trader frustrations and pain points appear repeatedly\n' +
-    'Do NOT skip any source. Every video idea must trace back to something in the data.\n\n' +
-
-    'STEP 2 — IDENTIFY REAL GAPS ONLY.\n' +
-    'A real gap is:\n' +
-    '- A question appearing 3+ times in Reddit/X with no satisfying video answer\n' +
-    '- A competitor video with big views where FXIFY has a direct counter-angle\n' +
-    '- A comparison video (FXIFY vs X) that does not exist on YouTube\n' +
-    '- A trader pain point with no clear video tutorial covering it\n\n' +
-
-    'STEP 3 — BUILD VIDEO IDEAS FROM GAPS ONLY.\n' +
-    'Cite the specific signal that justified each idea.\n' +
-    'No generic "prop trading tips" or "how to be a better trader" content.\n\n' +
-
-    // ── OUTPUT FORMAT — LOCKED ────────────────────────────────────────
-    'OUTPUT FORMAT — every video topic must follow this exactly:\n\n' +
-
-    'TITLE: Write as a statement or hook. Brand voice. Not a YouTube-style clickbait title.\n' +
-    'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
-    'GOOD: "There is a rule that can fail your account on your best trading day."\n' +
-    'GOOD: "One of our traders just received a single payout of $117,000."\n' +
-    'GOOD: "You can get a funded trading account for $19."\n' +
-    'BAD: "Top 5 Reasons FXIFY Is Better Than FTMO"\n' +
-    'BAD: "How I Made $10,000 with FXIFY in 30 Days"\n' +
-    'BAD: "Mastering Prop Trading in 2026"\n\n' +
-
-    'TONE — every field must:\n' +
-    '- Sound like a straight-talking trading mentor, not a content creator\n' +
-    '- ESL Grade 5-6. Short sentences. One idea. Full stop. Next sentence.\n' +
-    '- Brand voice: we/our — FXIFY is speaking, not a third-party trader\n' +
-    '- No buzzwords, no hype, no urgency tricks\n\n' +
-
-    'HOOK: Must stop the scroll in 3 seconds.\n' +
-    '- Opens with a trader\'s specific situation OR a punchy verifiable claim\n' +
-    '- NOT: "In this video we will..." or "Today we are talking about..."\n' +
-    '- YES: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
-    '- YES: "There is a rule that can fail your account on your best trading day."\n' +
-    '- 2 sentences max. Creates tension or curiosity immediately.\n\n' +
-
-    'SIGNAL SOURCE: cite exactly what data justified this idea.\n' +
-    '"Reddit: [question text]" | "Competitor: [channel — video title + views]" | "X: [take/trend]" | "Keyword: [term + volume]"\n\n' +
-
-    'COMPETITOR GAP: be specific.\n' +
-    '"[Channel] posted [title] but never addressed [specific angle]. FXIFY wins because [one specific fact with a number]."\n\n' +
-
-    'WHY NOW: specific 2026 event or market trigger. Not vague.\n' +
-    'GOOD: "FTMO acquired OANDA Dec 2025 — traders now asking what broker-backed means"\n' +
-    'BAD: "traders are always interested in funded accounts"\n\n' +
-
-    // ── FORMAT ────────────────────────────────────────────────────────
-    formatInstr + '\n\n' +
-
-    // ── FXIFY FACTS ───────────────────────────────────────────────────
-    'FXIFY FACTS — cite these exactly:\n' +
-    '- ONE PHASE: No consistency rule. Payout on demand after first profitable trade. Static drawdown.\n' +
-    '- TWO PHASE CLASSIC: Static drawdown, floor never moves. 25% consistency on funded stage only.\n' +
-    '- INSTANT FUNDING LITE: $19. Live account same day. No challenge.\n' +
-    '- BROKER-BACKED: FXPIG since 2010. Regulated. Real market infrastructure.\n' +
-    '- $40M+ paid out. 250,000+ traders. Highest single payout: $117,000. One trader: 40+ payouts, all on time.\n' +
-    '- Up to 90% performance split. Evaluation fee refunded with first payout on 1/2/3 Phase.\n\n' +
-
-    'SEED TOPIC: ' + topic + '\n' +
-    'VIDEO TYPE: ' + vidType + '\n' +
-    'TODAY: ' + nowStr() + '. All content must be current. No 2024/2025 references.\n\n' +
-
-    (kwBlock ?
-      '── YOUTUBE KEYWORD DATA ──\n' + kwBlock + '\n\n'
-    : '') +
-
-    (ytBlock ?
-      '── TOP VIDEOS CURRENTLY RANKING ──\n' +
-      'These are what traders are watching. What angle is missing? What could be done better?\n' +
-      ytBlock + '\n\n'
-    : '') +
-
-    (redditData ?
-      '── REDDIT — REAL TRADER QUESTIONS ──\n' +
-      'Each question here is a potential video title. Look for ones with no good answer.\n' +
-      redditData.substring(0, 2000) + '\n\n'
-    : '') +
-
-    (xData ?
-      '── X/TWITTER — TRADER TAKES ──\n' +
-      'Hot takes and complaints = high-engagement video angles.\n' +
-      xData.substring(0, 2000) + '\n\n'
-    : '') +
-
-    (compData ?
-      '── COMPETITOR YOUTUBE CHANNELS — READ EVERY TITLE ──\n' +
-      'What do they cover obsessively? What do they never touch? What do they get wrong?\n' +
-      compData.substring(0, 3000) + '\n\n'
-    : '') +
-
-    // ── OUTPUT SCHEMA ─────────────────────────────────────────────────
-    'Generate 8 video ideas ranked by opportunity score.\n' +
-    'Every idea must cite the signal that justified it.\n' +
-    'Return ONLY valid JSON. No markdown. No preamble.\n\n' +
-    '{"topics":[{\n' +
-    '"title":"Statement/hook. Brand voice. ESL Grade 5. Under 60 chars.",\n' +
-    '"score":85,\n' +
-    '"keyword":"primary search term",\n' +
-    '"yt_volume":"number or TBC",\n' +
-    '"signal_source":"Reddit: [question] | Competitor: [channel — title] | X: [take] | Keyword: [term]",\n' +
-    '"competitor_gap":"[Channel/site] covers [topic] but misses [specific angle]. FXIFY wins because [fact with number].",\n' +
-    '"fxify_angle":"[Exact FXIFY product] + [verifiable number]. One sentence.",\n' +
-    '"hook":"2 sentences. Brand voice. Opens with trader situation or punchy claim. No intro phrases.",\n' +
-    '"why_now":"Specific 2026 event or data. Not vague.",\n' +
-    '"thumbnail":"[Emotion] face + [4-word text overlay] + [visual element]",\n' +
-    '"video_type":"Tutorial|Comparison|Explainer|Proof|Reaction|Walkthrough",\n' +
-    '"format":"Short (<60s)|Long (5-15min)",\n' +
-    '"conversion_tier":"1|2|3",\n' +
-    '"priority":"High|Normal|Low"\n' +
-    '}]}';
   try {
-    var text = await v2Fetch(prompt, 4000);
+    var prompt =
+      'You are a YouTube content strategist for FXIFY, a prop trading firm. June 2026.\n\n' +
+      'Topic to research: "' + topic + '"\n' +
+      'Video format: ' + (vidType === 'short' ? 'Short-form (15-60 seconds)' : 'Long-form (5-15 minutes)') + '\n\n' +
+      'Based on your knowledge of prop trading YouTube content:\n' +
+      '1. What videos already dominate this topic (FTMO, FundedNext, etc.)?\n' +
+      '2. What angles do they ALL miss that FXIFY could own?\n' +
+      '3. What are traders searching for but not finding good video answers?\n\n' +
+      'FXIFY advantages: $19 Instant Funding, One Phase no consistency rule, ' +
+      'broker-backed FXPIG 2010, on-demand payouts, $40M+ paid. $117k highest payout to date.\n\n' +
+      'Generate 8 YouTube video ideas. Return ONLY valid JSON no markdown:\n' +
+      '{"topics":[{' +
+      '"title":"Hook statement — exact video title",' +
+      '"intent":"Commercial|Informational|Transactional",' +
+      '"conversion_tier":"1|2|3",' +
+      '"primary_keyword":"youtube search term",' +
+      '"short_form_hook":"exact opening line Harry says to camera",' +
+      '"competitor_gap":"What competitors cover and what they miss",' +
+      '"fxify_angle":"FXIFY specific fact that wins this angle",' +
+      '"why_now":"why this topic matters in June 2026",' +
+      '"opportunity_score":80' +
+      '}]}';
+
+    var text   = await v2Fetch(prompt, 2000);
     var result = parseJSON(text);
-    var topics = (result.topics || []).sort(function(a,b){ return (b.score||0)-(a.score||0); });
-    ytSetStep(steps, stepIdx, 'done');
-    renderYouTubeDiscovery(topics, {
-      hasSEO: useSEO && seoData.keywords && seoData.keywords.length > 0,
-      hasX: useX && xData.length > 0,
-      hasReddit: useReddit && redditData.length > 0,
-      hasComp: useComp && compData.length > 0,
-    });
+    var topics = result.topics || [];
+    renderTopicGrid(topics, false, 0);
   } catch(e) {
-    document.getElementById('yt-loading').style.display = 'none';
-    toast('Error: ' + e.message);
-    console.error(e);
+    console.error('[runYouTubeDiscovery]', e);
+    output.innerHTML =
+      '<div style="background:var(--bg2);border:1px solid var(--urgent);border-radius:var(--rl);padding:16px;">' +
+      '<p style="color:var(--urgent);font-weight:600;margin-bottom:6px;">Error: ' + e.message + '</p>' +
+      '<p style="color:var(--text3);font-size:12px;">Check browser console (F12) for details. If error says "empty response" — check n8n workflow is active.</p>' +
+      '</div>';
   }
 
-  btn.disabled = false; btn.textContent = '⚡ Discover topics →';
+  if (btn) { btn.disabled = false; btn.textContent = '🔍 Research'; }
 }
+
 
 function renderYouTubeDiscovery(topics, signals) {
   var loadEl   = document.getElementById('yt-loading');
@@ -6270,218 +6032,53 @@ function trendingStep(idx, steps, status) {
 }
 
 async function runTrendingDiscovery() {
-  var btn     = document.getElementById('trending-btn');
-  var loader  = document.getElementById('trending-loading');
-  var output  = document.getElementById('trending-output');
-  var stepsEl = document.getElementById('trending-steps');
-  if (!btn || !loader || !output) return;
+  var btn    = document.getElementById('trending-btn');
+  var output = document.getElementById('v2-brief-output');
+  if (btn) { btn.disabled = true; btn.textContent = 'Discovering...'; }
 
-  btn.disabled = true;
-  document.getElementById('trending-icon').textContent = '⏳';
-
-  var steps = [
-    'Reddit — r/Forex, r/propfirms, r/Daytrading this week',
-    'X — viral prop trading takes & breaking news',
-    'Google Trends — rising search queries (7 days)',
-    'DataForSEO — rising keyword volumes',
-    'Competitor blogs — new posts this week',
-    'Claude — scoring & ranking all signals',
-  ];
-
-  stepsEl.innerHTML = steps.map(function(s, i) {
-    return '<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">' +
-      '<div id="trd-dot-' + i + '" style="width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0;transition:all .3s;"></div>' +
-      '<span id="trd-txt-' + i + '" style="font-size:12px;color:var(--text3);transition:color .3s;">' + s + '</span>' +
-    '</div>';
-  }).join('');
-
-  loader.style.display = 'block';
-  output.style.display = 'none';
-
-  var redditData = '', xData = '', trendsData = '', dfsData = '', compData = '';
-
-  // ── Reddit ──────────────────────────────────────────────────────────────
-  trendingStep(0, steps, 'active');
-  try {
-    var redditResults = await Promise.allSettled(TRENDING_SOURCES.reddit.map(function(url) {
-      return fetch('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-        body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
-      }).then(function(r) { return r.json(); });
-    }));
-    var redditParts = redditResults
-      .filter(function(r) { return r.status === 'fulfilled' && r.value && r.value.success; })
-      .map(function(r) {
-        var md = r.value.data && r.value.data.markdown ? r.value.data.markdown : '';
-        var lines = md.split('\n').filter(function(l) {
-          return l.length > 20 && l.length < 200;
-        }).slice(0, 20);
-        return lines.join('\n');
-      });
-    redditData = redditParts.filter(Boolean).join('\n\n');
-    trendingStep(0, steps, redditData ? 'done' : 'warn');
-  } catch(e) { trendingStep(0, steps, 'warn'); }
-
-  // ── X ───────────────────────────────────────────────────────────────────
-  trendingStep(1, steps, 'active');
-  try {
-    var xResults = await Promise.allSettled(TRENDING_SOURCES.x.slice(0,2).map(function(url) {
-      return fetch('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-        body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
-      }).then(function(r) { return r.json(); });
-    }));
-    xData = xResults
-      .filter(function(r) { return r.status === 'fulfilled' && r.value && r.value.success; })
-      .map(function(r) {
-        var md = r.value.data && r.value.data.markdown ? r.value.data.markdown : '';
-        return md.substring(0, 2000);
-      }).filter(Boolean).join('\n\n');
-    trendingStep(1, steps, xData ? 'done' : 'warn');
-  } catch(e) { trendingStep(1, steps, 'warn'); }
-
-  // ── Google Trends ────────────────────────────────────────────────────────
-  trendingStep(2, steps, 'active');
-  try {
-    var trendsResults = await Promise.allSettled(TRENDING_SOURCES.trends.map(function(url) {
-      return fetch('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-        body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
-      }).then(function(r) { return r.json(); });
-    }));
-    trendsData = trendsResults
-      .filter(function(r) { return r.status === 'fulfilled' && r.value && r.value.success; })
-      .map(function(r) {
-        var md = r.value.data && r.value.data.markdown ? r.value.data.markdown : '';
-        return md.substring(0, 1500);
-      }).filter(Boolean).join('\n\n');
-    trendingStep(2, steps, trendsData ? 'done' : 'warn');
-  } catch(e) { trendingStep(2, steps, 'warn'); }
-
-  // ── DataForSEO rising keywords ───────────────────────────────────────────
-  trendingStep(3, steps, 'active');
-  if (V2_CONFIG.dfsLogin && V2_CONFIG.dfsPass) {
-    try {
-      var creds = btoa(V2_CONFIG.dfsLogin + ':' + V2_CONFIG.dfsPass);
-      // Use keyword ideas around prop trading core terms
-      var seeds = ['prop trading', 'funded trader', 'prop firm challenge', 'trading account'];
-      var dfsPromises = seeds.slice(0,2).map(function(seed) {
-        return fetch('https://api.dataforseo.com/v3/dataforseo_labs/google/keyword_suggestions/live', {
-          method: 'POST',
-          headers: { 'Authorization': 'Basic ' + creds, 'Content-Type': 'application/json' },
-          body: JSON.stringify([{ keyword: seed, language_code: 'en', location_code: 2840, limit: 15 }])
-        }).then(function(r) { return r.json(); });
-      });
-      var dfsResults = await Promise.allSettled(dfsPromises);
-      var allKws = [];
-      dfsResults.forEach(function(r) {
-        if (r.status !== 'fulfilled') return;
-        var items = (r.value.tasks && r.value.tasks[0] && r.value.tasks[0].result && r.value.tasks[0].result[0] && r.value.tasks[0].result[0].items) || [];
-        items.forEach(function(k) {
-          if (k.keyword_info && k.keyword_info.search_volume > 100) {
-            allKws.push(k.keyword + ' (vol: ' + k.keyword_info.search_volume + ', KD: ' + (k.keyword_properties && k.keyword_properties.keyword_difficulty ? k.keyword_properties.keyword_difficulty : 'TBC') + ')');
-          }
-        });
-      });
-      dfsData = allKws.slice(0, 30).join('\n');
-      trendingStep(3, steps, dfsData ? 'done' : 'warn');
-    } catch(e) { trendingStep(3, steps, 'warn'); }
-  } else {
-    document.getElementById('trd-txt-3').textContent += ' — no credentials';
-    trendingStep(3, steps, 'warn');
-  }
-
-  // ── Competitor new posts ─────────────────────────────────────────────────
-  trendingStep(4, steps, 'active');
-  try {
-    var compResults = await Promise.allSettled(TRENDING_SOURCES.competitors.map(function(c) {
-      return fetch('https://api.firecrawl.dev/v1/scrape', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
-        body: JSON.stringify({ url: c.url, formats: ['markdown'], onlyMainContent: true })
-      }).then(function(r) { return r.json().then(function(d) { return { name: c.name, url: c.url, data: d }; }); });
-    }));
-    var compParts = compResults
-      .filter(function(r) { return r.status === 'fulfilled' && r.value.data && r.value.data.success; })
-      .map(function(r) {
-        var md = r.value.data.data && r.value.data.data.markdown ? r.value.data.data.markdown : '';
-        // Extract article links
-        var linkRe = /\[([^\]]{15,100})\]\((https?:\/\/[^)]+)\)/g;
-        var m, links = [];
-        while ((m = linkRe.exec(md)) !== null && links.length < 15) {
-          if (!m[2].includes('/category/') && !m[2].includes('/tag/') && !m[2].includes('/page/')) {
-            links.push('- ' + m[1] + ' [' + m[2] + ']');
-          }
-        }
-        return links.length ? r.value.name + ':\n' + links.join('\n') : '';
-      });
-    compData = compParts.filter(Boolean).join('\n\n');
-    trendingStep(4, steps, compData ? 'done' : 'warn');
-  } catch(e) { trendingStep(4, steps, 'warn'); }
-
-  // ── Claude scores everything ──────────────────────────────────────────────
-  trendingStep(5, steps, 'active');
-
-  var prompt =
-    'You are a Senior Content Strategist for FXIFY — a broker-backed prop trading firm. ' +
-    'Based on the signals below, identify the 8 highest-opportunity blog or YouTube topics for this week. ' +
-    'No seed keyword given — you are finding the gaps that matter RIGHT NOW.\n\n' +
-
-    'FXIFY VERIFIED FACTS (use exact numbers — no vague claims):\n' +
-    '- ONE PHASE: No consistency rule. Payout on demand. No payout cycle. Only firm in category.\n' +
-    '- INSTANT FUNDING LITE: From $19 for $2,500 account. Lowest entry in the market.\n' +
-    '- BROKER-BACKED: Parent FXPIG (operating since 2010). Only prop firm with confirmed broker backing.\n' +
-    '- PAYOUTS: $40M+ paid out. 250K+ traders. Up to 90% performance split.\n' +
-    '- DRAWDOWN: 5% daily, 10% max. No payout cycle vs FTMO 14-day cycle.\n\n' +
-
-    (redditData ? 'REDDIT SIGNALS (r/Forex, r/propfirms, r/Daytrading this week):\n' + redditData.substring(0, 2000) + '\n\n' : '') +
-    (xData ? 'X (TWITTER) SIGNALS — viral trader takes this week:\n' + xData.substring(0, 1500) + '\n\n' : '') +
-    (trendsData ? 'GOOGLE TRENDS — rising searches:\n' + trendsData.substring(0, 1000) + '\n\n' : '') +
-    (dfsData ? 'DATAFORSEO — keywords with real volume:\n' + dfsData.substring(0, 1000) + '\n\n' : '') +
-    (compData ? 'COMPETITOR NEW POSTS THIS WEEK (with URLs):\n' + compData.substring(0, 2000) + '\n\n' : '') +
-
-    'SCORING (opportunity score 1-100):\n' +
-    '- 30% Signal strength: how many sources mention this theme\n' +
-    '- 30% Competitor gap: what FTMO/FundedNext/Apex haven\'t covered or covered poorly (cite the URL)\n' +
-    '- 20% FXIFY angle: how specifically FXIFY wins this with a verifiable fact\n' +
-    '- 20% Timing: why this week specifically\n\n' +
-
-    'Return ONLY valid JSON:\n' +
-    '{"topics":[{' +
-    '"title":"Keyword-first title under 65 chars",' +
-    '"type":"Blog|YouTube|Either",' +
-    '"score":85,' +
-    '"primary_keyword":"exact search phrase",' +
-    '"search_volume":"number from DataForSEO or TBC",' +
-    '"signals":["Reddit: 12 posts","X: trending","FTMO gap"],' +
-    '"signal_sources":["https://reddit.com/...", "https://ftmo.com/article/..."],' +
-    '"competitor_gap":"[FirmName] at [URL] misses [specific angle]",' +
-    '"fxify_angle":"[Exact program] wins because [verifiable claim with number]",' +
-    '"hook":"First 2 sentences — trader scenario, not a definition",' +
-    '"why_now":"Specific reason this week — not generic",' +
-    '"priority":"High|Normal|Low"' +
-    '}]}';
+  v2ShowLoader(output, [
+    'Asking Claude about trending prop trading topics...',
+    'Analysing current trader conversations...',
+    'Building topic ideas...'
+  ]);
 
   try {
-    var text = await v2Fetch(prompt, 4000);
+    var prompt =
+      'You are a content strategist for FXIFY, a prop trading firm. June 2026.\n\n' +
+      'Based on your knowledge of the prop trading industry right now, what topics are:\n' +
+      '1. Traders actively discussing on Reddit and Discord\n' +
+      '2. Competitors publishing about most heavily\n' +
+      '3. Generating most search interest\n' +
+      '4. Most underserved — high interest, low quality content\n\n' +
+      'FXIFY advantages: $19 Instant Funding, One Phase no consistency rule, ' +
+      'broker-backed FXPIG 2010, on-demand payouts, $40M+ paid.\n\n' +
+      'Return 8 trending topic ideas as ONLY valid JSON no markdown:\n' +
+      '{"topics":[{' +
+      '"title":"Hook statement under 65 chars",' +
+      '"trend_source":"Reddit|Discord|Search|YouTube",' +
+      '"why_trending":"one sentence on why this is hot right now",' +
+      '"intent":"Commercial|Informational|Transactional",' +
+      '"short_form_hook":"exact first sentence for a 15-30s video",' +
+      '"fxify_angle":"FXIFY specific fact that wins this topic",' +
+      '"opportunity_score":80' +
+      '}]}';
+
+    var text   = await v2Fetch(prompt, 2000);
     var result = parseJSON(text);
-    var topics = (result.topics || []).sort(function(a, b) { return (b.score || 0) - (a.score || 0); });
-    trendingStep(5, steps, 'done');
-    loader.style.display = 'none';
-    renderTrendingOutput(topics);
+    var topics = result.topics || [];
+    renderTopicGrid(topics, false, 0);
   } catch(e) {
-    loader.style.display = 'none';
-    toast('Error: ' + e.message);
-    btn.disabled = false;
-    document.getElementById('trending-icon').textContent = '⚡';
+    console.error('[runTrendingDiscovery]', e);
+    output.innerHTML =
+      '<div style="background:var(--bg2);border:1px solid var(--urgent);border-radius:var(--rl);padding:16px;">' +
+      '<p style="color:var(--urgent);font-weight:600;margin-bottom:6px;">Error: ' + e.message + '</p>' +
+      '<p style="color:var(--text3);font-size:12px;">Check browser console (F12) for details.</p>' +
+      '</div>';
   }
 
-  btn.disabled = false;
-  document.getElementById('trending-icon').textContent = '⚡';
+  if (btn) { btn.disabled = false; btn.textContent = '🔥 Discover trending'; }
 }
+
 
 function renderTrendingOutput(topics) {
   var output = document.getElementById('trending-output');
@@ -7566,6 +7163,8 @@ function parseJSON(text) {
 function v2Toast(msg) { toast(msg); }
 
 async function v2Fetch(prompt, max_tokens) {
+  // DIAGNOSTIC: log every call
+  console.log('[v2Fetch] calling webhook:', V2_CONFIG.webhook.substring(0, 50));
   var r = await fetch(V2_CONFIG.webhook, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -7574,26 +7173,49 @@ async function v2Fetch(prompt, max_tokens) {
       max_tokens: max_tokens || 3000
     })
   });
+
+  // Log HTTP status
+  console.log('[v2Fetch] HTTP status:', r.status, r.statusText);
+
   var raw = await r.text();
-  console.log('[v2Fetch] raw response (first 500):', raw.substring(0, 500));
+  console.log('[v2Fetch] raw response length:', raw.length, '| first 300:', raw.substring(0, 300));
+
+  if (!raw || !raw.trim()) {
+    throw new Error('n8n returned empty. In n8n: open Webhook node → set Respond to "When last node finishes" → save workflow → re-activate.');
+  }
+
   var data;
-  try { data = JSON.parse(raw); } catch(e) {
-    console.error('[v2Fetch] JSON parse failed on:', raw.substring(0, 200));
-    throw new Error('n8n returned non-JSON: ' + raw.substring(0, 100));
+  try {
+    data = JSON.parse(raw);
+  } catch(e) {
+    console.error('[v2Fetch] not JSON. Raw:', raw.substring(0, 300));
+    // Sometimes n8n returns the text directly (not wrapped in JSON)
+    if (raw.length > 10) return raw;
+    throw new Error('n8n response is not JSON: ' + raw.substring(0, 80));
   }
-  console.log('[v2Fetch] parsed data keys:', Object.keys(data));
+
+  console.log('[v2Fetch] data type:', Array.isArray(data) ? 'array' : typeof data, '| keys:', Object.keys(data||{}).join(','));
+
   var text = '';
-  if (Array.isArray(data) && data[0]) {
-    var d = data[0];
-    text = d.text || (d.content && d.content[0] && d.content[0].text) || '';
-    console.log('[v2Fetch] array format, text length:', text.length);
-  } else {
-    text = data.text || (data.content && data.content[0] && data.content[0].text) || '';
-    console.log('[v2Fetch] object format, text length:', text.length);
+  if (Array.isArray(data)) {
+    // n8n sometimes wraps in array
+    var d = data[0] || {};
+    text = d.text || d.output || d.message || d.response ||
+           (d.content && d.content[0] && d.content[0].text) || '';
+  } else if (typeof data === 'object') {
+    text = data.text || data.output || data.message || data.response ||
+           data.answer || data.result ||
+           (data.content && data.content[0] && data.content[0].text) || '';
+  } else if (typeof data === 'string') {
+    text = data;
   }
+
   if (!text) {
-    console.error('[v2Fetch] empty text! Full data:', JSON.stringify(data).substring(0, 300));
+    console.error('[v2Fetch] Could not extract text. Full response:', JSON.stringify(data).substring(0, 500));
+    throw new Error('n8n returned JSON but no text field found. Keys: ' + Object.keys(data||{}).join(', '));
   }
+
+  console.log('[v2Fetch] extracted text length:', text.length, '| preview:', text.substring(0, 100));
   return text;
 }
 
