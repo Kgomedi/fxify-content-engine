@@ -625,10 +625,10 @@ tr:last-child td{border-bottom:none;}
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
           <div>
             <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">What's trending in prop trading right now?</p>
-            <p style="font-size:11px;color:var(--text3);line-height:1.5;">Pulls Reddit, X, Google Trends, DataForSEO rising keywords, and competitor new posts — no seed needed. Surfaces the 8 highest-opportunity topics automatically.</p>
+            <p style="font-size:11px;color:var(--text3);line-height:1.5;">Pulls Reddit, X, Quick scan — no seed needed. For deep gap analysis with competitor research, use the Blog Topics tab below.</p>
           </div>
-          <button class="btn btn-p" id="trending-btn" style="flex-shrink:0;white-space:nowrap;gap:8px;">
-            <span id="trending-icon">⚡</span> Discover trending topics
+          <button class="btn btn-s" id="trending-btn" style="flex-shrink:0;white-space:nowrap;gap:6px;font-size:12px;">
+            🔥 Quick trends scan
           </button>
         </div>
 
@@ -6038,50 +6038,106 @@ function trendingStep(idx, steps, status) {
 async function runTrendingDiscovery() {
   var btn    = document.getElementById('trending-btn');
   var output = document.getElementById('v2-brief-output');
-  if (btn) { btn.disabled = true; btn.textContent = 'Discovering...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Scanning...'; }
 
   v2ShowLoader(output, [
-    'Asking Claude about trending prop trading topics...',
-    'Analysing current trader conversations...',
-    'Building topic ideas...'
+    'Scanning live competitor content...',
+    'Checking Reddit trader discussions...',
+    'Finding what is trending right now...'
   ]);
 
   try {
+    // Try live research first
+    var liveData = await v2LiveResearch(
+      'prop trading 2026 new blog posts YouTube videos Reddit discussions trending topics June ' + new Date().getFullYear(),
+      'Search for what prop trading firms published in the last 2-4 weeks. ' +
+      'Also search Reddit r/Forex r/PropTrading for what traders are discussing RIGHT NOW in June 2026. ' +
+      'Find specific article titles, video titles, and Reddit post titles. ' +
+      'What questions are traders asking that have no good content answer yet? ' +
+      'Be specific — list actual titles and post names you find, not categories. ' +
+      'Focus on: payout issues, rule changes, new products, trader complaints.'
+    );
+
+    var hasLive = liveData && liveData.length > 200;
+    console.log('[Trending] live data length:', liveData ? liveData.length : 0);
+
     var prompt =
-      'You are a content strategist for FXIFY, a prop trading firm. June 2026.\n\n' +
-      'Based on your knowledge of the prop trading industry right now, what topics are:\n' +
-      '1. Traders actively discussing on Reddit and Discord\n' +
-      '2. Competitors publishing about most heavily\n' +
-      '3. Generating most search interest\n' +
-      '4. Most underserved — high interest, low quality content\n\n' +
-      'FXIFY advantages: $19 Instant Funding, One Phase no consistency rule, ' +
-      'broker-backed FXPIG 2010, on-demand payouts, $40M+ paid.\n\n' +
-      'Return 8 trending topic ideas as ONLY valid JSON no markdown:\n' +
+      'You are the content strategist for FXIFY prop trading firm. Today is ' + new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) + '.\n\n' +
+      'FXIFY ADVANTAGES:\n' +
+      '- $19 Instant Funding Lite (cheapest in market)\n' +
+      '- One Phase: no consistency rule, static drawdown, payout on demand\n' +
+      '- Broker-backed via FXPIG since 2010\n' +
+      '- $40M+ paid, 250,000+ traders, $117k highest single payout to date\n\n' +
+
+      (hasLive
+        ? '── LIVE RESEARCH DATA (scraped right now) ──\n' + liveData.substring(0, 3000) + '\n\n' +
+          'Based on this REAL, CURRENT data above, identify 8 trending content opportunities for FXIFY.\n' +
+          'Every topic MUST trace to something specific in the live research data above.\n' +
+          'Do NOT use generic prop trading topics. Use what you actually found above.\n\n'
+        : '── No live data available — use your most recent knowledge of June 2026 prop trading trends.\n' +
+          'Focus on: recent industry news, trader pain points, new competitor moves.\n' +
+          'Be specific and avoid the obvious topics like "$19 funding" or "payout speed" — find fresher angles.\n\n'
+      ) +
+
+      'CRITICAL — AVOID THESE OVERUSED ANGLES (already covered):\n' +
+      '- $19 instant funding price comparison\n' +
+      '- Generic "payout speed" comparison with FTMO\n' +
+      '- Consistency rule explanation\n' +
+      '- Basic swing trader drawdown explainer\n' +
+      '- "What is a prop firm" beginner explainer\n' +
+      '- $117k payout proof\n\n' +
+
+      'TITLE FORMAT: statement or hook, not a blog headline.\n' +
+      'GOOD: "Most traders are failing the funded stage, not the challenge"\n' +
+      'GOOD: "FTMO just changed its rules. Here is what that means for you."\n' +
+      'BAD: "Top 5 Prop Firms in 2026"\n' +
+      'BAD: "Comprehensive Guide to Drawdown"\n\n' +
+
+      'Return ONLY valid JSON, no markdown:\n' +
       '{"topics":[{' +
-      '"title":"Hook statement under 65 chars",' +
-      '"trend_source":"Reddit|Discord|Search|YouTube",' +
-      '"why_trending":"one sentence on why this is hot right now",' +
+      '"title":"Statement hook under 65 chars",' +
       '"intent":"Commercial|Informational|Transactional",' +
-      '"short_form_hook":"exact first sentence for a 15-30s video",' +
-      '"fxify_angle":"FXIFY specific fact that wins this topic",' +
-      '"opportunity_score":80' +
+      '"conversion_tier":"1|2|3",' +
+      '"why_trending":"specific reason this is relevant RIGHT NOW in June 2026 — cite actual event or data",' +
+      '"short_form_hook":"exact first sentence for a 15-30s video. Brand voice.",' +
+      '"fxify_angle":"specific FXIFY product + verifiable fact. One sentence.",' +
+      '"opportunity_score":80,' +
+      '"source":"' + (hasLive ? 'live_research' : 'training_knowledge') + '"' +
       '}]}';
 
-    var text   = await v2Fetch(prompt, 2000);
+    var text   = await v2Fetch(prompt, 2500);
     var result = parseJSON(text);
     var topics = result.topics || [];
+
+    // Show data source badge
+    var sourceBadge = hasLive
+      ? '<div style="background:#DCFCE7;border:1px solid #86EFAC;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#166534;">✓ Based on live web research — ' + new Date().toLocaleTimeString() + '</div>'
+      : '<div style="background:#FEF9C3;border:1px solid #FDE047;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#854D0E;">⚠ Live research unavailable — add /webhook/research to n8n for real-time data. Using Claude knowledge.</div>';
+
+    var tempDiv = document.createElement('div');
+    tempDiv.innerHTML = sourceBadge;
+    output.innerHTML = '';
+    output.appendChild(tempDiv);
+
+    var gridDiv = document.createElement('div');
+    output.appendChild(gridDiv);
     renderTopicGrid(topics, false, 0);
+
+    // Prepend the badge
+    var existingContent = output.innerHTML;
+    output.innerHTML = sourceBadge + existingContent.replace(sourceBadge, '');
+
   } catch(e) {
     console.error('[runTrendingDiscovery]', e);
-    output.innerHTML =
+    if (output) output.innerHTML =
       '<div style="background:var(--bg2);border:1px solid var(--urgent);border-radius:var(--rl);padding:16px;">' +
-      '<p style="color:var(--urgent);font-weight:600;margin-bottom:6px;">Error: ' + e.message + '</p>' +
-      '<p style="color:var(--text3);font-size:12px;">Check browser console (F12) for details.</p>' +
+        '<p style="color:var(--urgent);font-weight:600;">Error: ' + e.message + '</p>' +
       '</div>';
   }
 
-  if (btn) { btn.disabled = false; btn.textContent = '🔥 Discover trending'; }
+  if (btn) { btn.disabled = false; btn.textContent = '🔥 Quick trends scan'; }
 }
+
 
 
 function renderTrendingOutput(topics) {
@@ -7443,81 +7499,137 @@ async function dfsAutocomplete(kw) {
 // ── FIRECRAWL COMPETITOR SCRAPER ──────────────────────────────────────
 async function v2ScrapeCompetitors(compKey) {
   var competitorMap = {
-    all:        ['FTMO','FundedNext','The5ers','FundingPips','ThinkCapital','Blue Guardian','Tradeify','MyFundedFX'],
+    all:        ['FTMO','FundedNext','The5ers','FundingPips','ThinkCapital','Tradeify'],
     ftmo:       ['FTMO'],
     fundednext: ['FundedNext'],
     the5ers:    ['The5ers'],
     fundingpips:['FundingPips'],
     thinkcap:   ['ThinkCapital'],
-    guardian:   ['Blue Guardian'],
     tradeify:   ['Tradeify'],
-    myfx:       ['MyFundedFX'],
   };
   var firms = competitorMap[compKey || 'all'] || competitorMap.all;
 
-  // Single comprehensive batched call — covers ALL content channels
+  // Try live research first (requires /webhook/research in n8n)
+  // Run 3 targeted searches in parallel for maximum intelligence
+  var searches = [
+    {
+      key: 'recent_blog',
+      query: firms.slice(0,3).join(' OR ') + ' prop firm blog 2026 latest articles',
+      instructions:
+        'Search for recent blog posts from these prop firms: ' + firms.join(', ') + '. ' +
+        'Find their most recent articles. For each firm list: ' +
+        '(1) recent article titles, (2) what topics they cover most, (3) what they never write about. ' +
+        'Be specific about actual article titles you find, not guesses.'
+    },
+    {
+      key: 'youtube',
+      query: firms.slice(0,3).join(' OR ') + ' prop firm YouTube 2026 video topics',
+      instructions:
+        'Search YouTube for recent videos from prop firms: ' + firms.join(', ') + '. ' +
+        'List actual video titles you find. What topics dominate their channels? ' +
+        'What gaps exist — what questions traders ask that no prop firm has made a video about?'
+    },
+    {
+      key: 'reddit',
+      query: 'site:reddit.com prop firm 2026 question complaint advice FTMO FundedNext FXIFY',
+      instructions:
+        'Search Reddit for recent trader discussions about prop firms. ' +
+        'Find actual posts and questions. What are traders complaining about? ' +
+        'What questions come up repeatedly with no good answer? ' +
+        'List specific post titles or questions you find.'
+    }
+  ];
+
+  // Run all searches in parallel
+  var results = await Promise.allSettled(
+    searches.map(function(s) {
+      return v2LiveResearch(s.query, s.instructions).then(function(text) {
+        return { key: s.key, text: text };
+      });
+    })
+  );
+
+  var liveData = {};
+  results.forEach(function(r) {
+    if (r.status === 'fulfilled' && r.value.text) {
+      liveData[r.value.key] = r.value.text;
+    }
+  });
+
+  var hasLiveData = Object.keys(liveData).length > 0;
+  console.log('[Competitors] live data sections:', Object.keys(liveData));
+
+  if (hasLiveData) {
+    // We have real data — return it structured for the prompt
+    return [{
+      domain: 'Live Research',
+      source: 'Web search',
+      articles: [
+        { title: 'BLOG CONTENT: ' + (liveData.recent_blog || '').substring(0, 500), url: '', subtopics: [], content: null },
+        { title: 'YOUTUBE CONTENT: ' + (liveData.youtube || '').substring(0, 500), url: '', subtopics: [], content: null },
+        { title: 'REDDIT/COMMUNITY: ' + (liveData.reddit || '').substring(0, 500), url: '', subtopics: [], content: null },
+      ],
+      fullArticles: 3,
+      missing: [],
+      content_angle: 'Live web research - ' + new Date().toLocaleDateString(),
+      publish_frequency: 'Live data',
+      traffic_est: 'live',
+      fxify_counter: ''
+    }];
+  }
+
+  // Fallback: single Claude call with training knowledge
+  // This is what we had before — useful but not live
+  console.warn('[Competitors] no live data — using Claude training knowledge');
   try {
     var prompt =
-      'You are a content intelligence analyst for FXIFY prop trading firm. June 2026.\n\n' +
-      'Research the content strategy of these live prop trading competitors across ALL channels:\n' +
+      'You are a content intelligence analyst. June 2026.\n\n' +
+      'Based on your most recent knowledge, what have these prop firms published recently:\n' +
       firms.join(', ') + '\n\n' +
-      'For EACH firm, analyse:\n' +
-      '1. BLOG — top topics, publishing frequency, angles they take\n' +
-      '2. YOUTUBE — video topics, most viewed content, what they do on Shorts vs long-form\n' +
-      '3. SOCIAL — Twitter/X, Instagram, TikTok themes\n' +
-      '4. AFFILIATE/SEO — keywords they rank for, review content targeting\n' +
-      '5. GAPS — topics they NEVER cover across any channel that FXIFY could own\n\n' +
-      'FXIFY advantages to find gaps against:\n' +
-      '- $19 Instant Funding Lite (lowest entry in market)\n' +
-      '- One Phase: no consistency rule, on-demand payout, static drawdown\n' +
-      '- Broker-backed via FXPIG since 2010 (most competitors are not broker-backed)\n' +
-      '- $40M+ paid, 250,000+ traders, $117k highest single payout to date\n\n' +
+      'For EACH firm be specific about:\n' +
+      '1. Actual article or video titles (not topics — real titles)\n' +
+      '2. Keywords they are targeting aggressively\n' +
+      '3. Angles or topics they have NEVER covered\n\n' +
+      'Then: what are traders asking on Reddit/YouTube comments about prop firms ' +
+      'that none of these firms have answered well in content?\n\n' +
       'Return ONLY valid JSON no markdown:\n' +
-      '{"competitors":[{' +
-      '"firm":"FTMO",' +
-      '"blog_topics":["exact topic 1","exact topic 2","exact topic 3"],' +
-      '"youtube_topics":["video topic 1","video topic 2"],' +
-      '"social_themes":["theme 1","theme 2"],' +
-      '"keywords_they_own":["kw1","kw2","kw3"],' +
-      '"content_gaps":["topic they never cover 1","gap 2","gap 3"],' +
-      '"publish_frequency":"X blog/month, Y videos/month",' +
-      '"content_angle":"one sentence on their overall positioning",' +
-      '"traffic_est":"high|medium|low",' +
-      '"fxify_counter":"how FXIFY specifically beats them on content"' +
-      '}]}';
+      '{"competitors":[{"firm":"FTMO","recent_content":["exact title 1","exact title 2"],' +
+      '"keywords":["kw1","kw2"],"gaps":["what they never cover 1","gap 2"]}],' +
+      '"trader_questions":["question traders ask with no good content answer 1","question 2"]}';
 
-    var text = await v2Fetch(prompt, 3000);
+    var text = await v2Fetch(prompt, 2000);
     var parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
     var competitors = parsed.competitors || [];
+    var questions   = parsed.trader_questions || [];
 
-    return competitors.map(function(c) {
-      var allTopics = [].concat(
-        c.blog_topics || [],
-        (c.youtube_topics||[]).map(function(t){ return '[YT] ' + t; }),
-        (c.social_themes||[]).map(function(t){ return '[Social] ' + t; })
-      );
-      var articles = allTopics.map(function(topic, i) {
-        return {
-          title: topic, url: '',
-          subtopics: i===0 ? (c.keywords_they_own||[]) : [],
-          content: i===0 ? ('Angle: ' + (c.content_angle||'') + ' | Counter: ' + (c.fxify_counter||'')) : null
-        };
-      });
-      return {
-        domain: c.firm, source: c.firm,
-        articles: articles, fullArticles: articles.length,
-        missing: c.content_gaps || [],
-        content_angle: c.content_angle || '',
-        publish_frequency: c.publish_frequency || '',
-        traffic_est: c.traffic_est || 'unknown',
-        fxify_counter: c.fxify_counter || ''
-      };
+    var articles = questions.map(function(q) {
+      return { title: '[Trader question] ' + q, url: '', subtopics: [], content: null };
     });
+
+    competitors.forEach(function(c) {
+      (c.recent_content||[]).forEach(function(title) {
+        articles.push({ title: '[' + c.firm + '] ' + title, url: '', subtopics: c.keywords||[], content: null });
+      });
+    });
+
+    return [{
+      domain: 'Competitor Research',
+      source: 'Claude training knowledge',
+      articles: articles,
+      fullArticles: articles.length,
+      missing: competitors.reduce(function(acc, c) { return acc.concat(c.gaps||[]); }, []),
+      content_angle: 'Based on training data — add /webhook/research to n8n for live data',
+      publish_frequency: 'Estimated',
+      traffic_est: 'unknown',
+      fxify_counter: ''
+    }];
   } catch(e) {
-    console.warn('[v2ScrapeCompetitors] error:', e.message);
+    console.warn('[Competitors] fallback also failed:', e.message);
     return [];
   }
 }
+
+
 
 
 
@@ -7556,28 +7668,57 @@ async function v2UpdateStatus() {
 // ── STAGE 1: TOPIC DISCOVERY ──────────────────────────────────────────
 
 // ── SERP RESEARCH — what is ranking right now for a keyword ──────────────
-async function v2SerpResearch(keyword) {
-  // Ask Claude what typically ranks for this keyword in prop trading
-  // Works without web search — Claude knows the competitive landscape
+// ── LIVE RESEARCH ENGINE ────────────────────────────────────
+// Calls /webhook/research in n8n which uses Claude with web_search tool
+// Returns actual current data from the web, not training knowledge
+
+async function v2LiveResearch(query, instructions) {
+  var researchWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/research');
   try {
-    var resp = await fetch(V2_CONFIG.webhook, {
+    var r = await fetch(researchWebhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        max_tokens: 500,
-        prompt:
-          'For the search query "' + keyword + '" in prop trading, what types of pages typically rank in Google? ' +
-          'Based on your knowledge, what angle do the top ranking pages take on this topic? ' +
-          'What intent is the searcher showing? ' +
-          'Return ONLY valid JSON no markdown: {"results":[{"title":"typical ranking page title","url":"example.com","description":"the angle they take"}]}'
+        query:        query,
+        instructions: instructions || 'Search for this and return what you find.',
+        max_tokens:   1500
       })
     });
-    var d = await resp.json();
-    var t = d.text || (d.content && d.content[0] && d.content[0].text) || '';
-    var p = JSON.parse(t.replace(/```json|```/g, '').trim());
-    return p.results || [];
-  } catch(e) { return []; }
+    var raw = await r.text();
+    if (!raw || !raw.trim()) throw new Error('empty');
+    var data = JSON.parse(raw);
+    // Handle both array and object response formats
+    var text = '';
+    if (Array.isArray(data)) {
+      var d = data[0] || {};
+      text = d.text || (d.content && d.content[0] && d.content[0].text) || '';
+    } else {
+      text = data.text || (data.content && data.content[0] && data.content[0].text) || data.output || '';
+    }
+    return text || '';
+  } catch(e) {
+    console.warn('[v2LiveResearch] failed for "' + query + '":', e.message);
+    return '';
+  }
 }
+
+async function v2SerpResearch(keyword) {
+  // Try live research webhook first, fall back to Claude estimate
+  var result = await v2LiveResearch(
+    keyword + ' prop firm 2026',
+    'Search Google for this query. List the top 8 results with their titles, URLs, ' +
+    'and one sentence describing their angle. Return as plain text, one result per line.'
+  );
+  if (result && result.length > 100) {
+    return result.split('\n').filter(Boolean).map(function(line, i) {
+      return { title: line, url: '', description: '' };
+    });
+  }
+  // Fallback: return empty so the prompt just skips serpBlock
+  return [];
+}
+
+
 
 
 
@@ -7593,11 +7734,15 @@ async function runTopicIdeas() {
   if (!seed.trim()) { v2Toast('Add a seed keyword or topic area first'); return; }
 
   btn.disabled = true; btn.textContent = 'Researching...';
+  var researchWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/research');
+  console.log('[Topics] Starting with seed:', seed);
+  console.log('[Topics] Research webhook:', researchWebhook);
+
   v2ShowLoader(output, [
-    'Pulling keyword data...',
-    'Researching competitor content strategies...',
-    'Loading FXIFY published articles...',
-    'Claude analysing gaps and building topics...'
+    'Pulling DataForSEO keyword data...',
+    'Live-searching competitor content and Reddit...',
+    'Cross-referencing 123 FXIFY published articles...',
+    'Claude analysing gaps and building Yoast-style topics...'
   ]);
 
   // Run all data sources in parallel
@@ -7622,20 +7767,29 @@ async function runTopicIdeas() {
   window._v2KwData   = kwData;
   var compBlock = compData.map(function(c) {
     var arts = c.articles || [];
-    var lines = arts.slice(0, 20).map(function(a) {
-      var line = '- ' + a.title + (a.url ? ' [' + a.url + ']' : '');
+    var isLive = c.traffic_est === 'live';
+
+    var lines = arts.map(function(a) {
+      // For live research data, show the full text
+      if (isLive) return a.title || '';
+      // For training data, format as bullet points
+      var line = '- ' + (a.title || '');
       if (a.subtopics && a.subtopics.length) {
-        line += '\n  Covers: ' + a.subtopics.join(' | ');
-      }
-      if (a.content) {
-        var snippet = a.content.substring(0, 400).replace(/\s+/g, ' ').trim().substring(0, 200);
-        line += '\n  Angle: ' + snippet;
+        line += '\n  Keywords: ' + a.subtopics.slice(0,3).join(', ');
       }
       return line;
-    });
-    var block = '=== ' + (c.domain || c.source) + ' ===\n' + lines.join('\n');
+    }).filter(Boolean);
+
+    var header = isLive
+      ? '=== LIVE WEB RESEARCH (scraped ' + new Date().toLocaleDateString() + ') ===\n'
+      : '=== ' + (c.domain || c.source) + ' (training knowledge) ===\n';
+
+    var block = header + lines.join('\n');
     if (c.missing && c.missing.length) {
-      block += '\nGAPS IDENTIFIED (topics they do not cover): ' + c.missing.join(' | ');
+      block += '\n\nGAPS — topics they never cover: ' + c.missing.join(', ');
+    }
+    if (c.content_angle && c.content_angle.includes('Add /webhook')) {
+      block += '\n\n⚠ NOTE: This is estimated data. Add /webhook/research to n8n for live competitor scraping.';
     }
     return block;
   }).join('\n\n');
@@ -7747,22 +7901,29 @@ async function runTopicIdeas() {
 
     (fxifyBlock ? '── FXIFY ALREADY PUBLISHED (exclude these completely) ──\n' + fxifyBlock + '\n\n' : '') +
 
-    'Generate exactly 8 topics: 2 PILLAR + 6 CLUSTER.\n' +
-    'Return ONLY valid JSON, no markdown, no preamble:\n' +
+    'Generate exactly 8 topics: 2 PILLAR + 6 CLUSTER.\n\n' +
+    'PILLAR = broad, high-volume cornerstone topic. Covers the main angle.\n' +
+    'CLUSTER = specific, fast-to-rank supporting topic. Answers one trader question precisely.\n\n' +
+    'QUALITY RULES:\n' +
+    '- Every topic MUST trace to specific data from the competitor or SERP research above\n' +
+    '- Cite the specific competitor content or trader question that created this gap\n' +
+    '- The short_form_hook must sound like a real trader said it, not a marketer\n' +
+    '- The competitor_gap must name an actual firm and an actual angle they miss\n' +
+    '- The fxify_angle must use a specific product name and a specific number\n\n' +
+    'Return ONLY valid JSON, no markdown:\n' +
     '{"topics":[{' +
-    '"title":"Statement hook under 65 chars — sounds like a trader said it",' +
+    '"title":"Statement hook — trader voice, under 65 chars, NOT a blog headline",' +
     '"type":"pillar|cluster",' +
     '"intent":"Commercial|Informational|Transactional",' +
     '"conversion_tier":"1|2|3",' +
-    '"primary_keyword":"exact keyword traders search",' +
-    '"search_volume":"volume or TBC",' +
+    '"primary_keyword":"exact phrase traders type",' +
+    '"search_volume":"number from DFS data or TBC",' +
     '"kd_score":"0-100 or TBC",' +
-    '"nlp_entities":["entity1","entity2","entity3"],' +
-    '"short_form_hook":"exact first sentence Harry says to camera. Brand voice. Under 15 words.",' +
-    '"competitor_gap":"[Firm] publishes [topic] but never covers [specific gap]. FXIFY wins because [one verifiable fact].",' +
-    '"fxify_angle":"exact FXIFY product name + one verifiable number. One sentence.",' +
-    '"why_now":"specific June 2026 event or stat. Not vague.",' +
-    '"opportunity_score":85' +
+    '"short_form_hook":"First sentence Harry says to camera. Under 15 words. Brand voice.",' +
+    '"competitor_gap":"[Firm name] covers [specific topic] but never addresses [specific gap]. FXIFY wins because [specific fact with number].",' +
+    '"fxify_angle":"[Exact FXIFY account type] + [one verifiable number]. One sentence max.",' +
+    '"why_now":"Specific event or stat from June 2026. Never vague. Cite the source.",' +
+    '"opportunity_score":0' +
     '}]}';
 
   try {
