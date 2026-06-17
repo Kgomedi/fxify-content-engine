@@ -406,6 +406,19 @@ tr:last-child td{border-bottom:none;}
   --g5:   var(--text3);
   --red:  #DC2626;
   --redL: #FEF2F2;}
+
+/* ── TEAM GRID ──────────────────────────────────────────────── */
+.wgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:12px;margin-top:8px;}
+.wcard{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;transition:border-color .12s;}
+.wcard:hover{border-color:var(--border2);}
+.wtop{display:flex;align-items:center;gap:12px;}
+.wav{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex-shrink:0;}
+.wname{font-size:14px;font-weight:600;color:var(--text);margin-bottom:2px;}
+.wemail{font-size:12px;color:var(--text3);}
+.wrole{font-size:11px;color:var(--teal);margin-top:3px;}
+.wstats{display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
+.wstat-val{font-size:18px;font-weight:700;color:var(--text);line-height:1;}
+.wstat-lbl{font-size:10px;color:var(--text3);margin-top:2px;}
 </style>
 </head>
 <body>
@@ -632,14 +645,30 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <!-- TRENDING DISCOVERY STRIP -->
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 20px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;">
-          <div>
-            <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">What's trending in prop trading right now?</p>
-            <p style="font-size:11px;color:var(--text3);line-height:1.5;">Pulls Reddit, X, Quick scan — no seed needed. For deep gap analysis with competitor research, use the Blog Topics tab below.</p>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 20px;margin-bottom:16px;">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
+            <div>
+              <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">What's trending in prop trading right now?</p>
+              <p style="font-size:11px;color:var(--text3);line-height:1.5;">Pulls Reddit, X, Google Ads, YouTube, blogs — no seed needed.</p>
+            </div>
+            <button class="btn btn-s" id="trending-btn" style="flex-shrink:0;white-space:nowrap;gap:6px;font-size:12px;">
+              🔥 Scan trends
+            </button>
           </div>
-          <button class="btn btn-s" id="trending-btn" style="flex-shrink:0;white-space:nowrap;gap:6px;font-size:12px;">
-            🔥 Quick trends scan
-          </button>
+          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
+            <span style="font-size:11px;font-weight:600;color:var(--text3);">Output for:</span>
+            <div style="display:flex;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:2px;">
+              <button class="trend-format-btn active" data-fmt="blog" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:var(--teal);color:#fff;">✦ Blog</button>
+              <button class="trend-format-btn" data-fmt="video" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">▶ Video</button>
+              <button class="trend-format-btn" data-fmt="both" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">Both</button>
+            </div>
+            <span style="font-size:11px;color:var(--text3);">Signals:</span>
+            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-blogs" checked style="accent-color:var(--teal);"> Blogs</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-youtube-trend" checked style="accent-color:var(--teal);"> YouTube</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-google-ads" checked style="accent-color:var(--teal);"> Google Ads</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-reddit-trend" checked style="accent-color:var(--teal);"> Reddit</label>
+            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-x-trend" checked style="accent-color:var(--teal);"> X</label>
+          </div>
         </div>
 
         <!-- TRENDING LOADER -->
@@ -884,16 +913,22 @@ tr:last-child td{border-bottom:none;}
 
 
       <div id="a-writers" class="pg">
-        <div class="pgh">Writers</div>
-        <p class="pgs">Team roster</p>
-        <div class="wgrid">
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--teal),var(--teal))">FK</div><div><p class="wname">Fariha Khan</p><p class="wemail">fariha.khan@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--purple),#9333ea)">HH</div><div><p class="wname">Harry Hosking</p><p class="wemail">harrison.hosking@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--amber),#f59e0b)">IN</div><div><p class="wname">Imran Najib</p><p class="wemail">imran.najib@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#0891b2,#06b6d4)">MA</div><div><p class="wname">Mamnun Ahmed</p><p class="wemail">mamnun.ahmed@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#dc2626,#ef4444)">RG</div><div><p class="wname">Roshan Ganesh</p><p class="wemail">roshan.ganesh@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,#7c3aed,#a855f7)">SA</div><div><p class="wname">Shatha Altrad</p><p class="wemail">shatha.altrad@fxify.com</p></div></div></div>
-          <div class="wcard"><div class="wtop"><div class="wav" style="background:linear-gradient(135deg,var(--blue),#2563eb)">SM</div><div><p class="wname">Sheperd Morena</p><p class="wemail">sheperd.morena@fxify.com</p></div></div></div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+          <div>
+            <div class="pgh">Team</div>
+            <p class="pgs" style="margin-bottom:0;">Content team roster. Stats pulled live from ClickUp.</p>
+          </div>
+          <button class="btn btn-s" onclick="loadTeamStats()" id="team-refresh-btn">↻ Refresh stats</button>
+        </div>
+        <div class="wgrid" id="team-grid">
+          <!-- Populated by loadTeamStats() — static fallback below -->
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:#0ea5e9;">FK</div><div><p class="wname">Fariha Khan</p><p class="wemail">fariha.khan@fxify.com</p><p class="wrole">Senior Copywriter</p></div></div><div class="wstats"><div><p class="wstat-val" id="wstat-fk-active">—</p><p class="wstat-lbl">Active</p></div><div><p class="wstat-val" id="wstat-fk-live">—</p><p class="wstat-lbl">Published</p></div><div><p class="wstat-val" id="wstat-fk-review">—</p><p class="wstat-lbl">In review</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:#a855f7;">HH</div><div><p class="wname">Harry Hosking</p><p class="wemail">harrison.hosking@fxify.com</p><p class="wrole">Video + Content Hybrid</p></div></div><div class="wstats"><div><p class="wstat-val" id="wstat-hh-active">—</p><p class="wstat-lbl">Active</p></div><div><p class="wstat-val" id="wstat-hh-live">—</p><p class="wstat-lbl">Published</p></div><div><p class="wstat-val" id="wstat-hh-review">—</p><p class="wstat-lbl">In review</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:#f59e0b;">IN</div><div><p class="wname">Imran Najib</p><p class="wemail">imran.najib@fxify.com</p><p class="wrole">Senior Copywriter</p></div></div><div class="wstats"><div><p class="wstat-val" id="wstat-in-active">—</p><p class="wstat-lbl">Active</p></div><div><p class="wstat-val" id="wstat-in-live">—</p><p class="wstat-lbl">Published</p></div><div><p class="wstat-val" id="wstat-in-review">—</p><p class="wstat-lbl">In review</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:#06b6d4;">MA</div><div><p class="wname">Mamnun Ahmed</p><p class="wemail">mamnun.ahmed@fxify.com</p><p class="wrole">Senior Copywriter</p></div></div><div class="wstats"><div><p class="wstat-val" id="wstat-ma-active">—</p><p class="wstat-lbl">Active</p></div><div><p class="wstat-val" id="wstat-ma-live">—</p><p class="wstat-lbl">Published</p></div><div><p class="wstat-val" id="wstat-ma-review">—</p><p class="wstat-lbl">In review</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:#ef4444;">RG</div><div><p class="wname">Roshan Ganesh</p><p class="wemail">roshan.ganesh@fxify.com</p><p class="wrole">Senior Copywriter</p></div></div><div class="wstats"><div><p class="wstat-val" id="wstat-rg-active">—</p><p class="wstat-lbl">Active</p></div><div><p class="wstat-val" id="wstat-rg-live">—</p><p class="wstat-lbl">Published</p></div><div><p class="wstat-val" id="wstat-rg-review">—</p><p class="wstat-lbl">In review</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:#7c3aed;">SA</div><div><p class="wname">Shatha Altrad</p><p class="wemail">shatha.altrad@fxify.com</p><p class="wrole">Senior Copywriter</p></div></div><div class="wstats"><div><p class="wstat-val" id="wstat-sa-active">—</p><p class="wstat-lbl">Active</p></div><div><p class="wstat-val" id="wstat-sa-live">—</p><p class="wstat-lbl">Published</p></div><div><p class="wstat-val" id="wstat-sa-review">—</p><p class="wstat-lbl">In review</p></div></div></div>
+          <div class="wcard"><div class="wtop"><div class="wav" style="background:#2563eb;">SM</div><div><p class="wname">Sheperd Morena</p><p class="wemail">sheperd.morena@fxify.com</p><p class="wrole">Senior Copywriter · Content Lead</p></div></div><div class="wstats"><div><p class="wstat-val" id="wstat-sm-active">—</p><p class="wstat-lbl">Active</p></div><div><p class="wstat-val" id="wstat-sm-live">—</p><p class="wstat-lbl">Published</p></div><div><p class="wstat-val" id="wstat-sm-review">—</p><p class="wstat-lbl">In review</p></div></div></div>
         </div>
       </div>
 
@@ -955,11 +990,13 @@ tr:last-child td{border-bottom:none;}
       <div id="a-live" class="pg">
         <div class="pgh">Published</div>
         <p class="pgs">Everything live on fxify.com/blog — indexed for duplicate detection in Content Hub. 🌐</p>
-        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;">
+        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
           <button class="btn btn-p btn-s" id="a-scrape-btn">🔄 Refresh from fxify.com/blog</button>
-          <input class="finput" id="a-live-search" type="text" placeholder="Search articles..." style="max-width:260px;"/>
+          <button class="btn btn-s" id="a-canonical-btn" onclick="runCanonicalCheck()" style="border-color:rgba(239,68,68,.3);color:var(--urgent);">🔍 Check canonicals</button>
+          <input class="finput" id="a-live-search" type="text" placeholder="Search articles..." style="max-width:220px;"/>
           <span style="font-size:12px;color:var(--text3);align-self:center;" id="a-live-count"></span>
         </div>
+        <div id="canonical-results" style="display:none;margin-bottom:20px;"></div>
         <div id="a-live-list"><p class="pempty" style="padding:40px 0;">Click refresh to load published articles from fxify.com/blog.</p></div>
       </div>
 
@@ -6223,8 +6260,15 @@ function trendingStep(idx, steps, status) {
 }
 
 async function runTrendingDiscovery() {
-  var btn    = document.getElementById('trending-btn');
-  var output = document.getElementById('v2-brief-output');
+  var btn       = document.getElementById('trending-btn');
+  var output    = document.getElementById('v2-brief-output');
+  var trendFmt  = window._trendFormat || 'blog';
+  var useBlog   = (document.getElementById('sig-blogs')||{}).checked !== false;
+  var useYT     = (document.getElementById('sig-youtube-trend')||{}).checked !== false;
+  var useAds    = (document.getElementById('sig-google-ads')||{}).checked !== false;
+  var useReddit = (document.getElementById('sig-reddit-trend')||{}).checked !== false;
+  var useX      = (document.getElementById('sig-x-trend')||{}).checked !== false;
+  var activeSignals = [useBlog&&'blog',useYT&&'youtube',useAds&&'google_ads',useReddit&&'reddit',useX&&'x'].filter(Boolean);
   if (btn) { btn.disabled = true; btn.textContent = 'Scanning...'; }
 
   v2ShowLoader(output, [
@@ -7682,7 +7726,12 @@ function renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub) {
           var vol = parseInt(String(k.volume||k.volume||'0').replace(/[^0-9]/g,''))||0;
           var volStr = vol >= 1000 ? (vol/1000).toFixed(1)+'k' : String(k.volume||'—');
           return '<tr style="border-bottom:0.5px solid var(--border);' + (i%2===0?'':'background:var(--bg3);') + '">' +
-            '<td style="padding:10px 12px;font-weight:500;color:var(--text);">' + k.keyword + '</td>' +
+            '<td style="padding:10px 12px;">' +
+            '<div style="display:flex;align-items:center;gap:8px;">' +
+              '<span style="font-weight:500;color:var(--text);">' + k.keyword + '</span>' +
+              '<button class="btn btn-s kw-use-seed-btn" data-kw="' + k.keyword.replace(/"/g,'') + '" style="font-size:9px;padding:2px 7px;white-space:nowrap;">Use as seed</button>' +
+            '</div>' +
+          '</td>' +
             '<td style="padding:10px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:' + (vol>=1000?'var(--green)':vol>=200?'var(--amber)':'var(--text3)') + ';">' + volStr + '</td>' +
             '<td style="padding:10px 12px;text-align:center;font-family:var(--mono);font-weight:700;color:' + kdCol + ';">' + (k.kd||'—') + '</td>' +
             '<td style="padding:10px 12px;text-align:center;color:var(--text3);">' + (k.cpc||'—') + '</td>' +
@@ -8248,6 +8297,18 @@ function v2WireCustomBtn() {
         document.querySelectorAll('.v2-open-refine-btn').forEach(function(b){ b.textContent='✏ Refine'; });
         if (!isOpen) { panel.style.display='block'; openRefineBtn.textContent='✕ Close'; }
       }
+      return;
+    }
+    // Use keyword as seed in Blog Topics
+    var useSeedBtn = e.target.closest('.kw-use-seed-btn');
+    if (useSeedBtn) {
+      var kw = useSeedBtn.dataset.kw;
+      var seedEl = document.getElementById('v2-seed');
+      if (seedEl) seedEl.value = kw;
+      // Navigate to Content Intelligence
+      var genLink = document.querySelector('.nlink[data-pg="a-generate"]');
+      if (genLink) genLink.click();
+      v2Toast('Seed filled: "' + kw + '" — hit Find topic gaps →');
       return;
     }
     // SERP Intelligence
@@ -8947,6 +9008,21 @@ function init(){
   var lRefreshDaily = document.getElementById('lrefresh-daily-btn');
   if (lRefreshDaily) lRefreshDaily.addEventListener('click', function(){ loadDailyIdeas('ldaily-ideas-list', 'ldaily-ideas-date'); toast('Refreshed'); });
 
+  // Trend format toggle
+  document.addEventListener('click', function(e) {
+    var fmtBtn = e.target.closest('.trend-format-btn');
+    if (fmtBtn) {
+      document.querySelectorAll('.trend-format-btn').forEach(function(b) {
+        b.style.background = 'transparent'; b.style.color = 'var(--text3)';
+        b.classList.remove('active');
+      });
+      fmtBtn.style.background = 'var(--teal)';
+      fmtBtn.style.color = '#fff';
+      fmtBtn.classList.add('active');
+      window._trendFormat = fmtBtn.dataset.fmt;
+    }
+  });
+
   // Internal links tabs
   document.addEventListener('click', function(e) {
     var tab = e.target.closest('.il-tab');
@@ -9030,27 +9106,73 @@ function openSwitchViewModal() {
     'border-radius:var(--rl);padding:6px;z-index:9999;min-width:180px;' +
     'box-shadow:0 8px 24px rgba(0,0,0,0.18);';
 
+  // Section: role views
+  var sep0 = document.createElement('p');
+  sep0.style.cssText = 'font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:6px 12px 2px;';
+  sep0.textContent = 'Role views';
+  modal.appendChild(sep0);
+
   var views = [
     { label:'Admin view',  screen:'admin',  icon:'⚙' },
-    { label:'Writer view', screen:'writer', icon:'✍' },
-    { label:'David view',  screen:'david',  icon:'👁' },
+    { label:'David view',  screen:'david',  icon:'📋' },
   ];
-
   views.forEach(function(v) {
     var btn = document.createElement('button');
-    btn.style.cssText =
-      'display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;border:none;' +
-      'background:none;font-size:13px;color:var(--text2);cursor:pointer;border-radius:6px;' +
-      'text-align:left;';
+    btn.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text2);cursor:pointer;border-radius:6px;text-align:left;';
     btn.innerHTML = '<span>' + v.icon + '</span><span>' + v.label + '</span>';
-    btn.onmouseenter = function(){ this.style.background = 'var(--bg3)'; };
-    btn.onmouseleave = function(){ this.style.background = 'none'; };
+    btn.onmouseenter = function(){ this.style.background='var(--bg3)'; };
+    btn.onmouseleave = function(){ this.style.background='none'; };
     btn.onclick = function() {
       modal.remove();
-      // Switch screen
       document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
       var target = document.getElementById(v.screen);
       if (target) target.classList.add('active');
+    };
+    modal.appendChild(btn);
+  });
+
+  // Divider
+  var divider = document.createElement('div');
+  divider.style.cssText = 'height:1px;background:var(--border);margin:6px 8px;';
+  modal.appendChild(divider);
+
+  // Section: writer views
+  var sep1 = document.createElement('p');
+  sep1.style.cssText = 'font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:6px 12px 2px;';
+  sep1.textContent = 'View as writer';
+  modal.appendChild(sep1);
+
+  var writers = [
+    { name:'Fariha Khan',    email:'fariha.khan@fxify.com',       initials:'FK', color:'#0ea5e9' },
+    { name:'Harry Hosking',  email:'harrison.hosking@fxify.com',  initials:'HH', color:'#a855f7' },
+    { name:'Imran Najib',    email:'imran.najib@fxify.com',       initials:'IN', color:'#f59e0b' },
+    { name:'Mamnun Ahmed',   email:'mamnun.ahmed@fxify.com',      initials:'MA', color:'#06b6d4' },
+    { name:'Roshan Ganesh',  email:'roshan.ganesh@fxify.com',     initials:'RG', color:'#ef4444' },
+    { name:'Shatha Altrad',  email:'shatha.altrad@fxify.com',     initials:'SA', color:'#7c3aed' },
+    { name:'Sheperd Morena', email:'sheperd.morena@fxify.com',    initials:'SM', color:'#2563eb' },
+  ];
+  writers.forEach(function(w) {
+    var btn = document.createElement('button');
+    btn.style.cssText = 'display:flex;align-items:center;gap:10px;width:100%;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text2);cursor:pointer;border-radius:6px;text-align:left;';
+    var av = '<span style="width:24px;height:24px;border-radius:50%;background:' + w.color + ';color:#fff;font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;">' + w.initials + '</span>';
+    btn.innerHTML = av + '<span>' + w.name + '</span>';
+    btn.onmouseenter = function(){ this.style.background='var(--bg3)'; };
+    btn.onmouseleave = function(){ this.style.background='none'; };
+    btn.onclick = function() {
+      modal.remove();
+      // Switch to writer screen and impersonate
+      currentWriterEmail = w.email;
+      var fakeUser = { email:w.email, role:'writer', name:w.name, screen:'writer',
+        initials:w.initials, av:'' };
+      // Update topbar name
+      var nameEl = document.getElementById('writer-tbu-name');
+      var avEl   = document.getElementById('writer-tbu-av');
+      if (nameEl) nameEl.textContent = w.name;
+      if (avEl)   { avEl.textContent = w.initials; avEl.style.background = w.color; }
+      document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+      document.getElementById('writer').classList.add('active');
+      // Load this writer's tasks
+      loadWriterDrafts();
     };
     modal.appendChild(btn);
   });
@@ -9689,6 +9811,286 @@ function renderSERPRow(label, value, color, bold) {
   '</div>';
 }
 window.renderSERPRow = renderSERPRow;
+
+
+
+// ── TEAM STATS ────────────────────────────────────────────────────────────
+async function loadTeamStats() {
+  var btn = document.getElementById('team-refresh-btn');
+  if (btn) { btn.disabled = true; btn.textContent = 'Loading...'; }
+
+  try {
+    var tasks = await cuGetTasks();
+
+    // Map email prefix to stat IDs
+    var writerMap = {
+      'fariha.khan':       'fk',
+      'harrison.hosking':  'hh',
+      'imran.najib':       'in',
+      'mamnun.ahmed':      'ma',
+      'roshan.ganesh':     'rg',
+      'shatha.altrad':     'sa',
+      'sheperd.morena':    'sm',
+    };
+
+    // Reset all
+    Object.values(writerMap).forEach(function(id) {
+      ['active','live','review'].forEach(function(stat) {
+        var el = document.getElementById('wstat-' + id + '-' + stat);
+        if (el) el.textContent = '0';
+      });
+    });
+
+    // Count tasks per writer
+    tasks.forEach(function(t) {
+      var status = (t.status && t.status.status) || '';
+      (t.assignees||[]).forEach(function(a) {
+        var email = (a.email||'').toLowerCase();
+        var prefix = email.split('@')[0];
+        var wid = writerMap[prefix];
+        if (!wid) return;
+
+        var isActive  = ['in progress','copy draft','review','editing'].includes(status);
+        var isLive    = ['published','completed','approved'].includes(status);
+        var isReview  = ['final review','review'].includes(status);
+
+        if (isLive) {
+          var el = document.getElementById('wstat-' + wid + '-live');
+          if (el) el.textContent = parseInt(el.textContent||'0') + 1;
+        } else if (isReview) {
+          var el2 = document.getElementById('wstat-' + wid + '-review');
+          if (el2) el2.textContent = parseInt(el2.textContent||'0') + 1;
+        } else if (isActive) {
+          var el3 = document.getElementById('wstat-' + wid + '-active');
+          if (el3) el3.textContent = parseInt(el3.textContent||'0') + 1;
+        }
+      });
+    });
+
+    v2Toast('Team stats updated ✓');
+  } catch(e) {
+    v2Toast('Stats failed: ' + e.message);
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = '↻ Refresh stats'; }
+}
+window.loadTeamStats = loadTeamStats;
+
+
+
+// ── CANONICAL CHECKER ────────────────────────────────────────────────────
+// Compares ClickUp pipeline vs live published articles
+// Finds: duplicates, near-duplicates, orphaned live content, pipeline conflicts
+
+function slugify(str) {
+  return (str || '').toLowerCase()
+    .replace(/[^a-z0-9\s-]/g, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
+function titleSimilarity(a, b) {
+  // Simple word overlap score 0-1
+  var wa = new Set(slugify(a).split('-').filter(function(w){ return w.length > 3; }));
+  var wb = new Set(slugify(b).split('-').filter(function(w){ return w.length > 3; }));
+  if (!wa.size || !wb.size) return 0;
+  var overlap = 0;
+  wa.forEach(function(w){ if (wb.has(w)) overlap++; });
+  return overlap / Math.max(wa.size, wb.size);
+}
+
+async function runCanonicalCheck() {
+  var btn       = document.getElementById('a-canonical-btn');
+  var resultsEl = document.getElementById('canonical-results');
+  if (!resultsEl) return;
+
+  if (btn) { btn.disabled = true; btn.textContent = 'Checking...'; }
+  resultsEl.style.display = 'block';
+  resultsEl.innerHTML =
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px;text-align:center;">' +
+      '<div class="loader-spinner"></div>' +
+      '<p style="font-size:13px;color:var(--text3);margin-top:12px;">Loading ClickUp tasks + published articles...</p>' +
+    '</div>';
+
+  try {
+    // Load both sources in parallel
+    var results = await Promise.allSettled([
+      cuGetTasks(),
+      supa.from('published_articles').select('title,url').order('scraped_at', {ascending:false})
+    ]);
+
+    var cuTasks   = results[0].status === 'fulfilled' ? results[0].value : [];
+    var pubResult = results[1].status === 'fulfilled' ? results[1].value : {data:[]};
+    var pubArts   = pubResult.data || [];
+
+    if (!cuTasks.length && !pubArts.length) {
+      resultsEl.innerHTML = '<p style="color:var(--urgent);padding:16px;">Could not load data. Refresh pipeline first.</p>';
+      if (btn) { btn.disabled=false; btn.textContent='🔍 Check canonicals'; }
+      return;
+    }
+
+    // ── FIND DUPLICATES ─────────────────────────────────────────────────
+    // 1. ClickUp tasks that match a published article (title similarity > 0.5)
+    var cuVsPub = [];
+    cuTasks.forEach(function(task) {
+      var cuTitle   = task.name || '';
+      var cuStatus  = (task.status && task.status.status) || '';
+      var cuSlug    = slugify(cuTitle);
+      var matches   = [];
+
+      pubArts.forEach(function(art) {
+        var pubSlug = slugify(art.title || '');
+        var sim     = titleSimilarity(cuTitle, art.title);
+
+        // Check exact slug match OR high similarity
+        if (sim >= 0.5 || cuSlug === pubSlug) {
+          matches.push({ pub: art, sim: Math.round(sim * 100), slugMatch: cuSlug === pubSlug });
+        }
+      });
+
+      if (matches.length) {
+        matches.sort(function(a,b){ return b.sim - a.sim; });
+        cuVsPub.push({ task: task, status: cuStatus, match: matches[0] });
+      }
+    });
+
+    // 2. ClickUp tasks where two tasks have similar titles (pipeline duplicates)
+    var pipelineDupes = [];
+    for (var i = 0; i < cuTasks.length; i++) {
+      for (var j = i+1; j < cuTasks.length; j++) {
+        var sim = titleSimilarity(cuTasks[i].name, cuTasks[j].name);
+        if (sim >= 0.55) {
+          pipelineDupes.push({ a: cuTasks[i], b: cuTasks[j], sim: Math.round(sim*100) });
+        }
+      }
+    }
+
+    // 3. Published articles with NO matching ClickUp task (orphaned)
+    var orphaned = pubArts.filter(function(art) {
+      var best = 0;
+      cuTasks.forEach(function(t){ var s = titleSimilarity(art.title, t.name); if (s>best) best=s; });
+      return best < 0.35;
+    }).slice(0, 20); // cap at 20
+
+    // ── RENDER RESULTS ──────────────────────────────────────────────────
+    var critCount   = cuVsPub.filter(function(r){ return r.match.sim >= 70; }).length;
+    var warnCount   = cuVsPub.filter(function(r){ return r.match.sim >= 50 && r.match.sim < 70; }).length;
+
+    var html =
+      // Summary bar
+      '<div style="display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;">' +
+        _canonStat(critCount, '🔴 Exact/near duplicates', 'var(--urgentL)', 'var(--urgent)') +
+        _canonStat(warnCount, '🟡 Possible duplicates', 'var(--highL)', 'var(--high)') +
+        _canonStat(pipelineDupes.length, '⚠ Pipeline conflicts', '#FFF7ED', 'var(--amber)') +
+        _canonStat(orphaned.length, '◎ Orphaned live posts', 'var(--bg3)', 'var(--text3)') +
+      '</div>';
+
+    // Critical duplicates (ClickUp vs Published)
+    if (cuVsPub.length) {
+      html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:12px;">' +
+        '<div style="padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">' +
+          '<p style="font-size:12px;font-weight:600;color:var(--text);">ClickUp tasks vs live articles</p>' +
+          '<span style="font-size:11px;color:var(--text3);">' + cuVsPub.length + ' potential conflicts</span>' +
+        '</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+          '<thead><tr style="background:var(--bg3);">' +
+            '<th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);">ClickUp task</th>' +
+            '<th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);">Live article match</th>' +
+            '<th style="padding:8px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);">Match</th>' +
+            '<th style="padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);">Status</th>' +
+            '<th style="padding:8px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--text3);border-bottom:1px solid var(--border);">Action</th>' +
+          '</tr></thead><tbody>' +
+          cuVsPub.map(function(r) {
+            var matchColor = r.match.sim >= 70 ? 'var(--urgent)' : 'var(--amber)';
+            var matchBg    = r.match.sim >= 70 ? 'var(--urgentL)' : 'var(--highL)';
+            var label      = r.match.slugMatch ? '🔴 Slug match' : r.match.sim >= 70 ? '🔴 ' + r.match.sim + '%' : '🟡 ' + r.match.sim + '%';
+            return '<tr style="border-bottom:0.5px solid var(--border);">' +
+              '<td style="padding:9px 12px;max-width:220px;">' +
+                '<p style="font-weight:500;color:var(--text);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + r.task.name + '</p>' +
+                '<p style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-top:1px;">' + slugify(r.task.name) + '</p>' +
+              '</td>' +
+              '<td style="padding:9px 12px;max-width:220px;">' +
+                '<p style="color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;" title="' + r.match.pub.title + '">' + r.match.pub.title + '</p>' +
+                '<a href="' + r.match.pub.url + '" target="_blank" style="font-size:10px;color:var(--teal);">' + (r.match.pub.url||'').replace('https://fxify.com','') + ' ↗</a>' +
+              '</td>' +
+              '<td style="padding:9px 12px;text-align:center;">' +
+                '<span style="font-size:10px;font-weight:700;background:' + matchBg + ';color:' + matchColor + ';padding:2px 8px;border-radius:10px;">' + label + '</span>' +
+              '</td>' +
+              '<td style="padding:9px 12px;">' +
+                '<span style="font-size:10px;color:var(--text3);">' + r.status + '</span>' +
+              '</td>' +
+              '<td style="padding:9px 12px;text-align:center;">' +
+                '<a href="https://app.clickup.com/t/' + r.task.id + '" target="_blank" class="btn btn-s" style="font-size:10px;text-decoration:none;">View ↗</a>' +
+              '</td>' +
+            '</tr>';
+          }).join('') +
+          '</tbody></table></div>';
+    }
+
+    // Pipeline duplicates
+    if (pipelineDupes.length) {
+      html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:12px;">' +
+        '<div style="padding:10px 14px;background:#FFFBEB;border-bottom:1px solid var(--border);">' +
+          '<p style="font-size:12px;font-weight:600;color:var(--amber);">⚠ Pipeline conflicts — similar titles in ClickUp</p>' +
+        '</div>' +
+        '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+          '<thead><tr style="background:var(--bg3);">' +
+            '<th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);">Task A</th>' +
+            '<th style="padding:8px 12px;text-align:left;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);">Task B</th>' +
+            '<th style="padding:8px 12px;text-align:center;font-size:10px;color:var(--text3);border-bottom:1px solid var(--border);">Similarity</th>' +
+          '</tr></thead><tbody>' +
+          pipelineDupes.slice(0,15).map(function(d) {
+            return '<tr style="border-bottom:0.5px solid var(--border);">' +
+              '<td style="padding:8px 12px;max-width:250px;"><p style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);">' + d.a.name + '</p>' +
+              '<a href="https://app.clickup.com/t/' + d.a.id + '" target="_blank" style="font-size:10px;color:var(--teal);">View ↗</a></td>' +
+              '<td style="padding:8px 12px;max-width:250px;"><p style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--text);">' + d.b.name + '</p>' +
+              '<a href="https://app.clickup.com/t/' + d.b.id + '" target="_blank" style="font-size:10px;color:var(--teal);">View ↗</a></td>' +
+              '<td style="padding:8px 12px;text-align:center;"><span style="font-size:10px;font-weight:700;background:var(--highL);color:var(--high);padding:2px 8px;border-radius:10px;">' + d.sim + '%</span></td>' +
+            '</tr>';
+          }).join('') +
+          '</tbody></table></div>';
+    }
+
+    // Orphaned live posts
+    if (orphaned.length) {
+      html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:12px;">' +
+        '<div style="padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);">' +
+          '<p style="font-size:12px;font-weight:600;color:var(--text3);">◎ Live articles with no ClickUp task (top 20)</p>' +
+        '</div>' +
+        '<div style="padding:8px 12px;display:grid;gap:5px;">' +
+          orphaned.map(function(art) {
+            return '<div style="display:flex;align-items:center;justify-content:space-between;padding:5px 0;border-bottom:0.5px solid var(--border);">' +
+              '<p style="font-size:12px;color:var(--text2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;">' + art.title + '</p>' +
+              '<a href="' + art.url + '" target="_blank" style="font-size:10px;color:var(--teal);flex-shrink:0;margin-left:12px;">Live ↗</a>' +
+            '</div>';
+          }).join('') +
+        '</div></div>';
+    }
+
+    if (!cuVsPub.length && !pipelineDupes.length) {
+      html = '<div style="background:var(--greenL);border:1px solid rgba(5,150,105,.2);border-radius:var(--rl);padding:16px;text-align:center;">' +
+        '<p style="font-size:14px;font-weight:600;color:var(--green);">✓ No canonical issues found</p>' +
+        '<p style="font-size:12px;color:var(--green);margin-top:4px;">Pipeline titles look clean vs ' + pubArts.length + ' live articles.</p>' +
+      '</div>';
+    }
+
+    resultsEl.innerHTML = html;
+
+  } catch(e) {
+    resultsEl.innerHTML = '<p style="color:var(--urgent);padding:16px;">Error: ' + e.message + '</p>';
+  }
+
+  if (btn) { btn.disabled=false; btn.textContent='🔍 Check canonicals'; }
+}
+window.runCanonicalCheck = runCanonicalCheck;
+
+function _canonStat(count, label, bg, color) {
+  return '<div style="background:' + bg + ';border-radius:var(--r);padding:10px 14px;flex:1;min-width:130px;">' +
+    '<p style="font-size:20px;font-weight:700;color:' + color + ';line-height:1;">' + count + '</p>' +
+    '<p style="font-size:11px;color:' + color + ';margin-top:3px;">' + label + '</p>' +
+  '</div>';
+}
 
 
 })();
