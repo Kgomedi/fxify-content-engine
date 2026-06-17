@@ -456,7 +456,7 @@ tr:last-child td{border-bottom:none;}
       <div class="ngrp">Insights</div>
       <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico">▲</span>Analytics</div>
       <div class="nlink" data-pg="a-keywords" data-sc="admin"><span class="nico">🔑</span>Keyword Analysis</div>
-      <div class="nlink" data-pg="a-keywords" data-sc="admin"><span class="nico">🔑</span>Keywords</div>
+      
       <div class="nlink" data-pg="a-competitors" data-sc="admin"><span class="nico">📡</span>Competitor Pulse</div>
 
       <div class="ndiv"></div>
@@ -8850,78 +8850,10 @@ window.doSwitchView        = doSwitchView;
 window.doExitSwitchView    = doExitSwitchView;
 window.prefillBrief        = prefillBrief;
 
-})();
-
-// Published articles — admin
-  var aScrapeBtn = document.getElementById('a-scrape-btn');
-  if (aScrapeBtn) aScrapeBtn.addEventListener('click', function(){
-    scrapePublishedArticles('a-live-list', 'a-live-count');
-  });
 
 
-  // Test save button — saves 1 row and reports exact result
-  var aSearch = document.getElementById('a-live-search');
-  if (aSearch) aSearch.addEventListener('input', function(){
-    if (publishedCache) renderPublishedArticles(publishedCache, 'a-live-list', 'a-live-count', aSearch.value);
-  });
+// ── MODAL + SWITCH VIEW FUNCTIONS ─────────────────────────
 
-
-  // Liam topic submission
-
-  // v2 Topic Intelligence Hub init
-  v2WireCredentials();
-  v2WireCustomBtn();
-  setTimeout(v2UpdateStatus, 800);
-
-  // Liam planner
-  var lplBtn = document.getElementById('lpl-analyse-btn');
-  if (lplBtn) lplBtn.addEventListener('click', runLiamPlanner);
-
-  // Daily ideas refresh buttons
-  var refreshDaily = document.getElementById('refresh-daily-btn');
-  if (refreshDaily) refreshDaily.addEventListener('click', function(){ loadDailyIdeas('daily-ideas-list', 'daily-ideas-date'); toast('Refreshed'); });
-  var lRefreshDaily = document.getElementById('lrefresh-daily-btn');
-  if (lRefreshDaily) lRefreshDaily.addEventListener('click', function(){ loadDailyIdeas('ldaily-ideas-list', 'ldaily-ideas-date'); toast('Refreshed'); });
-
-  // Internal links tabs
-  document.addEventListener('click', function(e) {
-    var tab = e.target.closest('.il-tab');
-    if (!tab) return;
-    ilCurrentTab = tab.getAttribute('data-iltab');
-    document.querySelectorAll('.il-tab').forEach(function(t){
-      t.classList.remove('active');
-      t.style.borderColor = 'var(--border)';
-      t.style.background = 'transparent';
-      t.style.color = 'var(--muted)';
-    });
-    tab.classList.add('active');
-    tab.style.borderColor = 'var(--teal)';
-    tab.style.background = 'var(--tealL)';
-    tab.style.color = 'var(--teal)';
-    renderILPanel(document.getElementById('il-search') ? document.getElementById('il-search').value : '');
-  });
-
-  // Internal links search
-  var ilSearch = document.getElementById('il-search');
-  if (ilSearch) ilSearch.addEventListener('input', function(){ renderILPanel(ilSearch.value); });
-
-  // Internal links refresh
-  var ilRefresh = document.getElementById('il-refresh');
-  if (ilRefresh) ilRefresh.addEventListener('click', function(){
-    internalLinksCache = publishedCache || null;
-    loadInternalLinks();
-    toast('Links refreshed ✓');
-  });
-
-  // goPage triggers
-  var origGoPage = goPage;
-
-
-
-init();
-
-// Expose functions called from inline onclick attributes
-// ── SWITCH VIEW MODAL ────────────────────────────────────────
 function openSwitchViewModal() {
   var existing = document.getElementById('switch-view-modal');
   if (existing) { existing.remove(); return; }
@@ -8973,13 +8905,6 @@ function openSwitchViewModal() {
   document.body.appendChild(modal);
 }
 
-window.openSwitchViewModal  = openSwitchViewModal;
-window.openWriterBriefModal = openWriterBriefModal;
-window.openWriterSubmit     = openWriterSubmit;
-window.approveDavidArticle  = approveDavidArticle;
-window.rejectDavidArticle   = rejectDavidArticle;
-
-// ── SWITCH VIEW (role preview) ─────────────────────────────────
 function doSwitchView(role) {
   // Switch active screen based on role
   var screenMap = { 'admin':'admin', 'writer':'writer', 'david':'david', 'liam':'admin' };
@@ -9008,11 +8933,6 @@ function prefillBrief(data) {
     window.createTaskFromTopic(data);
   }
 }
-
-window.doSwitchView        = doSwitchView;
-window.doExitSwitchView    = doExitSwitchView;
-window.prefillBrief        = prefillBrief;
-
 
 // ── GLOBAL FUNCTION EXPOSURE ────────────────────────────────
 // All functions callable from onclick, init(), and external code
@@ -9045,6 +8965,171 @@ if (typeof loadDavidLogAdmin === "function") window.loadDavidLogAdmin = loadDavi
 if (typeof toast === "function") window.toast = toast;
 if (typeof init === "function") window.init = init;
 
+
+
+
+// ── MISSING UTILITY FUNCTIONS ────────────────────────────────────────────
+
+// JSON parser with fallback (used by topic generation, keywords etc)
+function parseJSON(text) {
+  if (!text) throw new Error('No text to parse');
+  // Strip markdown code fences
+  var clean = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
+  // Find first { and last }
+  var start = clean.indexOf('{');
+  var end   = clean.lastIndexOf('}');
+  if (start < 0 || end < 0) throw new Error('No JSON object found in response');
+  try {
+    return JSON.parse(clean.slice(start, end + 1));
+  } catch(e) {
+    throw new Error('JSON parse failed: ' + e.message + ' | Preview: ' + clean.substring(0, 100));
+  }
+}
+
+// Competitor analysis page loader
+async function loadCompetitorAnalysis() {
+  var cards = document.getElementById('comp-cards');
+  var detail = document.getElementById('comp-detail');
+  if (!cards) return;
+  cards.innerHTML =
+    '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text3);">' +
+      '<p style="font-size:13px;font-weight:500;margin-bottom:6px;">Click <strong style="color:var(--text);">Run analysis</strong> to pull live competitor intelligence.</p>' +
+      '<p style="font-size:12px;">Uses Claude web search — results appear in the tabs below.</p>' +
+    '</div>';
+  if (detail) detail.style.display = 'none';
+}
+
+// Full competitor analysis runner
+async function runFullCompetitorAnalysis() {
+  var btn = document.getElementById('comp-run-btn');
+  var cards = document.getElementById('comp-cards');
+  var detail = document.getElementById('comp-detail');
+  if (btn) { btn.disabled = true; btn.textContent = 'Running...'; }
+
+  if (cards) {
+    cards.innerHTML =
+      '<div style="grid-column:1/-1;text-align:center;padding:40px;">' +
+        '<div class="loader-spinner"></div>' +
+        '<p style="font-size:13px;color:var(--text3);margin-top:12px;">Searching competitor content...</p>' +
+      '</div>';
+  }
+
+  try {
+    var firms = ['FTMO', 'FundedNext', 'Apex', 'Topstep', 'The5ers', 'E8 Funding', 'FundingPips', 'ThinkCapital'];
+
+    var liveData = await v2LiveResearch(
+      'prop trading blog articles 2026 ' + firms.slice(0,4).join(' '),
+      'Search for recent blog articles and content from these prop trading firms: ' + firms.join(', ') + '. ' +
+      'Find actual article titles published in the last 30 days. ' +
+      'What topics are they covering? What are they NOT covering? ' +
+      'List specific article titles you find.'
+    );
+
+    var prompt =
+      'You are a content intelligence analyst for FXIFY prop firm. June 2026.\n\n' +
+      'COMPETITORS TO ANALYSE: ' + firms.join(', ') + '\n\n' +
+      (liveData ? 'LIVE RESEARCH:\n' + liveData.substring(0, 2000) + '\n\n' : '') +
+      'FXIFY ADVANTAGES: $19 Instant Funding, One Phase no consistency rule, broker-backed FXPIG 2010, on-demand payouts, $40M+ paid.\n\n' +
+      'Return ONLY valid JSON:\n' +
+      '{"strategic_opportunities":[{"title":"opportunity","description":"what FXIFY should do","urgency":"High|Medium|Low"}],' +
+      '"content_gaps":[{"topic":"gap topic","why":"why competitors miss it","fxify_angle":"how FXIFY wins"}],' +
+      '"keyword_gaps":[{"keyword":"kw","why":"opportunity reason"}],' +
+      '"recent_moves":[{"firm":"name","move":"what they did","implication":"what it means for FXIFY"}]}';
+
+    var text = await v2Fetch(prompt, 2000);
+    var result = parseJSON(text);
+    renderCompetitorResults(result, liveData, firms);
+  } catch(e) {
+    if (cards) cards.innerHTML =
+      '<div style="grid-column:1/-1;background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:var(--rl);padding:16px;font-size:13px;color:var(--urgent);">' +
+        'Error: ' + e.message +
+      '</div>';
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = '⚡ Run analysis'; }
+}
+
+function renderCompetitorResults(result, liveData, firms) {
+  var cards = document.getElementById('comp-cards');
+  var detail = document.getElementById('comp-detail');
+
+  // Firm cards
+  if (cards) {
+    var firmColors = ['#FF6B6B','#4ECDC4','#45B7D1','#96CEB4','#FFEAA7','#DDA0DD','#98D8C8','#F7DC6F'];
+    cards.innerHTML = firms.map(function(firm, i) {
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+          '<span style="width:8px;height:8px;border-radius:50%;background:' + firmColors[i % firmColors.length] + ';flex-shrink:0;"></span>' +
+          '<p style="font-size:13px;font-weight:600;color:var(--text);">' + firm + '</p>' +
+        '</div>' +
+        '<p style="font-size:11px;color:var(--text3);">Monitored</p>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Show detail tabs
+  if (detail) detail.style.display = 'block';
+
+  // Opportunities tab
+  var oppPane = document.getElementById('comp-tab-opportunities');
+  if (oppPane && result.strategic_opportunities) {
+    oppPane.innerHTML = result.strategic_opportunities.map(function(o) {
+      var urgColor = o.urgency === 'High' ? 'var(--urgent)' : o.urgency === 'Medium' ? 'var(--amber)' : 'var(--text3)';
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;">' +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px;">' +
+          '<p style="font-size:13px;font-weight:600;color:var(--text);">' + o.title + '</p>' +
+          '<span style="font-size:10px;font-weight:700;color:' + urgColor + ';white-space:nowrap;">' + o.urgency + '</span>' +
+        '</div>' +
+        '<p style="font-size:12px;color:var(--text2);line-height:1.55;">' + o.description + '</p>' +
+      '</div>';
+    }).join('');
+  }
+
+  // Content gaps tab
+  var gapsPane = document.getElementById('comp-tab-gaps');
+  if (gapsPane && result.content_gaps) {
+    gapsPane.innerHTML = result.content_gaps.map(function(g) {
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;">' +
+        '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">' + g.topic + '</p>' +
+        '<p style="font-size:12px;color:var(--text3);margin-bottom:6px;">' + g.why + '</p>' +
+        '<p style="font-size:12px;color:var(--teal);">FXIFY angle: ' + g.fxify_angle + '</p>' +
+      '</div>';
+    }).join('');
+    gapsPane.style.display = 'block';
+  }
+
+  // Keyword gaps tab
+  var kwPane = document.getElementById('comp-tab-keywords');
+  if (kwPane && result.keyword_gaps) {
+    kwPane.innerHTML = result.keyword_gaps.map(function(k) {
+      return '<div style="display:flex;align-items:baseline;justify-content:space-between;padding:8px 0;border-bottom:0.5px solid var(--border);">' +
+        '<p style="font-size:13px;color:var(--text);font-weight:500;">' + k.keyword + '</p>' +
+        '<p style="font-size:12px;color:var(--text3);max-width:60%;">' + k.why + '</p>' +
+      '</div>';
+    }).join('');
+    kwPane.style.display = 'block';
+  }
+
+  // Recent moves tab
+  var movesPane = document.getElementById('comp-tab-recent');
+  if (movesPane && result.recent_moves) {
+    movesPane.innerHTML = result.recent_moves.map(function(m) {
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;margin-bottom:8px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">' +
+          '<span style="font-size:10px;font-weight:700;background:var(--urgentL);color:var(--urgent);padding:2px 8px;border-radius:4px;">' + m.firm + '</span>' +
+        '</div>' +
+        '<p style="font-size:12px;font-weight:500;color:var(--text);margin-bottom:4px;">' + m.move + '</p>' +
+        '<p style="font-size:12px;color:var(--text3);">' + m.implication + '</p>' +
+      '</div>';
+    }).join('');
+    movesPane.style.display = 'block';
+  }
+
+  toast('Competitor analysis complete ✓');
+}
+
+
+})();
 </script>
 
 </body>
