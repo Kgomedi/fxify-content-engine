@@ -399,7 +399,13 @@ tr:last-child td{border-bottom:none;}
 /* ── METRICS / ANALYTICS ────────────────────────────────── */
 .metric-up{color:var(--green);}
 .metric-down{color:var(--urgent);}
-.metric-neutral{color:var(--text3);}
+.metric-neutral{color:var(--text3);
+  /* ── Additional variables referenced in JS ────────────── */
+  --bg1:  var(--bg);
+  --g2:   var(--bg3);
+  --g5:   var(--text3);
+  --red:  #DC2626;
+  --redL: #FEF2F2;}
 </style>
 </head>
 <body>
@@ -840,163 +846,11 @@ tr:last-child td{border-bottom:none;}
 
         <!-- RECENT LIVE POSTS -->
         <div class="shead" style="margin-bottom:10px;">Recent live posts</div>
-        <div id="an-live-posts" style="display:grid;gap:8px;">
-          <p style="font-size:12px;color:var(--muted);">Refresh to load.</p>
-        </div>
+        
 
       </div>
-id="a-analytics" class="pg">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
-          <div>
-            <div class="pgh" style="margin-bottom:2px;">Analytics</div>
-            <p class="pgs" style="margin-bottom:0;">Live from ClickUp (blog + video) and Supabase article data.</p>
-          </div>
-          <div style="display:flex;gap:6px;flex-wrap:wrap;">
-            <button class="btn btn-s" id="an-refresh-btn">↻ Refresh</button>
-            <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">Blog ↗</a>
-            <a href="https://app.clickup.com/9005041798/v/li/901603213575" target="_blank" class="btn btn-s" style="text-decoration:none;">Video ↗</a>
-          </div>
-        </div>
 
-        <!-- PIPELINE STATS — from ClickUp (both lists) -->
-        <div class="shead">Pipeline — ClickUp live</div>
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:8px;" id="an-pipeline-grid">
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;grid-column:span 2;">
-            <!-- Blog row -->
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--teal);"></div>
-              <p style="font-size:9px;color:var(--teal);font-family:var(--mono);font-weight:600;margin-bottom:4px;">✦ BLOG</p>
-              <p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">Total tasks</p>
-              <p style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text);line-height:1;" id="an-blog-total">—</p>
-            </div>
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);"></div>
-              <p style="font-size:9px;color:var(--teal);font-family:var(--mono);font-weight:600;margin-bottom:4px;">✦ BLOG</p>
-              <p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">In progress</p>
-              <p style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--blue);line-height:1;" id="an-blog-prog">—</p>
-            </div>
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);"></div>
-              <p style="font-size:9px;color:var(--teal);font-family:var(--mono);font-weight:600;margin-bottom:4px;">✦ BLOG</p>
-              <p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">In review</p>
-              <p style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--amber);line-height:1;" id="an-blog-review">—</p>
-            </div>
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);"></div>
-              <p style="font-size:9px;color:var(--teal);font-family:var(--mono);font-weight:600;margin-bottom:4px;">✦ BLOG</p>
-              <p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">Published</p>
-              <p style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green);line-height:1;" id="an-blog-done">—</p>
-            </div>
-            <!-- Video row -->
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--urgent);"></div>
-              <p style="font-size:9px;color:var(--urgent);font-family:var(--mono);font-weight:600;margin-bottom:4px;">▶ VIDEO</p>
-              <p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">Total tasks</p>
-              <p style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--text);line-height:1;" id="an-video-total">—</p>
-            </div>
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--blue);"></div>
-              <p style="font-size:9px;color:var(--urgent);font-family:var(--mono);font-weight:600;margin-bottom:4px;">▶ VIDEO</p>
-              <p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">In production</p>
-              <p style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--blue);line-height:1;" id="an-video-prog">—</p>
-            </div>
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--amber);"></div>
-              <p style="font-size:9px;color:var(--urgent);font-family:var(--mono);font-weight:600;margin-bottom:4px;">▶ VIDEO</p>
-              <p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">In review</p>
-              <p style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--amber);line-height:1;" id="an-video-review">—</p>
-            </div>
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;position:relative;overflow:hidden;">
-              <div style="position:absolute;top:0;left:0;right:0;height:2px;background:var(--green);"></div>
-              <p style="font-size:9px;color:var(--urgent);font-family:var(--mono);font-weight:600;margin-bottom:4px;">▶ VIDEO</p>
-              <p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:6px;">Published</p>
-              <p style="font-family:var(--mono);font-size:22px;font-weight:700;color:var(--green);line-height:1;" id="an-video-done">—</p>
-            </div>
-          </div>
-        </div>
 
-        <!-- CONTENT STATS — from Supabase -->
-        <div class="shead" style="margin-top:20px;">Content stats — Supabase</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:20px;">
-          <div class="sc sc-t"><p class="slbl">Total articles</p><p class="sval" id="an-total">—</p></div>
-          <div class="sc sc-g"><p class="slbl">Live & published</p><p class="sval" style="color:var(--green);" id="an-live">—</p></div>
-          <div class="sc sc-b"><p class="slbl">Avg. word count</p><p class="sval" id="an-wc">—</p></div>
-        </div>
-
-        <!-- BY WRITER -->
-        <div class="shead">By writer</div>
-        <div class="twrap" style="margin-bottom:20px;">
-          <table class="dtable" id="an-by-writer">
-            <thead><tr>
-              <th>Writer</th>
-              <th>Blog tasks</th>
-              <th>Video tasks</th>
-              <th>Live</th>
-              <th>In progress</th>
-              <th>Avg. words</th>
-            </tr></thead>
-            <tbody><tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;font-family:var(--mono);font-size:11px;">Loading...</td></tr></tbody>
-          </table>
-        </div>
-
-        <!-- LIVE API DATA SLOTS -->
-        <div class="shead">Live performance data</div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px;">
-          <!-- GA4 slot -->
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-              <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--amberL);color:var(--amber);border:1px solid rgba(251,191,36,0.2);font-family:var(--mono);font-weight:600;">Google Analytics 4</span>
-              <span id="ga4-status" style="font-size:9px;color:var(--text3);font-family:var(--mono);">Not connected</span>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;" id="ga4-stats">
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Sessions (30d)</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="ga4-sessions">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Organic users</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="ga4-organic">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Avg. duration</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="ga4-duration">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Bounce rate</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="ga4-bounce">—</p></div>
-            </div>
-            <p style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5;">Connect GA4 via the Measurement Protocol API or a service account. Pulls sessions, organic users, and engagement per article.</p>
-          </div>
-          <!-- GSC slot -->
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-              <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);font-weight:600;">Search Console</span>
-              <span id="gsc-status" style="font-size:9px;color:var(--text3);font-family:var(--mono);">Not connected</span>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Impressions</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="gsc-impressions">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Clicks</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="gsc-clicks">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Avg. position</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="gsc-position">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">CTR</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="gsc-ctr">—</p></div>
-            </div>
-            <p style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5;">Connect via Google Search Console API (OAuth or service account). Shows impressions, clicks, and average ranking per keyword.</p>
-          </div>
-          <!-- YouTube slot -->
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
-              <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--urgentL);color:var(--urgent);border:1px solid rgba(248,113,113,0.2);font-family:var(--mono);font-weight:600;">YouTube Analytics</span>
-              <span id="yt-an-status" style="font-size:9px;color:var(--text3);font-family:var(--mono);">Not connected</span>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Views (30d)</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="yt-views">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Watch time</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="yt-watchtime">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Subscribers</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="yt-subs">—</p></div>
-              <div><p style="font-size:9px;color:var(--text3);font-family:var(--mono);margin-bottom:2px;">Avg. view %</p><p style="font-size:18px;font-weight:700;color:var(--text);font-family:var(--mono);" id="yt-retention">—</p></div>
-            </div>
-            <p style="font-size:10px;color:var(--text3);margin-top:10px;line-height:1.5;">Connect via YouTube Data API v3 with a service account. Pulls views, watch time, and retention per video.</p>
-          </div>
-        </div>
-
-        <!-- RECENT ARTICLES -->
-        <div class="shead">Recent articles</div>
-        <div class="twrap">
-          <table class="dtable" id="an-recent">
-            <thead><tr><th>Article</th><th>Writer</th><th>Status</th><th>Words</th><th>SEO</th></tr></thead>
-            <tbody><tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;"></td></tr></tbody>
-          </table>
-        </div>
-      </div>
-
-      <!-- WRITERS -->
       <div id="a-writers" class="pg">
         <div class="pgh">Writers</div>
         <p class="pgs">Team roster</p>
@@ -2004,7 +1858,7 @@ async function cuFetch(path, method, body) {
 
 async function cuCreateTask(article) {
   var brief = null;
-  try { if (article.content && article.content.trim().startsWith('{')) brief = JSON.parse(article.content); } catch(e) {}
+  try { if (article.content && article.content.trim().startsWith('{')) brief = JSON.parse(article.content); } catch(e) { /* silent */ }
   var desc = '';
   if (brief) {
     desc += 'KEYWORD: ' + (brief.primary_keyword || article.primary_kw || '') + '\n';
@@ -2022,7 +1876,7 @@ async function cuCreateTask(article) {
   var cuPriority = { 'Urgent':1, 'High':2, 'Normal':3, 'Low':4 };
   var pri = cuPriority[article.priority] || 3;
   var dueDate = null;
-  if (article.due_date) { try { dueDate = new Date(article.due_date).getTime(); } catch(e){} }
+  if (article.due_date) { try { dueDate = new Date(article.due_date).getTime(); } catch(e){ /* silent */ } }
   var customFields = [];
   if (article.primary_kw) customFields.push({ id: CU.fields.primaryKeyword.id, value: article.primary_kw });
   if (article.category && CU.fieldOptions.category[article.category]) customFields.push({ id: CU.fields.category.id, value: CU.fieldOptions.category[article.category] });
@@ -2933,7 +2787,6 @@ async function loadDavidAnalytics(){
   var avgWc=total?Math.round(totalWc/total):0;
   var seoArts=arts.filter(function(a){return a.seo_score;});
   var avgSeo=seoArts.length?Math.round(seoArts.reduce(function(s,a){return s+(a.seo_score||0);},0)/seoArts.length):0;
-  function set(id,val){var e=document.getElementById(id);if(e)e.textContent=val;}
   set('dan-total',total); set('dan-live',live); set('dan-pipeline',pipeline);
   set('dan-review',inReview); set('dan-wc',avgWc?avgWc.toLocaleString():'—');
   set('dan-seo',avgSeo?avgSeo+'/100':'—');
@@ -3290,7 +3143,7 @@ async function loadWriterDrafts() {
         intent = brief.intent           || '';
         wc     = brief.word_count       || '';
       }
-    } catch(e) {}
+    } catch(e) { /* silent */ }
 
     // Priority colour
     var pri = (t.priority && t.priority.color) || 'transparent';
@@ -3446,7 +3299,7 @@ function openEditor(art,role){
         var match = String(briefD2.word_count).match(/\d+/);
         if (match) targetWc = parseInt(match[0]);
       }
-    } catch(e) {}
+    } catch(e) { /* silent */ }
     if (!targetWc && art.length) {
       var m2 = String(art.length).match(/\d+/);
       if (m2) targetWc = parseInt(m2[0]);
@@ -3894,7 +3747,7 @@ function wireToolbar() {
       ta.value = wpHtml;
       document.body.appendChild(ta);
       ta.select();
-      document.execCommand('copy');
+      (function(){ try { navigator.clipboard.writeText(document.getSelection().toString()); } catch(e) { document.execCommand('copy'); } })();
       document.body.removeChild(ta);
       toast('HTML copied — go paste it in WordPress, you know the drill ');
     });
@@ -4452,7 +4305,7 @@ function wireMeta() {
       ta.value = metaText;
       document.body.appendChild(ta);
       ta.select();
-      document.execCommand('copy');
+      (function(){ try { navigator.clipboard.writeText(document.getSelection().toString()); } catch(e) { document.execCommand('copy'); } })();
       document.body.removeChild(ta);
       toast('Meta copied — paste into Yoast and done ✓');
     });
@@ -4666,7 +4519,7 @@ async function loadInternalLinks() {
         }
         internalLinksCache = links;
       }
-    } catch(e) {}
+    } catch(e) { /* silent */ }
     if (!internalLinksCache) internalLinksCache = [];
   }
   renderILPanel();
@@ -4812,11 +4665,11 @@ function initInlineComments() {
           var range = selection.getRangeAt(0);
           inEditor = edEl.contains(range.commonAncestorContainer);
         }
-      } catch(e2) {}
+      } catch(e2) { /* silent */ }
 
       if (text.length > 2 && inEditor) {
         selectedText = text;
-        try { selectedRange = selection.getRangeAt(0).cloneRange(); } catch(e3) {}
+        try { selectedRange = selection.getRangeAt(0).cloneRange(); } catch(e3) { /* silent */ }
         // Position tooltip near selection
         try {
           var rect = selection.getRangeAt(0).getBoundingClientRect();
@@ -4825,7 +4678,7 @@ function initInlineComments() {
           tooltip.style.top = top + 'px';
           tooltip.style.left = Math.max(10, Math.min(rect.left + rect.width/2 - 70, window.innerWidth - 160)) + 'px';
           tooltip.classList.add('show');
-        } catch(e4) {}
+        } catch(e4) { /* silent */ }
       } else if (!tooltip.contains(e.target)) {
         tooltip.classList.remove('show');
         selectedText = '';
@@ -4855,7 +4708,7 @@ function initInlineComments() {
         // Save highlighted content to Supabase
         var edEl = document.getElementById('tiptap-editor');
         if (edEl) autoSave(edEl.innerHTML);
-      } catch(e) {}
+      } catch(e) { /* silent */ }
     }
     // Open comment form with quote
     var cp = document.getElementById('comments-panel');
@@ -6173,7 +6026,7 @@ function generateOutline() { toast('Outline feature removed — use Content Hub'
 function generate() { toast('Use Content Hub → Build brief'); }
 function runSEOOptimizer() { toast('Use Content Hub for SEO research'); }
 function runPlanner() { toast('Use Content Hub for topic planning'); }
-function loadDailyIdeas() {}// ── CROSS-POLLINATE: Blog ↔ YouTube ─────────────────────────────────────────
+function loadDailyIdeas() { /* stub — removed */ }// ── CROSS-POLLINATE: Blog ↔ YouTube ─────────────────────────────────────────
 async function runCrossPost(direction) {
   var input, outputEl, prompt;
   if (direction === 'blog-to-yt') {
@@ -6414,7 +6267,7 @@ async function runTrendingDiscovery() {
     // Show data source badge
     var sourceBadge = hasLive
       ? '<div style="background:#DCFCE7;border:1px solid #86EFAC;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#166534;">✓ Based on live web research — ' + new Date().toLocaleTimeString() + '</div>'
-      : '<div style="background:#FEF9C3;border:1px solid #FDE047;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#854D0E;">⚠ Live research unavailable — add /webhook/research to n8n for real-time data. Using Claude knowledge.</div>';
+      : '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--text3);">ℹ Using Claude knowledge for research — publish /webhook/research in n8n to enable live web search.</div>';
 
     var tempDiv = document.createElement('div');
     tempDiv.innerHTML = sourceBadge;
@@ -6589,6 +6442,8 @@ function openBriefModal() { /* removed */ }
 
 
 function v2Toast(msg) { toast(msg); }
+window.v2Toast = v2Toast;
+
 
 // ── V2 ENGINE CONFIG ─────────────────────────────────────────────────────
 var V2_CONFIG = {
@@ -7033,6 +6888,8 @@ async function v2UpdateStatus() {
   }
   return articles;
 }
+window.v2UpdateStatus = v2UpdateStatus;
+
 
 // ── STAGE 1: TOPIC DISCOVERY ──────────────────────────────────────────
 
@@ -7042,6 +6899,7 @@ async function v2UpdateStatus() {
 // Returns actual current data from the web, not training knowledge
 
 async function v2LiveResearch(query, instructions) {
+  // Try 1: n8n /webhook/research (Claude with web_search tool)
   var researchWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/research');
   try {
     var r = await fetch(researchWebhook, {
@@ -7053,23 +6911,87 @@ async function v2LiveResearch(query, instructions) {
         max_tokens:   1500
       })
     });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
     var raw = await r.text();
-    if (!raw || !raw.trim()) throw new Error('empty');
+    if (!raw || !raw.trim()) throw new Error('empty response');
     var data = JSON.parse(raw);
-    // Handle both array and object response formats
+    // Extract text from all possible n8n response formats
+    // especially when Claude uses web_search tool (multiple content blocks)
     var text = '';
+    var extractText = function(obj) {
+      if (!obj) return '';
+      // Direct text field (Simplify Output ON)
+      if (typeof obj.text === 'string' && obj.text.length > 10) return obj.text;
+      // Content array (Simplify Output OFF)
+      if (Array.isArray(obj.content)) {
+        return obj.content
+          .filter(function(b){ return b.type === 'text'; })
+          .map(function(b){ return b.text || ''; })
+          .join('\n');
+      }
+      // Output field
+      if (typeof obj.output === 'string') return obj.output;
+      // message field
+      if (typeof obj.message === 'string') return obj.message;
+      return '';
+    };
+
     if (Array.isArray(data)) {
-      var d = data[0] || {};
-      text = d.text || (d.content && d.content[0] && d.content[0].text) || '';
+      // Try each item in array — take the longest text result
+      var candidates = data.map(extractText).filter(Boolean);
+      text = candidates.sort(function(a,b){ return b.length - a.length; })[0] || '';
     } else {
-      text = data.text || (data.content && data.content[0] && data.content[0].text) || data.output || '';
+      text = extractText(data);
     }
-    return text || '';
+
+    console.log('[LiveResearch] n8n response text length:', text.length);
+    if (text && text.length > 20) {
+      return text;
+    }
+    // Log full response for debugging
+    console.warn('[LiveResearch] could not extract text. Full response:', JSON.stringify(data).substring(0, 300));
+    throw new Error('could not extract text from response');
   } catch(e) {
-    console.warn('[v2LiveResearch] failed for "' + query + '":', e.message);
-    return '';
+    console.warn('[LiveResearch] n8n webhook failed:', e.message);
   }
+
+  // Try 2: Firecrawl search API directly (no n8n needed)
+  // Uses the firecrawl key from V2_CONFIG
+  try {
+    var fc = await fetch('https://api.firecrawl.dev/v2/search', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + V2_CONFIG.firecrawl
+      },
+      body: JSON.stringify({
+        query:   query,
+        limit:   5,
+        scrape_options: { formats: ['markdown'] }
+      })
+    });
+    if (!fc.ok) throw new Error('Firecrawl HTTP ' + fc.status);
+    var fcData = await fc.json();
+    var results = Array.isArray(fcData) ? fcData : (fcData.data || fcData.results || []);
+    if (results.length > 0) {
+      var combined = results.map(function(r) {
+        return '### ' + (r.title || r.url || '') + '\n' +
+               'URL: ' + (r.url || '') + '\n' +
+               (r.markdown || r.content || r.description || '').substring(0, 600);
+      }).join('\n\n');
+      console.log('[LiveResearch] Firecrawl returned', results.length, 'results');
+      return combined;
+    }
+    throw new Error('no results');
+  } catch(e2) {
+    console.warn('[LiveResearch] Firecrawl also failed:', e2.message);
+  }
+
+  // Both failed — return empty, caller handles fallback
+  return '';
 }
+
+
 
 async function v2SerpResearch(keyword) {
   // Call DataForSEO SERP API via n8n — same credentials already in V2_CONFIG
@@ -7730,7 +7652,7 @@ async function runBriefResearch(topicObj) {
   ]);
 
   var researchContext = '';
-  try { researchContext = await scrapeUrls(['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://apextraderfunding.com/blog/']); } catch(e) {}
+  try { researchContext = await scrapeUrls(['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://apextraderfunding.com/blog/']); } catch(e) { /* silent */ }
 
   var extraContext = (typeof topicObj === 'object') ?
     'KEYWORD RESEARCH ALREADY DONE:\n' +
@@ -8037,6 +7959,8 @@ function v2ShowLoader(output, steps) {
     if (i >= steps.length) clearInterval(timer);
   }, 4000);
 }
+window.v2ShowLoader = v2ShowLoader;
+
 
 // ── CREDENTIALS UI ────────────────────────────────────────────────────
 function v2WireCredentials() {
@@ -8056,7 +7980,7 @@ function v2WireCredentials() {
       try {
         localStorage.setItem('dfs_login', login);
         localStorage.setItem('dfs_pass',  pass);
-      } catch(e) {}
+      } catch(e) { /* silent */ }
       V2_CONFIG.dfsLogin = login;
       V2_CONFIG.dfsPass  = pass;
       var el = document.getElementById('dfs-status');
@@ -8070,6 +7994,8 @@ function v2WireCredentials() {
     });
   }
 }
+window.v2WireCredentials = v2WireCredentials;
+
 
 // ── CUSTOM TOPIC BRIEF ────────────────────────────────────────────────
 function v2WireCustomBtn() {
@@ -8225,151 +8151,11 @@ function v2WireCustomBtn() {
     }
   });
 }
-  function bootUser(user) {
-    currentUser = user;
-    activeRole = user.role;
-
-    // Update all topbars with user name + initials
-    updateTopbars(user);
-
-    // Always set these for filter to work
-    currentRole = user.role;
-    activeRole = user.role;
-    if (user.role === 'writer') {
-      currentWriterEmail = user.email;
-    }
-
-    // Clear generate form on login — no stale data from previous session
-    ['b-title','b-pkw','b-skw','b-geo','b-claim','b-q','b-paa','b-links','b-research'].forEach(function(id){
-      var el = document.getElementById(id); if (el) el.value = '';
-    });
-    var outSec = document.getElementById('outline-section');
-    if (outSec) outSec.style.display = 'none';
-    var genBan = document.getElementById('gen-banner');
-    if (genBan) genBan.style.display = 'none';
-    currentBriefData = null; currentOutline = '';
-
-    goScreen(user.screen);
-    loadPipeline(); loadWriterDrafts();
-  loadPublishingBadge();
-    setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
+window.v2WireCustomBtn = v2WireCustomBtn;
 
 
 
-    // David greeting
-    if (user.name && user.name.includes('David')) {
-      var davidGreetings = [
-        "The boss is in. Let\'s see what the team built. 👔",
-        "Morning, David. The pipeline is live — full access awaits. ✍️",
-        "Articles are queued up. One tap from you and they\'re off to publish. 💼",
-        "The SEO is clean, the copy is tight. Just need the big boss stamp. 🏆",
-        "Good to see you, David. The team delivered — now it\'s your call. 👀",
-        "Full pipeline at your fingertips. The final word is yours. 🎯",
-      ];
-      var dg = document.getElementById('david-greeting');
-      if (dg) dg.textContent = davidGreetings[Math.floor(Math.random() * davidGreetings.length)];
-    }
 
-    // Add sign out button to topbar
-    ['admin','writer','david'].forEach(function(sc) {
-      var tbr = document.querySelector('#' + sc + ' .tbr');
-      if (tbr && !tbr.querySelector('.signout-btn')) {
-        var sob = document.createElement('button');
-        sob.className = 'btn btn-s signout-btn';
-        sob.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.08);color:#475569;background:transparent;';
-        sob.textContent = 'Sign out';
-        sob.addEventListener('click', function(){
-          if(confirm('Sign out?')){
-            sessionStorage.removeItem('fxify_user');
-            currentUser = null; impersonating = null; currentWriterEmail = null;
-            supa.auth.signOut();
-            goScreen('login');
-          }
-        });
-        tbr.insertBefore(sob, tbr.firstChild);
-      }
-    });
-
-    // Show impersonate button for admin and david
-    if (user.role === 'admin') {
-      showImpersonateBtn();
-    }
-    if (user.role === 'hybrid') {
-      // Harry: writer screen + Content Hub access
-      // Show Content Hub link in writer sidebar
-      var hcg = document.getElementById('hybrid-content-grp');
-      var hcl = document.getElementById('hybrid-content-link');
-      if (hcg) hcg.style.display = 'block';
-      if (hcl) hcl.style.display = 'flex';
-      currentWriterEmail = user.email;
-    }
-  }
-
-  function updateTopbars(user) {
-    // Update each screen's topbar
-    var screens = ['admin','writer','david'];
-    screens.forEach(function(sc) {
-      var nameEl = document.querySelector('#' + sc + ' .tbu');
-      var avEl = document.querySelector('#' + sc + ' .tbav');
-      if (nameEl) nameEl.textContent = user.name;
-      if (avEl) {
-        avEl.textContent = user.initials;
-        avEl.className = 'tbav' + (user.av ? ' ' + user.av : '');
-      }
-    });
-    // Also update by ID for admin screen specifically
-    var adminTbu = document.getElementById('admin-tbu');
-    var adminTbav = document.getElementById('admin-tbav');
-    var adminCtx = document.getElementById('admin-ctx');
-    if (adminTbu) adminTbu.textContent = user.name;
-    if (adminTbav) { adminTbav.textContent = user.initials; adminTbav.className = 'tbav' + (user.av ? ' ' + user.av : ''); }
-    if (adminCtx) adminCtx.textContent = user.role === 'david' ? 'Manager' : 'Admin';
-    // Update writer greeting
-    var greetEl = document.getElementById('writer-greeting');
-    if (greetEl && user.role === 'writer') {
-      var firstName = user.name.split(' ')[0];
-      var hr = new Date().getHours();
-      var greetWord = hr < 12 ? 'Morning' : hr < 17 ? 'Afternoon' : 'Evening';
-      greetEl.textContent = greetWord + ', ' + firstName + '. Here\'s your plate. 👊';
-    }
-  }
-
-  function showImpersonateBtn() {
-    // Button is already static in HTML — just wire it
-    var btn = document.getElementById('imp-btn');
-    if (btn) {
-      btn.onclick = function() {
-        var modal = document.getElementById('imp-modal');
-        if (modal) {
-          modal.style.display = 'flex';
-          modal.style.alignItems = 'center';
-          modal.style.justifyContent = 'center';
-          modal.classList.add('open');
-        }
-      };
-    }
-  }
-
-  function resolveUserFromEmail(email) {
-    var errEl = document.getElementById('login-error');
-    var isApproved = email.endsWith('@fxify.com') || email === 'shepherdmorena2@gmail.com';
-    if (!isApproved) {
-      if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
-      supa.auth.signOut();
-      return;
-    }
-    var userDef = USERS[email];
-    // Unknown @fxify.com → new writer
-    if (!userDef && email.endsWith('@fxify.com')) {
-      var nameParts = email.split('@')[0].split('.');
-      var name = nameParts.map(function(p){ return p.charAt(0).toUpperCase() + p.slice(1); }).join(' ');
-      userDef = { role:'writer', name: name, screen:'writer', initials: nameParts.map(function(p){ return p[0].toUpperCase(); }).join(''), av:'' };
-    }
-    if (!userDef) { if (errEl) { errEl.textContent = 'Access denied.'; errEl.style.display = 'block'; } return; }
-    var user = { email: email, role: userDef.role, name: userDef.name, screen: userDef.screen, initials: userDef.initials, av: userDef.av };
-    sessionStorage.setItem('fxify_user', JSON.stringify(user));
-    bootUser(user);
-  }
 
 
 // ── AUTH STATE LISTENER — IIFE level ────────────────────────────────────
@@ -8411,7 +8197,7 @@ async function openWriterBriefModal(task) {
       artData = res.data[0];
       brief = JSON.parse(res.data[0].content);
     }
-  } catch(e) {}
+  } catch(e) { /* silent */ }
 
   // Build modal
   var overlay = document.createElement('div');
@@ -8480,7 +8266,7 @@ async function openWriterBriefModal(task) {
       var ta = document.createElement('textarea');
       ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
       document.body.appendChild(ta); ta.select();
-      document.execCommand('copy'); ta.remove();
+      (function(){ try { navigator.clipboard.writeText(document.getSelection().toString()); } catch(e) { document.execCommand('copy'); } })(); ta.remove();
       toast('Brief copied ✓');
     });
   });
@@ -8514,7 +8300,7 @@ async function openWriterSubmit(task) {
     // Move ClickUp task to review
     await cuFetch('/task/' + task.id, 'PUT', { status: 'review' });
     // Update Supabase
-    try { await supa.from('articles').update({ status: 'Sheperd Review' }).ilike('title', task.name); } catch(e) {}
+    try { await supa.from('articles').update({ status: 'Sheperd Review' }).ilike('title', task.name); } catch(e) { /* silent */ }
     toast('✓ Set for review — Sheperd has been notified');
     loadWriterDrafts();
   } catch(e) {
@@ -8554,7 +8340,7 @@ function init(){
       currentUser = JSON.parse(savedUser);
       bootUser(currentUser);
     }
-  } catch(e) {}
+  } catch(e) { /* silent */ }
 
   function bootUser(user) {
     currentUser = user;
@@ -9049,16 +8835,108 @@ init();
 
 // Expose functions called from inline onclick attributes
 // ── SWITCH VIEW MODAL ────────────────────────────────────────
+
+window.openSwitchViewModal  = openSwitchViewModal;
+window.openWriterBriefModal = openWriterBriefModal;
+window.openWriterSubmit     = openWriterSubmit;
+window.approveDavidArticle  = approveDavidArticle;
+window.rejectDavidArticle   = rejectDavidArticle;
+
+// ── SWITCH VIEW (role preview) ─────────────────────────────────
+
+
+
+window.doSwitchView        = doSwitchView;
+window.doExitSwitchView    = doExitSwitchView;
+window.prefillBrief        = prefillBrief;
+
+})();
+
+// Published articles — admin
+  var aScrapeBtn = document.getElementById('a-scrape-btn');
+  if (aScrapeBtn) aScrapeBtn.addEventListener('click', function(){
+    scrapePublishedArticles('a-live-list', 'a-live-count');
+  });
+
+
+  // Test save button — saves 1 row and reports exact result
+  var aSearch = document.getElementById('a-live-search');
+  if (aSearch) aSearch.addEventListener('input', function(){
+    if (publishedCache) renderPublishedArticles(publishedCache, 'a-live-list', 'a-live-count', aSearch.value);
+  });
+
+
+  // Liam topic submission
+
+  // v2 Topic Intelligence Hub init
+  v2WireCredentials();
+  v2WireCustomBtn();
+  setTimeout(v2UpdateStatus, 800);
+
+  // Liam planner
+  var lplBtn = document.getElementById('lpl-analyse-btn');
+  if (lplBtn) lplBtn.addEventListener('click', runLiamPlanner);
+
+  // Daily ideas refresh buttons
+  var refreshDaily = document.getElementById('refresh-daily-btn');
+  if (refreshDaily) refreshDaily.addEventListener('click', function(){ loadDailyIdeas('daily-ideas-list', 'daily-ideas-date'); toast('Refreshed'); });
+  var lRefreshDaily = document.getElementById('lrefresh-daily-btn');
+  if (lRefreshDaily) lRefreshDaily.addEventListener('click', function(){ loadDailyIdeas('ldaily-ideas-list', 'ldaily-ideas-date'); toast('Refreshed'); });
+
+  // Internal links tabs
+  document.addEventListener('click', function(e) {
+    var tab = e.target.closest('.il-tab');
+    if (!tab) return;
+    ilCurrentTab = tab.getAttribute('data-iltab');
+    document.querySelectorAll('.il-tab').forEach(function(t){
+      t.classList.remove('active');
+      t.style.borderColor = 'var(--border)';
+      t.style.background = 'transparent';
+      t.style.color = 'var(--muted)';
+    });
+    tab.classList.add('active');
+    tab.style.borderColor = 'var(--teal)';
+    tab.style.background = 'var(--tealL)';
+    tab.style.color = 'var(--teal)';
+    renderILPanel(document.getElementById('il-search') ? document.getElementById('il-search').value : '');
+  });
+
+  // Internal links search
+  var ilSearch = document.getElementById('il-search');
+  if (ilSearch) ilSearch.addEventListener('input', function(){ renderILPanel(ilSearch.value); });
+
+  // Internal links refresh
+  var ilRefresh = document.getElementById('il-refresh');
+  if (ilRefresh) ilRefresh.addEventListener('click', function(){
+    internalLinksCache = publishedCache || null;
+    loadInternalLinks();
+    toast('Links refreshed ✓');
+  });
+
+  // goPage triggers
+  var origGoPage = goPage;
+
+
+
+init();
+
+// Expose functions called from inline onclick attributes
+// ── SWITCH VIEW MODAL ────────────────────────────────────────
 function openSwitchViewModal() {
   var existing = document.getElementById('switch-view-modal');
   if (existing) { existing.remove(); return; }
 
+  // Find the Switch view button to anchor dropdown below it
+  var anchor = document.querySelector('[onclick*="openSwitchViewModal"]');
+  var rect   = anchor ? anchor.getBoundingClientRect() : { bottom: 56, right: 200 };
+
   var modal = document.createElement('div');
   modal.id = 'switch-view-modal';
   modal.style.cssText =
-    'position:fixed;top:56px;right:16px;background:var(--bg2);border:1px solid var(--border);' +
-    'border-radius:var(--rl);padding:6px;z-index:500;min-width:180px;' +
-    'box-shadow:0 8px 24px rgba(0,0,0,0.12);';
+    'position:fixed;top:' + (rect.bottom + 4) + 'px;right:' + (window.innerWidth - rect.right) + 'px;' +
+    'background:var(--bg2);border:1px solid var(--border);' +
+    'border-radius:var(--rl);padding:6px;z-index:9999;min-width:180px;' +
+    'box-shadow:0 8px 24px rgba(0,0,0,0.18);';
 
   var views = [
     { label:'Admin view',  screen:'admin',  icon:'⚙' },
@@ -9135,7 +9013,38 @@ window.doSwitchView        = doSwitchView;
 window.doExitSwitchView    = doExitSwitchView;
 window.prefillBrief        = prefillBrief;
 
-})();
+
+// ── GLOBAL FUNCTION EXPOSURE ────────────────────────────────
+// All functions callable from onclick, init(), and external code
+if (typeof goPage === "function") window.goPage = goPage;
+if (typeof goScreen === "function") window.goScreen = goScreen;
+if (typeof doGoogleLogin === "function") window.doGoogleLogin = doGoogleLogin;
+if (typeof loadClickUpBoard === "function") window.loadClickUpBoard = loadClickUpBoard;
+if (typeof openTaskPanel === "function") window.openTaskPanel = openTaskPanel;
+if (typeof closeTaskPanel === "function") window.closeTaskPanel = closeTaskPanel;
+if (typeof cuApplyFilter === "function") window.cuApplyFilter = cuApplyFilter;
+if (typeof cuExportCSV === "function") window.cuExportCSV = cuExportCSV;
+if (typeof loadWriterDrafts === "function") window.loadWriterDrafts = loadWriterDrafts;
+if (typeof loadWriterSubmitted === "function") window.loadWriterSubmitted = loadWriterSubmitted;
+if (typeof loadAnalytics === "function") window.loadAnalytics = loadAnalytics;
+if (typeof loadDavidAnalytics === "function") window.loadDavidAnalytics = loadDavidAnalytics;
+if (typeof runTopicIdeas === "function") window.runTopicIdeas = runTopicIdeas;
+if (typeof runTrendingDiscovery === "function") window.runTrendingDiscovery = runTrendingDiscovery;
+if (typeof runYouTubeDiscovery === "function") window.runYouTubeDiscovery = runYouTubeDiscovery;
+if (typeof runKeywordAnalysis === "function") window.runKeywordAnalysis = runKeywordAnalysis;
+if (typeof exportKeywordCSV === "function") window.exportKeywordCSV = exportKeywordCSV;
+if (typeof scrapePublishedArticles === "function") window.scrapePublishedArticles = scrapePublishedArticles;
+if (typeof testN8nConnection === "function") window.testN8nConnection = testN8nConnection;
+if (typeof testDFSConnection === "function") window.testDFSConnection = testDFSConnection;
+if (typeof v2Fetch === "function") window.v2Fetch = v2Fetch;
+if (typeof loadDavidPipeline === "function") window.loadDavidPipeline = loadDavidPipeline;
+if (typeof loadDavidQ === "function") window.loadDavidQ = loadDavidQ;
+if (typeof loadDavidLog === "function") window.loadDavidLog = loadDavidLog;
+if (typeof loadDavidApprovalAdmin === "function") window.loadDavidApprovalAdmin = loadDavidApprovalAdmin;
+if (typeof loadDavidLogAdmin === "function") window.loadDavidLogAdmin = loadDavidLogAdmin;
+if (typeof toast === "function") window.toast = toast;
+if (typeof init === "function") window.init = init;
+
 </script>
 
 </body>
