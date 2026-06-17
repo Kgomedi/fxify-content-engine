@@ -898,7 +898,7 @@ tr:last-child td{border-bottom:none;}
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
           <div>
             <div class="pgh">Analytics</div>
-            <p class="pgs" style="margin-bottom:0;">Pipeline velocity, content output, keyword rank movement, and gap coverage. Live from ClickUp and DataForSEO.</p>
+            <p class="pgs" style="margin-bottom:0;">Pipeline velocity, content output, and writer performance. Live from ClickUp and Supabase.</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
             <button class="btn btn-s" id="an-refresh-btn">↻ Refresh</button>
@@ -907,56 +907,88 @@ tr:last-child td{border-bottom:none;}
           </div>
         </div>
 
-        <!-- PIPELINE STATS -->
-        <div class="shead" style="margin-bottom:10px;">Pipeline — live</div>
+        <!-- PIPELINE STATS: BLOG -->
+        <div class="shead" style="margin-bottom:10px;">Blog pipeline</div>
+        <div class="cu-stats" style="margin-bottom:8px;">
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#7C3AED;"></span><span class="cu-stat-lbl">Briefed</span></div><div class="cu-stat-val" id="an-blog-total">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#2563EB;"></span><span class="cu-stat-lbl">In progress</span></div><div class="cu-stat-val" id="an-blog-prog">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#D97706;"></span><span class="cu-stat-lbl">In review</span></div><div class="cu-stat-val" id="an-blog-review">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#059669;"></span><span class="cu-stat-lbl">Published</span></div><div class="cu-stat-val" id="an-blog-done">—</div></div>
+        </div>
+
+        <!-- PIPELINE STATS: VIDEO -->
+        <div class="shead" style="margin-bottom:10px;margin-top:20px;">Video pipeline</div>
+        <div class="cu-stats" style="margin-bottom:8px;">
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#7C3AED;"></span><span class="cu-stat-lbl">Briefed</span></div><div class="cu-stat-val" id="an-video-total">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#2563EB;"></span><span class="cu-stat-lbl">In progress</span></div><div class="cu-stat-val" id="an-video-prog">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#D97706;"></span><span class="cu-stat-lbl">In review</span></div><div class="cu-stat-val" id="an-video-review">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#059669;"></span><span class="cu-stat-lbl">Published</span></div><div class="cu-stat-val" id="an-video-done">—</div></div>
+        </div>
+
+        <!-- CONTENT STATS -->
+        <div class="shead" style="margin-bottom:10px;margin-top:20px;">Content output</div>
         <div class="cu-stats" style="margin-bottom:24px;">
-          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#7C3AED;"></span><span class="cu-stat-lbl">Briefed</span></div><div class="cu-stat-val" id="cu-st-todo">—</div></div>
-          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#2563EB;"></span><span class="cu-stat-lbl">Drafting</span></div><div class="cu-stat-val" id="cu-st-prog">—</div></div>
-          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#D97706;"></span><span class="cu-stat-lbl">In review</span></div><div class="cu-stat-val" id="cu-st-review">—</div></div>
-          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#059669;"></span><span class="cu-stat-lbl">Live</span></div><div class="cu-stat-val" id="cu-st-done">—</div></div>
-          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#6B7280;"></span><span class="cu-stat-lbl">Published articles</span></div><div class="cu-stat-val" id="an-published">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:var(--teal);"></span><span class="cu-stat-lbl">Published articles</span></div><div class="cu-stat-val" id="an-published">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:var(--blue);"></span><span class="cu-stat-lbl">Pipeline tasks</span></div><div class="cu-stat-val" id="an-pipe-count">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:var(--amber);"></span><span class="cu-stat-lbl">Live in Supabase</span></div><div class="cu-stat-val" id="an-live">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:var(--text3);"></span><span class="cu-stat-lbl">Avg word count</span></div><div class="cu-stat-val" id="an-wc">—</div></div>
         </div>
 
         <!-- VELOCITY -->
         <div class="shead" style="margin-bottom:10px;">Pipeline velocity</div>
-        <div id="an-velocity" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:24px;">
-          <p style="color:var(--text3);font-size:13px;">Refresh to load velocity data.</p>
+        <div id="an-velocity" style="margin-bottom:24px;">
+          <p style="color:var(--text3);font-size:13px;">Click ↻ Refresh to load velocity data.</p>
+        </div>
+
+        <!-- BY WRITER -->
+        <div class="shead" style="margin-bottom:10px;">By writer</div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:24px;">
+          <table id="an-by-writer" style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:var(--bg3);border-bottom:1px solid var(--border);">
+                <th style="padding:9px 12px;text-align:left;font-weight:600;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Writer</th>
+                <th style="padding:9px 12px;text-align:center;font-weight:600;color:var(--teal);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Blog tasks</th>
+                <th style="padding:9px 12px;text-align:center;font-weight:600;color:var(--urgent);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Video tasks</th>
+                <th style="padding:9px 12px;text-align:center;font-weight:600;color:var(--green);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Published</th>
+                <th style="padding:9px 12px;text-align:center;font-weight:600;color:var(--blue);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">In progress</th>
+                <th style="padding:9px 12px;text-align:center;font-weight:600;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Avg WC</th>
+              </tr>
+            </thead>
+            <tbody id="an-by-writer-body">
+              <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Click ↻ Refresh to load writer stats</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- RECENT ARTICLES -->
+        <div class="shead" style="margin-bottom:10px;">Recent articles</div>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;margin-bottom:24px;">
+          <table id="an-recent" style="width:100%;border-collapse:collapse;font-size:12px;">
+            <thead>
+              <tr style="background:var(--bg3);border-bottom:1px solid var(--border);">
+                <th style="padding:9px 12px;text-align:left;font-weight:600;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Title</th>
+                <th style="padding:9px 12px;text-align:left;font-weight:600;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Writer</th>
+                <th style="padding:9px 12px;text-align:left;font-weight:600;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Status</th>
+                <th style="padding:9px 12px;text-align:center;font-weight:600;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">Words</th>
+                <th style="padding:9px 12px;text-align:center;font-weight:600;color:var(--text3);font-size:10px;text-transform:uppercase;letter-spacing:.07em;">SEO</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Click ↻ Refresh to load recent articles</td></tr>
+            </tbody>
+          </table>
         </div>
 
         <!-- KEYWORD TRACKING -->
         <div class="shead" style="margin-bottom:10px;">Keyword rank tracking</div>
         <div id="an-keywords" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:24px;">
-          <p style="color:var(--text3);font-size:13px;margin-bottom:12px;">Track your key terms. Run from Keyword Analysis page — results appear here.</p>
+          <p style="color:var(--text3);font-size:12px;margin-bottom:12px;">Keywords tracked after running Keyword Analysis. Results persist here across sessions.</p>
           <div id="an-kw-tracked" style="display:flex;flex-direction:column;gap:8px;">
             <p style="font-size:12px;color:var(--muted);">No tracked keywords yet. Run a keyword analysis to start tracking.</p>
           </div>
         </div>
 
-        <!-- CONTENT COVERAGE -->
-        <div class="shead" style="margin-bottom:10px;">Content gap coverage</div>
-        <div id="an-coverage" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:24px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <p style="font-size:13px;font-weight:500;color:var(--text);">FXIFY published articles</p>
-            <span style="font-size:13px;font-weight:700;color:var(--teal);" id="an-art-count">—</span>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
-            <p style="font-size:13px;color:var(--text2);">Topics in pipeline</p>
-            <span style="font-size:13px;font-weight:600;color:var(--text);" id="an-pipe-count">—</span>
-          </div>
-          <div style="display:flex;align-items:center;justify-content:space-between;">
-            <p style="font-size:13px;color:var(--text2);">Competitor gaps identified</p>
-            <span style="font-size:13px;font-weight:600;color:var(--text);" id="an-gap-count">—</span>
-          </div>
-        </div>
-
-        <!-- RECENT LIVE POSTS -->
-        <div class="shead" style="margin-bottom:10px;">Recent live posts</div>
-        
-
-      </div>
-
-
-      <div id="a-writers" class="pg">
+      id="a-writers" class="pg">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
           <div>
             <div class="pgh">Team</div>
@@ -5131,7 +5163,7 @@ async function loadAnalytics() {
     byWriter[w].wc += (a.word_count||0);
   });
 
-  var writerTable = document.querySelector('#an-by-writer tbody');
+  var writerTable = document.getElementById('an-by-writer-body');
   if (writerTable) {
     writerTable.innerHTML = '';
     var writersSorted = Object.keys(byWriter).filter(function(w){ return w !== 'Unassigned'; }).sort();
@@ -5164,7 +5196,7 @@ async function loadAnalytics() {
   }
 
   // ── Recent articles ─────────────────────────────────────────────────────
-  var recentTable = document.querySelector('#an-recent tbody');
+  var recentTable = document.querySelector('#an-recent tbody') || document.querySelector('#an-recent');
   if (recentTable) {
     recentTable.innerHTML = '';
     arts.slice(0, 12).forEach(function(a) {
@@ -5186,26 +5218,39 @@ async function loadAnalytics() {
     var drafting = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('draft')||s.includes('writing'); }).length;
     var review   = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('review')||s.includes('approval'); }).length;
     var liveCnt  = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('live')||s.includes('publish'); }).length;
-    set('cu-st-todo',   briefed);
-    set('cu-st-prog',   drafting);
-    set('cu-st-review', review);
-    set('cu-st-done',   liveCnt);
-    set('an-published', typeof allArticles !== 'undefined' ? allArticles.length : '—');
-    set('an-art-count', typeof allArticles !== 'undefined' ? allArticles.length : '—');
+    // cu-st-* IDs are on the pipeline page, not analytics
+    var pubCount = (typeof allArticles !== 'undefined' && allArticles) ? allArticles.length : 0;
+    set('an-published', pubCount || '—');
+    set('an-art-count', pubCount || '—');
     set('an-pipe-count', blogTasks.length + (typeof videoTasks !== 'undefined' ? videoTasks.length : 0));
 
     // Velocity: average days per stage
     var velocityHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">';
+    // Calculate real velocity from ClickUp task dates
+    var now = Date.now();
+    var dayMs = 86400000;
+    var progTasks = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('draft')||s.includes('writing')||s.includes('progress'); });
+    var reviewTasks = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('review')||s.includes('editing'); });
+    var doneTasks   = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('publish')||s.includes('live')||s.includes('completed'); });
+    function avgDays(tasks) {
+      if (!tasks.length) return null;
+      var sum = tasks.reduce(function(acc, t) {
+        var created = parseInt(t.date_created||'0');
+        return acc + (created ? (now - created) / dayMs : 0);
+      }, 0);
+      var avg = sum / tasks.filter(function(t){ return parseInt(t.date_created||'0') > 0; }).length;
+      return isNaN(avg) || !avg ? null : avg.toFixed(1);
+    }
     var stages = [
-      { name:'Briefed → Drafting',  days:2.3 },
-      { name:'Drafting → Review',   days:3.1 },
-      { name:'Review → Approved',   days:1.8 },
-      { name:'Approved → Live',     days:0.9 },
+      { name:'Avg days in progress', days: avgDays(progTasks)   || '—' },
+      { name:'Avg days in review',   days: avgDays(reviewTasks) || '—' },
+      { name:'Total tasks briefed',  days: blogTasks.length,    unit:'' },
+      { name:'Total published',      days: bDone,               unit:'' },
     ];
     stages.forEach(function(s){
       velocityHtml +=
         '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;">' +
-          '<p style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.5px;">' + s.days + 'd</p>' +
+          '<p style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.5px;">' + s.days + (s.unit !== undefined ? s.unit : 'd') + '</p>' +
           '<p style="font-size:11px;color:var(--text3);margin-top:3px;">' + s.name + '</p>' +
         '</div>';
     });
@@ -5213,19 +5258,7 @@ async function loadAnalytics() {
     var velEl = document.getElementById('an-velocity');
     if (velEl) velEl.innerHTML = velocityHtml;
 
-    // Recent live posts
-    var livePosts = blogTasks
-      .filter(function(t){ return (t.status&&t.status.status||'').toLowerCase().includes('live'); })
-      .slice(0,6);
-    var liveEl = document.getElementById('an-live-posts');
-    if (liveEl && livePosts.length) {
-      liveEl.innerHTML = livePosts.map(function(t){
-        return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">' +
-          '<p style="font-size:13px;color:var(--text);font-weight:500;">' + (t.name||'Untitled') + '</p>' +
-          '<span style="font-size:10px;font-weight:600;background:var(--greenL);color:var(--green);padding:2px 8px;border-radius:10px;">Live</span>' +
-        '</div>';
-      }).join('');
-    }
+    // Live posts shown in Recent articles table
   } catch(anErr) { console.warn('Analytics extra fields:', anErr.message); }
 
 }
