@@ -961,7 +961,10 @@ tr:last-child td{border-bottom:none;}
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:16px;">
           <p class="shead" style="margin-bottom:8px;">n8n Connection Test</p>
           <p style="font-size:12px;color:var(--text3);margin-bottom:10px;">Tests the webhook is active and returning Claude responses.</p>
-          <button id="n8n-test-btn" class="btn btn-s" onclick="testN8nConnection()" style="font-size:12px;">Test n8n</button>
+          <div style="display:flex;gap:8px;margin-bottom:10px;">
+            <button id="n8n-test-btn" class="btn btn-s" onclick="testN8nConnection()" style="font-size:12px;">Test Claude webhook</button>
+            <button id="dfs-test-btn" class="btn btn-s" onclick="testDFSConnection()" style="font-size:12px;">Test DataForSEO webhook</button>
+          </div>
           <div id="n8n-test-out" style="margin-top:10px;"></div>
         </div>
 
@@ -1608,7 +1611,7 @@ tr:last-child td{border-bottom:none;}
 <!-- TOAST -->
 <div class="toast" id="toast"></div>
 
-<script>// FXIFY Content Engine v2 — build 2026-06-15-v3
+<script>// FXIFY Content Engine v2 — build 2026-06-17-v1781717320
 
 // ── FIRECRAWL DISABLED — key expired, all calls return empty immediately ──────
 var _nativeFetch = window.fetch;
@@ -7188,6 +7191,54 @@ function v2Toast(msg) { toast(msg); }
 async function v2Fetch(prompt, max_tokens) {
   
 // ── N8N CONNECTION TEST ──────────────────────────────────────
+async function testDFSConnection() {
+  var btn = document.getElementById('dfs-test-btn');
+  var out = document.getElementById('n8n-test-out');
+  if (!btn || !out) return;
+  btn.disabled = true; btn.textContent = 'Testing...';
+
+  var dfsWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/dataforseo');
+  out.innerHTML = '<p style="font-size:12px;color:var(--text3);">Calling ' + dfsWebhook + '...</p>';
+
+  try {
+    var r = await fetch(dfsWebhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        keyword: 'prop firm challenge',
+        login:   V2_CONFIG.dfsLogin,
+        pass:    V2_CONFIG.dfsPass,
+        location: 2840,
+        language: 'en',
+        limit:    5
+      })
+    });
+
+    var raw = await r.text();
+    out.innerHTML =
+      '<p style="font-size:12px;font-family:var(--mono);margin-bottom:6px;color:var(--text3);">HTTP ' + r.status + ' · ' + raw.length + ' bytes</p>' +
+      '<pre style="font-size:11px;color:var(--text);background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:10px;overflow-x:auto;white-space:pre-wrap;word-break:break-all;">' +
+        raw.substring(0, 800) +
+      '</pre>';
+
+    if (!raw || !raw.trim()) {
+      out.innerHTML += '<p style="color:var(--urgent);font-size:12px;margin-top:8px;">⚠ Empty response. Check n8n DataForSEO workflow is active and Respond is set to "Using Respond to Webhook Node".</p>';
+    } else {
+      try {
+        var d = JSON.parse(raw);
+        var items = (d.tasks && d.tasks[0] && d.tasks[0].result && d.tasks[0].result[0] && d.tasks[0].result[0].items) || d.keywords || d;
+        var count = Array.isArray(items) ? items.length : '?';
+        out.innerHTML += '<p style="color:var(--green);font-size:13px;font-weight:600;margin-top:8px;">✓ DataForSEO working — ' + count + ' keywords returned</p>';
+      } catch(pe) {
+        out.innerHTML += '<p style="color:var(--amber);font-size:12px;margin-top:8px;">⚠ Response not JSON. Raw text returned — check n8n "Respond With" setting.</p>';
+      }
+    }
+  } catch(e) {
+    out.innerHTML = '<p style="color:var(--urgent);font-size:12px;">Error: ' + e.message + '</p>';
+  }
+  btn.disabled = false; btn.textContent = 'Test DataForSEO webhook';
+}
+
 async function testN8nConnection() {
   var btn = document.getElementById('n8n-test-btn');
   var out = document.getElementById('n8n-test-out');
@@ -7258,10 +7309,11 @@ async function testN8nConnection() {
 
   var text = '';
   if (Array.isArray(data)) {
-    // n8n sometimes wraps in array
+    // n8n wraps response in array
     var d = data[0] || {};
+    // Handle both Simplify Output ON (d.text) and OFF (d.content[].text)
     text = d.text || d.output || d.message || d.response ||
-           (d.content && d.content[0] && d.content[0].text) || '';
+           (d.content && Array.isArray(d.content) && d.content[0] && d.content[0].text) || '';
   } else if (typeof data === 'object') {
     text = data.text || data.output || data.message || data.response ||
            data.answer || data.result ||
@@ -7640,7 +7692,7 @@ async function runTopicIdeas() {
     'or a CLUSTER topic (specific, supports a pillar, faster to rank).\n' +
     'We want 2 pillar topics and 6 cluster topics in the output.\n\n' +
 
-    'TITLE FORMAT — statement or hook, never a blog headline:\n' +
+    'TITLE FORMAT — statement or hook, not a blog headline:\n' +
     'GOOD: "You can get a funded trading account for $19"\n' +
     'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
     'GOOD: "There is a rule that can fail your account on your best trading day"\n' +
@@ -7648,6 +7700,18 @@ async function runTopicIdeas() {
     'BAD: "A Comprehensive Guide to Drawdown Rules"\n' +
     'BANNED WORDS: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Navigating, ' +
     'Elevate, Transform, Revolutionize, Seamlessly, Robust, Empowering, Delve\n\n' +
+
+    'CRITICAL — AVOID THESE OVERUSED TOPICS (already produced, do not repeat):\n' +
+    '- $19 instant funding (already covered)\n' +
+    '- payout speed comparison with FTMO (already covered)\n' +
+    '- consistency rule failing accounts (already covered)\n' +
+    '- swing trader drawdown rules (already covered)\n' +
+    '- broker-backed prop firm explainer (already covered)\n' +
+    '- how much traders spend on challenges (already covered)\n' +
+    '- $117k payout proof (already covered)\n' +
+    '- what is a prop firm explainer (already covered)\n\n' +
+    'Find FRESH angles from the seed keyword and competitor gaps. ' +
+    'Every topic must be something we have NOT produced before.\n\n' +
 
     'TONE: ESL Grade 5-6. Short sentences. Straight-talking trading mentor. ' +
     'Brand voice — FXIFY is speaking, not a content creator.\n\n' +
@@ -7845,7 +7909,7 @@ function renderTopicGrid(topics, isStub, publishedCount) {
   window._v2Topics = topics;
 }
 
-function handleTopicClick(idx) {
+window.handleTopicClick = function handleTopicClick(idx) {
   var t = window._v2Topics && window._v2Topics[idx];
   if (!t) return;
   // Expand/collapse — todo: add expanded detail view
@@ -7854,6 +7918,64 @@ function handleTopicClick(idx) {
 
 
 
+
+// ── TOPIC → BRIEF + TASK BRIDGE ────────────────────────────
+window.generateTopicBrief = function generateTopicBrief(topic) {
+  if (!topic) return;
+  // Build an article-like object that openBriefModal expects
+  var art = {
+    title:   topic.title || 'Untitled topic',
+    url:     '',
+    content: JSON.stringify({
+      title:           topic.title,
+      intent:          topic.intent,
+      conversion_tier: topic.conversion_tier,
+      primary_keyword: topic.primary_keyword,
+      search_volume:   topic.search_volume,
+      kd_score:        topic.kd_score,
+      short_form_hook: topic.short_form_hook,
+      competitor_gap:  topic.competitor_gap,
+      fxify_angle:     topic.fxify_angle,
+      why_now:         topic.why_now,
+      nlp_entities:    topic.nlp_entities,
+      opportunity_score: topic.opportunity_score
+    })
+  };
+  openBriefModal(art);
+}
+
+window.createTaskFromTopic = function createTaskFromTopic(topic) {
+  if (!topic) return;
+  // Map topic → article object that cuCreateTask expects
+  var art = {
+    title:   topic.title || 'Untitled topic',
+    url:     '',
+    content: JSON.stringify({
+      primary_keyword: topic.primary_keyword,
+      intent:          topic.intent,
+      fxify_angle:     topic.fxify_angle,
+      short_form_hook: topic.short_form_hook,
+      competitor_gap:  topic.competitor_gap,
+      why_now:         topic.why_now,
+      opportunity_score: topic.opportunity_score
+    })
+  };
+  // Pre-fill the create task form
+  var createPanel = document.getElementById('cu-create-panel');
+  var titleInput  = document.getElementById('ct-title');
+  var kwInput     = document.getElementById('ct-keyword');
+  if (titleInput) titleInput.value = topic.title || '';
+  if (kwInput)    kwInput.value    = topic.primary_keyword || '';
+  if (createPanel) {
+    createPanel.style.display = 'block';
+    // Scroll to the create panel
+    createPanel.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  // Switch to pipeline page so user can see the form
+  var pipelineLink = document.querySelector('.nlink[data-pg="a-pipeline"]');
+  if (pipelineLink) pipelineLink.click();
+  v2Toast('Topic added to task form — fill in assignee and submit');
+}
 
 // ── CSV EXPORT ────────────────────────────────────────────────────────
 function exportTopicsCSV(topics) {
