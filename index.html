@@ -1008,26 +1008,48 @@ tr:last-child td{border-bottom:none;}
           </div>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:13px;font-weight:500;">FXIFY Blog Draft Prompt</span><span class="badge bt">Active</span></div>
-        <div class="pbox"><pre><span class="pc">FXIFY Blog Draft Prompt</span>
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
+          <div style="padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
+            <p style="font-size:12px;font-weight:600;color:var(--text);">FXIFY Blog Draft Prompt</p>
+            <div style="display:flex;gap:6px;align-items:center;">
+              <span class="badge bt" style="font-size:10px;">Active</span>
+              <button class="btn btn-s" id="prompt-edit-btn" onclick="togglePromptEdit()" style="font-size:11px;">✏ Edit</button>
+              <button class="btn btn-p btn-s" id="prompt-save-btn" onclick="savePromptTemplate()" style="font-size:11px;display:none;">Save →</button>
+            </div>
+          </div>
+          <div id="prompt-display" style="padding:14px 16px;">
+<pre id="prompt-pre" style="font-size:12px;line-height:1.7;white-space:pre-wrap;font-family:var(--mono);color:var(--text2);margin:0;"><span class="pc">FXIFY Blog Draft Prompt</span>
 <span class="pv">Topic:</span> [Insert topic]
 
 <span class="pc">━━ 1. CORE INSTRUCTIONS ━━━━━━━━━━━━━━━━━━━━━━</span>
 <span class="pc">- FXIFY tone: direct, proof-led, no hype</span>
 <span class="pc">- Short sentences. One idea per sentence.</span>
 <span class="pc">- No filler. Every sentence must be functional.</span>
+<span class="pc">- No em dashes. No "straightforward". No "genuine".</span>
+<span class="pc">- ESL Grade 5–6 reading level. Short paragraphs.</span>
+<span class="pc">- Always: "performance split" not "profit split"</span>
+<span class="pc">- FXIFY specifics: One Phase, no consistency rule, payout on demand, broker-backed FXPIG (est. 2010), $40M+ paid out.</span>
 
 <span class="pc">━━ 2. SEO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
 <span class="pv">Primary keyword:</span> in H1, first 100 words, at least one H2
 <span class="pv">Secondary keywords:</span> naturally in H2s and body
+<span class="pv">Internal links:</span> minimum 2, relevant FXIFY blog posts
 
 <span class="pc">━━ 3. STRUCTURE (mandatory) ━━━━━━━━━━━━━━━━━━</span>
 <span class="pc">H1 → Intro (max 120 words) → Summary Table → ToC</span>
 <span class="pc">→ Body H2 sections → Common Mistakes</span>
 <span class="pc">→ How This Applies to Prop Trading</span>
 <span class="pc">→ Key Takeaways (bullets) → FAQ (5-7 questions)</span>
+<span class="pc">→ CTA (challenge signup or relevant product)</span>
 
 <span class="pc">━━ 4. OUTPUT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━</span>
-<span class="pc">Clean draft + meta title + meta description + slug</span></pre></div>
+<span class="pc">Clean draft + meta title (60 chars) + meta description (155 chars) + slug</span></pre>
+          </div>
+          <div id="prompt-edit-area" style="display:none;padding:14px 16px;">
+            <textarea id="prompt-textarea" class="finput" style="width:100%;height:320px;font-family:var(--mono);font-size:12px;line-height:1.7;resize:vertical;white-space:pre;" placeholder="Edit the master blog draft prompt..."></textarea>
+            <p style="font-size:11px;color:var(--text3);margin-top:6px;">This prompt is used in every article generation. Changes are saved to Supabase ai_rules table and take effect immediately.</p>
+          </div>
+        </div>
       </div>
 
       <!-- PUBLISHED ARTICLES (ADMIN) -->
@@ -1157,7 +1179,11 @@ tr:last-child td{border-bottom:none;}
       <div class="tblogo" id="writer-logo" style="cursor:pointer;"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjM0IiB2aWV3Qm94PSIwIDAgMTgyIDM0IiB3aWR0aD0iMTgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGl0bGU+RlhJRlkgUHJvcCBUcmFkaW5nIEZpcm08L3RpdGxlPgo8cGF0aCBkPSJNMjcuOTU2OSAwLjVIMC45MDM2ODJDMC40MDQ1OTIgMC41IDAgMC44ODYzOTkgMCAxLjM2MzA1VjUuNjc4MjhDMCA2LjE1NDkzIDAuNDA0NTkyIDYuNTQxMzMgMC45MDM2ODIgNi41NDEzM0gyNy45NTY5QzI4LjQ1NTkgNi41NDEzMyAyOC44NjA1IDYuMTU0OTMgMjguODYwNSA1LjY3ODI4VjEuMzYzMDVDMjguODYwNSAwLjg4NjM5OSAyOC40NTU5IDAuNSAyNy45NTY5IDAuNVoiIGZpbGw9IiMxRTFCNEIiIGlkPSJwYXRoLTEtbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMjcuOTYzMSA4LjQ3NDEySDUuNDE1NjRDNC45MTY1NSA4LjQ3NDEyIDQuNTExOTYgOC44NjA1MiA0LjUxMTk2IDkuMzM3MTdWMTMuNjUyNEM0LjUxMTk2IDE0LjEyOTEgNC45MTY1NSAxNC41MTU0IDUuNDE1NjQgMTQuNTE1NEgyNy45NjMxQzI4LjQ2MjIgMTQuNTE1NCAyOC44NjY4IDE0LjEyOTEgMjguODY2OCAxMy42NTI0VjkuMzM3MTdDMjguODY2OCA4Ljg2MDUyIDI4LjQ2MjIgOC40NzQxMiAyNy45NjMxIDguNDc0MTJaIiBmaWxsPSIjMUUxQjRCIiBpZD0icGF0aC0yLWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTI3Ljk1NjggMTYuNDQxOUg5LjkyMTM4QzkuNDIyMjkgMTYuNDQxOSA5LjAxNzcgMTYuODI4MyA5LjAxNzcgMTcuMzA0OVYyMS42MjAyQzkuMDE3NyAyMi4wOTY4IDkuNDIyMjkgMjIuNDgzMiA5LjkyMTM4IDIyLjQ4MzJIMjcuOTU2OEMyOC40NTU5IDIyLjQ4MzIgMjguODYwNSAyMi4wOTY4IDI4Ljg2MDUgMjEuNjIwMlYxNy4zMDQ5QzI4Ljg2MDUgMTYuODI4MyAyOC40NTU5IDE2LjQ0MTkgMjcuOTU2OCAxNi40NDE5WiIgZmlsbD0iIzFFMUI0QiIgaWQ9InBhdGgtMy1sb2dvIj48L3BhdGg+CjxwYXRoIGQ9Ik0yNy45NTY5IDI0LjQxNkgxNC40MzM1QzEzLjkzNDQgMjQuNDE2IDEzLjUyOTggMjQuODAyNCAxMy41Mjk4IDI1LjI3OTFWMjkuNTk0M0MxMy41Mjk4IDMwLjA3MDkgMTMuOTM0NCAzMC40NTczIDE0LjQzMzUgMzAuNDU3M0gyNy45NTY5QzI4LjQ1NiAzMC40NTczIDI4Ljg2MDYgMzAuMDcwOSAyOC44NjA2IDI5LjU5NDNWMjUuMjc5MUMyOC44NjA2IDI0LjgwMjQgMjguNDU2IDI0LjQxNiAyNy45NTY5IDI0LjQxNloiIGZpbGw9IiMxRTFCNEIiIGlkPSJwYXRoLTQtbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMzYuOTgxIDMwLjVWMC41SDU4Ljg3OTNWNy40NzEyM0g0NS4zMTc3VjEzLjI3NTVINTUuODE4M1YxOS44Mzk1SDQ1LjMxNzdWMzAuNUgzNi45ODFWMzAuNVoiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTYwLjEwMTIgMzAuNUw3MC43OTI3IDE1LjE2NTdMNjAuMTAxMiAwLjVINzAuMzY2M0w3NS41OTExIDguMjc5NThMODAuNjMxMyAwLjVIODkuOTFMODAuMTYwNCAxNC4zOTk5TDkxLjk3ODMgMzAuNUg4MS41NzMyTDc1LjMxMTEgMjEuMjhMNjkuMjMzNSAzMC41SDYwLjA5NDhINjAuMTAxMloiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTk1LjA5MDIgMzAuNVYwLjVIMTAzLjQyN1YzMC41SDk1LjA5MDJaIiBmaWxsPSIjMUUxQjRCIj48L3BhdGg+CjxwYXRoIGQ9Ik0xMDkuMDc4IDMwLjVWMC41SDEzMC45NzZWNy40NzEyM0gxMTcuNDE1VjEzLjI3NTVIMTI3LjkxNVYxOS44Mzk1SDExNy40MTVWMzAuNUgxMDkuMDc4WiIgZmlsbD0iIzFFMUI0QiI+PC9wYXRoPgo8cGF0aCBkPSJNMTQzLjQ1NiAzMC41VjE4LjUzMjhMMTMyLjI5NCAwLjVIMTQxLjg1M0wxNDcuOTc1IDExLjIwM0wxNTMuNzIxIDAuNUgxNjNMMTUxLjc5MyAxOC40OTAzVjMwLjVIMTQzLjQ1NloiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTcwLjc5MjYgMTUuMTU5Nkw2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OE04MC4xNjA0IDE0LjM5MzhMOTEuOTc4MiAzMC40OTM5SDgxLjU3MzJMNzUuMzExIDIxLjI3MzkiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTE3Mi41ODcgMC40NTQ1OUgxNzQuMDM4TDE3NS45ODEgNS4xOTc0OUgxNzYuMDU4TDE3OC4wMDEgMC40NTQ1OUgxNzkuNDUyVjcuMDAwMDRIMTc4LjMxNFYyLjUwMzI0SDE3OC4yNTNMMTc2LjQ0NSA2Ljk4MDg3SDE3NS41OTRMMTczLjc4NSAyLjQ5MzY1SDE3My43MjVWNy4wMDAwNEgxNzIuNTg3VjAuNDU0NTlaIiBmaWxsPSIjMUUxQjRCIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvcGF0aD4KPHBhdGggZD0iTTE2Ni4zNTggMS40NDg1NVYwLjQ1NDU5SDE3MS41OFYxLjQ0ODU1SDE2OS41NTdWNy4wMDAwNEgxNjguMzgxVjEuNDQ4NTVIMTY2LjM1OFoiIGZpbGw9IiMxRTFCNEIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8L3N2Zz4=" height="20" style="display:block;"></div>
       <div class="tbsep"></div><span class="tbctx" id="writer-ctx-label">Writer Portal</span>
     </div>
-    <div class="tbr"><span class="tbu" id="writer-tbu-name">—</span><div class="tbav" id="writer-tbu-av">—</div></div>
+    <div class="tbr" style="display:flex;align-items:center;gap:10px;">
+          <button id="writer-back-btn" onclick="doExitSwitchView()" style="display:none;font-size:11px;padding:4px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--bg2);color:var(--text2);cursor:pointer;">← Back to Admin</button>
+          <span class="tbu" id="writer-tbu-name">—</span>
+          <div class="tbav" id="writer-tbu-av">—</div>
+        </div>
   </div>
   <div class="awrap">
     <div class="sbov" id="writer-ov"></div>
@@ -2110,6 +2136,7 @@ function goPage(sc,pg,navEl){
   if(pg==='d-analytics') { loadDavidAnalytics(); }
   if(pg==='a-analytics')   { loadAnalytics(); }
   if(pg==='a-competitors') { loadCompetitorAnalysis(); }
+  if(pg==='a-prompts')     { if(typeof loadPromptTemplate==='function') loadPromptTemplate(); }
   if(pg==='a-generate' && activeRole === 'writer') {
     // Hybrid user — switch to admin screen for Content Hub
     goScreen('admin');
@@ -8263,7 +8290,39 @@ function v2WireCustomBtn() {
     // ── New task toggle ────────────────────────────────────────
     if (e.target.closest('#cu-new-task-btn')) {
       var cp2 = document.getElementById('cu-create-panel');
-      if (cp2) cp2.style.display = cp2.style.display==='none'?'block':'none'; return;
+      if (cp2) {
+        var isOpen = cp2.style.display !== 'none' && cp2.style.display !== '';
+        cp2.style.display = isOpen ? 'none' : 'block';
+        if (!isOpen) {
+          // Populate assignee dropdown from CU.members
+          var asel = document.getElementById('ct-assignee');
+          if (asel && CU.members && CU.members.length) {
+            asel.innerHTML = '<option value="">— Unassigned —</option>' +
+              CU.members.map(function(m){
+                return '<option value="' + m.id + '">' + m.username + '</option>';
+              }).join('');
+          }
+          // Populate status dropdown from CU.statuses
+          var ssel = document.getElementById('ct-status');
+          if (ssel && CU.statuses && CU.statuses.length) {
+            var writableStatuses = CU.statuses.filter(function(s){
+              return !['published','completed','cancelled'].includes(s.status);
+            });
+            ssel.innerHTML = writableStatuses.map(function(s){
+              var label = s.status.charAt(0).toUpperCase() + s.status.slice(1);
+              return '<option value="' + s.status + '"' + (s.status==='to do'?' selected':'') + '>' + label + '</option>';
+            }).join('');
+          }
+          // Clear fields
+          ['ct-title','ct-keyword','ct-notes'].forEach(function(id){
+            var el = document.getElementById(id);
+            if (el) el.value = '';
+          });
+          var due = document.getElementById('ct-due');
+          if (due) due.value = '';
+        }
+      }
+      return;
     }
     if (e.target.closest('#cu-create-close')) {
       var cp3 = document.getElementById('cu-create-panel'); if(cp3) cp3.style.display='none'; return;
@@ -8779,6 +8838,7 @@ function init(){
   }
 
   function resolveUserFromEmail(email) {
+  window.resolveUserFromEmail = resolveUserFromEmail; // ensure callable from auth callback
     var errEl = document.getElementById('login-error');
     var isApproved = email.endsWith('@fxify.com') || email === 'liam@quirkydigital.com';
     if (!isApproved) {
@@ -9262,6 +9322,9 @@ function openSwitchViewModal() {
       if (avEl)   { avEl.textContent = w.initials; avEl.style.background = w.color; }
       document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
       document.getElementById('writer').classList.add('active');
+      // Show back button
+      var backBtn = document.getElementById('writer-back-btn');
+      if (backBtn) backBtn.style.display = 'inline-flex';
       // Load this writer's tasks
       loadWriterDrafts();
     };
@@ -9297,6 +9360,10 @@ function doExitSwitchView() {
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   var admin = document.getElementById('admin');
   if (admin) admin.classList.add('active');
+  // Hide back button + reset writer topbar
+  var backBtn = document.getElementById('writer-back-btn');
+  if (backBtn) backBtn.style.display = 'none';
+  currentWriterEmail = null;
 }
 
 function prefillBrief(data) {
@@ -9309,6 +9376,8 @@ function prefillBrief(data) {
 
 // ── GLOBAL FUNCTION EXPOSURE ────────────────────────────────
 // All functions callable from onclick, init(), and external code
+// Auth helpers — must be on window before Supabase fires
+window.resolveUserFromEmail = typeof resolveUserFromEmail === "function" ? resolveUserFromEmail : function(e){ console.warn("resolveUserFromEmail called before init", e); };
 if (typeof goPage === "function") window.goPage = goPage;
 if (typeof goScreen === "function") window.goScreen = goScreen;
 if (typeof doGoogleLogin === "function") window.doGoogleLogin = doGoogleLogin;
@@ -10182,6 +10251,116 @@ function _canonStat(count, label, bg, color) {
     '<p style="font-size:11px;color:' + color + ';margin-top:3px;">' + label + '</p>' +
   '</div>';
 }
+
+
+
+// ── PROMPT TEMPLATE MANAGEMENT ────────────────────────────────────────────
+
+var DEFAULT_PROMPT = `FXIFY Blog Draft Prompt
+Topic: [Insert topic]
+
+━━ 1. CORE INSTRUCTIONS ━━━━━━━━━━━━━━━━━━━━━━
+- FXIFY tone: direct, proof-led, no hype
+- Short sentences. One idea per sentence.
+- No filler. Every sentence must be functional.
+- No em dashes. No "straightforward". No "genuine".
+- ESL Grade 5-6 reading level. Short paragraphs.
+- Always: "performance split" not "profit split"
+- FXIFY specifics: One Phase, no consistency rule, payout on demand, broker-backed FXPIG (est. 2010), $40M+ paid out.
+
+━━ 2. SEO ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Primary keyword: in H1, first 100 words, at least one H2
+Secondary keywords: naturally in H2s and body
+Internal links: minimum 2, relevant FXIFY blog posts
+
+━━ 3. STRUCTURE (mandatory) ━━━━━━━━━━━━━━━━━━
+H1 → Intro (max 120 words) → Summary Table → ToC
+→ Body H2 sections → Common Mistakes
+→ How This Applies to Prop Trading
+→ Key Takeaways (bullets) → FAQ (5-7 questions)
+→ CTA (challenge signup or relevant product)
+
+━━ 4. OUTPUT ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Clean draft + meta title (60 chars) + meta description (155 chars) + slug`;
+
+function togglePromptEdit() {
+  var display  = document.getElementById('prompt-display');
+  var editArea = document.getElementById('prompt-edit-area');
+  var textarea = document.getElementById('prompt-textarea');
+  var editBtn  = document.getElementById('prompt-edit-btn');
+  var saveBtn  = document.getElementById('prompt-save-btn');
+
+  if (!display || !editArea) return;
+  var isEditing = editArea.style.display !== 'none';
+
+  if (!isEditing) {
+    // Switch to edit mode — populate textarea from current prompt text
+    var pre = document.getElementById('prompt-pre');
+    var raw = pre ? (pre.textContent || pre.innerText) : DEFAULT_PROMPT;
+    if (textarea) textarea.value = raw.trim();
+    display.style.display  = 'none';
+    editArea.style.display = 'block';
+    if (editBtn) editBtn.textContent = '✕ Cancel';
+    if (saveBtn) saveBtn.style.display = 'inline-flex';
+  } else {
+    // Cancel edit
+    display.style.display  = 'block';
+    editArea.style.display = 'none';
+    if (editBtn) editBtn.textContent = '✏ Edit';
+    if (saveBtn) saveBtn.style.display = 'none';
+  }
+}
+window.togglePromptEdit = togglePromptEdit;
+
+async function savePromptTemplate() {
+  var textarea = document.getElementById('prompt-textarea');
+  var saveBtn  = document.getElementById('prompt-save-btn');
+  if (!textarea) return;
+  var rules = textarea.value.trim();
+  if (!rules) { v2Toast('Prompt is empty', 'error'); return; }
+
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Saving...'; }
+
+  try {
+    // Save to ai_rules table
+    await supa.from('ai_rules').insert([{
+      rules:      rules,
+      active:     true,
+      created_at: new Date().toISOString()
+    }]);
+
+    // Update the display pre tag
+    var pre = document.getElementById('prompt-pre');
+    if (pre) pre.textContent = rules;
+
+    // Switch back to display mode
+    var display  = document.getElementById('prompt-display');
+    var editArea = document.getElementById('prompt-edit-area');
+    var editBtn  = document.getElementById('prompt-edit-btn');
+    if (display)  display.style.display  = 'block';
+    if (editArea) editArea.style.display = 'none';
+    if (editBtn)  editBtn.textContent    = '✏ Edit';
+    if (saveBtn)  { saveBtn.style.display = 'none'; saveBtn.disabled = false; saveBtn.textContent = 'Save →'; }
+
+    v2Toast('Prompt saved — active on next generation ✓', 'success');
+  } catch(e) {
+    v2Toast('Save failed: ' + e.message, 'error');
+    if (saveBtn) { saveBtn.disabled = false; saveBtn.textContent = 'Save →'; }
+  }
+}
+window.savePromptTemplate = savePromptTemplate;
+
+async function loadPromptTemplate() {
+  try {
+    var res = await supa.from('ai_rules').select('rules').eq('active', true).order('created_at', {ascending:false}).limit(1);
+    if (res.data && res.data.length && res.data[0].rules) {
+      var pre = document.getElementById('prompt-pre');
+      if (pre) pre.textContent = res.data[0].rules;
+      window._activePrompt = res.data[0].rules;
+    }
+  } catch(e) { console.warn('[Prompt] load failed:', e.message); }
+}
+window.loadPromptTemplate = loadPromptTemplate;
 
 
 })();
