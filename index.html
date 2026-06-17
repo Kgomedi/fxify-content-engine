@@ -5198,7 +5198,7 @@ function renderPlannerResults(plan) {
 }
 
 // ── FIRECRAWL ─────────────────────────────────────────────────────────────
-var FIRECRAWL_KEY = 'fc-3cdb13de532d48c2a5b2692ebb9b3fcf';
+var FIRECRAWL_KEY = 'fc-918ef0f7ffac439caca532272347e770';
 
 async function scrapeUrls(urls) {
   if (!urls || !urls.length) return '';
@@ -6450,7 +6450,7 @@ var V2_CONFIG = {
   webhook:   'https://sheperd.app.n8n.cloud/webhook/generate-draft',
   dfsLogin:  'sheperd.morena@fxify.com',
   dfsPass:   '953542a6e47cca32',
-  firecrawl: 'fc-3cdb13de532d48c2a5b2692ebb9b3fcf'
+  firecrawl: 'fc-918ef0f7ffac439caca532272347e770'
 };
 
 
@@ -6899,66 +6899,61 @@ window.v2UpdateStatus = v2UpdateStatus;
 // Returns actual current data from the web, not training knowledge
 
 async function v2LiveResearch(query, instructions) {
-  // Try 1: n8n /webhook/research (Claude with web_search tool)
-  var researchWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/research');
+  // Try 1: Route through /webhook/generate-draft with research prompt
+  // (the dedicated /webhook/research has CORS issues - generate-draft works fine)
   try {
-    var r = await fetch(researchWebhook, {
+    var researchPrompt =
+      (instructions || 'Search for recent information about this topic.') +
+      '\n\nQUERY: ' + query +
+      '\n\nReturn what you find as plain text. Be specific - list actual titles, ' +
+      'facts, and details you find. No JSON needed.';
+
+    var r = await fetch(V2_CONFIG.webhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        query:        query,
-        instructions: instructions || 'Search for this and return what you find.',
-        max_tokens:   1500
+        prompt:     researchPrompt,
+        max_tokens: 1500
       })
     });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     var raw = await r.text();
     if (!raw || !raw.trim()) throw new Error('empty response');
     var data = JSON.parse(raw);
-    // Extract text from all possible n8n response formats
-    // especially when Claude uses web_search tool (multiple content blocks)
+
     var text = '';
     var extractText = function(obj) {
       if (!obj) return '';
-      // Direct text field (Simplify Output ON)
       if (typeof obj.text === 'string' && obj.text.length > 10) return obj.text;
-      // Content array (Simplify Output OFF)
       if (Array.isArray(obj.content)) {
         return obj.content
           .filter(function(b){ return b.type === 'text'; })
           .map(function(b){ return b.text || ''; })
           .join('\n');
       }
-      // Output field
       if (typeof obj.output === 'string') return obj.output;
-      // message field
       if (typeof obj.message === 'string') return obj.message;
       return '';
     };
 
     if (Array.isArray(data)) {
-      // Try each item in array — take the longest text result
       var candidates = data.map(extractText).filter(Boolean);
       text = candidates.sort(function(a,b){ return b.length - a.length; })[0] || '';
     } else {
       text = extractText(data);
     }
 
-    console.log('[LiveResearch] n8n response text length:', text.length);
-    if (text && text.length > 20) {
-      return text;
-    }
-    // Log full response for debugging
-    console.warn('[LiveResearch] could not extract text. Full response:', JSON.stringify(data).substring(0, 300));
-    throw new Error('could not extract text from response');
+    console.log('[LiveResearch] generate-draft research returned:', text.length, 'chars');
+    if (text && text.length > 20) return text;
+    throw new Error('response too short');
   } catch(e) {
-    console.warn('[LiveResearch] n8n webhook failed:', e.message);
+    console.warn('[LiveResearch] generate-draft research failed:', e.message);
   }
 
   // Try 2: Firecrawl search API directly (no n8n needed)
   // Uses the firecrawl key from V2_CONFIG
   try {
-    var fc = await fetch('https://api.firecrawl.dev/v2/search', {
+    var fc = await fetch('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
