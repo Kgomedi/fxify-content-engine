@@ -419,6 +419,22 @@ tr:last-child td{border-bottom:none;}
 .wstats{display:flex;gap:16px;margin-top:12px;padding-top:12px;border-top:1px solid var(--border);}
 .wstat-val{font-size:18px;font-weight:700;color:var(--text);line-height:1;}
 .wstat-lbl{font-size:10px;color:var(--text3);margin-top:2px;}
+
+/* ── RESPONSIVE ─────────────────────────────────────────────── */
+@media (max-width: 860px) {
+  .sb { position:fixed;left:-240px;top:0;bottom:0;z-index:1000;transition:left .22s cubic-bezier(.4,0,.2,1);box-shadow:none; }
+  .sb.open { left:0;box-shadow:4px 0 24px rgba(0,0,0,.25); }
+  .main { margin-left:0 !important; }
+  .topbar { padding-left:52px; }
+  .pg { padding:16px; }
+  .frow.fg { grid-template-columns:1fr !important; }
+  .wgrid { grid-template-columns:1fr !important; }
+}
+@media (max-width: 600px) {
+  .pgh { font-size:18px; }
+  .wcard { padding:12px; }
+  .tbr .tbu { display:none; }
+}
 </style>
 </head>
 <body>
@@ -681,6 +697,34 @@ tr:last-child td{border-bottom:none;}
         <div id="trending-output" style="display:none;margin-bottom:16px;"></div>
 
         <!-- MODE TABS -->
+        <!-- STEP FLOW GUIDE -->
+        <div style="display:flex;align-items:center;gap:0;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;flex-wrap:wrap;gap:4px;">
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:11px;font-weight:700;background:var(--teal);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">1</span>
+            <span style="font-size:11px;color:var(--text3);">Scan trends</span>
+            <span style="color:var(--border);margin:0 6px;">→</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:11px;font-weight:700;background:var(--teal);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">2</span>
+            <span style="font-size:11px;color:var(--text3);">Seed + filters</span>
+            <span style="color:var(--border);margin:0 6px;">→</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:11px;font-weight:700;background:var(--teal);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">3</span>
+            <span style="font-size:11px;color:var(--text3);">Generate topics</span>
+            <span style="color:var(--border);margin:0 6px;">→</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:11px;font-weight:700;background:var(--teal);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">4</span>
+            <span style="font-size:11px;color:var(--text3);">Refine · SERP · Bookmark</span>
+            <span style="color:var(--border);margin:0 6px;">→</span>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px;">
+            <span style="font-size:11px;font-weight:700;background:var(--brand);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">5</span>
+            <span style="font-size:11px;color:var(--text2);font-weight:600;">Create ClickUp task</span>
+          </div>
+        </div>
+
         <div style="display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:20px;">
           <button class="hub-tab active" data-tab="blog" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--bg3);color:var(--teal);">Blog Topics</button>
           <button class="hub-tab" data-tab="youtube" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">YouTube Topics</button>
@@ -1049,8 +1093,17 @@ tr:last-child td{border-bottom:none;}
         <!-- COMPETITOR OVERVIEW CARDS -->
         <div class="shead" style="margin-bottom:10px;">Tracked competitors</div>
         <div id="comp-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:24px;">
-          <div id="comp-cards-loading" style="text-align:center;padding:40px;color:var(--text3);font-size:13px;grid-column:1/-1;">
-            Click <strong style="color:var(--text);">Run analysis</strong> to pull live competitor intelligence via web search.
+          <div id="comp-cards-loading" style="text-align:center;padding:40px;grid-column:1/-1;">
+            <p style="font-size:28px;margin-bottom:10px;">📡</p>
+            <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;">No competitor analysis run yet</p>
+            <p style="font-size:12px;color:var(--text3);line-height:1.6;max-width:340px;margin:0 auto 16px;">Run an analysis to surface content gaps, keyword opportunities, and recent competitor moves from FTMO, FundedNext, Apex and others.</p>
+            <button class="btn btn-p btn-s" id="comp-run-empty-btn" style="font-size:12px;">Run Analysis →</button>
+          </div>
+          <div id="comp-empty-state" style="display:none;grid-column:1/-1;padding:32px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:var(--rl);margin-top:8px;">
+            <p style="font-size:28px;margin-bottom:8px;">📡</p>
+            <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;">No competitor analysis run yet</p>
+            <p style="font-size:12px;color:var(--text3);line-height:1.6;max-width:380px;margin:0 auto 16px;">Run an analysis to surface content gaps, keyword opportunities, and recent moves from FTMO, FundedNext, Apex and others.</p>
+            <button class="btn btn-p btn-s" id="comp-run-empty-btn" style="font-size:12px;">Run Competitor Analysis →</button>
           </div>
         </div>
 
@@ -1927,7 +1980,7 @@ async function cuFetch(path, method, body) {
 
 async function cuCreateTask(article) {
   var brief = null;
-  try { if (article.content && article.content.trim().startsWith('{')) brief = JSON.parse(article.content); } catch(e) { /* silent */ }
+  try { if (article.content && article.content.trim().startsWith('{')) brief = JSON.parse(article.content); } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
   var desc = '';
   if (brief) {
     desc += 'KEYWORD: ' + (brief.primary_keyword || article.primary_kw || '') + '\n';
@@ -1945,7 +1998,7 @@ async function cuCreateTask(article) {
   var cuPriority = { 'Urgent':1, 'High':2, 'Normal':3, 'Low':4 };
   var pri = cuPriority[article.priority] || 3;
   var dueDate = null;
-  if (article.due_date) { try { dueDate = new Date(article.due_date).getTime(); } catch(e){ /* silent */ } }
+  if (article.due_date) { try { dueDate = new Date(article.due_date).getTime(); } catch(e){ console.warn("[Engine silent catch]", e && e.message); } }
   var customFields = [];
   if (article.primary_kw) customFields.push({ id: CU.fields.primaryKeyword.id, value: article.primary_kw });
   if (article.category && CU.fieldOptions.category[article.category]) customFields.push({ id: CU.fields.category.id, value: CU.fieldOptions.category[article.category] });
@@ -3212,7 +3265,7 @@ async function loadWriterDrafts() {
         intent = brief.intent           || '';
         wc     = brief.word_count       || '';
       }
-    } catch(e) { /* silent */ }
+    } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
 
     // Priority colour
     var pri = (t.priority && t.priority.color) || 'transparent';
@@ -3368,7 +3421,7 @@ function openEditor(art,role){
         var match = String(briefD2.word_count).match(/\d+/);
         if (match) targetWc = parseInt(match[0]);
       }
-    } catch(e) { /* silent */ }
+    } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
     if (!targetWc && art.length) {
       var m2 = String(art.length).match(/\d+/);
       if (m2) targetWc = parseInt(m2[0]);
@@ -4588,7 +4641,7 @@ async function loadInternalLinks() {
         }
         internalLinksCache = links;
       }
-    } catch(e) { /* silent */ }
+    } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
     if (!internalLinksCache) internalLinksCache = [];
   }
   renderILPanel();
@@ -4734,11 +4787,11 @@ function initInlineComments() {
           var range = selection.getRangeAt(0);
           inEditor = edEl.contains(range.commonAncestorContainer);
         }
-      } catch(e2) { /* silent */ }
+      } catch(e2) { /* selection range — intentional */ }
 
       if (text.length > 2 && inEditor) {
         selectedText = text;
-        try { selectedRange = selection.getRangeAt(0).cloneRange(); } catch(e3) { /* silent */ }
+        try { selectedRange = selection.getRangeAt(0).cloneRange(); } catch(e3) { /* selection range — intentional */ }
         // Position tooltip near selection
         try {
           var rect = selection.getRangeAt(0).getBoundingClientRect();
@@ -4747,7 +4800,7 @@ function initInlineComments() {
           tooltip.style.top = top + 'px';
           tooltip.style.left = Math.max(10, Math.min(rect.left + rect.width/2 - 70, window.innerWidth - 160)) + 'px';
           tooltip.classList.add('show');
-        } catch(e4) { /* silent */ }
+        } catch(e4) { /* tooltip positioning — intentional */ }
       } else if (!tooltip.contains(e.target)) {
         tooltip.classList.remove('show');
         selectedText = '';
@@ -4777,7 +4830,7 @@ function initInlineComments() {
         // Save highlighted content to Supabase
         var edEl = document.getElementById('tiptap-editor');
         if (edEl) autoSave(edEl.innerHTML);
-      } catch(e) { /* silent */ }
+      } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
     }
     // Open comment form with quote
     var cp = document.getElementById('comments-panel');
@@ -6529,7 +6582,16 @@ var _briefModalArt = null;
 function openBriefModal() { /* removed */ }
 
 
-function v2Toast(msg) { toast(msg); }
+function v2Toast(msg, type) {
+  // type: 'success' | 'error' | 'warn' | undefined (default)
+  if (type === 'error') {
+    toast('⚠ ' + msg);
+  } else if (type === 'success') {
+    toast('✓ ' + msg);
+  } else {
+    toast(msg);
+  }
+}
 window.v2Toast = v2Toast;
 
 
@@ -7424,7 +7486,7 @@ function renderTopicGrid(topics, isStub, publishedCount) {
     var isLast = idx === topics.length - 1;
 
     // Build the why paragraph — Yoast's one-paragraph explanation
-    var why = [t.competitor_gap, t.fxify_angle, t.why_now].filter(Boolean).join(' ');
+    var why = [t.why_trending, t.competitor_gap, t.fxify_angle, t.why_now].filter(Boolean).join(' · ');
     if (!why && t.short_form_hook) why = t.short_form_hook;
 
     html +=
@@ -7801,7 +7863,7 @@ async function runBriefResearch(topicObj) {
   ]);
 
   var researchContext = '';
-  try { researchContext = await scrapeUrls(['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://apextraderfunding.com/blog/']); } catch(e) { /* silent */ }
+  try { researchContext = await scrapeUrls(['https://ftmo.com/en/blog/','https://fundednext.com/blog/','https://apextraderfunding.com/blog/']); } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
 
   var extraContext = (typeof topicObj === 'object') ?
     'KEYWORD RESEARCH ALREADY DONE:\n' +
@@ -8129,7 +8191,7 @@ function v2WireCredentials() {
       try {
         localStorage.setItem('dfs_login', login);
         localStorage.setItem('dfs_pass',  pass);
-      } catch(e) { /* silent */ }
+      } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
       V2_CONFIG.dfsLogin = login;
       V2_CONFIG.dfsPass  = pass;
       var el = document.getElementById('dfs-status');
@@ -8186,7 +8248,7 @@ function v2WireCustomBtn() {
     if (e.target.closest('#cu-sync-btn'))        { cuSyncFromClickUp(); return; }
     if (e.target.closest('#cu-export-btn'))      { cuExportCSV(); return; }
     if (e.target.closest('#an-refresh-btn'))     { loadAnalytics(); return; }
-    if (e.target.closest('#comp-run-btn'))       { runFullCompetitorAnalysis(); return; }
+    if (e.target.closest('#comp-run-btn') || e.target.closest('#comp-run-empty-btn')) { runFullCompetitorAnalysis(); return; }
     if (e.target.closest('#comp-refresh-btn'))   { loadCompetitorAnalysis(); return; }
 
     // ── Pipeline list toggle ───────────────────────────────────
@@ -8403,7 +8465,7 @@ async function openWriterBriefModal(task) {
       artData = res.data[0];
       brief = JSON.parse(res.data[0].content);
     }
-  } catch(e) { /* silent */ }
+  } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
 
   // Build modal
   var overlay = document.createElement('div');
@@ -8506,7 +8568,7 @@ async function openWriterSubmit(task) {
     // Move ClickUp task to review
     await cuFetch('/task/' + task.id, 'PUT', { status: 'review' });
     // Update Supabase
-    try { await supa.from('articles').update({ status: 'Sheperd Review' }).ilike('title', task.name); } catch(e) { /* silent */ }
+    try { await supa.from('articles').update({ status: 'Sheperd Review' }).ilike('title', task.name); } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
     toast('✓ Set for review — Sheperd has been notified');
     loadWriterDrafts();
   } catch(e) {
@@ -8546,7 +8608,7 @@ function init(){
       currentUser = JSON.parse(savedUser);
       bootUser(currentUser);
     }
-  } catch(e) { /* silent */ }
+  } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
 
   function bootUser(user) {
     currentUser = user;
@@ -9052,6 +9114,35 @@ function init(){
       if (!isNaN(ridx)) refineTopicCustom(ridx);
     }
   });
+
+  // Hamburger menu — toggle sidebar on mobile
+  document.querySelectorAll('.mtoggle').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      // Find sidebar for this screen
+      var screen = btn.closest('.screen');
+      var sb = screen && screen.querySelector('.sb');
+      if (sb) {
+        var isOpen = sb.classList.contains('open');
+        sb.classList.toggle('open', !isOpen);
+        // Close overlay click
+        if (!isOpen) {
+          var overlay = document.createElement('div');
+          overlay.id = 'sb-overlay';
+          overlay.style.cssText = 'position:fixed;inset:0;z-index:999;background:rgba(0,0,0,0.3);';
+          overlay.onclick = function() { sb.classList.remove('open'); overlay.remove(); };
+          document.body.appendChild(overlay);
+        } else {
+          var ov = document.getElementById('sb-overlay');
+          if (ov) ov.remove();
+        }
+      }
+    });
+  });
+
+  // Show hamburger on mobile via CSS
+  var mobileStyle = document.createElement('style');
+  mobileStyle.textContent = '@media(max-width:860px){.mtoggle{display:flex;}}';
+  document.head.appendChild(mobileStyle);
 
   // Internal links refresh
   var ilRefresh = document.getElementById('il-refresh');
