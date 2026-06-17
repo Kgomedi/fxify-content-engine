@@ -623,9 +623,11 @@ tr:last-child td{border-bottom:none;}
             <div class="pgh">Content Intelligence</div>
             <p class="pgs" style="margin-bottom:0;">Blog + YouTube, one engine. Research real gaps, cross-pollinate topics, build briefs that convert.</p>
           </div>
-          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
+          <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap;">
             <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);" id="hub-dfs-status">DataForSEO ✓</span>
             <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--greenL);color:var(--green);border:1px solid rgba(52,211,153,0.2);font-family:var(--mono);">Firecrawl ✓</span>
+            <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;">📚 History</button>
+            <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;">★ Bookmarks</button>
           </div>
         </div>
 
@@ -685,6 +687,36 @@ tr:last-child td{border-bottom:none;}
                   <option value="topstep">Topstep only</option>
                   <option value="the5ers">The5ers only</option>
                   <option value="e8">E8 Funding only</option>
+                </select>
+              </div>
+            </div>
+            <div class="frow fg" style="margin-top:10px;">
+              <div>
+                <label class="flbl">Target audience</label>
+                <select class="finput" id="v2-audience">
+                  <option value="all">All traders</option>
+                  <option value="beginner">Beginner traders</option>
+                  <option value="experienced">Experienced traders</option>
+                  <option value="researcher">Prop firm researchers</option>
+                  <option value="funded">Already funded traders</option>
+                </select>
+              </div>
+              <div>
+                <label class="flbl">Content goal</label>
+                <select class="finput" id="v2-goal">
+                  <option value="rank">Rank for keyword</option>
+                  <option value="authority">Build authority</option>
+                  <option value="convert">Drive challenge signups</option>
+                  <option value="retention">Retain funded traders</option>
+                </select>
+              </div>
+              <div>
+                <label class="flbl">Word count target</label>
+                <select class="finput" id="v2-wordcount">
+                  <option value="800">800 words (quick read)</option>
+                  <option value="1200" selected>1200 words (standard)</option>
+                  <option value="2000">2000 words (pillar)</option>
+                  <option value="3000">3000+ words (cornerstone)</option>
                 </select>
               </div>
             </div>
@@ -943,8 +975,8 @@ tr:last-child td{border-bottom:none;}
             <p class="pgs" style="margin-bottom:0;">Run keyword research using DataForSEO. Track volume, KD, CPC, and trends. Find rising opportunities before competitors do.</p>
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
-            <input id="kw-seed-input" type="text" placeholder="e.g. prop firm challenge, funded trading 2026" style="width:320px;font-size:13px;"/>
-            <button class="btn btn-p" id="kw-run-btn" style="white-space:nowrap;">🔍 Analyse keywords</button>
+            <input id="kw-seed-input" type="text" placeholder="e.g. prop firm challenge, funded trading 2026" onkeydown="if(event.key==='Enter')runKeywordAnalysis()" style="width:320px;font-size:13px;"/>
+            <button class="btn btn-p" id="kw-run-btn" onclick="runKeywordAnalysis()" style="white-space:nowrap;">🔍 Analyse keywords</button>
           </div>
         </div>
 
@@ -1033,9 +1065,9 @@ tr:last-child td{border-bottom:none;}
     <div class="tbl">
       <button class="mtoggle" id="writer-menu-btn"><span></span><span></span><span></span></button>
       <div class="tblogo" id="writer-logo" style="cursor:pointer;"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjM0IiB2aWV3Qm94PSIwIDAgMTgyIDM0IiB3aWR0aD0iMTgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGl0bGU+RlhJRlkgUHJvcCBUcmFkaW5nIEZpcm08L3RpdGxlPgo8cGF0aCBkPSJNMjcuOTU2OSAwLjVIMC45MDM2ODJDMC40MDQ1OTIgMC41IDAgMC44ODYzOTkgMCAxLjM2MzA1VjUuNjc4MjhDMCA2LjE1NDkzIDAuNDA0NTkyIDYuNTQxMzMgMC45MDM2ODIgNi41NDEzM0gyNy45NTY5QzI4LjQ1NTkgNi41NDEzMyAyOC44NjA1IDYuMTU0OTMgMjguODYwNSA1LjY3ODI4VjEuMzYzMDVDMjguODYwNSAwLjg4NjM5OSAyOC40NTU5IDAuNSAyNy45NTY5IDAuNVoiIGZpbGw9IiMxRTFCNEIiIGlkPSJwYXRoLTEtbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMjcuOTYzMSA4LjQ3NDEySDUuNDE1NjRDNC45MTY1NSA4LjQ3NDEyIDQuNTExOTYgOC44NjA1MiA0LjUxMTk2IDkuMzM3MTdWMTMuNjUyNEM0LjUxMTk2IDE0LjEyOTEgNC45MTY1NSAxNC41MTU0IDUuNDE1NjQgMTQuNTE1NEgyNy45NjMxQzI4LjQ2MjIgMTQuNTE1NCAyOC44NjY4IDE0LjEyOTEgMjguODY2OCAxMy42NTI0VjkuMzM3MTdDMjguODY2OCA4Ljg2MDUyIDI4LjQ2MjIgOC40NzQxMiAyNy45NjMxIDguNDc0MTJaIiBmaWxsPSIjMUUxQjRCIiBpZD0icGF0aC0yLWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTI3Ljk1NjggMTYuNDQxOUg5LjkyMTM4QzkuNDIyMjkgMTYuNDQxOSA5LjAxNzcgMTYuODI4MyA5LjAxNzcgMTcuMzA0OVYyMS42MjAyQzkuMDE3NyAyMi4wOTY4IDkuNDIyMjkgMjIuNDgzMiA5LjkyMTM4IDIyLjQ4MzJIMjcuOTU2OEMyOC40NTU5IDIyLjQ4MzIgMjguODYwNSAyMi4wOTY4IDI4Ljg2MDUgMjEuNjIwMlYxNy4zMDQ5QzI4Ljg2MDUgMTYuODI4MyAyOC40NTU5IDE2LjQ0MTkgMjcuOTU2OCAxNi40NDE5WiIgZmlsbD0iIzFFMUI0QiIgaWQ9InBhdGgtMy1sb2dvIj48L3BhdGg+CjxwYXRoIGQ9Ik0yNy45NTY5IDI0LjQxNkgxNC40MzM1QzEzLjkzNDQgMjQuNDE2IDEzLjUyOTggMjQuODAyNCAxMy41Mjk4IDI1LjI3OTFWMjkuNTk0M0MxMy41Mjk4IDMwLjA3MDkgMTMuOTM0NCAzMC40NTczIDE0LjQzMzUgMzAuNDU3M0gyNy45NTY5QzI4LjQ1NiAzMC40NTczIDI4Ljg2MDYgMzAuMDcwOSAyOC44NjA2IDI5LjU5NDNWMjUuMjc5MUMyOC44NjA2IDI0LjgwMjQgMjguNDU2IDI0LjQxNiAyNy45NTY5IDI0LjQxNloiIGZpbGw9IiMxRTFCNEIiIGlkPSJwYXRoLTQtbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMzYuOTgxIDMwLjVWMC41SDU4Ljg3OTNWNy40NzEyM0g0NS4zMTc3VjEzLjI3NTVINTUuODE4M1YxOS44Mzk1SDQ1LjMxNzdWMzAuNUgzNi45ODFWMzAuNVoiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTYwLjEwMTIgMzAuNUw3MC43OTI3IDE1LjE2NTdMNjAuMTAxMiAwLjVINzAuMzY2M0w3NS41OTExIDguMjc5NThMODAuNjMxMyAwLjVIODkuOTFMODAuMTYwNCAxNC4zOTk5TDkxLjk3ODMgMzAuNUg4MS41NzMyTDc1LjMxMTEgMjEuMjhMNjkuMjMzNSAzMC41SDYwLjA5NDhINjAuMTAxMloiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTk1LjA5MDIgMzAuNVYwLjVIMTAzLjQyN1YzMC41SDk1LjA5MDJaIiBmaWxsPSIjMUUxQjRCIj48L3BhdGg+CjxwYXRoIGQ9Ik0xMDkuMDc4IDMwLjVWMC41SDEzMC45NzZWNy40NzEyM0gxMTcuNDE1VjEzLjI3NTVIMTI3LjkxNVYxOS44Mzk1SDExNy40MTVWMzAuNUgxMDkuMDc4WiIgZmlsbD0iIzFFMUI0QiI+PC9wYXRoPgo8cGF0aCBkPSJNMTQzLjQ1NiAzMC41VjE4LjUzMjhMMTMyLjI5NCAwLjVIMTQxLjg1M0wxNDcuOTc1IDExLjIwM0wxNTMuNzIxIDAuNUgxNjNMMTUxLjc5MyAxOC40OTAzVjMwLjVIMTQzLjQ1NloiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTcwLjc5MjYgMTUuMTU5Nkw2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OE04MC4xNjA0IDE0LjM5MzhMOTEuOTc4MiAzMC40OTM5SDgxLjU3MzJMNzUuMzExIDIxLjI3MzkiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTE3Mi41ODcgMC40NTQ1OUgxNzQuMDM4TDE3NS45ODEgNS4xOTc0OUgxNzYuMDU4TDE3OC4wMDEgMC40NTQ1OUgxNzkuNDUyVjcuMDAwMDRIMTc4LjMxNFYyLjUwMzI0SDE3OC4yNTNMMTc2LjQ0NSA2Ljk4MDg3SDE3NS41OTRMMTczLjc4NSAyLjQ5MzY1SDE3My43MjVWNy4wMDAwNEgxNzIuNTg3VjAuNDU0NTlaIiBmaWxsPSIjMUUxQjRCIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvcGF0aD4KPHBhdGggZD0iTTE2Ni4zNTggMS40NDg1NVYwLjQ1NDU5SDE3MS41OFYxLjQ0ODU1SDE2OS41NTdWNy4wMDAwNEgxNjguMzgxVjEuNDQ4NTVIMTY2LjM1OFoiIGZpbGw9IiMxRTFCNEIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8L3N2Zz4=" height="20" style="display:block;"></div>
-      <div class="tbsep"></div><span class="tbctx">Writer Portal</span>
+      <div class="tbsep"></div><span class="tbctx" id="writer-ctx-label">Writer Portal</span>
     </div>
-    <div class="tbr"><span class="tbu">Fariha K.</span><div class="tbav">FK</div></div>
+    <div class="tbr"><span class="tbu" id="writer-tbu-name">—</span><div class="tbav" id="writer-tbu-av">—</div></div>
   </div>
   <div class="awrap">
     <div class="sbov" id="writer-ov"></div>
@@ -6233,6 +6265,14 @@ async function runTrendingDiscovery() {
           'Focus on: recent industry news, trader pain points, new competitor moves.\n' +
           'Be specific and avoid the obvious topics like "$19 funding" or "payout speed" — find fresher angles.\n\n'
       ) +
+      '── MULTI-SIGNAL REQUIREMENT ──\n' +
+      'For each topic, identify which signal surfaces it:\n' +
+      '- BLOG: competitor firms publishing heavily on this (signals saturation OR opportunity)\n' +
+      '- YOUTUBE: video titles getting traction — what hooks work on camera vs article\n' +
+      '- GOOGLE ADS: what prop firms are bidding on = commercial intent gold, high conversion\n' +
+      '- REDDIT: trader complaints, questions, or frustrations = real pain points to address\n' +
+      '- X/TWITTER: viral angles, hot debates, fast-moving news in prop trading\n\n' +
+      'Include a signal_source field for each topic that names WHICH signal(s) it came from and WHY.\n\n' +
 
       'CRITICAL — AVOID THESE OVERUSED ANGLES (already covered):\n' +
       '- $19 instant funding price comparison\n' +
@@ -6257,6 +6297,10 @@ async function runTrendingDiscovery() {
       '"short_form_hook":"exact first sentence for a 15-30s video. Brand voice.",' +
       '"fxify_angle":"specific FXIFY product + verifiable fact. One sentence.",' +
       '"opportunity_score":80,' +
+      '"signal_type":"Blog|YouTube|Google Ads|Reddit|X|Mixed",' +
+      '"signal_source":"which specific signal surfaced this topic and why it matters",' +
+      '"youtube_title":"exact YouTube video title for this topic",' +
+      '"ad_headline":"30 char Google Ads headline if this has commercial intent",' +
       '"source":"' + (hasLive ? 'live_research' : 'training_knowledge') + '"' +
       '}]}';
 
@@ -7056,9 +7100,12 @@ async function v2SerpResearch(keyword) {
 
 
 async function runTopicIdeas() {
-  var seed    = (document.getElementById('v2-seed')||{}).value || '';
-  var cat     = (document.getElementById('v2-cat')||{}).value  || 'All';
-  var compKey = (document.getElementById('v2-comp-focus')||{}).value || 'all';
+  var seed      = (document.getElementById('v2-seed')||{}).value || '';
+  var cat       = (document.getElementById('v2-cat')||{}).value  || 'All';
+  var compKey   = (document.getElementById('v2-comp-focus')||{}).value || 'all';
+  var audience  = (document.getElementById('v2-audience')||{}).value || 'all';
+  var goal      = (document.getElementById('v2-goal')||{}).value || 'rank';
+  var wordcount = (document.getElementById('v2-wordcount')||{}).value || '1200';
   var btn     = document.getElementById('v2-research-btn');
   var output  = document.getElementById('v2-brief-output');
 
@@ -7215,7 +7262,10 @@ async function runTopicIdeas() {
     '- News trading allowed: One Phase, Two Phase, Three Phase. Restricted on Lightning/Instant.\n\n' +
 
     'SEED TOPIC: ' + seed + '\n' +
-    'CATEGORY: ' + cat + '\n\n' +
+    'CATEGORY: ' + cat + '\n' +
+    'TARGET AUDIENCE: ' + ({all:'All traders',beginner:'Beginner traders (new to prop firms)',experienced:'Experienced traders (passed challenges before)',researcher:'Prop firm researchers (comparing firms)',funded:'Already funded traders (managing live accounts)'}[audience]||'All traders') + '\n' +
+    'CONTENT GOAL: ' + ({rank:'Rank for keyword in Google',authority:'Build FXIFY authority and trust',convert:'Drive challenge signups and conversions',retention:'Retain and educate funded traders'}[goal]||'Rank for keyword') + '\n' +
+    'TARGET WORD COUNT: ' + wordcount + ' words\n\n' +
 
     (serpBlock ? '── WHAT CURRENTLY RANKS FOR THIS TOPIC (SERP data) ──\n' +
       'These are the pages traders find right now. Study their angles — what do ALL of them cover? ' +
@@ -7264,6 +7314,8 @@ async function runTopicIdeas() {
     // Sort by opportunity score descending
     topics.sort(function(a,b){ return (b.opportunity_score||0) - (a.opportunity_score||0); });
     renderTopicGrid(topics, isStub, fxifyArticles.length);
+    // Auto-save this run to history
+    saveTopicRun(seed, audience, goal, wordcount, topics);
   } catch(e) {
     console.error('[runTopicIdeas] error:', e);
     output.innerHTML = '<div style="background:var(--bg2);border:1px solid var(--urgent);border-radius:var(--rl);padding:16px;">' +
@@ -7359,6 +7411,17 @@ function renderTopicGrid(topics, isStub, publishedCount) {
           '</div>' +
         '</div>' +
 
+        // ── Row 1b: Signal type badge ──
+        (t.signal_type ?
+          '<div style="margin-bottom:6px;">' +
+            '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;' +
+              'background:' + ({Blog:'var(--blueL)',YouTube:'#FEF2F2','Google Ads':'var(--greenL)',Reddit:'var(--highL)',X:'#F0FDF4',Mixed:'var(--brandL)'}[t.signal_type]||'var(--bg3)') + ';' +
+              'color:' + ({Blog:'var(--blue)',YouTube:'var(--urgent)','Google Ads':'var(--green)',Reddit:'var(--high)',X:'#15803d',Mixed:'var(--brand)'}[t.signal_type]||'var(--text3)') + ';">' +
+              ({'Blog':'✦ Blog','YouTube':'▶ YouTube','Google Ads':'📣 Google Ads','Reddit':'💬 Reddit','X':'𝕏 X/Twitter','Mixed':'⚡ Multi-signal'}[t.signal_type]||t.signal_type) +
+            '</span>' +
+            (t.signal_source ? '<span style="font-size:10px;color:var(--text3);margin-left:8px;">' + t.signal_source.substring(0,80) + '</span>' : '') +
+          '</div>' : '') +
+
         // ── Row 2: Title — bold, the content hook ──
         '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:' + (why?'8px':'10px') + ';">' +
           (t.title || 'Untitled') +
@@ -7376,16 +7439,58 @@ function renderTopicGrid(topics, isStub, publishedCount) {
             t.short_form_hook + '"' +
           '</p>' : '') +
 
-        // ── Row 5: Keyword pill + action button ──
+        // ── Row 4b: YouTube + Ad angles if present ──
+        (t.youtube_title || t.ad_headline ?
+          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">' +
+            (t.youtube_title ? '<div style="background:#FEF2F2;border-radius:4px;padding:5px 10px;flex:1;min-width:0;">' +
+              '<p style="font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.07em;margin-bottom:2px;">▶ YOUTUBE ANGLE</p>' +
+              '<p style="font-size:11px;color:var(--text2);">' + t.youtube_title + '</p>' +
+            '</div>' : '') +
+            (t.ad_headline ? '<div style="background:var(--greenL);border-radius:4px;padding:5px 10px;flex:1;min-width:0;">' +
+              '<p style="font-size:9px;font-weight:700;color:var(--green);letter-spacing:.07em;margin-bottom:2px;">📣 AD HEADLINE</p>' +
+              '<p style="font-size:11px;color:var(--text2);">' + t.ad_headline + '</p>' +
+            '</div>' : '') +
+          '</div>' : '') +
+
+        // ── Row 5: Keyword pill + actions ──
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
           (t.primary_keyword ?
             '<span style="font-size:11px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 9px;font-family:var(--mono);">🔑 ' + t.primary_keyword + '</span>' : '') +
-          // NLP entities if present
           ((t.nlp_entities||[]).slice(0,3).map(function(e){
             return '<span style="font-size:10px;background:var(--g2);color:var(--g5);border-radius:4px;padding:1px 7px;">' + e + '</span>';
           })).join('') +
-          '<button class="btn btn-p btn-s" style="margin-left:auto;font-size:11px;" ' +
-            'onclick="window.createTaskFromTopic(window._v2Topics[' + idx + '])">+ Create task</button>' +
+          '<div style="margin-left:auto;display:flex;gap:5px;">' +
+            '<button class="btn btn-p btn-s" style="font-size:11px;" ' +
+              'onclick="window.createTaskFromTopic(window._v2Topics[' + idx + '])">+ Create task</button>' +
+            '<button class="btn btn-s v2-serp-btn" data-kw="' + (t.primary_keyword||t.title||'').replace(/"/g, '') + '" style="font-size:11px;padding:4px 10px;" title="SERP Intelligence">📊 SERP</button>' +
+            '<button class="btn btn-s v2-bookmark-btn" data-idx="' + idx + '" style="font-size:11px;padding:4px 10px;" title="Bookmark">★</button>' +
+            '<button class="btn btn-s v2-open-refine-btn" data-idx="' + idx + '" style="font-size:11px;padding:4px 10px;">✏ Refine</button>' +
+          '</div>' +
+        '</div>' +
+
+        // ── Refine panel (hidden by default, toggled per card) ──
+        '<div id="v2-refine-' + idx + '" style="display:none;border-top:1px solid var(--border);padding:12px 0 4px;">' +
+          '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Refine this topic</p>' +
+
+          // Preset refine options
+          '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="specific">More specific</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="broad">Broader angle</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="commercial">More commercial</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="comparison">Make it a comparison</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="beginner">Target beginners</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="advanced">Target advanced traders</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="fxify">Lean into FXIFY angle</button>' +
+          '</div>' +
+
+          // Custom AI instruction
+          '<div style="display:flex;gap:6px;align-items:center;">' +
+            '<input type="text" id="v2-custom-refine-' + idx + '" placeholder="Custom instruction... e.g. rewrite for swing traders" ' +
+              'style="flex:1;font-size:12px;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--bg2);color:var(--text);outline:none;" ' +
+              'data-enter-refine="true" />' +
+            '<button class="btn btn-p btn-s v2-refine-custom-btn" data-idx="' + idx + '" style="font-size:11px;white-space:nowrap;">Apply →</button>' +
+          '</div>' +
+          '<div id="v2-refine-loading-' + idx + '" style="display:none;font-size:11px;color:var(--teal);margin-top:6px;font-family:var(--mono);">Refining...</div>' +
         '</div>' +
 
       '</div>';
@@ -8132,6 +8237,51 @@ function v2WireCustomBtn() {
       runKeywordAnalysis();
       return;
     }
+    // Topic refine panel toggle
+    var openRefineBtn = e.target.closest('.v2-open-refine-btn');
+    if (openRefineBtn) {
+      var ridx = parseInt(openRefineBtn.dataset.idx);
+      var panel = document.getElementById('v2-refine-' + ridx);
+      if (panel) {
+        var isOpen = panel.style.display !== 'none';
+        document.querySelectorAll('[id^="v2-refine-"]').forEach(function(p){ if(!p.id.includes('loading')) p.style.display='none'; });
+        document.querySelectorAll('.v2-open-refine-btn').forEach(function(b){ b.textContent='✏ Refine'; });
+        if (!isOpen) { panel.style.display='block'; openRefineBtn.textContent='✕ Close'; }
+      }
+      return;
+    }
+    // SERP Intelligence
+    var serpBtn = e.target.closest('.v2-serp-btn');
+    if (serpBtn) {
+      var kw = serpBtn.dataset.kw;
+      if (kw) runSERPIntelligence(kw);
+      return;
+    }
+    // Bookmark topic
+    var bookmarkBtn = e.target.closest('.v2-bookmark-btn');
+    if (bookmarkBtn) {
+      var bidx = parseInt(bookmarkBtn.dataset.idx);
+      var btopic = window._v2Topics && window._v2Topics[bidx];
+      var bseed  = (document.getElementById('v2-seed')||{}).value || '';
+      if (btopic) {
+        bookmarkTopic(btopic, bseed);
+        bookmarkBtn.textContent = '★';
+        bookmarkBtn.style.color = 'var(--amber)';
+      }
+      return;
+    }
+    // Topic refine preset chips
+    var presetBtn = e.target.closest('.v2-refine-preset-btn');
+    if (presetBtn) {
+      refineTopicPreset(parseInt(presetBtn.dataset.idx), presetBtn.dataset.preset);
+      return;
+    }
+    // Topic custom refine apply
+    var customBtn = e.target.closest('.v2-refine-custom-btn');
+    if (customBtn) {
+      refineTopicCustom(parseInt(customBtn.dataset.idx));
+      return;
+    }
     if (e.target.closest('#an-refresh-btn')) {
       loadAnalytics();
       return;
@@ -8457,6 +8607,13 @@ function init(){
     if (adminTbu) adminTbu.textContent = user.name;
     if (adminTbav) { adminTbav.textContent = user.initials; adminTbav.className = 'tbav' + (user.av ? ' ' + user.av : ''); }
     if (adminCtx) adminCtx.textContent = user.role === 'david' ? 'Manager' : 'Admin';
+    var writerCtx = document.getElementById('writer-ctx-label');
+    if (writerCtx) writerCtx.textContent = user.role === 'hybrid' ? 'Content + Writer' : 'Writer Portal';
+    // Update writer topbar with actual logged-in user
+    var writerTbuName = document.getElementById('writer-tbu-name');
+    var writerTbuAv   = document.getElementById('writer-tbu-av');
+    if (writerTbuName) writerTbuName.textContent = user.name;
+    if (writerTbuAv)   { writerTbuAv.textContent = user.initials; writerTbuAv.className = 'tbav' + (user.av ? ' ' + user.av : ''); }
     // Update writer greeting
     var greetEl = document.getElementById('writer-greeting');
     if (greetEl && user.role === 'writer') {
@@ -8812,6 +8969,14 @@ function init(){
   var ilSearch = document.getElementById('il-search');
   if (ilSearch) ilSearch.addEventListener('input', function(){ renderILPanel(ilSearch.value); });
 
+  // Custom refine input Enter key via event delegation
+  document.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && e.target && e.target.hasAttribute('data-enter-refine')) {
+      var ridx = parseInt(e.target.id.replace('v2-custom-refine-', ''));
+      if (!isNaN(ridx)) refineTopicCustom(ridx);
+    }
+  });
+
   // Internal links refresh
   var ilRefresh = document.getElementById('il-refresh');
   if (ilRefresh) ilRefresh.addEventListener('click', function(){
@@ -9064,6 +9229,14 @@ function renderCompetitorResults(result, liveData, firms) {
 
   // Show detail tabs
   if (detail) detail.style.display = 'block';
+  // Make first tab active by default
+  var firstTab = detail && detail.querySelector('.comp-tab');
+  var firstPane = document.getElementById('comp-tab-opportunities');
+  if (firstTab) { 
+    document.querySelectorAll('.comp-tab').forEach(function(t){ t.classList.remove('active'); t.style.background='transparent'; t.style.color='var(--text3)'; });
+    firstTab.classList.add('active'); firstTab.style.background='var(--tealL)'; firstTab.style.color='var(--teal)';
+  }
+  if (firstPane) firstPane.style.display = 'block';
 
   // Opportunities tab
   var oppPane = document.getElementById('comp-tab-opportunities');
@@ -9122,6 +9295,400 @@ function renderCompetitorResults(result, liveData, firms) {
 
   toast('Competitor analysis complete ✓');
 }
+
+
+
+// ── TOPIC REFINE FUNCTIONS ────────────────────────────────────────────────
+
+function openTopicRefinePanel(idx, btn) {
+  var panel = document.getElementById('v2-refine-' + idx);
+  if (!panel) return;
+  var isOpen = panel.style.display !== 'none';
+  // Close all other panels first
+  document.querySelectorAll('[id^="v2-refine-"]').forEach(function(p) {
+    if (!p.id.includes('loading') && !p.id.includes('custom')) {
+      p.style.display = 'none';
+    }
+  });
+  panel.style.display = isOpen ? 'none' : 'block';
+  if (btn) btn.textContent = isOpen ? '✏ Refine' : '✕ Close';
+}
+window.openTopicRefinePanel = openTopicRefinePanel;
+
+var REFINE_PRESETS = {
+  specific:   'Make this topic much more specific and niche. Target a precise trader scenario rather than a broad concept.',
+  broad:      'Broaden this topic to appeal to a wider audience of traders. Make the angle more universal.',
+  commercial: 'Rewrite this topic with stronger commercial intent. The reader should be comparing options and close to buying.',
+  comparison: 'Turn this into a direct comparison topic. Position FXIFY vs a named competitor.',
+  beginner:   'Rewrite this for complete beginners to prop trading. Assume they have never heard of a funded account.',
+  advanced:   'Rewrite this for experienced traders who have passed challenges before. Skip the basics entirely.',
+  fxify:      'Lean harder into the FXIFY unique angle. Name a specific FXIFY product or rule that wins this topic.',
+};
+
+async function refineTopicPreset(idx, preset) {
+  var topic = window._v2Topics && window._v2Topics[idx];
+  if (!topic) return;
+  var instruction = REFINE_PRESETS[preset] || preset;
+  await _runTopicRefine(idx, topic, instruction);
+}
+window.refineTopicPreset = refineTopicPreset;
+
+async function refineTopicCustom(idx) {
+  var topic = window._v2Topics && window._v2Topics[idx];
+  var input = document.getElementById('v2-custom-refine-' + idx);
+  if (!topic || !input) return;
+  var instruction = input.value.trim();
+  if (!instruction) { v2Toast('Type a custom instruction first'); return; }
+  await _runTopicRefine(idx, topic, instruction);
+}
+window.refineTopicCustom = refineTopicCustom;
+
+async function _runTopicRefine(idx, topic, instruction) {
+  var loadEl = document.getElementById('v2-refine-loading-' + idx);
+  if (loadEl) { loadEl.style.display = 'block'; loadEl.textContent = 'Claude is refining...'; }
+
+  var prompt =
+    'You are a content strategist for FXIFY prop firm. Refine this topic based on the instruction below.\n\n' +
+    'ORIGINAL TOPIC:\n' +
+    'Title: ' + topic.title + '\n' +
+    'Intent: ' + (topic.intent||'') + '\n' +
+    'Primary keyword: ' + (topic.primary_keyword||'') + '\n' +
+    'FXIFY angle: ' + (topic.fxify_angle||'') + '\n' +
+    'Competitor gap: ' + (topic.competitor_gap||'') + '\n' +
+    'Hook: ' + (topic.short_form_hook||'') + '\n\n' +
+    'REFINEMENT INSTRUCTION: ' + instruction + '\n\n' +
+    'FXIFY FACTS: One Phase (no consistency rule, payout on demand), Instant Funding from $19, broker-backed FXPIG 2010, up to 90% split, $40M+ paid.\n\n' +
+    'Return ONLY valid JSON — same structure as the original, fully updated:\n' +
+    '{"title":"refined title","intent":"Commercial|Informational|Transactional","conversion_tier":"1|2|3",' +
+    '"primary_keyword":"refined keyword","short_form_hook":"refined hook","competitor_gap":"refined gap",' +
+    '"fxify_angle":"refined FXIFY angle","why_now":"refined why now","opportunity_score":80}';
+
+  try {
+    var text = await v2Fetch(prompt, 800);
+    var refined = parseJSON(text);
+
+    // Update the topic in the global array
+    window._v2Topics[idx] = Object.assign({}, topic, refined);
+
+    // Re-render just this card
+    var output = document.getElementById('v2-brief-output');
+    if (output) renderTopicGrid(window._v2Topics, false, 0);
+
+    v2Toast('Topic refined ✓');
+  } catch(e) {
+    v2Toast('Refine failed: ' + e.message);
+    if (loadEl) { loadEl.textContent = 'Error: ' + e.message; }
+  }
+
+  if (loadEl) loadEl.style.display = 'none';
+}
+
+
+
+// ── TOPIC HISTORY + BOOKMARKS ────────────────────────────────────────────
+
+async function saveTopicRun(seed, audience, goal, wordcount, topics) {
+  try {
+    await supa.from('topic_runs').insert([{
+      seed:       seed,
+      audience:   audience || 'all',
+      goal:       goal || 'rank',
+      wordcount:  wordcount || '1200',
+      topics:     JSON.stringify(topics),
+      topic_count: topics.length,
+      created_at: new Date().toISOString()
+    }]);
+    console.log('[History] Run saved:', seed, topics.length, 'topics');
+  } catch(e) { console.warn('[History] Save failed:', e.message); }
+}
+window.saveTopicRun = saveTopicRun;
+
+async function bookmarkTopic(topic, seed) {
+  try {
+    // Check if already bookmarked
+    var existing = await supa.from('topic_bookmarks')
+      .select('id').eq('title', topic.title).limit(1);
+    if (existing.data && existing.data.length) {
+      v2Toast('Already bookmarked ✓');
+      return;
+    }
+    await supa.from('topic_bookmarks').insert([{
+      title:           topic.title,
+      primary_keyword: topic.primary_keyword || '',
+      intent:          topic.intent || '',
+      fxify_angle:     topic.fxify_angle || '',
+      competitor_gap:  topic.competitor_gap || '',
+      opportunity_score: topic.opportunity_score || 0,
+      seed:            seed || '',
+      topic_data:      JSON.stringify(topic),
+      created_at:      new Date().toISOString()
+    }]);
+    v2Toast('Bookmarked ✓');
+  } catch(e) { v2Toast('Bookmark failed: ' + e.message); }
+}
+window.bookmarkTopic = bookmarkTopic;
+
+async function loadTopicHistory() {
+  var output = document.getElementById('v2-brief-output');
+  if (!output) return;
+  output.innerHTML = '<div style="padding:20px;text-align:center;"><div class="loader-spinner"></div></div>';
+
+  try {
+    var [runsRes, bookmarksRes] = await Promise.all([
+      supa.from('topic_runs').select('*').order('created_at', {ascending:false}).limit(30),
+      supa.from('topic_bookmarks').select('*').order('created_at', {ascending:false}).limit(50)
+    ]);
+
+    var runs      = runsRes.data || [];
+    var bookmarks = bookmarksRes.data || [];
+
+    var html =
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">' +
+        '<div style="display:flex;gap:0;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px;">' +
+          '<button class="hist-tab-btn active" data-htab="runs" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg3);color:var(--teal);">History (' + runs.length + ')</button>' +
+          '<button class="hist-tab-btn" data-htab="bookmarks" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">Bookmarks (' + bookmarks.length + ')</button>' +
+        '</div>' +
+        '<button class="btn btn-s" onclick="window.loadTopicHistory()" style="font-size:11px;">↻ Refresh</button>' +
+      '</div>' +
+
+      // RUNS TAB
+      '<div id="hist-runs-pane">' +
+        (runs.length ? runs.map(function(r) {
+          var date = new Date(r.created_at).toLocaleDateString('en-GB', {day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+          var topics = [];
+          try { topics = JSON.parse(r.topics || '[]'); } catch(e) {}
+          return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;">' +
+            '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">' +
+              '<div style="flex:1;">' +
+                '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">🔑 ' + r.seed + '</p>' +
+                '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
+                  '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">' + r.topic_count + ' topics</span>' +
+                  '<span style="font-size:10px;color:var(--text3);">·</span>' +
+                  '<span style="font-size:10px;color:var(--text3);">' + (r.audience||'all') + '</span>' +
+                  '<span style="font-size:10px;color:var(--text3);">·</span>' +
+                  '<span style="font-size:10px;color:var(--text3);">' + date + '</span>' +
+                '</div>' +
+                '<div style="margin-top:8px;display:flex;gap:4px;flex-wrap:wrap;">' +
+                  topics.slice(0,3).map(function(t) {
+                    return '<span style="font-size:10px;background:var(--bg3);color:var(--text2);border-radius:4px;padding:2px 8px;">' + (t.title||'').substring(0,50) + '</span>';
+                  }).join('') +
+                  (topics.length > 3 ? '<span style="font-size:10px;color:var(--text3);">+' + (topics.length-3) + ' more</span>' : '') +
+                '</div>' +
+              '</div>' +
+              '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+                '<button class="btn btn-p btn-s hist-rerun-btn" data-seed="' + (r.seed||'').replace(/"/g,'&quot;') + '" data-audience="' + (r.audience||'all') + '" data-goal="' + (r.goal||'rank') + '" data-wc="' + (r.wordcount||'1200') + '" style="font-size:11px;">Re-run →</button>' +
+                '<button class="btn btn-s hist-restore-btn" data-topics="' + encodeURIComponent(r.topics||'[]') + '" style="font-size:11px;">View topics</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No analysis history yet — run a topic search to start tracking.</p>') +
+      '</div>' +
+
+      // BOOKMARKS TAB
+      '<div id="hist-bookmarks-pane" style="display:none;">' +
+        (bookmarks.length ? bookmarks.map(function(b) {
+          var topic = {}; try { topic = JSON.parse(b.topic_data||'{}'); } catch(e) {}
+          return '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;">' +
+            '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">' +
+              '<div style="flex:1;">' +
+                '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">' + b.title + '</p>' +
+                '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
+                  (b.primary_keyword ? '<span style="font-size:10px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 8px;font-family:var(--mono);">🔑 ' + b.primary_keyword + '</span>' : '') +
+                  (b.intent ? '<span style="font-size:10px;background:var(--bg3);color:var(--text3);border-radius:4px;padding:2px 8px;">' + b.intent + '</span>' : '') +
+                  '<span style="font-size:10px;color:var(--muted);">Saved from: ' + (b.seed||'—') + '</span>' +
+                '</div>' +
+                (b.fxify_angle ? '<p style="font-size:11px;color:var(--teal);line-height:1.5;">' + b.fxify_angle + '</p>' : '') +
+              '</div>' +
+              '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+                '<button class="btn btn-p btn-s" onclick="window.createTaskFromTopic(' + JSON.stringify(topic).replace(/"/g,'&quot;') + ')" style="font-size:11px;">+ Create task</button>' +
+                '<button class="btn btn-s hist-delete-bookmark-btn" data-id="' + b.id + '" style="font-size:11px;color:var(--urgent);">✕</button>' +
+              '</div>' +
+            '</div>' +
+          '</div>';
+        }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No bookmarks yet — click ★ on any topic card to bookmark it.</p>') +
+      '</div>';
+
+    output.innerHTML = html;
+
+    // Wire tab switching
+    output.querySelectorAll('.hist-tab-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        output.querySelectorAll('.hist-tab-btn').forEach(function(b) {
+          b.style.background='transparent'; b.style.color='var(--text3)'; b.classList.remove('active');
+        });
+        btn.style.background='var(--bg3)'; btn.style.color='var(--teal)'; btn.classList.add('active');
+        document.getElementById('hist-runs-pane').style.display  = btn.dataset.htab==='runs' ? 'block' : 'none';
+        document.getElementById('hist-bookmarks-pane').style.display = btn.dataset.htab==='bookmarks' ? 'block' : 'none';
+      });
+    });
+
+    // Wire re-run buttons
+    output.querySelectorAll('.hist-rerun-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        var seedEl = document.getElementById('v2-seed');
+        var audEl  = document.getElementById('v2-audience');
+        var goalEl = document.getElementById('v2-goal');
+        var wcEl   = document.getElementById('v2-wordcount');
+        if (seedEl) seedEl.value = btn.dataset.seed;
+        if (audEl)  audEl.value  = btn.dataset.audience;
+        if (goalEl) goalEl.value = btn.dataset.goal;
+        if (wcEl)   wcEl.value   = btn.dataset.wc;
+        runTopicIdeas();
+      });
+    });
+
+    // Wire restore buttons
+    output.querySelectorAll('.hist-restore-btn').forEach(function(btn) {
+      btn.addEventListener('click', function() {
+        try {
+          var topics = JSON.parse(decodeURIComponent(btn.dataset.topics));
+          window._v2Topics = topics;
+          renderTopicGrid(topics, false, 0);
+        } catch(e) { v2Toast('Could not restore: ' + e.message); }
+      });
+    });
+
+    // Wire delete bookmark buttons
+    output.querySelectorAll('.hist-delete-bookmark-btn').forEach(function(btn) {
+      btn.addEventListener('click', async function() {
+        await supa.from('topic_bookmarks').delete().eq('id', btn.dataset.id);
+        loadTopicHistory();
+      });
+    });
+
+  } catch(e) {
+    output.innerHTML = '<p style="color:var(--urgent);padding:20px;">Error: ' + e.message + '</p>';
+  }
+}
+window.loadTopicHistory = loadTopicHistory;
+
+
+
+// ── SERP INTELLIGENCE — what's working in top 5 ────────────────────────────
+async function runSERPIntelligence(keyword) {
+  var output = document.getElementById('v2-brief-output');
+  if (!output) return;
+
+  v2ShowLoader(output, [
+    'Pulling top 5 ranking pages for "' + keyword + '"...',
+    'Analysing title formulas and content angles...',
+    'Checking which prop firms rank and what they do...',
+    'Finding gaps FXIFY can exploit...'
+  ]);
+
+  try {
+    // Step 1: Get SERP data
+    var serpData = await v2SerpResearch(keyword);
+
+    // Step 2: Ask Claude to analyse the SERP pattern
+    var serpSummary = serpData.slice(0,8).map(function(r,i) {
+      return (i+1) + '. ' + r.title + (r.url ? ' | ' + r.url.replace(/https?:\/\/(www\.)?/,'').split('/')[0] : '') + (r.description ? '\n   ' + r.description.substring(0,100) : '');
+    }).join('\n');
+
+    var prompt =
+      'You are a content strategist for FXIFY prop firm. Analyse these top Google results for "' + keyword + '".\n\n' +
+      'SERP DATA:\n' + (serpSummary || 'No live SERP data — use training knowledge for this keyword.') + '\n\n' +
+      'Analyse:\n' +
+      '1. TITLE FORMULA — what pattern do all top results follow? (e.g. "Best X for Y in 2026", "How to X without Y")\n' +
+      '2. CONTENT ANGLE — what argument do they all make? What do they ALL skip?\n' +
+      '3. PROP FIRM PRESENCE — which prop firms rank? What exactly do they cover?\n' +
+      '4. FXIFY GAP — the one angle NO competitor covers that FXIFY can own completely\n' +
+      '5. WINNING TITLE — write the exact H1 FXIFY should use to outrank these\n' +
+      '6. YOUTUBE ANGLE — what video title would dominate for this keyword\n' +
+      '7. AD ANGLE — what Google ad headline would convert for this keyword\n\n' +
+      'Return ONLY valid JSON:\n' +
+      '{"keyword":"' + keyword + '",' +
+      '"title_formula":"the pattern all top results follow",' +
+      '"what_they_all_cover":["topic1","topic2","topic3"],' +
+      '"what_none_cover":["gap1","gap2","gap3"],' +
+      '"prop_firms_ranking":[{"firm":"name","angle":"what they cover","weakness":"what they miss"}],' +
+      '"fxify_gap":"the specific angle FXIFY owns",' +
+      '"winning_title":"exact H1 for FXIFY to rank #1",' +
+      '"winning_meta":"155 char meta description",' +
+      '"youtube_angle":"exact YouTube video title",' +
+      '"ad_headline":"30 char Google Ads headline",' +
+      '"ad_description":"90 char Google Ads description",' +
+      '"opportunity_score":85}';
+
+    var text   = await v2Fetch(prompt, 1500);
+    var result = parseJSON(text);
+    renderSERPIntelligence(result, serpData);
+
+  } catch(e) {
+    output.innerHTML = '<p style="color:var(--urgent);padding:16px;">Error: ' + e.message + '</p>';
+  }
+}
+window.runSERPIntelligence = runSERPIntelligence;
+
+function renderSERPIntelligence(result, serpData) {
+  var output = document.getElementById('v2-brief-output');
+  if (!output) return;
+
+  var scoreColor = result.opportunity_score >= 75 ? 'var(--green)' : result.opportunity_score >= 50 ? 'var(--amber)' : 'var(--urgent)';
+
+  var html =
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">' +
+      '<p style="font-size:14px;font-weight:700;color:var(--text);">SERP Intelligence — "' + result.keyword + '"</p>' +
+      '<span style="font-size:18px;font-weight:800;color:' + scoreColor + ';font-family:var(--mono);">' + result.opportunity_score + '</span>' +
+    '</div>' +
+
+    // What's working
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
+      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">' +
+        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Title formula in top 5</p>' +
+        '<p style="font-size:13px;color:var(--text);font-style:italic;">"' + result.title_formula + '"</p>' +
+      '</div>' +
+      '<div style="background:var(--urgentL);border:1px solid rgba(239,68,68,.15);border-radius:var(--rl);padding:14px 16px;">' +
+        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--urgent);margin-bottom:8px;">Gap — none of them cover</p>' +
+        (result.what_none_cover||[]).map(function(g){ return '<p style="font-size:12px;color:var(--text2);padding:2px 0;">· ' + g + '</p>'; }).join('') +
+      '</div>' +
+    '</div>' +
+
+    // Prop firms ranking
+    (result.prop_firms_ranking && result.prop_firms_ranking.length ?
+      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:12px;">' +
+        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;">Prop firms in top 5</p>' +
+        result.prop_firms_ranking.map(function(f) {
+          return '<div style="display:flex;gap:12px;padding:6px 0;border-bottom:0.5px solid var(--border);">' +
+            '<p style="font-size:12px;font-weight:600;color:var(--text);min-width:100px;">' + f.firm + '</p>' +
+            '<p style="font-size:12px;color:var(--text2);flex:1;">' + f.angle + '</p>' +
+            '<p style="font-size:11px;color:var(--urgent);">Gap: ' + f.weakness + '</p>' +
+          '</div>';
+        }).join('') +
+      '</div>' : '') +
+
+    // FXIFY winning angle
+    '<div style="background:var(--tealL);border:1px solid rgba(37,99,235,.2);border-radius:var(--rl);padding:14px 16px;margin-bottom:12px;">' +
+      '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:6px;">FXIFY wins with</p>' +
+      '<p style="font-size:13px;color:var(--teal);line-height:1.55;">' + result.fxify_gap + '</p>' +
+    '</div>' +
+
+    // Output package
+    '<div style="display:grid;gap:8px;">' +
+      renderSERPRow('Winning H1', result.winning_title, 'var(--text)', true) +
+      renderSERPRow('Meta description', result.winning_meta, 'var(--text2)', false) +
+      renderSERPRow('YouTube title', result.youtube_angle, 'var(--urgent)', false) +
+      renderSERPRow('Google Ads headline', result.ad_headline, 'var(--green)', false) +
+      renderSERPRow('Ad description', result.ad_description, 'var(--text3)', false) +
+    '</div>' +
+
+    // Back button
+    '<div style="margin-top:16px;">' +
+      '<button class="btn btn-s" onclick="if(window._v2Topics) renderTopicGrid(window._v2Topics, false, 0)">← Back to topics</button>' +
+    '</div>';
+
+  output.innerHTML = html;
+}
+
+function renderSERPRow(label, value, color, bold) {
+  if (!value) return '';
+  return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;display:flex;gap:12px;align-items:baseline;">' +
+    '<span style="font-size:10px;font-weight:700;color:var(--text3);min-width:120px;flex-shrink:0;">' + label.toUpperCase() + '</span>' +
+    '<span style="font-size:' + (bold?'14px':'12px') + ';' + (bold?'font-weight:600;':'') + 'color:' + color + ';flex:1;">' + value + '</span>' +
+    '<button class="btn btn-s" style="font-size:10px;padding:2px 8px;flex-shrink:0;" onclick="navigator.clipboard.writeText(' + JSON.stringify(value) + ')">Copy</button>' +
+  '</div>';
+}
+window.renderSERPRow = renderSERPRow;
 
 
 })();
