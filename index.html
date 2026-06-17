@@ -449,7 +449,9 @@ tr:last-child td{border-bottom:none;}
       <div class="ndiv"></div>
       <div class="ngrp">Insights</div>
       <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico">▲</span>Analytics</div>
-      <div class="nlink" data-pg="a-competitors" data-sc="admin"><span class="nico">◎</span>Competitors</div>
+      <div class="nlink" data-pg="a-keywords" data-sc="admin"><span class="nico">🔑</span>Keyword Analysis</div>
+      <div class="nlink" data-pg="a-keywords" data-sc="admin"><span class="nico">🔑</span>Keywords</div>
+      <div class="nlink" data-pg="a-competitors" data-sc="admin"><span class="nico">📡</span>Competitor Pulse</div>
 
       <div class="ndiv"></div>
       <div class="ngrp">Settings</div>
@@ -782,6 +784,68 @@ tr:last-child td{border-bottom:none;}
 
       <!-- ANALYTICS -->
       <div id="a-analytics" class="pg">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+          <div>
+            <div class="pgh">Analytics</div>
+            <p class="pgs" style="margin-bottom:0;">Pipeline velocity, content output, keyword rank movement, and gap coverage. Live from ClickUp and DataForSEO.</p>
+          </div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;">
+            <button class="btn btn-s" id="an-refresh-btn">↻ Refresh</button>
+            <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">Blog ↗</a>
+            <a href="https://app.clickup.com/9005041798/v/li/901603213575" target="_blank" class="btn btn-s" style="text-decoration:none;">Video ↗</a>
+          </div>
+        </div>
+
+        <!-- PIPELINE STATS -->
+        <div class="shead" style="margin-bottom:10px;">Pipeline — live</div>
+        <div class="cu-stats" style="margin-bottom:24px;">
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#7C3AED;"></span><span class="cu-stat-lbl">Briefed</span></div><div class="cu-stat-val" id="cu-st-todo">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#2563EB;"></span><span class="cu-stat-lbl">Drafting</span></div><div class="cu-stat-val" id="cu-st-prog">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#D97706;"></span><span class="cu-stat-lbl">In review</span></div><div class="cu-stat-val" id="cu-st-review">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#059669;"></span><span class="cu-stat-lbl">Live</span></div><div class="cu-stat-val" id="cu-st-done">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#6B7280;"></span><span class="cu-stat-lbl">Published articles</span></div><div class="cu-stat-val" id="an-published">—</div></div>
+        </div>
+
+        <!-- VELOCITY -->
+        <div class="shead" style="margin-bottom:10px;">Pipeline velocity</div>
+        <div id="an-velocity" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:24px;">
+          <p style="color:var(--text3);font-size:13px;">Refresh to load velocity data.</p>
+        </div>
+
+        <!-- KEYWORD TRACKING -->
+        <div class="shead" style="margin-bottom:10px;">Keyword rank tracking</div>
+        <div id="an-keywords" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:24px;">
+          <p style="color:var(--text3);font-size:13px;margin-bottom:12px;">Track your key terms. Run from Keyword Analysis page — results appear here.</p>
+          <div id="an-kw-tracked" style="display:flex;flex-direction:column;gap:8px;">
+            <p style="font-size:12px;color:var(--muted);">No tracked keywords yet. Run a keyword analysis to start tracking.</p>
+          </div>
+        </div>
+
+        <!-- CONTENT COVERAGE -->
+        <div class="shead" style="margin-bottom:10px;">Content gap coverage</div>
+        <div id="an-coverage" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:24px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <p style="font-size:13px;font-weight:500;color:var(--text);">FXIFY published articles</p>
+            <span style="font-size:13px;font-weight:700;color:var(--teal);" id="an-art-count">—</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+            <p style="font-size:13px;color:var(--text2);">Topics in pipeline</p>
+            <span style="font-size:13px;font-weight:600;color:var(--text);" id="an-pipe-count">—</span>
+          </div>
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <p style="font-size:13px;color:var(--text2);">Competitor gaps identified</p>
+            <span style="font-size:13px;font-weight:600;color:var(--text);" id="an-gap-count">—</span>
+          </div>
+        </div>
+
+        <!-- RECENT LIVE POSTS -->
+        <div class="shead" style="margin-bottom:10px;">Recent live posts</div>
+        <div id="an-live-posts" style="display:grid;gap:8px;">
+          <p style="font-size:12px;color:var(--muted);">Refresh to load.</p>
+        </div>
+
+      </div>
+id="a-analytics" class="pg">
         <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
           <div>
             <div class="pgh" style="margin-bottom:2px;">Analytics</div>
@@ -1018,10 +1082,42 @@ tr:last-child td{border-bottom:none;}
       <!-- DAVID APPROVAL (accessible when David uses admin screen) -->
       
       <!-- COMPETITOR ANALYSIS PAGE -->
-      <div id="a-competitors" class="pg">
+      <div id="a-keywords" class="pg">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
           <div>
-            <div class="pgh">Competitor Intelligence</div>
+            <div class="pgh">Keyword Analysis</div>
+            <p class="pgs" style="margin-bottom:0;">Run keyword research using DataForSEO. Track volume, KD, CPC, and trends. Find rising opportunities before competitors do.</p>
+          </div>
+          <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
+            <input id="kw-seed-input" type="text" placeholder="e.g. prop firm challenge, funded trading 2026" style="width:320px;font-size:13px;"/>
+            <button class="btn btn-p" id="kw-run-btn" style="white-space:nowrap;">🔍 Analyse keywords</button>
+          </div>
+        </div>
+
+        <!-- SAVED KEYWORD SETS -->
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px;" id="kw-saved-chips">
+          <span style="font-size:11px;color:var(--text3);align-self:center;">Quick run:</span>
+          <button class="chip" onclick="document.getElementById('kw-seed-input').value='prop firm 2026';document.getElementById('kw-run-btn').click()">prop firm 2026</button>
+          <button class="chip" onclick="document.getElementById('kw-seed-input').value='funded trading account';document.getElementById('kw-run-btn').click()">funded trading account</button>
+          <button class="chip" onclick="document.getElementById('kw-seed-input').value='FXIFY review';document.getElementById('kw-run-btn').click()">FXIFY review</button>
+          <button class="chip" onclick="document.getElementById('kw-seed-input').value='instant funding prop firm';document.getElementById('kw-run-btn').click()">instant funding</button>
+          <button class="chip" onclick="document.getElementById('kw-seed-input').value='prop firm no consistency rule';document.getElementById('kw-run-btn').click()">no consistency rule</button>
+        </div>
+
+        <!-- RESULTS -->
+        <div id="kw-output">
+          <div style="text-align:center;padding:48px 24px;color:var(--text3);">
+            <p style="font-size:28px;margin-bottom:12px;opacity:.3;">🔑</p>
+            <p style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:4px;">Enter a keyword to start</p>
+            <p style="font-size:12px;">Uses DataForSEO — returns volume, KD, CPC, trend, and related keyword clusters</p>
+          </div>
+        </div>
+      </div>
+
+<div id="a-competitors" class="pg">
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
+          <div>
+            <div class="pgh">Competitor Pulse</div>
             <p class="pgs" style="margin-bottom:0;">Live research on FTMO, FundedNext, Apex, Topstep, The5ers and E8. Content gaps, keyword gaps, recent moves, strategic opportunities. Powered by Claude web search.</p>
           </div>
           <button class="btn btn-p btn-s" id="comp-run-btn" style="font-size:13px;">⚡ Run analysis</button>
@@ -1102,38 +1198,81 @@ tr:last-child td{border-bottom:none;}
     </nav>
     <div class="ma">
       <div id="w-drafts" class="pg active">
-        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;margin-bottom:20px;">
+
+        <!-- ── GREETING + STATS ────────────────────────── -->
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:16px;margin-bottom:24px;">
           <div>
-            <p style="font-size:9px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;font-family:var(--mono);" id="greet">Good morning</p>
-            <h1 style="font-size:22px;font-weight:700;color:var(--text);margin-bottom:0;letter-spacing:-0.02em;" id="writer-greeting">Your assignments</h1>
+            <p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;font-family:var(--mono);" id="greet">Good morning</p>
+            <h1 style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:0;letter-spacing:-.4px;" id="writer-greeting">Your assignments</h1>
           </div>
           <button class="btn btn-s" onclick="loadWriterDrafts()">↻ Refresh</button>
         </div>
 
-        <!-- HOW IT WORKS — simple 3 step -->
-        <div style="background:var(--bg2);border:1px solid rgba(29,155,240,0.15);border-radius:var(--rl);padding:14px 18px;margin-bottom:20px;display:flex;gap:24px;flex-wrap:wrap;align-items:center;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
-            <span style="font-size:13px;color:var(--text2);">Open your brief below</span>
+        <!-- ── WRITER STATS ROW ───────────────────────── -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:10px;margin-bottom:24px;">
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">
+            <p style="font-size:24px;font-weight:700;color:var(--teal);letter-spacing:-.5px;line-height:1;" id="ws-active">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:4px;">Active tasks</p>
           </div>
-          <span style="color:var(--text3);font-size:16px;">→</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
-            <span style="font-size:13px;color:var(--text2);">Copy it to Google Docs &amp; write</span>
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">
+            <p style="font-size:24px;font-weight:700;color:var(--green);letter-spacing:-.5px;line-height:1;" id="ws-done">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:4px;">Published</p>
           </div>
-          <span style="color:var(--text3);font-size:16px;">→</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#000;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
-            <span style="font-size:13px;color:var(--text2);">Submit your Doc link when done</span>
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">
+            <p style="font-size:24px;font-weight:700;color:var(--amber);letter-spacing:-.5px;line-height:1;" id="ws-overdue">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:4px;">Overdue</p>
+          </div>
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">
+            <p style="font-size:24px;font-weight:700;color:var(--brand);letter-spacing:-.5px;line-height:1;" id="ws-streak">—</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:4px;">Day streak</p>
           </div>
         </div>
 
-        <!-- TASK LIST — from ClickUp -->
+        <!-- ── ACTIVITY CHART ────────────────────────── -->
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:20px;">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+            <p style="font-size:13px;font-weight:600;color:var(--text);">Output this month</p>
+            <span style="font-size:11px;color:var(--text3);font-family:var(--mono);" id="ws-month-label">June 2026</span>
+          </div>
+          <canvas id="ws-chart" height="70" style="width:100%;"></canvas>
+          <div style="display:flex;justify-content:space-between;margin-top:6px;">
+            <span style="font-size:10px;color:var(--muted);">Week 1</span>
+            <span style="font-size:10px;color:var(--muted);">Week 2</span>
+            <span style="font-size:10px;color:var(--muted);">Week 3</span>
+            <span style="font-size:10px;color:var(--muted);">Week 4</span>
+          </div>
+        </div>
+
+        <!-- ── STATUS PIPELINE ───────────────────────── -->
+        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 20px;margin-bottom:20px;">
+          <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:12px;">Your pipeline</p>
+          <div style="display:flex;align-items:center;gap:0;" id="ws-pipeline">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- ── HOW IT WORKS ──────────────────────────── -->
+        <div style="background:var(--tealL);border:1px solid var(--tealG);border-radius:var(--rl);padding:12px 18px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
+            <span style="font-size:13px;color:var(--text2);">Read your brief below</span>
+          </div>
+          <span style="color:var(--border2);">→</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
+            <span style="font-size:13px;color:var(--text2);">Write in Google Docs</span>
+          </div>
+          <span style="color:var(--border2);">→</span>
+          <div style="display:flex;align-items:center;gap:8px;">
+            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
+            <span style="font-size:13px;color:var(--text2);">Click "Set for review" when done</span>
+          </div>
+        </div>
+
+        <!-- ── TASK LIST ─────────────────────────────── -->
         <div id="w-drafts-list" style="display:grid;gap:10px;">
           <p style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center;">Loading your tasks...</p>
         </div>
-
-</div>
 
       </div>
       <div id="w-submitted" class="pg">
@@ -1613,20 +1752,7 @@ tr:last-child td{border-bottom:none;}
 
 <script>// FXIFY Content Engine v2 — build 2026-06-17-v1781717320
 
-// ── FIRECRAWL DISABLED — key expired, all calls return empty immediately ──────
-var _nativeFetch = window.fetch;
-window.fetch = function(url, opts) {
-  if (typeof url === 'string' && url.includes('firecrawl.dev')) {
-    console.log('[Firecrawl] Intercepted — key expired, returning empty stub');
-    return Promise.resolve({
-      ok: false, status: 403,
-      json: function() { return Promise.resolve({ success: false, data: null }); },
-      text: function() { return Promise.resolve(''); }
-    });
-  }
-  return _nativeFetch.apply(this, arguments);
-};
-
+// Firecrawl active — key updated
 
 (function(){
 
@@ -2996,16 +3122,13 @@ async function loadWriterDrafts() {
   if (!list) return;
   list.innerHTML = '<p style="font-size:13px;color:var(--text3);padding:20px 0;text-align:center;">Loading tasks from ClickUp...</p>';
 
-  // Determine which member ID to filter by
-  var email = currentWriterEmail || (currentUser && currentUser.email) || '';
+  // Match writer by email or name
+  var email  = currentWriterEmail || (currentUser && currentUser.email) || '';
   var member = CU.members.find(function(m){ return m.email.toLowerCase() === email.toLowerCase(); });
-
-  // Fallback: try matching by name if email not found
   if (!member && currentUser && currentUser.name) {
-    var nameLower = currentUser.name.toLowerCase();
+    var nl = currentUser.name.toLowerCase();
     member = CU.members.find(function(m){
-      return m.username.toLowerCase() === nameLower ||
-             m.username.toLowerCase().includes(nameLower.split(' ')[0]);
+      return m.username.toLowerCase() === nl || m.username.toLowerCase().includes(nl.split(' ')[0]);
     });
   }
   if (!member) {
@@ -3013,96 +3136,226 @@ async function loadWriterDrafts() {
     return;
   }
 
-  // Pull all blog tasks, filter to this writer
   var allTasks = await cuGetTasks();
-  var tasks = allTasks.filter(function(t) {
+  var active   = allTasks.filter(function(t) {
     return (t.assignees||[]).some(function(a){ return a.id === member.id; }) &&
            !['published','completed','canceled'].includes((t.status&&t.status.status)||'');
   });
+  var published = allTasks.filter(function(t) {
+    return (t.assignees||[]).some(function(a){ return a.id === member.id; }) &&
+           ['published','completed'].includes((t.status&&t.status.status)||'');
+  });
+  var overdue = active.filter(function(t){ return t.due_date && parseInt(t.due_date) < Date.now(); });
+
+  // ── Populate stats ────────────────────────────────────
+  var set = function(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; };
+  set('ws-active',  active.length);
+  set('ws-done',    published.length);
+  set('ws-overdue', overdue.length);
+  set('ws-streak',  published.length >= 4 ? '🔥' + Math.min(published.length, 12) : published.length);
 
   var nb = document.getElementById('nb-wdrafts');
-  if (nb) nb.textContent = tasks.length || '';
+  if (nb) nb.textContent = active.length || '';
 
-  if (!tasks.length) {
-    list.innerHTML = '<p style="font-size:13px;color:var(--text3);padding:40px 0;text-align:center;">No active tasks assigned to you in ClickUp.</p>';
+  // ── Draw activity chart ───────────────────────────────
+  var canvas = document.getElementById('ws-chart');
+  if (canvas && canvas.getContext) {
+    var ctx = canvas.getContext('2d');
+    canvas.width = canvas.offsetWidth || 600;
+    canvas.height = 70;
+
+    // Group published tasks by week of current month
+    var now   = new Date();
+    var weeks = [0, 0, 0, 0];
+    published.forEach(function(t) {
+      if (!t.date_closed) return;
+      var d = new Date(parseInt(t.date_closed));
+      if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return;
+      var week = Math.min(Math.floor((d.getDate() - 1) / 7), 3);
+      weeks[week]++;
+    });
+
+    // Also count active tasks per week (by creation date)
+    var activeWeeks = [0, 0, 0, 0];
+    active.forEach(function(t) {
+      if (!t.date_created) return;
+      var d = new Date(parseInt(t.date_created));
+      if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return;
+      var week = Math.min(Math.floor((d.getDate() - 1) / 7), 3);
+      activeWeeks[week]++;
+    });
+
+    var maxVal = Math.max.apply(null, weeks.concat(activeWeeks).concat([1]));
+    var W = canvas.width, H = 70, pad = 4, barW = (W - pad*5) / 8;
+
+    ctx.clearRect(0, 0, W, H);
+
+    // Draw baseline
+    ctx.strokeStyle = 'rgba(148,163,184,0.2)';
+    ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(0, H-1); ctx.lineTo(W, H-1); ctx.stroke();
+
+    // Draw bars for each week
+    for (var i = 0; i < 4; i++) {
+      var x = pad + i * (barW * 2 + pad * 2);
+
+      // Published bar (green)
+      var ph = Math.max(weeks[i] / maxVal * (H - 10), weeks[i] > 0 ? 4 : 0);
+      ctx.fillStyle = '#059669';
+      ctx.beginPath();
+      ctx.roundRect(x, H - ph - 1, barW, ph, [3, 3, 0, 0]);
+      ctx.fill();
+
+      // Active bar (blue)
+      var ah = Math.max(activeWeeks[i] / maxVal * (H - 10), activeWeeks[i] > 0 ? 4 : 0);
+      ctx.fillStyle = '#2563EB';
+      ctx.globalAlpha = 0.35;
+      ctx.beginPath();
+      ctx.roundRect(x + barW + 2, H - ah - 1, barW, ah, [3, 3, 0, 0]);
+      ctx.fill();
+      ctx.globalAlpha = 1;
+
+      // Value label
+      if (weeks[i] > 0) {
+        ctx.fillStyle = '#059669';
+        ctx.font = '700 10px system-ui';
+        ctx.textAlign = 'center';
+        ctx.fillText(weeks[i], x + barW/2, H - ph - 5);
+      }
+    }
+
+    // Legend
+    ctx.font = '10px system-ui';
+    ctx.fillStyle = '#059669';
+    ctx.textAlign = 'left';
+    ctx.fillText('■ Published', 0, 10);
+    ctx.fillStyle = '#2563EB';
+    ctx.globalAlpha = 0.6;
+    ctx.fillText('■ Active', 72, 10);
+    ctx.globalAlpha = 1;
+  }
+
+  // ── Pipeline bar ─────────────────────────────────────
+  var pipe = document.getElementById('ws-pipeline');
+  if (pipe && active.length) {
+    var statusGroups = {};
+    active.forEach(function(t) {
+      var s = (t.status && t.status.status) || 'to do';
+      statusGroups[s] = (statusGroups[s] || 0) + 1;
+    });
+    pipe.innerHTML = Object.keys(statusGroups).map(function(s) {
+      var col = (CU.statuses.find(function(st){ return st.status === s; })||{}).color || '#475569';
+      var pct = Math.round((statusGroups[s] / active.length) * 100);
+      return '<div title="' + s + ': ' + statusGroups[s] + '" style="height:8px;flex:' + pct + ';background:' + col + ';min-width:4px;border-radius:2px;margin-right:2px;" ></div>';
+    }).join('') +
+    '<div style="margin-left:12px;font-size:11px;color:var(--text3);white-space:nowrap;">' + active.length + ' tasks</div>';
+  }
+
+  // ── No tasks ─────────────────────────────────────────
+  if (!active.length) {
+    list.innerHTML =
+      '<div style="text-align:center;padding:48px 24px;">' +
+        '<p style="font-size:32px;margin-bottom:12px;">✓</p>' +
+        '<p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">All clear!</p>' +
+        '<p style="font-size:13px;color:var(--text3);">No active tasks assigned to you right now.</p>' +
+      '</div>';
     return;
   }
 
-  window._writerTasks = tasks;
+  window._writerTasks = active;
 
-  list.innerHTML = tasks.map(function(t) {
-    var status     = (t.status && t.status.status) || 'to do';
+  // ── Build task cards ─────────────────────────────────
+  list.innerHTML = active.map(function(t, cardIdx) {
+    var status      = (t.status && t.status.status) || 'to do';
     var statusColor = (CU.statuses.find(function(s){ return s.status === status; })||{}).color || '#475569';
-    var due        = t.due_date ? new Date(parseInt(t.due_date)).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
-    var isOverdue  = t.due_date && parseInt(t.due_date) < Date.now();
+    var due         = t.due_date ? new Date(parseInt(t.due_date)).toLocaleDateString('en-GB',{day:'numeric',month:'short'}) : '';
+    var isOverdue   = t.due_date && parseInt(t.due_date) < Date.now();
 
-    // Get primary keyword from custom fields
-    var pkw = '';
-    (t.custom_fields||[]).forEach(function(cf){
-      if (cf.id === CU.fields.primaryKeyword.id && cf.value) pkw = cf.value;
+    // Custom fields
+    var pkw = '', draftUrl = '', hook = '', gap = '', angle = '', wc = '', intent = '';
+    (t.custom_fields||[]).forEach(function(cf) {
+      if (cf.id === CU.fields.primaryKeyword.id && cf.value) pkw     = cf.value;
+      if (cf.id === CU.fields.draft.id          && cf.value) draftUrl = cf.value;
     });
 
-    // Get draft URL if already saved
-    var draftUrl = '';
-    (t.custom_fields||[]).forEach(function(cf){
-      if (cf.id === CU.fields.draft.id && cf.value) draftUrl = cf.value;
-    });
+    // Parse brief from task description if JSON
+    try {
+      var desc = t.description || '';
+      var jsonStart = desc.indexOf('{');
+      if (jsonStart >= 0) {
+        var brief = JSON.parse(desc.slice(jsonStart));
+        hook   = brief.short_form_hook  || brief.hook  || '';
+        gap    = brief.competitor_gap   || brief.gap   || '';
+        angle  = brief.fxify_angle      || brief.angle || '';
+        intent = brief.intent           || '';
+        wc     = brief.word_count       || '';
+      }
+    } catch(e) {}
 
-    // Does this task have brief data in Supabase?
-    var hasBrief = false;
+    // Priority colour
+    var pri = (t.priority && t.priority.color) || 'transparent';
 
-    return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 18px;" data-taskid="' + t.id + '">' +
+    return '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ' + (isOverdue?'var(--urgent)':pri!=='transparent'?pri:statusColor) + ';border-radius:var(--rl);overflow:hidden;" data-taskid="' + t.id + '">' +
 
-      // Header row
-      '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">' +
-        '<div style="flex:1;min-width:0;">' +
-          '<p style="font-size:15px;font-weight:600;color:var(--text);margin-bottom:4px;line-height:1.3;">' + (t.name||'Untitled') + '</p>' +
-          '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
-            '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:' + statusColor + '22;color:' + statusColor + ';font-family:var(--mono);">' + status.toUpperCase() + '</span>' +
-            (pkw ? '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">🔑 ' + pkw + '</span>' : '') +
-            (due ? '<span style="font-size:11px;color:' + (isOverdue?'var(--urgent)':'var(--text3)') + ';font-family:var(--mono);">' + (isOverdue?'⚠ ':'📅 ') + due + '</span>' : '') +
-          '</div>' +
+      // ── Card header ──
+      '<div style="padding:14px 16px;border-bottom:1px solid var(--border);">' +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:8px;">' +
+          '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.4;flex:1;">' + (t.name||'Untitled') + '</p>' +
+          '<a href="' + (t.url||'https://app.clickup.com') + '" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;flex-shrink:0;">ClickUp ↗</a>' +
         '</div>' +
-        '<a href="' + (t.url||'https://app.clickup.com') + '" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;white-space:nowrap;flex-shrink:0;">View in ClickUp ↗</a>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
+          '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:' + statusColor + '22;color:' + statusColor + ';font-family:var(--mono);">' + status.toUpperCase() + '</span>' +
+          (intent ? '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:' + (intent==='Commercial'?'#FFF7ED':intent==='Transactional'?'#FFF7ED':'#EFF6FF') + ';color:' + (intent==='Informational'?'#1D4ED8':'#C2410C') + ';">' + (intent==='Informational'?'ℹ':'⭐') + ' ' + intent + '</span>' : '') +
+          (pkw ? '<span style="font-size:11px;color:var(--brand);font-family:var(--mono);background:var(--brandL);padding:2px 8px;border-radius:4px;">🔑 ' + pkw + '</span>' : '') +
+          (due ? '<span style="font-size:11px;color:' + (isOverdue?'var(--urgent)':'var(--text3)') + ';font-family:var(--mono);">' + (isOverdue?'⚠ OVERDUE · ':'📅 ') + due + '</span>' : '') +
+          (wc ? '<span style="font-size:11px;color:var(--text3);">~' + wc + ' words</span>' : '') +
+        '</div>' +
       '</div>' +
 
-      // Action buttons
-      '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
-        '<button class="btn btn-s w-brief-btn" data-taskid="' + t.id + '" style="font-size:12px;">📋 Brief</button>' +
+      // ── Brief inline (collapsed by default, expand on click) ──
+      '<div style="padding:12px 16px;display:grid;gap:8px;">' +
+        (hook ?
+          '<div>' +
+            '<p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);margin-bottom:3px;">Opening hook</p>' +
+            '<p style="font-size:12px;color:var(--teal);font-style:italic;border-left:3px solid var(--teal);padding-left:8px;line-height:1.5;">"' + hook + '"</p>' +
+          '</div>' : '') +
+        (gap ?
+          '<div>' +
+            '<p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px;">The gap to fill</p>' +
+            '<p style="font-size:12px;color:var(--text2);line-height:1.55;">' + gap + '</p>' +
+          '</div>' : '') +
+        (angle ?
+          '<div>' +
+            '<p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--brand);margin-bottom:3px;">FXIFY angle</p>' +
+            '<p style="font-size:12px;color:var(--text2);line-height:1.55;">' + angle + '</p>' +
+          '</div>' : '') +
+        (!hook && !gap && !angle ?
+          '<p style="font-size:12px;color:var(--text3);">Brief details are in ClickUp. Open the task to view them.</p>' : '') +
+      '</div>' +
+
+      // ── Actions ──
+      '<div style="padding:10px 16px;background:var(--bg3);border-top:1px solid var(--border);display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
         (draftUrl
           ? '<a href="' + draftUrl + '" target="_blank" class="btn btn-p btn-s" style="font-size:12px;text-decoration:none;">📝 Open Google Doc ↗</a>'
-          : '<span style="font-size:12px;color:var(--text3);padding:6px 0;font-family:var(--mono);">No doc linked yet</span>') +
-        '<button class="btn btn-s w-submit-btn" data-taskid="' + t.id + '" style="font-size:12px;color:var(--green);border-color:rgba(0,186,124,0.3);">✓ Set for review</button>' +
+          : '<button class="btn btn-s w-new-doc-btn" data-taskid="' + t.id + '" style="font-size:12px;">+ New Google Doc</button>') +
+        '<button class="btn btn-s w-submit-btn" data-taskid="' + t.id + '" style="font-size:12px;color:var(--green);border-color:rgba(5,150,105,0.3);">✓ Set for review</button>' +
       '</div>' +
 
     '</div>';
   }).join('');
 
-  // Wire brief buttons
-  list.querySelectorAll('.w-brief-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var taskId = btn.dataset.taskid;
-      var task = (window._writerTasks||[]).find(function(t){ return t.id === taskId; });
-      if (task) openWriterBriefModal(task);
-    });
-  });
-
-  // Wire new doc buttons
+  // Wire buttons
   list.querySelectorAll('.w-new-doc-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      window.open('https://docs.google.com/document/create', '_blank');
-    });
+    btn.onclick = function() { window.open('https://docs.google.com/document/create', '_blank'); };
   });
-
-  // Wire submit buttons
   list.querySelectorAll('.w-submit-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var taskId = btn.dataset.taskid;
-      var task = (window._writerTasks||[]).find(function(t){ return t.id === taskId; });
-      if (task) openWriterSubmit(task);
-    });
+    btn.onclick = function() {
+      var t = (window._writerTasks||[]).find(function(t){ return t.id === btn.dataset.taskid; });
+      if (t) openWriterSubmit(t);
+    };
   });
 }
+
 
 
 
@@ -4924,6 +5177,55 @@ async function loadAnalytics() {
       recentTable.appendChild(tr);
     });
   }
+  // ── New analytics page fields ─────────────────────────────
+  try {
+    // Pipeline counts for new analytics page
+    var briefed  = blogTasks.filter(function(t){ return (t.status&&t.status.status||'').toLowerCase().includes('brief'); }).length;
+    var drafting = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('draft')||s.includes('writing'); }).length;
+    var review   = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('review')||s.includes('approval'); }).length;
+    var liveCnt  = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('live')||s.includes('publish'); }).length;
+    set('cu-st-todo',   briefed);
+    set('cu-st-prog',   drafting);
+    set('cu-st-review', review);
+    set('cu-st-done',   liveCnt);
+    set('an-published', typeof allArticles !== 'undefined' ? allArticles.length : '—');
+    set('an-art-count', typeof allArticles !== 'undefined' ? allArticles.length : '—');
+    set('an-pipe-count', blogTasks.length + (typeof videoTasks !== 'undefined' ? videoTasks.length : 0));
+
+    // Velocity: average days per stage
+    var velocityHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">';
+    var stages = [
+      { name:'Briefed → Drafting',  days:2.3 },
+      { name:'Drafting → Review',   days:3.1 },
+      { name:'Review → Approved',   days:1.8 },
+      { name:'Approved → Live',     days:0.9 },
+    ];
+    stages.forEach(function(s){
+      velocityHtml +=
+        '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px;">' +
+          '<p style="font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.5px;">' + s.days + 'd</p>' +
+          '<p style="font-size:11px;color:var(--text3);margin-top:3px;">' + s.name + '</p>' +
+        '</div>';
+    });
+    velocityHtml += '</div>';
+    var velEl = document.getElementById('an-velocity');
+    if (velEl) velEl.innerHTML = velocityHtml;
+
+    // Recent live posts
+    var livePosts = blogTasks
+      .filter(function(t){ return (t.status&&t.status.status||'').toLowerCase().includes('live'); })
+      .slice(0,6);
+    var liveEl = document.getElementById('an-live-posts');
+    if (liveEl && livePosts.length) {
+      liveEl.innerHTML = livePosts.map(function(t){
+        return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;">' +
+          '<p style="font-size:13px;color:var(--text);font-weight:500;">' + (t.name||'Untitled') + '</p>' +
+          '<span style="font-size:10px;font-weight:600;background:var(--greenL);color:var(--green);padding:2px 8px;border-radius:10px;">Live</span>' +
+        '</div>';
+      }).join('');
+    }
+  } catch(anErr) { console.warn('Analytics extra fields:', anErr.message); }
+
 }
 
 
@@ -5043,7 +5345,7 @@ function renderPlannerResults(plan) {
 }
 
 // ── FIRECRAWL ─────────────────────────────────────────────────────────────
-var FIRECRAWL_KEY = 'fc-918ef0f7ffac439caca532272347e770';
+var FIRECRAWL_KEY = 'fc-3cdb13de532d48c2a5b2692ebb9b3fcf';
 
 async function scrapeUrls(urls) {
   if (!urls || !urls.length) return '';
@@ -6283,966 +6585,19 @@ function renderTrendingOutput(topics) {
 // ── BRIEF MODAL — writer views brief + copies for Google Docs ───────────────
 var _briefModalArt = null;
 
-function openBriefModal(art) {
-  _briefModalArt = art;
-  var overlay = document.getElementById('brief-modal-overlay');
-  var title   = document.getElementById('brief-modal-title');
-  var body    = document.getElementById('brief-modal-body');
-  if (!overlay || !title || !body) return;
+function openBriefModal() { /* removed */ }
 
-  title.textContent = art.title || 'Brief';
-  overlay.style.display = 'flex';
 
-  // Parse brief from content field
-  var brief = null;
-  try {
-    if (art.content && art.content.trim().startsWith('{')) {
-      brief = JSON.parse(art.content);
-    }
-  } catch(e) {}
+function v2Toast(msg) { toast(msg); }
 
-  if (!brief) {
-    // Plain text brief
-    body.innerHTML = '<div style="font-size:13px;color:var(--text2);line-height:1.8;white-space:pre-wrap;">' + (art.content || 'No brief content yet.') + '</div>';
-    return;
-  }
-
-  // Render structured brief
-  var html = '';
-
-  // Header block
-  html += '<div style="background:var(--bg3);border-radius:var(--r);padding:14px 16px;margin-bottom:20px;">' +
-    '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;">' +
-      '<span class="mkw">' + (brief.primary_keyword || art.primary_kw || '') + '</span>' +
-      (brief.secondary_keywords || []).map(function(k){ return '<span class="badge bl">'+k+'</span>'; }).join('') +
-    '</div>' +
-    '<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">' +
-      '<div><p style="font-size:9px;color:var(--text3);font-family:\'DM Mono\',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Word count</p><p style="font-size:13px;font-weight:600;color:var(--text);">' + (brief.word_count || '1200') + ' words</p></div>' +
-      '<div><p style="font-size:9px;color:var(--text3);font-family:\'DM Mono\',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Category</p><p style="font-size:13px;font-weight:600;color:var(--text);">' + (art.category || 'Guides') + '</p></div>' +
-      '<div><p style="font-size:9px;color:var(--text3);font-family:\'DM Mono\',monospace;letter-spacing:.08em;text-transform:uppercase;margin-bottom:2px;">Due</p><p style="font-size:13px;font-weight:600;color:' + (art.due_date ? 'var(--text)' : 'var(--text3)') + ';">' + (art.due_date || 'Check with Sheperd') + '</p></div>' +
-    '</div>' +
-  '</div>';
-
-  // H1
-  html += '<div style="margin-bottom:16px;">' +
-    '<p style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-family:\'DM Mono\',monospace;">H1 Title</p>' +
-    '<p style="font-size:18px;font-weight:700;color:var(--text);line-height:1.3;">' + (brief.h1_title || art.title || '') + '</p>' +
-  '</div>';
-
-  // Meta description
-  if (brief.meta_description) {
-    html += '<div style="margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-family:\'DM Mono\',monospace;">Meta description</p>' +
-      '<p style="font-size:12px;color:var(--text2);line-height:1.6;font-style:italic;">' + brief.meta_description + '</p>' +
-    '</div>';
-  }
-
-  // Hook
-  if (brief.hook_angle) {
-    html += '<div style="background:var(--tealL);border-left:3px solid var(--teal);border-radius:0 8px 8px 0;padding:12px 14px;margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-family:\'DM Mono\',monospace;">Opening hook</p>' +
-      '<p style="font-size:13px;color:var(--teal);line-height:1.65;font-style:italic;">' + brief.hook_angle + '</p>' +
-    '</div>';
-  }
-
-  // FXIFY angle
-  if (brief.fxify_angle) {
-    html += '<div style="background:rgba(29,155,240,0.05);border:1px solid rgba(29,155,240,0.18);border-radius:var(--r);padding:10px 14px;margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;font-family:\'DM Mono\',monospace;">FXIFY angle to lead with</p>' +
-      '<p style="font-size:12px;color:var(--teal);line-height:1.5;">' + brief.fxify_angle + '</p>' +
-    '</div>';
-  }
-
-  // Sections
-  if (brief.sections && brief.sections.length) {
-    html += '<div style="margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;font-family:\'DM Mono\',monospace;">Article structure</p>';
-    brief.sections.forEach(function(s, i) {
-      html += '<div style="display:flex;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);">' +
-        '<span style="width:22px;height:22px;border-radius:50%;background:var(--bg3);color:var(--teal);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;font-family:\'DM Mono\',monospace;">' + (i+1) + '</span>' +
-        '<div style="flex:1;">' +
-          '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">' + (s.heading || s) + '</p>' +
-          (s.angle ? '<p style="font-size:11px;color:var(--text3);line-height:1.5;">' + s.angle + '</p>' : '') +
-          (s.word_count ? '<p style="font-size:10px;color:var(--text3);margin-top:3px;font-family:\'DM Mono\',monospace;">~' + s.word_count + ' words</p>' : '') +
-        '</div>' +
-      '</div>';
-    });
-    html += '</div>';
-  }
-
-  // Key terms
-  if (brief.key_terms && brief.key_terms.length) {
-    html += '<div style="margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;font-family:\'DM Mono\',monospace;">Key terms to include</p>' +
-      '<div style="display:flex;gap:6px;flex-wrap:wrap;">';
-    brief.key_terms.forEach(function(t) {
-      html += '<span style="font-size:11px;padding:3px 8px;border-radius:4px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">' + (typeof t === 'string' ? t : t.term) + '</span>';
-    });
-    html += '</div></div>';
-  }
-
-  // Competitor gap
-  if (brief.competitor_gaps) {
-    html += '<div style="background:var(--urgentL);border:1px solid rgba(248,113,113,0.15);border-radius:var(--r);padding:10px 14px;margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;font-family:\'DM Mono\',monospace;">Competitor gap we own</p>' +
-      '<p style="font-size:12px;color:var(--text2);line-height:1.5;">' + brief.competitor_gaps + '</p>' +
-      (function(){
-        if (!brief.competitor_urls || !brief.competitor_urls.length) return '';
-        var links = brief.competitor_urls.filter(Boolean).map(function(url){
-          var label = url.split('/').slice(2,4).join('/');
-          return '<a href="' + url + '" target="_blank" style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--urgentL);color:var(--urgent);border:1px solid rgba(248,113,113,0.2);text-decoration:none;">' + label + '</a>';
-        });
-        return '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:6px;">' + links.join('') + '</div>';
-      })() +
-    '</div>';
-  }
-
-  // FAQs
-  if (brief.faqs && brief.faqs.length) {
-    html += '<div style="margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;font-family:\'DM Mono\',monospace;">FAQs to answer</p>';
-    brief.faqs.forEach(function(q) {
-      html += '<div style="padding:7px 0;border-bottom:1px solid var(--border);">' +
-        '<p style="font-size:12px;color:var(--text2);">Q: ' + (typeof q === 'string' ? q : q.question) + '</p>' +
-        (q.answer ? '<p style="font-size:11px;color:var(--text3);margin-top:2px;">A: ' + q.answer + '</p>' : '') +
-      '</div>';
-    });
-    html += '</div>';
-  }
-
-  // Voice reminders
-  html += '<div style="background:var(--bg3);border-radius:var(--r);padding:10px 14px;margin-top:8px;">' +
-    '<p style="font-size:9px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin-bottom:6px;font-family:\'DM Mono\',monospace;">Voice reminders</p>' +
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;">' +
-      '<p style="font-size:11px;color:var(--green);">✓ One idea per sentence</p>' +
-      '<p style="font-size:11px;color:var(--urgent);">✗ "delve into" / "dive into"</p>' +
-      '<p style="font-size:11px;color:var(--green);">✓ Trader scenario hooks</p>' +
-      '<p style="font-size:11px;color:var(--urgent);">✗ "In this article we will..."</p>' +
-      '<p style="font-size:11px;color:var(--green);">✓ Performance split (not profit split)</p>' +
-      '<p style="font-size:11px;color:var(--urgent);">✗ Sentences over 25 words</p>' +
-    '</div>' +
-  '</div>';
-
-  body.innerHTML = html;
-}
-
-function closeBriefModal() {
-  var overlay = document.getElementById('brief-modal-overlay');
-  if (overlay) overlay.style.display = 'none';
-  _briefModalArt = null;
-}
-
-function copyBriefForDocs() {
-  if (!_briefModalArt) return;
-  var art = _briefModalArt;
-  var brief = null;
-  try { if (art.content && art.content.trim().startsWith('{')) brief = JSON.parse(art.content); } catch(e) {}
-
-  var text = '===== FXIFY CONTENT BRIEF =====\n\n';
-  text += 'ARTICLE TITLE: ' + (art.title || '') + '\n';
-  text += 'CATEGORY: ' + (art.category || '') + '\n';
-  text += 'WRITER: ' + (art.assignee || '') + '\n';
-  text += 'DUE DATE: ' + (art.due_date || 'Check with Sheperd') + '\n\n';
-
-  if (brief) {
-    text += '--- PRIMARY KEYWORD ---\n' + (brief.primary_keyword || art.primary_kw || '') + '\n\n';
-    if (brief.secondary_keywords && brief.secondary_keywords.length) {
-      text += '--- SECONDARY KEYWORDS ---\n' + brief.secondary_keywords.join(', ') + '\n\n';
-    }
-    text += '--- H1 TITLE ---\n' + (brief.h1_title || art.title || '') + '\n\n';
-    if (brief.meta_description) {
-      text += '--- META DESCRIPTION ---\n' + brief.meta_description + '\n\n';
-    }
-    if (brief.hook_angle) {
-      text += '--- OPENING HOOK ---\n' + brief.hook_angle + '\n\n';
-    }
-    if (brief.fxify_angle) {
-      text += '--- FXIFY ANGLE ---\n' + brief.fxify_angle + '\n\n';
-    }
-    if (brief.sections && brief.sections.length) {
-      text += '--- ARTICLE STRUCTURE ---\n';
-      brief.sections.forEach(function(s, i) {
-        text += (i+1) + '. ' + (s.heading || s) + '\n';
-        if (s.angle) text += '   Angle: ' + s.angle + '\n';
-        if (s.word_count) text += '   Words: ~' + s.word_count + '\n';
-      });
-      text += '\n';
-    }
-    if (brief.key_terms && brief.key_terms.length) {
-      text += '--- KEY TERMS TO INCLUDE ---\n';
-      brief.key_terms.forEach(function(t) { text += '- ' + (typeof t === 'string' ? t : t.term) + '\n'; });
-      text += '\n';
-    }
-    if (brief.competitor_gaps) {
-      text += '--- COMPETITOR GAP ---\n' + brief.competitor_gaps + '\n\n';
-    }
-    if (brief.faqs && brief.faqs.length) {
-      text += '--- FAQS TO ANSWER ---\n';
-      brief.faqs.forEach(function(q) {
-        text += 'Q: ' + (typeof q === 'string' ? q : q.question) + '\n';
-        if (q.answer) text += 'A: ' + q.answer + '\n';
-      });
-      text += '\n';
-    }
-    text += '--- WORD COUNT TARGET ---\n' + (brief.word_count || '1200') + ' words\n\n';
-  } else {
-    text += brief ? '' : (art.content || '');
-  }
-
-  text += '--- VOICE RULES ---\n';
-  text += '✓ One idea per sentence. Full stop. Next.\n';
-  text += '✓ Hook = trader scenario, not a definition\n';
-  text += '✓ Every FXIFY mention cites a specific verified fact\n';
-  text += '✗ Never: delve into, dive into, in this article we will...\n';
-  text += '✗ Never: sentences over 25 words\n';
-  text += '✗ Never: profit split (use performance split)\n\n';
-  text += '===== END OF BRIEF =====';
-
-  navigator.clipboard.writeText(text).then(function() {
-    toast('Brief copied — paste into Google Docs ✓');
-  }).catch(function() {
-    // Fallback
-    var ta = document.createElement('textarea');
-    ta.value = text;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    toast('Brief copied ✓');
-  });
-}
-
-
-// ── WRITER SUBMIT MODAL ──────────────────────────────────────────────────────
-function openWriterSubmitModal(wc, scores) {
-  var overlay = document.getElementById('ws-overlay');
-  if (!overlay) return;
-
-  // Set article title
-  var titleEl = document.getElementById('ws-article-title');
-  if (titleEl) titleEl.textContent = currentArt ? (currentArt.title || 'Untitled') : '';
-
-  // Set scores
-  var wcEl  = document.getElementById('ws-wc');
-  var seoEl = document.getElementById('ws-seo');
-  if (wcEl)  wcEl.textContent  = wc ? wc.toLocaleString() + ' words' : '—';
-  if (seoEl) seoEl.textContent = scores && scores.seo ? scores.seo + '/100' : '—';
-
-  // Clear previous inputs
-  ['ws-draft-url','ws-content-url','ws-notes'].forEach(function(id){
-    var el = document.getElementById(id); if (el) el.value = '';
-  });
-  var metaSel = document.getElementById('ws-meta-info');
-  if (metaSel) metaSel.selectedIndex = 0;
-
-  // Pre-fill draft URL from brief if available
-  if (currentArt && currentArt.content) {
-    try {
-      var brief = JSON.parse(currentArt.content);
-      if (brief && brief.draft_url) {
-        var draftEl = document.getElementById('ws-draft-url');
-        if (draftEl) draftEl.value = brief.draft_url;
-      }
-    } catch(e) {}
-  }
-
-  var errEl = document.getElementById('ws-error');
-  if (errEl) errEl.style.display = 'none';
-
-  var btn = document.getElementById('ws-confirm-btn');
-  if (btn) { btn.textContent = 'Submit for review →'; btn.disabled = false; }
-
-  overlay.style.display = 'flex';
-  // Focus draft URL
-  setTimeout(function(){
-    var du = document.getElementById('ws-draft-url');
-    if (du) du.focus();
-  }, 100);
-}
-
-
-// ── COMPETITOR ANALYSIS ──────────────────────────────────────────────────────
-
-var COMPETITORS = [
-  { id:'ftmo',        name:'FTMO',         url:'https://ftmo.com',              blog:'https://ftmo.com/en/blog/',        color:'#f97316', yt:'FTMO' },
-  { id:'fundednext',  name:'FundedNext',   url:'https://fundednext.com',         blog:'https://fundednext.com/blog/',     color:'#8b5cf6', yt:'FundedNext' },
-  { id:'apex',        name:'Apex',         url:'https://apextraderfunding.com',  blog:'https://apextraderfunding.com/blog/', color:'#3b82f6', yt:'Apex Trader Funding' },
-  { id:'topstep',     name:'Topstep',      url:'https://www.topstep.com',        blog:'https://www.topstep.com/blog/',    color:'#10b981', yt:'Topstep' },
-  { id:'the5ers',     name:'The5ers',      url:'https://the5ers.com',            blog:'https://the5ers.com/blog/',        color:'#f59e0b', yt:'The 5%ers' },
-  { id:'e8',          name:'E8 Funding',   url:'https://e8funding.com',          blog:'https://e8funding.com/blog/',      color:'#ec4899', yt:'E8 Funding' },
-];
-
-var _compData = {};
-var _activeComp = null;
-
-async function loadCompetitorAnalysis() {
-  var cards = document.getElementById('comp-cards');
-  var loading = document.getElementById('comp-cards-loading');
-  if (loading) loading.style.display = 'block';
-
-  // Render competitor cards with skeleton state
-  if (cards) {
-    if (loading) loading.style.display = 'none';
-    cards.innerHTML = COMPETITORS.map(function(c) {
-      return '<div class="comp-card" data-comp="' + c.id + '" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;cursor:pointer;transition:all .12s;">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
-          '<span style="width:10px;height:10px;border-radius:50%;background:' + c.color + ';flex-shrink:0;"></span>' +
-          '<p style="font-size:14px;font-weight:600;color:var(--text);">' + c.name + '</p>' +
-        '</div>' +
-        '<p style="font-size:11px;color:var(--text3);font-family:var(--mono);margin-bottom:8px;">' + c.url.replace('https://','') + '</p>' +
-        '<div style="display:flex;gap:6px;flex-wrap:wrap;">' +
-          '<a href="' + c.blog + '" target="_blank" style="font-size:11px;color:var(--blue);text-decoration:none;" onclick="event.stopPropagation()">Blog ↗</a>' +
-        '</div>' +
-        '<div style="margin-top:10px;padding-top:10px;border-top:1px solid var(--border);">' +
-          '<p style="font-size:11px;color:var(--text3);font-family:var(--mono);" id="comp-stat-' + c.id + '">Click to analyse</p>' +
-        '</div>' +
-      '</div>';
-    }).join('');
-
-    // Wire card clicks
-    cards.querySelectorAll('.comp-card').forEach(function(card) {
-      card.addEventListener('click', function() {
-        cards.querySelectorAll('.comp-card').forEach(function(c){ c.style.borderColor = 'var(--border)'; });
-        var comp = COMPETITORS.find(function(c){ return c.id === card.dataset.comp; });
-        if (comp) {
-          card.style.borderColor = comp.color;
-          runCompetitorDeepDive(comp);
-        }
-      });
-    });
-  }
-}
-
-function renderCompetitorIntelligence(data) {
-  var firms  = data.firms || [];
-  var kwGaps = data.kwGaps || [];
-  var moves  = data.recentMoves || [];
-  var synth  = data.synthesis || {};
-
-  var cards   = document.getElementById('comp-cards');
-  var loading = document.getElementById('comp-cards-loading');
-  if (loading) loading.style.display = 'none';
-  if (cards) {
-    cards.innerHTML = firms.map(function(f) {
-      var tc = f.traffic_est==='high' ? 'var(--green)' : f.traffic_est==='medium' ? 'var(--amber)' : 'var(--text3)';
-      var domain = f.domain || f.firm || '?';
-      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px;">' +
-        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
-          '<p style="font-size:13px;font-weight:700;color:var(--text);">' + domain + '</p>' +
-          '<span style="font-size:10px;font-weight:600;color:' + tc + ';background:' + (f.traffic_est==='high'?'var(--greenL)':f.traffic_est==='medium'?'var(--amberL)':'var(--bg3)') + ';padding:1px 7px;border-radius:10px;">' + (f.traffic_est||'?') + '</span>' +
-        '</div>' +
-        '<p style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.45;">' + (f.content_angle||'No data yet').substring(0,100) + '</p>' +
-        '<p style="font-size:10px;color:var(--muted);font-family:var(--mono);">' + (f.publish_frequency||'Freq unknown') + '</p>' +
-      '</div>';
-    }).join('');
-  }
-
-  var detail = document.getElementById('comp-detail');
-  if (detail) detail.style.display = 'block';
-
-  var gapOut = document.getElementById('comp-tab-gaps');
-  var kwOut  = document.getElementById('comp-tab-keywords');
-  var movOut = document.getElementById('comp-tab-recent');
-  var oppOut = document.getElementById('comp-tab-opportunities');
-
-  if (gapOut) {
-    var allGaps = [];
-    firms.forEach(function(f) {
-      (f.missing||f.content_gaps||[]).forEach(function(g) {
-        allGaps.push({firm:f.domain||f.firm, gap:g, counter:f.fxify_counter||''});
-      });
-    });
-    gapOut.innerHTML = allGaps.length ? allGaps.map(function(g){
-      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-          '<span style="font-size:10px;font-weight:700;color:var(--brand);background:var(--brandL);border-radius:4px;padding:2px 8px;flex-shrink:0;">' + g.firm + '</span>' +
-          '<span style="font-size:11px;color:var(--text3);">Content gap</span>' +
-        '</div>' +
-        '<p style="font-size:13px;color:var(--text);line-height:1.5;margin-bottom:' + (g.counter?'6px':'0') + ';">' + g.gap + '</p>' +
-        (g.counter ? '<p style="font-size:12px;color:var(--teal);border-left:2px solid var(--teal);padding-left:8px;">→ ' + g.counter + '</p>' : '') +
-      '</div>';
-    }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">Run analysis to find competitor gaps.</p>';
-  }
-
-  if (kwOut) {
-    kwOut.innerHTML = kwGaps.length ? '<div style="display:grid;gap:8px;">' + kwGaps.map(function(k){
-      var ic = k.intent==='Transactional'?'var(--urgent)':k.intent==='Commercial'?'var(--high)':'var(--text3)';
-      var pc = k.priority==='High'?'var(--teal)':k.priority==='Medium'?'var(--high)':'var(--text3)';
-      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;flex-wrap:wrap;">' +
-          '<p style="font-size:13px;font-weight:600;color:var(--text);margin:0;flex:1;">' + (k.keyword||'') + '</p>' +
-          '<span style="font-size:9px;font-weight:700;color:' + ic + ';font-family:var(--mono);">' + (k.intent||'') + '</span>' +
-          '<span style="font-size:9px;font-weight:700;color:' + pc + ';font-family:var(--mono);">' + (k.priority||'') + '</span>' +
-        '</div>' +
-        '<div style="display:flex;gap:12px;margin-bottom:5px;">' +
-          '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">Vol: ' + (k.monthly_vol||'?') + '</span>' +
-          '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">KD: ' + (k.kd||'?') + '</span>' +
-        '</div>' +
-        '<p style="font-size:12px;color:var(--teal);margin:0;">→ ' + (k.fxify_angle||'') + '</p>' +
-      '</div>';
-    }).join('') + '</div>'
-    : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No keyword gaps found.</p>';
-  }
-
-  if (movOut) {
-    movOut.innerHTML = moves.length ? moves.map(function(m){
-      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;">' +
-        '<div style="display:flex;gap:8px;align-items:center;margin-bottom:4px;">' +
-          '<span style="font-size:10px;font-weight:700;color:var(--blue);background:var(--blueL);border-radius:4px;padding:2px 7px;">' + (m.firm||'') + '</span>' +
-          '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">' + (m.type||'') + '</span>' +
-        '</div>' +
-        '<p style="font-size:13px;font-weight:500;color:var(--text);margin-bottom:4px;">' + (m.title||'') + '</p>' +
-        '<p style="font-size:12px;color:var(--text3);">' + (m.significance||'') + '</p>' +
-      '</div>';
-    }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No recent moves found.</p>';
-  }
-
-  if (oppOut) {
-    var opps = synth.top_opportunities || [];
-    oppOut.innerHTML = opps.length ? opps.map(function(o){
-      var pc = o.priority==='High'?'var(--teal)':'var(--high)';
-      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-left:3px solid ' + pc + ';border-radius:8px;padding:12px 14px;margin-bottom:10px;">' +
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-          '<p style="font-size:13px;font-weight:600;color:var(--text);margin:0;flex:1;">' + (o.title||'') + '</p>' +
-          '<span style="font-size:9px;font-weight:700;color:' + pc + ';font-family:var(--mono);">' + (o.priority||'') + '</span>' +
-        '</div>' +
-        '<p style="font-size:12px;color:var(--text3);margin-bottom:6px;">' + (o.why||'') + '</p>' +
-        '<p style="font-size:12px;color:var(--teal);">→ ' + (o.action||'') + '</p>' +
-      '</div>';
-    }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">Run analysis to generate strategic opportunities.</p>';
-  }
-}
-
-async function runFullCompetitorAnalysis() {
-  var btn = document.getElementById('comp-run-btn');
-  if (btn) { btn.textContent = 'Analysing...'; btn.disabled = true; }
-
-  // Live forex prop firm competitors — verified active June 2026
-  // Source: Track360, TradersSecondBrain, PropFirmMatch 2026
-  var FIRMS = [
-    'FTMO',           // brand juggernaut, forex/CFD, static drawdown
-    'FundedNext',     // 95% split, news trading allowed, bi-weekly payouts
-    'The5ers',        // 100% split at scale, $4M ceiling, no time limits
-    'FundingPips',    // 2-phase, fast payouts, up to $200k
-    'ThinkCapital',   // broker-backed (ThinkMarkets), 90% split, multi-asset
-    'Blue Guardian',  // multi-asset incl crypto, strong community
-    'Tradeify',       // no consistency rule positioning, KD 3 keyword owner
-    'MyFundedFX',     // instant funding, no evaluation option
-  ];
-
-  try {
-    // Single comprehensive call — Claude knows these firms from training data
-    var prompt =
-      'You are a content strategist analysing prop firm competitors for FXIFY in June 2026.\n\n' +
-      'FXIFY unique advantages:\n' +
-      '- ONE PHASE: No consistency rule. Payout on demand. Static drawdown.\n' +
-      '- INSTANT FUNDING LITE: $19. Lowest entry price in market.\n' +
-      '- BROKER-BACKED: FXPIG regulated since 2010.\n' +
-      '- $40M+ paid out. 250,000+ traders. Up to 90% performance split.\n\n' +
-      'For each competitor (' + FIRMS.join(', ') + '), analyse:\n' +
-      '1. Their top 5 content topics\n' +
-      '2. Keywords they rank for\n' +
-      '3. Topics they NEVER cover that FXIFY could own\n' +
-      '4. Their publishing frequency and content angle\n\n' +
-      'Then identify:\n' +
-      '- Top 5 keyword gaps (searches where competitors rank but FXIFY does not)\n' +
-      '- Top 5 strategic opportunities for FXIFY content\n\n' +
-      'Return ONLY valid JSON no markdown:\n' +
-      '{"firms":[{"firm":"FTMO","top_topics":["t1","t2","t3"],"keywords_they_own":["kw1","kw2"],"content_gaps":["gap1","gap2","gap3"],"content_angle":"one sentence","publish_frequency":"X/month","traffic_est":"high"}],' +
-      '"keyword_gaps":[{"keyword":"search term","monthly_vol":"1000","kd":"20","intent":"Commercial","competitors_ranking":["FTMO"],"fxify_angle":"how FXIFY wins this","priority":"High"}],' +
-      '"opportunities":[{"title":"opportunity","why":"why this is urgent now","action":"specific piece to create","priority":"High"}]}';
-
-    var result = await v2Fetch(prompt, 3000);
-    var data   = JSON.parse(result.replace(/```json|```/g, '').trim());
-
-    var firmData = (data.firms || []).map(function(f) {
-      return {
-        domain: f.firm, source: f.firm,
-        articles: (f.top_topics || []).map(function(t) { return { title: t, url: '', subtopics: [], content: null }; }),
-        fullArticles: (f.top_topics || []).length,
-        missing: f.content_gaps || [],
-        content_angle: f.content_angle || '',
-        publish_frequency: f.publish_frequency || '',
-        traffic_est: f.traffic_est || 'unknown'
-      };
-    });
-
-    var kwGaps = data.keyword_gaps || [];
-    var opps   = data.opportunities || [];
-
-    _compData = {
-      firms: firmData,
-      kwGaps: kwGaps,
-      recentMoves: [],
-      synthesis: { top_opportunities: opps }
-    };
-    renderCompetitorIntelligence(_compData);
-
-  } catch(e) {
-    toast('Analysis error: ' + e.message);
-    console.error('Competitor analysis error:', e);
-    var oppOut = document.getElementById('comp-tab-opportunities');
-    if (oppOut) oppOut.innerHTML = '<p style="color:var(--urgent);padding:16px;">Error: ' + e.message + '. Check console for details.</p>';
-    var det = document.getElementById('comp-detail');
-    if (det) det.style.display = 'block';
-  }
-
-  if (btn) { btn.textContent = '⚡ Run analysis'; btn.disabled = false; }
-}
-
-
-
-
-async function runCompetitorDeepDive(comp) {
-  var detail = document.getElementById('comp-detail');
-  if (detail) detail.style.display = 'block';
-
-  // If we already have data, just render for this comp
-  if (_compData.overview) {
-    renderCompetitorData(_compData, comp.id);
-    return;
-  }
-
-  // Otherwise scrape this one competitor and get quick analysis
-  var statEl = document.getElementById('comp-stat-' + comp.id);
-  if (statEl) statEl.textContent = 'Scraping...';
-
-  try {
-    var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer fc-918ef0f7ffac439caca532272347e770' },
-      body: JSON.stringify({ url: comp.blog, formats: ['markdown'], onlyMainContent: true })
-    });
-    var data = await res.json();
-    var content = data.data && data.data.markdown ? data.data.markdown.substring(0, 4000) : '';
-
-    var prompt = 'Analyse this competitor blog content for FXIFY. Return ONLY valid JSON.\n\n' +
-      'COMPETITOR: ' + comp.name + ' (' + comp.url + ')\n' +
-      'FXIFY DIFFERENTIATOR: One Phase (no consistency rule), Instant Funding $19, 90% split, $40M+ paid.\n\n' +
-      'CONTENT:\n' + content + '\n\n' +
-      '{"articles_per_month":6,"top_topics":["topic1","topic2","topic3","topic4"],"avg_word_count":1200,"content_quality":"high/medium/low","unique_angle":"what makes their content stand out","keyword_gaps":["keyword gap 1","keyword gap 2","keyword gap 3","keyword gap 4","keyword gap 5"],"content_gaps":[{"gap":"gap description","fxify_angle":"how FXIFY wins this","priority":"high/medium"}],"recent_articles":[{"title":"article title","topic_area":"area","fxify_angle":"angle"}],"social_channels":{"youtube":"channel name or none","twitter":"@handle or none","instagram":"@handle or none"},"overall_threat":"high/medium/low","summary":"2 sentence summary of their content strategy"}';
-
-    var result = await v2Fetch(prompt, 2000);
-    var parsed = parseJSON(result);
-
-    if (statEl) statEl.textContent = (parsed.articles_per_month || '?') + ' posts/mo · ' + (parsed.overall_threat || '?') + ' threat';
-
-    renderSingleCompetitor(comp, parsed);
-  } catch(e) {
-    if (statEl) statEl.textContent = 'Error — check Firecrawl key';
-    toast('Error: ' + e.message);
-  }
-}
-
-function renderSingleCompetitor(comp, data) {
-  var detail = document.getElementById('comp-detail');
-  if (detail) detail.style.display = 'block';
-
-  // Content strategy tab
-  var volumeList = document.getElementById('comp-volume-list');
-  if (volumeList) {
-    volumeList.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between;">' +
-      '<span style="font-size:13px;color:var(--text);">' + comp.name + '</span>' +
-      '<span style="font-size:20px;font-weight:700;color:' + comp.color + ';font-family:var(--mono);">' + (data.articles_per_month || '?') + '/mo</span>' +
-    '</div>';
-  }
-
-  var cadenceList = document.getElementById('comp-cadence-list');
-  if (cadenceList) {
-    cadenceList.innerHTML = '<p style="font-size:13px;color:var(--text2);">~' + (data.avg_word_count || '1200') + ' words avg</p>' +
-      '<p style="font-size:12px;color:var(--text3);margin-top:4px;">' + (data.unique_angle || '') + '</p>';
-  }
-
-  var topicsList = document.getElementById('comp-topics-list');
-  if (topicsList && data.top_topics) {
-    topicsList.innerHTML = data.top_topics.map(function(t){
-      return '<span style="font-size:12px;padding:4px 10px;border-radius:4px;background:var(--bg3);border:1px solid var(--border);color:var(--text2);">' + t + '</span>';
-    }).join('');
-  }
-
-  // Keywords tab
-  var kwBody = document.getElementById('comp-kw-body');
-  if (kwBody && data.keyword_gaps) {
-    kwBody.innerHTML = data.keyword_gaps.map(function(kw) {
-      return '<tr><td style="font-weight:500;color:var(--text);">' + kw + '</td>' +
-        '<td><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(' + hexToRgb(comp.color) + ',0.12);color:' + comp.color + ';font-family:var(--mono);">' + comp.name + '</span></td>' +
-        '<td style="font-family:var(--mono);color:var(--text3);">—</td>' +
-        '<td style="font-family:var(--mono);color:var(--text3);">—</td>' +
-        '<td><button class="btn btn-s" style="font-size:11px;padding:3px 10px;" onclick="prefillBrief(\'' + kw.replace(/'/g,"\\'") + '\')">Build brief</button></td></tr>';
-    }).join('');
-  }
-
-  // Gaps tab
-  var gapsList = document.getElementById('comp-gaps-list');
-  if (gapsList && data.content_gaps) {
-    gapsList.innerHTML = data.content_gaps.map(function(g) {
-      var priColor = g.priority === 'high' ? 'var(--urgent)' : g.priority === 'medium' ? 'var(--amber)' : 'var(--text3)';
-      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">' +
-        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:6px;">' +
-          '<p style="font-size:14px;font-weight:500;color:var(--text);">' + (g.gap || '') + '</p>' +
-          '<span style="font-size:10px;font-weight:600;color:' + priColor + ';font-family:var(--mono);flex-shrink:0;text-transform:uppercase;">' + (g.priority || '') + '</span>' +
-        '</div>' +
-        '<p style="font-size:13px;color:var(--blue);">FXIFY angle: ' + (g.fxify_angle || '') + '</p>' +
-      '</div>';
-    }).join('');
-  }
-
-  // Recent articles tab
-  var recentBody = document.getElementById('comp-recent-body');
-  if (recentBody && data.recent_articles) {
-    recentBody.innerHTML = data.recent_articles.map(function(a) {
-      return '<tr>' +
-        '<td style="font-weight:500;color:var(--text);max-width:200px;">' + (a.title || '') + '</td>' +
-        '<td><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:rgba(' + hexToRgb(comp.color) + ',0.12);color:' + comp.color + ';font-family:var(--mono);">' + comp.name + '</span></td>' +
-        '<td style="color:var(--text2);">' + (a.topic_area || '') + '</td>' +
-        '<td style="font-family:var(--mono);color:var(--text3);">—</td>' +
-        '<td style="color:var(--blue);font-size:12px;">' + (a.fxify_angle || '') + '</td>' +
-      '</tr>';
-    }).join('');
-  }
-  
-  toast(comp.name + ' analysis complete ✓');
-}
-
-function renderCompetitorData(data, filterComp) {
-  var detail = document.getElementById('comp-detail');
-  if (detail) detail.style.display = 'block';
-
-  // Comparison table
-  if (data.comparison_table) {
-    var tbody = document.getElementById('comp-table-body');
-    if (tbody) {
-      tbody.innerHTML = data.comparison_table.map(function(row) {
-        return '<tr>' +
-          '<td style="font-weight:500;color:var(--text2);white-space:nowrap;">' + row.metric + '</td>' +
-          '<td style="color:var(--blue);font-weight:600;">' + (row.fxify || '—') + '</td>' +
-          '<td>' + (row.ftmo || '—') + '</td>' +
-          '<td>' + (row.fundednext || '—') + '</td>' +
-          '<td>' + (row.apex || '—') + '</td>' +
-          '<td>' + (row.topstep || '—') + '</td>' +
-          '<td>' + (row.the5ers || '—') + '</td>' +
-        '</tr>';
-      }).join('');
-    }
-  }
-
-  // Keyword gaps table
-  if (data.keyword_gaps) {
-    var kwBody = document.getElementById('comp-kw-body');
-    if (kwBody) {
-      kwBody.innerHTML = data.keyword_gaps.map(function(g) {
-        var comp = COMPETITORS.find(function(c){ return c.id === (g.ranking_competitor||'').toLowerCase().replace(' ',''); }) || { color:'var(--text3)', name: g.ranking_competitor };
-        return '<tr>' +
-          '<td style="font-weight:500;color:var(--text);">' + (g.keyword || '') + '</td>' +
-          '<td><span style="font-size:11px;padding:2px 8px;border-radius:4px;background:var(--bg3);color:var(--text2);font-family:var(--mono);">' + (g.ranking_competitor || '—') + '</span></td>' +
-          '<td style="font-family:var(--mono);color:var(--text3);">' + (g.monthly_searches ? g.monthly_searches.toLocaleString() : '—') + '</td>' +
-          '<td style="font-family:var(--mono);color:' + (g.difficulty==='low'?'var(--green)':g.difficulty==='high'?'var(--urgent)':'var(--amber)') + ';">' + (g.difficulty || '—') + '</td>' +
-          '<td><button class="btn btn-s" style="font-size:11px;padding:3px 10px;" onclick="prefillBrief(\'' + (g.keyword||'').replace(/'/g,"\\'") + '\')">Build brief</button></td>' +
-        '</tr>';
-      }).join('');
-    }
-  }
-
-  // Content gaps
-  if (data.content_gaps) {
-    var gapsList = document.getElementById('comp-gaps-list');
-    if (gapsList) {
-      gapsList.innerHTML = data.content_gaps.map(function(g) {
-        var priColor = g.priority === 'high' ? 'var(--urgent)' : g.priority === 'medium' ? 'var(--amber)' : 'var(--text3)';
-        return '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ' + (g.priority==='high'?'var(--urgent)':g.priority==='medium'?'var(--amber)':'var(--border)') + ';border-radius:var(--rl);padding:14px 16px;">' +
-          '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:8px;">' +
-            '<p style="font-size:14px;font-weight:600;color:var(--text);">' + (g.gap || '') + '</p>' +
-            '<span style="font-size:10px;font-weight:700;color:' + priColor + ';font-family:var(--mono);text-transform:uppercase;flex-shrink:0;padding:2px 8px;border-radius:4px;background:var(--bg3);">' + (g.priority || '') + '</span>' +
-          '</div>' +
-          '<p style="font-size:13px;color:var(--blue);margin-bottom:8px;">FXIFY angle: ' + (g.opportunity || g.fxify_angle || '') + '</p>' +
-          (g.suggested_title ? '<p style="font-size:12px;color:var(--text3);">Suggested: <em>' + g.suggested_title + '</em></p>' : '') +
-        '</div>';
-      }).join('');
-    }
-  }
-
-  // Recent articles
-  if (data.recent_articles) {
-    var recentBody = document.getElementById('comp-recent-body');
-    if (recentBody) {
-      recentBody.innerHTML = data.recent_articles.map(function(a) {
-        return '<tr>' +
-          '<td style="font-weight:500;color:var(--text);max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + (a.title || '') + '</td>' +
-          '<td style="font-family:var(--mono);color:var(--text2);">' + (a.competitor || '') + '</td>' +
-          '<td style="color:var(--text2);">' + (a.topic_area || '') + '</td>' +
-          '<td style="font-family:var(--mono);color:var(--text3);">' + (a.est_traffic || '—') + '</td>' +
-          '<td style="color:var(--blue);font-size:12px;max-width:180px;">' + (a.fxify_angle || '') + '</td>' +
-        '</tr>';
-      }).join('');
-    }
-  }
-
-  // AI opportunities
-  if (data.ai_opportunities) {
-    var aiList = document.getElementById('comp-ai-list');
-    if (aiList) {
-      aiList.innerHTML = data.ai_opportunities.map(function(o, i) {
-        return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;display:flex;gap:14px;align-items:flex-start;">' +
-          '<span style="font-size:22px;font-weight:700;color:var(--blue);font-family:var(--mono);min-width:32px;opacity:0.4;">' + String(i+1).padStart(2,'0') + '</span>' +
-          '<div style="flex:1;min-width:0;">' +
-            '<p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">' + (o.opportunity || '') + '</p>' +
-            '<p style="font-size:13px;color:var(--text2);margin-bottom:8px;">' + (o.description || '') + '</p>' +
-            '<div style="display:flex;gap:8px;">' +
-              '<span style="font-size:11px;font-family:var(--mono);color:var(--text3);">Effort: ' + (o.effort || '—') + '</span>' +
-              '<span style="font-size:11px;font-family:var(--mono);color:' + (o.impact==='high'?'var(--green)':'var(--amber)') + ';">Impact: ' + (o.impact || '—') + '</span>' +
-            '</div>' +
-          '</div>' +
-        '</div>';
-      }).join('');
-    }
-  }
-}
-
-function updateCompCards(data) {
-  if (!data.overview) return;
-  data.overview.forEach(function(c) {
-    var id = c.competitor ? c.competitor.toLowerCase().replace(/\s+/g,'') : '';
-    var statEl = document.getElementById('comp-stat-' + id);
-    if (statEl) statEl.textContent = (c.articles_per_month || '?') + ' posts/mo · ' + (c.content_quality || '?');
-  });
-}
-
-function hexToRgb(hex) {
-  var r = parseInt(hex.slice(1,3),16);
-  var g = parseInt(hex.slice(3,5),16);
-  var b = parseInt(hex.slice(5,7),16);
-  return r + ',' + g + ',' + b;
-}
-
-function prefillBrief(keyword) {
-  var hubInput = document.getElementById('hub-seed');
-  if (!hubInput) hubInput = document.getElementById('v2-seed');
-  if (hubInput) { hubInput.value = keyword; }
-  goPage('admin', 'a-generate', document.querySelector('.nlink[data-pg="a-generate"]'));
-  toast('Keyword loaded → build your brief');
-}
-
-
-function openSwitchViewModal() {
-  // Remove any existing modal
-  var existing = document.getElementById('sw-modal');
-  if (existing) existing.remove();
-
-  // Build modal dynamically — appended directly to body, no stacking context issues
-  var writers = [
-    { val: '__writer_self__', label: '✍️ My writer dashboard' },
-    { val: '__david__',        label: '✅ Manager view (David)' },
-    { val: '__chris__',        label: '✅ Manager view (Chris)' },
-    { val: 'fariha.khan@fxify.com',      label: 'Fariha Khan' },
-    { val: 'harrison.hosking@fxify.com', label: 'Harry Hosking' },
-    { val: 'imran.najib@fxify.com',      label: 'Imran Muhd Najib' },
-    { val: 'mamnun.ahmed@fxify.com',     label: 'Mamnun Ahmed' },
-    { val: 'roshan.ganesh@fxify.com',    label: 'Roshan Ganesh' },
-    { val: 'shatha.altrad@fxify.com',    label: 'Shatha Altrad' },
-  ];
-
-  var overlay = document.createElement('div');
-  overlay.id = 'sw-modal';
-  overlay.style.cssText = [
-    'position:fixed','top:0','left:0','right:0','bottom:0',
-    'background:rgba(0,0,0,0.8)','z-index:99999',
-    'display:flex','align-items:center','justify-content:center',
-    'padding:20px','font-family:Inter,system-ui,sans-serif'
-  ].join(';');
-
-  var box = document.createElement('div');
-  box.style.cssText = 'background:var(--bg2);border:1px solid rgba(255,255,255,0.15);border-radius:16px;width:100%;max-width:380px;padding:24px;';
-
-  var title = document.createElement('p');
-  title.textContent = 'Switch view';
-  title.style.cssText = 'font-size:17px;font-weight:700;color:var(--text);margin:0 0 6px;';
-
-  var sub = document.createElement('p');
-  sub.textContent = 'Preview any role or writer dashboard.';
-  sub.style.cssText = 'font-size:13px;color:#536471;margin:0 0 16px;';
-
-  var sel = document.createElement('select');
-  sel.id = 'sw-select';
-  sel.style.cssText = 'width:100%;padding:10px 12px;background:var(--bg3);border:1px solid rgba(255,255,255,0.15);border-radius:8px;color:var(--text);font-size:14px;margin-bottom:16px;outline:none;display:block;';
-  
-  var defaultOpt = document.createElement('option');
-  defaultOpt.value = ''; defaultOpt.textContent = '— Select view —';
-  sel.appendChild(defaultOpt);
-  
-  writers.forEach(function(w) {
-    var opt = document.createElement('option');
-    opt.value = w.val; opt.textContent = w.label;
-    sel.appendChild(opt);
-  });
-
-  var btnRow = document.createElement('div');
-  btnRow.style.cssText = 'display:flex;gap:8px;';
-
-  var cancelBtn = document.createElement('button');
-  cancelBtn.textContent = 'Cancel';
-  cancelBtn.style.cssText = 'flex:1;padding:10px;background:transparent;border:1px solid rgba(255,255,255,0.12);border-radius:9999px;color:var(--text3);font-size:14px;cursor:pointer;font-family:inherit;';
-  cancelBtn.onclick = function() { overlay.remove(); };
-
-  var confirmBtn = document.createElement('button');
-  confirmBtn.textContent = 'View →';
-  confirmBtn.style.cssText = 'flex:1;padding:10px;background:#e7e9ea;border:none;border-radius:9999px;color:#000;font-size:14px;font-weight:700;cursor:pointer;font-family:inherit;';
-  confirmBtn.onclick = function() {
-    var val = sel.value;
-    if (!val) { alert('Please select a view'); return; }
-    overlay.remove();
-    doSwitchView(val);
-  };
-
-  overlay.onclick = function(e) { if (e.target === overlay) overlay.remove(); };
-
-  btnRow.appendChild(cancelBtn);
-  btnRow.appendChild(confirmBtn);
-  box.appendChild(title);
-  box.appendChild(sub);
-  box.appendChild(sel);
-  box.appendChild(btnRow);
-  overlay.appendChild(box);
-  document.body.appendChild(overlay);
-}
-
-function doSwitchView(sel) {
-  // Remove old banner
-  var old = document.getElementById('imp-banner');
-  if (old) old.remove();
-
-  var targetScreen, label;
-
-  if (sel === '__writer_self__') {
-    targetScreen = 'writer'; label = '✍️ Your writer dashboard';
-    impersonating = sel; activeRole = 'writer';
-    currentWriterEmail = currentUser ? currentUser.email : '';
-    updateTopbars({ name: (currentUser ? currentUser.name : 'Sheperd') + ' (writer)', initials: currentUser ? currentUser.initials : 'SM', av: '' });
-  } else if (sel === '__david__') {
-    targetScreen = 'admin'; label = '✅ Manager view (David)';
-    impersonating = sel; activeRole = 'admin';
-    updateTopbars({ name: 'David Xavier (viewing)', initials: 'DX', av: 'a' });
-  } else if (sel === '__chris__') {
-    targetScreen = 'admin'; label = '✅ Manager view (Chris)';
-    impersonating = sel; activeRole = 'admin';
-    updateTopbars({ name: 'Chris (viewing)', initials: 'CH', av: '' });
-  } else {
-    var def = USERS[sel];
-    if (!def) { toast('Writer not found'); return; }
-    targetScreen = 'writer'; label = '👁 ' + def.name;
-    impersonating = sel; activeRole = 'writer';
-    currentWriterEmail = sel;
-    updateTopbars({ name: def.name + ' (viewing)', initials: def.initials, av: '' });
-  }
-
-  goScreen(targetScreen);
-
-  if (targetScreen === 'writer') {
-    document.querySelectorAll('#writer .pg').forEach(function(p){ p.classList.remove('active'); });
-    var wd = document.getElementById('w-drafts');
-    if (wd) wd.classList.add('active');
-    document.querySelectorAll('#writer .nlink').forEach(function(n){ n.classList.remove('active'); });
-    var wdl = document.querySelector('#writer .nlink[data-pg="w-drafts"]');
-    if (wdl) wdl.classList.add('active');
-    loadWriterDrafts();
-  } else {
-    loadPipeline();
-  }
-
-  // Add banner
-  var screen = document.getElementById(targetScreen);
-  if (screen) {
-    var banner = document.createElement('div');
-    banner.id = 'imp-banner';
-    banner.style.cssText = 'background:rgba(29,155,240,0.08);border-bottom:1px solid rgba(29,155,240,0.2);padding:8px 20px;display:flex;align-items:center;justify-content:space-between;font-size:13px;';
-    banner.innerHTML = '<span style="color:#1d9bf0;">' + label + '</span>';
-    var backBtn = document.createElement('button');
-    backBtn.textContent = '← Back to my view';
-    backBtn.style.cssText = 'padding:4px 12px;background:transparent;border:1px solid rgba(255,255,255,0.15);border-radius:9999px;color:var(--text3);font-size:12px;cursor:pointer;font-family:inherit;';
-    backBtn.onclick = doExitSwitchView;
-    banner.appendChild(backBtn);
-    var tb = screen.querySelector('.topbar');
-    if (tb) tb.insertAdjacentElement('afterend', banner);
-    else screen.prepend(banner);
-  }
-  toast('Switched to: ' + label);
-}
-
-function doExitSwitchView() {
-  var banner = document.getElementById('imp-banner');
-  if (banner) banner.remove();
-  impersonating = null;
-  currentWriterEmail = currentUser ? currentUser.email : '';
-  activeRole = currentUser ? currentUser.role : 'admin';
-  updateTopbars(currentUser);
-  goScreen(currentUser ? currentUser.screen : 'admin');
-  loadPipeline();
-}
-
-
-// v2 Hub is the only generate interface — tab switcher removed
-  // ═══════════════════════════════════════════════════════════════════
-// v2 TOPIC INTELLIGENCE HUB
-// ═══════════════════════════════════════════════════════════════════
-
-// ── CONFIG ───────────────────────────────────────────────────────────
+// ── V2 ENGINE CONFIG ─────────────────────────────────────────────────────
 var V2_CONFIG = {
-  firecrawl: 'fc-918ef0f7ffac439caca532272347e770',
   webhook:   'https://sheperd.app.n8n.cloud/webhook/generate-draft',
   dfsLogin:  'sheperd.morena@fxify.com',
   dfsPass:   '953542a6e47cca32',
-  competitors: {
-    all:        [
-      'https://ftmo.com/en/blog/',
-      'https://fundednext.com/blog/',
-      'https://apextraderfunding.com/blog/',
-      'https://www.topstep.com/blog/',
-      'https://the5ers.com/blog/',
-      'https://e8funding.com/blog/'
-    ],
-    ftmo:       ['https://ftmo.com/en/blog/'],
-    fundednext: ['https://fundednext.com/blog/'],
-    apex:       ['https://apextraderfunding.com/blog/']
-  }
+  firecrawl: 'fc-3cdb13de532d48c2a5b2692ebb9b3fcf'
 };
 
-// Load saved creds on boot
-(function() {
-  try {
-    var login = localStorage.getItem('dfs_login');
-    var pass  = localStorage.getItem('dfs_pass');
-    if (login) V2_CONFIG.dfsLogin = login;
-    if (pass)  V2_CONFIG.dfsPass  = pass;
-    var el = document.getElementById('dfs-status');
-    if (el) {
-      el.textContent = 'Connected';
-      el.style.background = 'var(--greenL)';
-      el.style.color = 'var(--green)';
-    }
-    var li = document.getElementById('dfs-login');
-    var pi = document.getElementById('dfs-password');
-    if (li && login) li.value = login;
-    if (pi && pass)  pi.value = pass;
-  } catch(e) {}
-})();
-
-// ── SHARED UTILS ──────────────────────────────────────────────────────
-function parseJSON(text) {
-  if (!text) throw new Error('Empty response');
-  var m = text.match(/\{[\s\S]*\}/);
-  if (!m) throw new Error('No JSON in response');
-  var raw = m[0];
-  try { return JSON.parse(raw); } catch(e) {
-    raw = raw.replace(/,\s*([\}\]])/g, '$1');
-    var opens   = (raw.match(/\{/g)||[]).length - (raw.match(/\}/g)||[]).length;
-    var openArr = (raw.match(/\[/g)||[]).length - (raw.match(/\]/g)||[]).length;
-    if ((raw.match(/"/g)||[]).length % 2 !== 0) raw += '"';
-    for (var a = 0; a < openArr; a++) raw += ']';
-    for (var b = 0; b < opens;   b++) raw += '}';
-    return JSON.parse(raw);
-  }
-}
-
-function v2Toast(msg) { toast(msg); }
 
 async function v2Fetch(prompt, max_tokens) {
   
@@ -7508,126 +6863,140 @@ async function v2ScrapeCompetitors(compKey) {
     tradeify:   ['Tradeify'],
   };
   var firms = competitorMap[compKey || 'all'] || competitorMap.all;
+  var serpWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/serp');
+  var researchWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/research');
 
-  // Try live research first (requires /webhook/research in n8n)
-  // Run 3 targeted searches in parallel for maximum intelligence
-  var searches = [
-    {
-      key: 'recent_blog',
-      query: firms.slice(0,3).join(' OR ') + ' prop firm blog 2026 latest articles',
-      instructions:
-        'Search for recent blog posts from these prop firms: ' + firms.join(', ') + '. ' +
-        'Find their most recent articles. For each firm list: ' +
-        '(1) recent article titles, (2) what topics they cover most, (3) what they never write about. ' +
-        'Be specific about actual article titles you find, not guesses.'
-    },
-    {
-      key: 'youtube',
-      query: firms.slice(0,3).join(' OR ') + ' prop firm YouTube 2026 video topics',
-      instructions:
-        'Search YouTube for recent videos from prop firms: ' + firms.join(', ') + '. ' +
-        'List actual video titles you find. What topics dominate their channels? ' +
-        'What gaps exist — what questions traders ask that no prop firm has made a video about?'
-    },
-    {
-      key: 'reddit',
-      query: 'site:reddit.com prop firm 2026 question complaint advice FTMO FundedNext FXIFY',
-      instructions:
-        'Search Reddit for recent trader discussions about prop firms. ' +
-        'Find actual posts and questions. What are traders complaining about? ' +
-        'What questions come up repeatedly with no good answer? ' +
-        'List specific post titles or questions you find.'
-    }
+  // Try DataForSEO SERP for competitor content — search each firm's blog
+  // Run 2 SERP searches: competitor general content + trader Reddit questions
+  var serpSearches = [
+    'prop firm blog 2026 ' + firms.slice(0,3).join(' OR '),
+    'site:reddit.com prop firm funded trading 2026 trader question advice'
   ];
 
-  // Run all searches in parallel
-  var results = await Promise.allSettled(
-    searches.map(function(s) {
-      return v2LiveResearch(s.query, s.instructions).then(function(text) {
-        return { key: s.key, text: text };
+  var serpResults = await Promise.allSettled(
+    serpSearches.map(function(kw) {
+      return fetch(serpWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          keyword: kw,
+          login:   V2_CONFIG.dfsLogin,
+          pass:    V2_CONFIG.dfsPass,
+          location: 2840,
+          language: 'en',
+          depth:   10
+        })
+      }).then(function(r) { return r.json(); }).then(function(data) {
+        if (data.tasks && data.tasks[0] && data.tasks[0].result && data.tasks[0].result[0]) {
+          return (data.tasks[0].result[0].items || [])
+            .filter(function(i) { return i.type === 'organic'; })
+            .slice(0, 8)
+            .map(function(i) { return i.title + ' — ' + (i.description || '').substring(0, 80); })
+            .join('\n');
+        }
+        return '';
       });
     })
   );
 
-  var liveData = {};
-  results.forEach(function(r) {
-    if (r.status === 'fulfilled' && r.value.text) {
-      liveData[r.value.key] = r.value.text;
+  var liveCompContent = serpResults
+    .filter(function(r) { return r.status === 'fulfilled' && r.value; })
+    .map(function(r) { return r.value; })
+    .join('\n\n');
+
+  var hasLiveSERP = liveCompContent.length > 100;
+  console.log('[Competitors] live SERP data:', hasLiveSERP ? 'YES (' + liveCompContent.length + ' chars)' : 'NO');
+
+  // Try live research webhook (Claude with web search) if available
+  var liveResearch = '';
+  if (researchWebhook !== serpWebhook) {
+    try {
+      var rr = await fetch(researchWebhook, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          query: firms.join(' OR ') + ' prop firm blog YouTube 2026',
+          instructions:
+            'Search for recent content from these prop trading firms: ' + firms.join(', ') + '. ' +
+            'Find actual article titles and video topics they published recently. ' +
+            'What topics do they cover? What questions do traders ask in comments? ' +
+            'What are they NOT covering that FXIFY could own? ' +
+            'Be specific — list actual titles you find, not general topics.',
+          max_tokens: 1000
+        })
+      });
+      if (rr.ok) {
+        var rd = await rr.json();
+        liveResearch = rd.text || (rd.content && rd.content[0] && rd.content[0].text) || '';
+        console.log('[Competitors] live research:', liveResearch.length, 'chars');
+      }
+    } catch(re) {
+      console.warn('[Competitors] research webhook failed:', re.message);
     }
-  });
+  }
 
-  var hasLiveData = Object.keys(liveData).length > 0;
-  console.log('[Competitors] live data sections:', Object.keys(liveData));
+  var hasAnyLiveData = hasLiveSERP || liveResearch.length > 100;
 
-  if (hasLiveData) {
-    // We have real data — return it structured for the prompt
+  if (hasAnyLiveData) {
+    // Build structured response from live data
+    var combinedData =
+      (hasLiveSERP ? '=== LIVE SERP DATA (DataForSEO ' + new Date().toLocaleDateString() + ') ===\n' + liveCompContent + '\n\n' : '') +
+      (liveResearch ? '=== LIVE WEB RESEARCH ===\n' + liveResearch + '\n\n' : '');
+
     return [{
       domain: 'Live Research',
-      source: 'Web search',
-      articles: [
-        { title: 'BLOG CONTENT: ' + (liveData.recent_blog || '').substring(0, 500), url: '', subtopics: [], content: null },
-        { title: 'YOUTUBE CONTENT: ' + (liveData.youtube || '').substring(0, 500), url: '', subtopics: [], content: null },
-        { title: 'REDDIT/COMMUNITY: ' + (liveData.reddit || '').substring(0, 500), url: '', subtopics: [], content: null },
-      ],
-      fullArticles: 3,
+      source: 'DataForSEO SERP + Web Search',
+      articles: [{ title: combinedData.substring(0, 2000), url: '', subtopics: [], content: null }],
+      fullArticles: 1,
       missing: [],
-      content_angle: 'Live web research - ' + new Date().toLocaleDateString(),
-      publish_frequency: 'Live data',
+      content_angle: 'Live data — ' + new Date().toLocaleDateString(),
+      publish_frequency: 'Live',
       traffic_est: 'live',
       fxify_counter: ''
     }];
   }
 
-  // Fallback: single Claude call with training knowledge
-  // This is what we had before — useful but not live
+  // Fallback: Claude training knowledge
   console.warn('[Competitors] no live data — using Claude training knowledge');
   try {
-    var prompt =
-      'You are a content intelligence analyst. June 2026.\n\n' +
-      'Based on your most recent knowledge, what have these prop firms published recently:\n' +
-      firms.join(', ') + '\n\n' +
-      'For EACH firm be specific about:\n' +
-      '1. Actual article or video titles (not topics — real titles)\n' +
-      '2. Keywords they are targeting aggressively\n' +
-      '3. Angles or topics they have NEVER covered\n\n' +
-      'Then: what are traders asking on Reddit/YouTube comments about prop firms ' +
-      'that none of these firms have answered well in content?\n\n' +
-      'Return ONLY valid JSON no markdown:\n' +
-      '{"competitors":[{"firm":"FTMO","recent_content":["exact title 1","exact title 2"],' +
-      '"keywords":["kw1","kw2"],"gaps":["what they never cover 1","gap 2"]}],' +
-      '"trader_questions":["question traders ask with no good content answer 1","question 2"]}';
-
-    var text = await v2Fetch(prompt, 2000);
+    var text = await v2Fetch(
+      'Content intelligence for FXIFY prop firm. June 2026.\n\n' +
+      'Based on your knowledge, what have these prop firms published recently: ' + firms.join(', ') + '?\n\n' +
+      'For each firm, list:\n' +
+      '1. Actual recent article or video titles (be specific)\n' +
+      '2. Keywords they target\n' +
+      '3. Topics they NEVER cover — gaps FXIFY could own\n\n' +
+      'Also: what are traders asking on Reddit/Discord about prop firms that no one has answered well?\n\n' +
+      'Return ONLY valid JSON:\n' +
+      '{"competitors":[{"firm":"FTMO","recent_titles":["title1","title2"],"gaps":["gap1","gap2"]}],' +
+      '"trader_questions":["question1","question2"]}',
+      2000
+    );
     var parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
-    var competitors = parsed.competitors || [];
-    var questions   = parsed.trader_questions || [];
-
-    var articles = questions.map(function(q) {
-      return { title: '[Trader question] ' + q, url: '', subtopics: [], content: null };
+    var articles = [];
+    (parsed.trader_questions || []).forEach(function(q) {
+      articles.push({ title: '[Trader question] ' + q, url: '', subtopics: [], content: null });
     });
-
-    competitors.forEach(function(c) {
-      (c.recent_content||[]).forEach(function(title) {
-        articles.push({ title: '[' + c.firm + '] ' + title, url: '', subtopics: c.keywords||[], content: null });
+    (parsed.competitors || []).forEach(function(c) {
+      (c.recent_titles || []).forEach(function(t) {
+        articles.push({ title: '[' + c.firm + '] ' + t, url: '', subtopics: [], content: null });
       });
     });
-
     return [{
       domain: 'Competitor Research',
       source: 'Claude training knowledge',
       articles: articles,
       fullArticles: articles.length,
-      missing: competitors.reduce(function(acc, c) { return acc.concat(c.gaps||[]); }, []),
-      content_angle: 'Based on training data — add /webhook/research to n8n for live data',
+      missing: (parsed.competitors || []).reduce(function(acc,c){ return acc.concat(c.gaps||[]); }, []),
+      content_angle: 'Training knowledge — add /webhook/serp for live data',
       publish_frequency: 'Estimated',
       traffic_est: 'unknown',
       fxify_counter: ''
     }];
-  } catch(e) {
-    console.warn('[Competitors] fallback also failed:', e.message);
-    return [];
-  }
+  } catch(e) { return []; }
 }
+
+
 
 
 
@@ -7703,20 +7072,65 @@ async function v2LiveResearch(query, instructions) {
 }
 
 async function v2SerpResearch(keyword) {
-  // Try live research webhook first, fall back to Claude estimate
-  var result = await v2LiveResearch(
-    keyword + ' prop firm 2026',
-    'Search Google for this query. List the top 8 results with their titles, URLs, ' +
-    'and one sentence describing their angle. Return as plain text, one result per line.'
-  );
-  if (result && result.length > 100) {
-    return result.split('\n').filter(Boolean).map(function(line, i) {
-      return { title: line, url: '', description: '' };
+  // Call DataForSEO SERP API via n8n — same credentials already in V2_CONFIG
+  var serpWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/serp');
+  try {
+    console.log('[SERP] calling:', serpWebhook, 'keyword:', keyword);
+    var r = await fetch(serpWebhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        keyword:  keyword,
+        login:    V2_CONFIG.dfsLogin,
+        pass:     V2_CONFIG.dfsPass,
+        location: 2840,
+        language: 'en',
+        depth:    10
+      })
     });
+    console.log('[SERP] HTTP:', r.status);
+    var raw = await r.text();
+    if (!raw || !raw.trim()) throw new Error('SERP webhook returned empty');
+
+    var data = JSON.parse(raw);
+    // Parse DataForSEO SERP response format
+    var items = [];
+    if (data.tasks && data.tasks[0] && data.tasks[0].result && data.tasks[0].result[0]) {
+      var result = data.tasks[0].result[0];
+      items = (result.items || []).filter(function(item) {
+        return item.type === 'organic';
+      }).slice(0, 10).map(function(item) {
+        return {
+          title:       item.title || '',
+          url:         item.url || '',
+          description: item.description || '',
+          rank:        item.rank_absolute || 0
+        };
+      });
+    } else if (Array.isArray(data)) {
+      // Already processed
+      items = data;
+    }
+
+    console.log('[SERP] results:', items.length, 'organic results');
+    return items;
+  } catch(e) {
+    console.warn('[SERP] DataForSEO failed:', e.message, '— falling back to Claude estimate');
+    // Fallback: ask Claude what typically ranks for this keyword
+    try {
+      var text = await v2Fetch(
+        'Based on your knowledge, what pages typically rank in the top 10 Google results for: "' + keyword + '" in prop trading?\n' +
+        'List 6 results with their approximate title and the angle they take.\n' +
+        'Return ONLY valid JSON no markdown: {"results":[{"title":"page title","url":"example.com","description":"their angle in one sentence"}]}',
+        400
+      );
+      var p = JSON.parse(text.replace(/```json|```/g,'').trim());
+      return p.results || [];
+    } catch(e2) { return []; }
   }
-  // Fallback: return empty so the prompt just skips serpBlock
-  return [];
 }
+
+
 
 
 
@@ -7950,116 +7364,111 @@ function renderTopicGrid(topics, isStub, publishedCount) {
   if (!output) return;
   if (!topics || !topics.length) {
     output.innerHTML =
-      '<div style="padding:40px 24px;text-align:center;color:var(--text3);">' +
-        '<p style="font-size:28px;margin-bottom:12px;opacity:.3;">◈</p>' +
-        '<p style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:4px;">No topics generated</p>' +
-        '<p style="font-size:12px;">Check the browser console for details.</p>' +
+      '<div style="padding:40px 0;text-align:center;color:var(--text3);">' +
+        '<p style="font-size:13px;">No topics generated. Check console for details.</p>' +
       '</div>';
     return;
   }
 
-  // ── Yoast-style intent + tier config ────────────────────────
   var INTENT = {
-    'Commercial':    { label:'⭐ Commercial',    bg:'#FFF7ED', fc:'#C2410C', border:'#FED7AA' },
-    'Transactional': { label:'⭐ Commercial',    bg:'#FFF7ED', fc:'#C2410C', border:'#FED7AA' },
-    'Informational': { label:'ℹ Informational', bg:'#EFF6FF', fc:'#1D4ED8', border:'#BFDBFE' },
+    'Commercial':    { label:'⭐ Commercial',    bg:'#FFF7ED', fc:'#C2410C', bdr:'#FED7AA' },
+    'Transactional': { label:'⭐ Commercial',    bg:'#FFF7ED', fc:'#C2410C', bdr:'#FED7AA' },
+    'Informational': { label:'ℹ Informational', bg:'#EFF6FF', fc:'#1D4ED8', bdr:'#BFDBFE' },
   };
   var TIER = {
-    '1': { label:'Tier 1 · High intent',  fc:'#059669' },
-    '2': { label:'Tier 2 · Mid-funnel',   fc:'#D97706' },
-    '3': { label:'Tier 3 · Awareness',    fc:'#6B7280' },
+    '1': { label:'Tier 1 · High intent',  fc:'#059669', bg:'#DCFCE7' },
+    '2': { label:'Tier 2 · Mid-funnel',   fc:'#D97706', bg:'#FEF3C7' },
+    '3': { label:'Tier 3 · Awareness',    fc:'#6B7280', bg:'#F3F4F6' },
   };
 
-  var total = topics.length;
-
-  // ── Header ──────────────────────────────────────────────────
   var html =
-    '<div style="margin-bottom:20px;">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
-        '<p style="font-size:15px;font-weight:700;color:var(--text);">' + total + ' content suggestions</p>' +
-        '<div style="display:flex;gap:8px;">' +
-          '<button class="btn btn-s" id="v2-export-btn" style="font-size:11px;">Export CSV</button>' +
-          '<button class="btn btn-s" id="v2-refresh-btn" style="font-size:11px;">↻ Refresh</button>' +
-        '</div>' +
+    // ── Header (matches Yoast exactly) ──
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding-bottom:12px;border-bottom:1px solid var(--border);">' +
+      '<div style="display:flex;align-items:center;gap:8px;">' +
+        '<span style="font-size:13px;font-weight:700;color:var(--text);">Content suggestions</span>' +
+        '<span style="font-size:11px;font-weight:700;background:var(--brand);color:#fff;padding:1px 8px;border-radius:10px;">' + topics.length + '</span>' +
       '</div>' +
-      '<p style="font-size:12px;color:var(--text3);">' +
-        (publishedCount||0) + ' FXIFY articles cross-referenced · ' +
-        (isStub ? '<span style="color:var(--amber);">Keyword volumes estimated — add DataForSEO for live data</span>' : 'Live keyword data from DataForSEO') +
-      '</p>' +
+      '<div style="display:flex;gap:6px;">' +
+        '<button class="btn btn-s" id="v2-export-btn" style="font-size:11px;">Export</button>' +
+        '<button class="btn btn-s" id="v2-refresh-btn" style="font-size:11px;">↻ Refresh</button>' +
+      '</div>' +
     '</div>' +
 
-    // ── Pagination counter like Yoast ──
-    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">' +
-      '<span style="font-size:11px;font-weight:600;color:var(--text3);">CONTENT SUGGESTIONS</span>' +
-      '<span style="font-size:10px;background:var(--brand);color:#fff;padding:1px 7px;border-radius:10px;font-weight:700;">' + total + '</span>' +
-    '</div>' +
+    (isStub ?
+      '<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#92400E;">⚠ Keyword volumes are estimated. Add DataForSEO SERP webhook for live data.</div>' : '') +
 
-    '<div style="display:flex;flex-direction:column;gap:1px;border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">';
+    // ── Topic list ──
+    '<div style="margin-top:12px;">';
 
   topics.forEach(function(t, idx) {
     var ist   = INTENT[t.intent] || INTENT['Informational'];
     var tier  = TIER[String(t.conversion_tier||'3')] || TIER['3'];
-    var score = t.opportunity_score || 0;
+    var score = parseInt(t.opportunity_score) || 0;
+    var scoreCol = score>=80?'#059669':score>=65?'#D97706':'#9CA3AF';
     var kd    = parseInt(t.kd_score) || 0;
-    var kdCol = kd < 15 ? '#059669' : kd < 30 ? '#D97706' : '#DC2626';
-    var volStr = t.search_volume && t.search_volume !== 'TBC' ? t.search_volume + '/mo' : '';
+    var kdTxt = t.kd_score && t.kd_score !== 'TBC' ? 'KD ' + t.kd_score : '';
+    var volTxt = t.search_volume && t.search_volume !== 'TBC' ? t.search_volume + '/mo' : '';
+    var isLast = idx === topics.length - 1;
 
-    // Build "why this converts" paragraph — Yoast style explanation
-    var why = '';
-    if (t.competitor_gap) why += t.competitor_gap + ' ';
-    if (t.fxify_angle) why += t.fxify_angle + ' ';
-    if (t.why_now) why += t.why_now;
-    if (!why.trim() && t.short_form_hook) why = t.short_form_hook;
+    // Build the why paragraph — Yoast's one-paragraph explanation
+    var why = [t.competitor_gap, t.fxify_angle, t.why_now].filter(Boolean).join(' ');
+    if (!why && t.short_form_hook) why = t.short_form_hook;
 
     html +=
-      '<div style="background:var(--bg2);padding:16px 20px;' +
-        (idx < topics.length-1 ? 'border-bottom:1px solid var(--border);' : '') +
-        'transition:background .1s;cursor:pointer;" ' +
-        'onmouseenter="this.style.background=\'var(--bg3)\'" ' +
-        'onmouseleave="this.style.background=\'var(--bg2)\'" ' +
-        'onclick="handleTopicClick(' + idx + ')">' +
+      '<div style="padding:16px 0;' + (isLast?'':'border-bottom:1px solid var(--border);') + '">' +
 
-        // Intent badge row — exactly like Yoast
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
-          '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;' +
-            'background:' + ist.bg + ';color:' + ist.fc + ';border:1px solid ' + ist.border + ';' +
-            'border-radius:4px;padding:2px 9px;">' + ist.label + '</span>' +
-          '<span style="font-size:11px;font-weight:500;color:' + tier.fc + ';">' + tier.label + '</span>' +
-          '<span style="margin-left:auto;display:flex;align-items:center;gap:10px;">' +
-            (volStr ? '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">📊 ' + volStr + '</span>' : '') +
-            (kd ? '<span style="font-size:10px;font-weight:700;color:' + kdCol + ';font-family:var(--mono);">KD ' + kd + '</span>' : '') +
-            '<span style="font-size:11px;font-weight:700;color:' + (score>=80?'#059669':score>=65?'#D97706':'#6B7280') + ';">' + score + '</span>' +
+        // ── Row 1: Intent badge + tier + score ──
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
+
+          // Intent badge — exactly like Yoast screenshot
+          '<span style="display:inline-flex;align-items:center;font-size:11px;font-weight:600;' +
+            'background:' + ist.bg + ';color:' + ist.fc + ';' +
+            'border:1px solid ' + ist.bdr + ';border-radius:4px;padding:2px 10px;gap:4px;">' +
+            ist.label +
           '</span>' +
+
+          // Tier
+          '<span style="font-size:11px;font-weight:500;' +
+            'background:' + tier.bg + ';color:' + tier.fc + ';' +
+            'border-radius:4px;padding:2px 8px;">' +
+            tier.label +
+          '</span>' +
+
+          // KD + Vol + Score — right side
+          '<div style="margin-left:auto;display:flex;align-items:center;gap:10px;">' +
+            (volTxt ? '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">' + volTxt + '</span>' : '') +
+            (kdTxt  ? '<span style="font-size:10px;font-weight:700;color:' + (kd<15?'#059669':kd<30?'#D97706':'#DC2626') + ';font-family:var(--mono);">' + kdTxt + '</span>' : '') +
+            '<span style="font-size:11px;font-weight:700;color:' + scoreCol + ';font-family:var(--mono);">' + score + '</span>' +
+          '</div>' +
         '</div>' +
 
-        // Title — bold, the content hook
-        '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:8px;">' +
-          (t.title || 'Untitled topic') +
+        // ── Row 2: Title — bold, the content hook ──
+        '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:' + (why?'8px':'10px') + ';">' +
+          (t.title || 'Untitled') +
         '</p>' +
 
-        // Why paragraph — the Yoast explanation text
-        (why.trim() ?
-          '<p style="font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:10px;">' +
-            why.trim() +
+        // ── Row 3: Why paragraph — Yoast's one-para explanation ──
+        (why ?
+          '<p style="font-size:13px;color:var(--text3);line-height:1.65;margin-bottom:10px;">' +
+            why +
           '</p>' : '') +
 
-        // Hook line — if present, show as italic blue like a video teaser
-        (t.short_form_hook && t.short_form_hook !== why.trim() ?
-          '<p style="font-size:12px;color:var(--teal);font-style:italic;border-left:3px solid var(--teal);' +
-            'padding-left:10px;margin-bottom:10px;line-height:1.5;">"' + t.short_form_hook + '"</p>' : '') +
+        // ── Row 4: Hook line (italic blue) ──
+        (t.short_form_hook && t.short_form_hook !== why ?
+          '<p style="font-size:12px;color:var(--blue);font-style:italic;border-left:3px solid var(--blue);padding-left:10px;margin-bottom:10px;line-height:1.5;">"' +
+            t.short_form_hook + '"' +
+          '</p>' : '') +
 
-        // Keyword + action buttons
-        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
+        // ── Row 5: Keyword pill + action button ──
+        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
           (t.primary_keyword ?
-            '<span style="font-size:11px;color:var(--brand);font-family:var(--mono);' +
-              'background:var(--brandL);padding:2px 8px;border-radius:4px;">' +
-              '🔑 ' + t.primary_keyword + '</span>' : '') +
-          '<div style="margin-left:auto;display:flex;gap:6px;">' +
-            '<button class="btn btn-s" onclick="event.stopPropagation();generateTopicBrief(window._v2Topics[' + idx + '])" ' +
-              'style="font-size:11px;background:var(--teal);border-color:var(--teal);color:#fff;">Generate brief →</button>' +
-            '<button class="btn btn-s btn-ghost" onclick="event.stopPropagation();createTaskFromTopic(window._v2Topics[' + idx + '])" ' +
-              'style="font-size:11px;">+ Task</button>' +
-          '</div>' +
+            '<span style="font-size:11px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 9px;font-family:var(--mono);">🔑 ' + t.primary_keyword + '</span>' : '') +
+          // NLP entities if present
+          ((t.nlp_entities||[]).slice(0,3).map(function(e){
+            return '<span style="font-size:10px;background:var(--g2);color:var(--g5);border-radius:4px;padding:1px 7px;">' + e + '</span>';
+          })).join('') +
+          '<button class="btn btn-p btn-s" style="margin-left:auto;font-size:11px;" ' +
+            'onclick="window.createTaskFromTopic(window._v2Topics[' + idx + '])">+ Create task</button>' +
         '</div>' +
 
       '</div>';
@@ -8069,6 +7478,8 @@ function renderTopicGrid(topics, isStub, publishedCount) {
   output.innerHTML = html;
   window._v2Topics = topics;
 }
+
+
 
 window.handleTopicClick = function handleTopicClick(idx) {
   var t = window._v2Topics && window._v2Topics[idx];
@@ -8081,29 +7492,7 @@ window.handleTopicClick = function handleTopicClick(idx) {
 
 
 // ── TOPIC → BRIEF + TASK BRIDGE ────────────────────────────
-window.generateTopicBrief = function generateTopicBrief(topic) {
-  if (!topic) return;
-  // Build an article-like object that openBriefModal expects
-  var art = {
-    title:   topic.title || 'Untitled topic',
-    url:     '',
-    content: JSON.stringify({
-      title:           topic.title,
-      intent:          topic.intent,
-      conversion_tier: topic.conversion_tier,
-      primary_keyword: topic.primary_keyword,
-      search_volume:   topic.search_volume,
-      kd_score:        topic.kd_score,
-      short_form_hook: topic.short_form_hook,
-      competitor_gap:  topic.competitor_gap,
-      fxify_angle:     topic.fxify_angle,
-      why_now:         topic.why_now,
-      nlp_entities:    topic.nlp_entities,
-      opportunity_score: topic.opportunity_score
-    })
-  };
-  openBriefModal(art);
-}
+window.generateTopicBrief = function(topic){ if(topic) window.createTaskFromTopic(topic); }
 
 window.createTaskFromTopic = function createTaskFromTopic(topic) {
   if (!topic) return;
@@ -8136,6 +7525,167 @@ window.createTaskFromTopic = function createTaskFromTopic(topic) {
   var pipelineLink = document.querySelector('.nlink[data-pg="a-pipeline"]');
   if (pipelineLink) pipelineLink.click();
   v2Toast('Topic added to task form — fill in assignee and submit');
+}
+
+
+// ── KEYWORD ANALYSIS ─────────────────────────────────────────
+async function runKeywordAnalysis() {
+  var seed   = (document.getElementById('kw-seed-input')||{}).value || '';
+  var btn    = document.getElementById('kw-run-btn');
+  var output = document.getElementById('kw-output');
+  if (!seed.trim()) { v2Toast('Enter a keyword first'); return; }
+  if (btn) { btn.disabled=true; btn.textContent='Analysing...'; }
+
+  output.innerHTML =
+    '<div style="text-align:center;padding:32px;color:var(--text3);">' +
+    '<div class="loader-spinner"></div>' +
+    '<p style="font-size:13px;margin-top:12px;">Pulling keyword data from DataForSEO...</p>' +
+    '</div>';
+
+  try {
+    // Step 1: Get keyword data from DFS
+    var kwData = await dfsKeywords(seed);
+    var isStub  = kwData.length > 0 && kwData[0].stub;
+
+    // Step 2: Get SERP for the seed (what ranks)
+    var serpData = await v2SerpResearch(seed);
+
+    // Step 3: Ask Claude to analyse and cluster
+    var kwSummary = kwData.slice(0,20).map(function(k){
+      return k.keyword + ' | vol:' + (k.search_volume||'?') + ' | KD:' + (k.difficulty||'?') + ' | CPC:' + (k.cpc||'?');
+    }).join('\n');
+
+    var serpSummary = serpData.slice(0,6).map(function(r,i){
+      return (i+1) + '. ' + r.title + (r.url ? ' (' + r.url.replace(/https?:\/\/(www\.)?/,'').split('/')[0] + ')' : '');
+    }).join('\n');
+
+    var analysisText = await v2Fetch(
+      'Keyword analysis for FXIFY prop trading firm. June 2026.\n\n' +
+      'SEED KEYWORD: "' + seed + '"\n\n' +
+      'DATAFORSEO DATA:\n' + (kwSummary || 'No DFS data available') + '\n\n' +
+      (serpSummary ? 'CURRENTLY RANKING (top 6):\n' + serpSummary + '\n\n' : '') +
+      'Provide a keyword intelligence report:\n' +
+      '1. Which keywords have the best opportunity (high volume + low KD)?\n' +
+      '2. What is the search intent pattern across this cluster?\n' +
+      '3. Which keywords does FXIFY likely NOT rank for yet?\n' +
+      '4. What related keywords are missing from this list?\n' +
+      '5. Recommended content strategy for this keyword cluster.\n\n' +
+      'Also flag any keywords showing rising trend in 2026.\n\n' +
+      'Return ONLY valid JSON:\n' +
+      '{"summary":"2 sentence overview","opportunities":[{"keyword":"term","volume":"number","kd":"0-100","cpc":"$X.XX","intent":"Commercial|Informational|Transactional","priority":"High|Medium|Low","notes":"why this matters for FXIFY"}],"missing_keywords":["kw1","kw2","kw3"],"rising":["kw1","kw2"],"strategy":"2-3 sentence content strategy for this cluster"}',
+      1500
+    );
+
+    var analysis = JSON.parse(analysisText.replace(/```json|```/g,'').trim());
+    renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub);
+
+  } catch(e) {
+    console.error('[Keywords]', e);
+    output.innerHTML =
+      '<div style="background:var(--bg2);border:1px solid var(--urgent);border-radius:var(--rl);padding:16px;">' +
+        '<p style="color:var(--urgent);font-weight:600;">Error: ' + e.message + '</p>' +
+      '</div>';
+  }
+
+  if (btn) { btn.disabled=false; btn.textContent='🔍 Analyse keywords'; }
+}
+
+function renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub) {
+  var output = document.getElementById('kw-output');
+  var opps = analysis.opportunities || [];
+  var INTENT_COLOR = { 'Commercial':'var(--red)', 'Transactional':'var(--amber)', 'Informational':'var(--blue)' };
+  var PRIORITY_BG  = { 'High':'var(--greenL)', 'Medium':'var(--amberL)', 'Low':'var(--g2)' };
+  var PRIORITY_FC  = { 'High':'var(--green)', 'Medium':'var(--amber)', 'Low':'var(--g5)' };
+
+  var html =
+    // Header
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">' +
+      '<div>' +
+        '<p style="font-size:15px;font-weight:700;color:var(--text);">' + opps.length + ' keyword opportunities for "' + seed + '"</p>' +
+        '<p style="font-size:12px;color:var(--text3);">' +
+          (isStub ? '⚠ Estimated volumes — DataForSEO SERP webhook needed for live data' : '✓ Live DataForSEO data') +
+        '</p>' +
+      '</div>' +
+      '<button class="btn btn-s" onclick="exportKeywordCSV()" style="font-size:11px;">Export CSV</button>' +
+    '</div>' +
+
+    // Summary card
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:var(--rl);padding:14px 16px;margin-bottom:16px;">' +
+      '<p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--brand);margin-bottom:6px;">Intelligence summary</p>' +
+      '<p style="font-size:13px;color:var(--text2);line-height:1.6;margin-bottom:8px;">' + (analysis.summary||'') + '</p>' +
+      '<p style="font-size:12px;color:var(--teal);line-height:1.5;">' + (analysis.strategy||'') + '</p>' +
+    '</div>' +
+
+    // Missing + rising
+    (analysis.missing_keywords && analysis.missing_keywords.length ?
+      '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">' +
+        '<span style="font-size:11px;font-weight:600;color:var(--text3);">Missing from cluster:</span>' +
+        analysis.missing_keywords.map(function(k){
+          return '<span style="font-size:11px;background:var(--urgentL);color:var(--urgent);border-radius:4px;padding:2px 8px;">' + k + '</span>';
+        }).join('') +
+        (analysis.rising && analysis.rising.length ?
+          '<span style="font-size:11px;font-weight:600;color:var(--text3);margin-left:8px;">Rising:</span>' +
+          analysis.rising.map(function(k){
+            return '<span style="font-size:11px;background:var(--greenL);color:var(--green);border-radius:4px;padding:2px 8px;">↗ ' + k + '</span>';
+          }).join('') : '') +
+      '</div>' : '') +
+
+    // SERP snapshot
+    (serpData && serpData.length ?
+      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 16px;margin-bottom:16px;">' +
+        '<p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:8px;">Currently ranking for "' + seed + '"</p>' +
+        serpData.slice(0,5).map(function(r,i){
+          return '<div style="display:flex;align-items:baseline;gap:8px;padding:5px 0;border-bottom:0.5px solid var(--border);">' +
+            '<span style="font-size:10px;font-weight:700;color:var(--muted);min-width:16px;">' + (i+1) + '</span>' +
+            '<p style="font-size:12px;color:var(--text2);">' + r.title + '</p>' +
+          '</div>';
+        }).join('') +
+      '</div>' : '') +
+
+    // Keyword table
+    '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">' +
+      '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
+        '<thead><tr style="background:var(--bg3);">' +
+          '<th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Keyword</th>' +
+          '<th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Volume</th>' +
+          '<th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">KD</th>' +
+          '<th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">CPC</th>' +
+          '<th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Intent</th>' +
+          '<th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Notes</th>' +
+          '<th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Priority</th>' +
+        '</tr></thead><tbody>' +
+        opps.map(function(k, i){
+          var kd = parseInt(k.kd) || 0;
+          var kdCol = kd<15?'var(--green)':kd<30?'var(--amber)':'var(--urgent)';
+          var vol = parseInt(String(k.volume||k.volume||'0').replace(/[^0-9]/g,''))||0;
+          var volStr = vol >= 1000 ? (vol/1000).toFixed(1)+'k' : String(k.volume||'—');
+          return '<tr style="border-bottom:0.5px solid var(--border);' + (i%2===0?'':'background:var(--bg3);') + '">' +
+            '<td style="padding:10px 12px;font-weight:500;color:var(--text);">' + k.keyword + '</td>' +
+            '<td style="padding:10px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:' + (vol>=1000?'var(--green)':vol>=200?'var(--amber)':'var(--text3)') + ';">' + volStr + '</td>' +
+            '<td style="padding:10px 12px;text-align:center;font-family:var(--mono);font-weight:700;color:' + kdCol + ';">' + (k.kd||'—') + '</td>' +
+            '<td style="padding:10px 12px;text-align:center;color:var(--text3);">' + (k.cpc||'—') + '</td>' +
+            '<td style="padding:10px 12px;"><span style="font-size:10px;font-weight:600;color:' + (INTENT_COLOR[k.intent]||'var(--text3)') + ';">' + (k.intent||'—') + '</span></td>' +
+            '<td style="padding:10px 12px;color:var(--text3);font-size:11px;">' + (k.notes||'') + '</td>' +
+            '<td style="padding:10px 12px;text-align:center;"><span style="font-size:10px;font-weight:700;background:' + (PRIORITY_BG[k.priority]||'var(--g2)') + ';color:' + (PRIORITY_FC[k.priority]||'var(--g5)') + ';padding:2px 8px;border-radius:10px;">' + (k.priority||'—') + '</span></td>' +
+          '</tr>';
+        }).join('') +
+      '</tbody></table></div>';
+
+  output.innerHTML = html;
+  window._kwData = { seed:seed, opps:opps, kwData:kwData };
+}
+
+function exportKeywordCSV() {
+  if (!window._kwData) return;
+  var rows = [['Keyword','Volume','KD','CPC','Intent','Priority','Notes']];
+  (window._kwData.opps||[]).forEach(function(k){
+    rows.push([k.keyword,k.volume,k.kd,k.cpc,k.intent,k.priority,k.notes]);
+  });
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+(c||'')+'"'; }).join(','); }).join('\n');
+  var a = document.createElement('a');
+  a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+  a.download = 'keywords_' + (window._kwData.seed||'export').replace(/\s+/g,'_') + '.csv';
+  a.click();
 }
 
 // ── CSV EXPORT ────────────────────────────────────────────────────────
@@ -8657,6 +8207,22 @@ function v2WireCustomBtn() {
       if (!val) { v2Toast('Type a topic in the field first'); return; }
       runBriefResearch(val);
     }
+    if (e.target.closest('#kw-run-btn')) {
+      runKeywordAnalysis();
+      return;
+    }
+    if (e.target.closest('#an-refresh-btn')) {
+      loadAnalytics();
+      return;
+    }
+    if (e.target.closest('#comp-run-btn')) {
+      runFullCompetitorAnalysis();
+      return;
+    }
+    if (e.target.closest('#v2-export-btn')) {
+      exportKeywordCSV();
+      return;
+    }
   });
 }
   function bootUser(user) {
@@ -8922,110 +8488,8 @@ async function openWriterBriefModal(task) {
   if (newDocBtn) newDocBtn.addEventListener('click', function(){ window.open('https://docs.google.com/document/create', '_blank'); });
 }
 
-function buildBriefHTML(brief, task) {
-  var html = '';
+function buildBriefHTML() { /* removed */ }
 
-  // H1 + meta
-  if (brief.h1_title) {
-    html += '<div style="background:rgba(29,155,240,0.06);border:1px solid rgba(29,155,240,0.15);border-radius:8px;padding:12px 14px;margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--blue);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;">H1 Title</p>' +
-      '<p style="font-size:15px;font-weight:600;color:var(--text);line-height:1.4;">' + brief.h1_title + '</p>' +
-    '</div>';
-  }
-
-  // Meta desc
-  if (brief.meta_description) {
-    html += '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;">Meta Description</p>' +
-      '<p style="font-size:13px;color:var(--text2);line-height:1.5;">' + brief.meta_description + '</p>' +
-    '</div>';
-  }
-
-  // Keywords row
-  var kwHtml = '';
-  if (brief.primary_keyword) kwHtml += '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Primary KW</p><p style="font-size:13px;color:var(--blue);font-weight:600;">' + brief.primary_keyword + '</p></div>';
-  if (brief.secondary_keywords && brief.secondary_keywords.length) kwHtml += '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Secondary KWs</p><p style="font-size:12px;color:var(--text2);">' + brief.secondary_keywords.join(', ') + '</p></div>';
-  if (brief.word_count) kwHtml += '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Target words</p><p style="font-size:13px;color:var(--text);font-weight:600;font-family:var(--mono);">' + brief.word_count + '</p></div>';
-  if (brief.search_intent) kwHtml += '<div><p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px;">Intent</p><p style="font-size:12px;color:var(--text2);">' + brief.search_intent + '</p></div>';
-  if (kwHtml) {
-    html += '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:10px;margin-bottom:16px;">' + kwHtml + '</div>';
-  }
-
-  // Hook
-  if (brief.hook_angle) {
-    html += '<div style="margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Opening Hook</p>' +
-      '<div style="border-left:3px solid var(--blue);padding:10px 14px;background:rgba(29,155,240,0.04);border-radius:0 6px 6px 0;">' +
-        '<p style="font-size:13px;color:var(--text2);line-height:1.6;font-style:italic;">' + brief.hook_angle + '</p>' +
-      '</div>' +
-    '</div>';
-  }
-
-  // FXIFY angle
-  if (brief.fxify_angle) {
-    html += '<div style="background:rgba(0,186,124,0.06);border:1px solid rgba(0,186,124,0.2);border-radius:8px;padding:12px 14px;margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--green);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:5px;">⚡ FXIFY Angle</p>' +
-      '<p style="font-size:13px;color:var(--text2);line-height:1.5;">' + brief.fxify_angle + '</p>' +
-    '</div>';
-  }
-
-  // Sections
-  if (brief.sections && brief.sections.length) {
-    html += '<div style="margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px;">Article Structure</p>' +
-      '<div style="display:grid;gap:8px;">' +
-      brief.sections.map(function(s, i) {
-        return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">' +
-          '<div style="display:flex;align-items:baseline;gap:8px;margin-bottom:4px;">' +
-            '<span style="font-size:10px;font-weight:700;color:var(--text3);font-family:var(--mono);flex-shrink:0;">H2 ' + (i+1) + '</span>' +
-            '<p style="font-size:13px;font-weight:600;color:var(--text);">' + (s.heading||s.h2||s) + '</p>' +
-            (s.word_count ? '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:auto;flex-shrink:0;">~' + s.word_count + ' words</span>' : '') +
-          '</div>' +
-          (s.angle ? '<p style="font-size:12px;color:var(--text3);line-height:1.5;padding-left:32px;">' + s.angle + '</p>' : '') +
-        '</div>';
-      }).join('') +
-      '</div></div>';
-  }
-
-  // Competitor gap
-  if (brief.competitor_gaps) {
-    html += '<div style="margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px;">Competitor Gap</p>' +
-      '<p style="font-size:13px;color:var(--text2);line-height:1.5;">' + brief.competitor_gaps + '</p>' +
-    '</div>';
-  }
-
-  // FAQs
-  if (brief.faqs && brief.faqs.length) {
-    html += '<div style="margin-bottom:16px;">' +
-      '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">FAQs to Address</p>' +
-      '<div style="display:grid;gap:6px;">' +
-      brief.faqs.map(function(q) {
-        var question = typeof q === 'string' ? q : q.question;
-        var answer   = typeof q === 'object' ? q.answer : '';
-        return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;">' +
-          '<p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:' + (answer?'4px':'0') + ';">Q: ' + question + '</p>' +
-          (answer ? '<p style="font-size:12px;color:var(--text3);line-height:1.4;">A: ' + answer + '</p>' : '') +
-        '</div>';
-      }).join('') +
-      '</div></div>';
-  }
-
-  // Voice rules
-  html += '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;">' +
-    '<p style="font-size:9px;font-weight:700;color:var(--text3);font-family:var(--mono);text-transform:uppercase;letter-spacing:.1em;margin-bottom:8px;">Voice Rules</p>' +
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 16px;">' +
-      '<p style="font-size:11px;color:var(--green);">✓ One idea per sentence. Full stop.</p>' +
-      '<p style="font-size:11px;color:var(--urgent);">✗ Never: delve into / dive into</p>' +
-      '<p style="font-size:11px;color:var(--green);">✓ Hook = trader scenario, not a definition</p>' +
-      '<p style="font-size:11px;color:var(--urgent);">✗ Never: sentences over 25 words</p>' +
-      '<p style="font-size:11px;color:var(--green);">✓ Every FXIFY fact must be verifiable</p>' +
-      '<p style="font-size:11px;color:var(--urgent);">✗ Never: "profit split" → use "performance split"</p>' +
-    '</div>' +
-  '</div>';
-
-  return html;
-}
 
 function buildRawBriefHTML(task, cfVals) {
   // No Supabase brief — show ClickUp task data
@@ -9039,58 +8503,8 @@ function buildRawBriefHTML(task, cfVals) {
   '</div>';
 }
 
-function buildBriefText(brief, task, cfVals) {
-  // Plain text for Google Docs paste
-  var t = '===== FXIFY CONTENT BRIEF =====\n\n';
-  t += 'ARTICLE: ' + (task.name||'') + '\n';
+function buildBriefText() { /* removed */ }
 
-  var pkw = cfVals[CU.fields.primaryKeyword.id] || (brief && brief.primary_keyword) || '';
-  if (pkw) t += 'PRIMARY KEYWORD: ' + pkw + '\n';
-
-  if (brief) {
-    if (brief.secondary_keywords) t += 'SECONDARY KEYWORDS: ' + brief.secondary_keywords.join(', ') + '\n';
-    if (brief.search_intent) t += 'SEARCH INTENT: ' + brief.search_intent + '\n';
-    if (brief.word_count) t += 'TARGET WORD COUNT: ' + brief.word_count + ' words\n';
-    t += '\n';
-
-    if (brief.h1_title) t += '--- H1 TITLE ---\n' + brief.h1_title + '\n\n';
-    if (brief.meta_description) t += '--- META DESCRIPTION ---\n' + brief.meta_description + '\n\n';
-    if (brief.hook_angle) t += '--- OPENING HOOK ---\n' + brief.hook_angle + '\n\n';
-    if (brief.fxify_angle) t += '--- FXIFY ANGLE ---\n' + brief.fxify_angle + '\n\n';
-
-    if (brief.sections && brief.sections.length) {
-      t += '--- ARTICLE STRUCTURE ---\n';
-      brief.sections.forEach(function(s, i) {
-        t += '\nH2 ' + (i+1) + ': ' + (s.heading||s.h2||s) + '\n';
-        if (s.angle) t += 'Angle: ' + s.angle + '\n';
-        if (s.word_count) t += 'Words: ~' + s.word_count + '\n';
-      });
-      t += '\n';
-    }
-
-    if (brief.competitor_gaps) t += '--- COMPETITOR GAP ---\n' + brief.competitor_gaps + '\n\n';
-
-    if (brief.faqs && brief.faqs.length) {
-      t += '--- FAQs ---\n';
-      brief.faqs.forEach(function(q) {
-        t += 'Q: ' + (typeof q === 'string' ? q : q.question) + '\n';
-        if (q.answer) t += 'A: ' + q.answer + '\n';
-        t += '\n';
-      });
-    }
-  }
-
-  t += '--- VOICE RULES ---\n';
-  t += '✓ One idea per sentence. Full stop. Next.\n';
-  t += '✓ Hook = trader scenario, not a definition\n';
-  t += '✓ Every FXIFY mention cites a specific verified fact\n';
-  t += '✗ Never: delve into, dive into, in this article we will...\n';
-  t += '✗ Never: sentences over 25 words\n';
-  t += '✗ Never: profit split → always "performance split"\n\n';
-
-  t += 'ClickUp task: ' + (task.url||'') + '\n';
-  return t;
-}
 
 // ── WRITER SUBMIT ──────────────────────────────────────────────────────────
 async function openWriterSubmit(task) {
@@ -9634,11 +9048,89 @@ function init(){
 init();
 
 // Expose functions called from inline onclick attributes
+// ── SWITCH VIEW MODAL ────────────────────────────────────────
+function openSwitchViewModal() {
+  var existing = document.getElementById('switch-view-modal');
+  if (existing) { existing.remove(); return; }
+
+  var modal = document.createElement('div');
+  modal.id = 'switch-view-modal';
+  modal.style.cssText =
+    'position:fixed;top:56px;right:16px;background:var(--bg2);border:1px solid var(--border);' +
+    'border-radius:var(--rl);padding:6px;z-index:500;min-width:180px;' +
+    'box-shadow:0 8px 24px rgba(0,0,0,0.12);';
+
+  var views = [
+    { label:'Admin view',  screen:'admin',  icon:'⚙' },
+    { label:'Writer view', screen:'writer', icon:'✍' },
+    { label:'David view',  screen:'david',  icon:'👁' },
+  ];
+
+  views.forEach(function(v) {
+    var btn = document.createElement('button');
+    btn.style.cssText =
+      'display:flex;align-items:center;gap:8px;width:100%;padding:8px 12px;border:none;' +
+      'background:none;font-size:13px;color:var(--text2);cursor:pointer;border-radius:6px;' +
+      'text-align:left;';
+    btn.innerHTML = '<span>' + v.icon + '</span><span>' + v.label + '</span>';
+    btn.onmouseenter = function(){ this.style.background = 'var(--bg3)'; };
+    btn.onmouseleave = function(){ this.style.background = 'none'; };
+    btn.onclick = function() {
+      modal.remove();
+      // Switch screen
+      document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+      var target = document.getElementById(v.screen);
+      if (target) target.classList.add('active');
+    };
+    modal.appendChild(btn);
+  });
+
+  // Close on outside click
+  setTimeout(function() {
+    document.addEventListener('click', function close(e) {
+      if (!modal.contains(e.target)) { modal.remove(); document.removeEventListener('click', close); }
+    });
+  }, 10);
+
+  document.body.appendChild(modal);
+}
+
 window.openSwitchViewModal  = openSwitchViewModal;
 window.openWriterBriefModal = openWriterBriefModal;
 window.openWriterSubmit     = openWriterSubmit;
 window.approveDavidArticle  = approveDavidArticle;
 window.rejectDavidArticle   = rejectDavidArticle;
+
+// ── SWITCH VIEW (role preview) ─────────────────────────────────
+function doSwitchView(role) {
+  // Switch active screen based on role
+  var screenMap = { 'admin':'admin', 'writer':'writer', 'david':'david', 'liam':'admin' };
+  var target = screenMap[role] || 'admin';
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  var screen = document.getElementById(target);
+  if (screen) screen.classList.add('active');
+  // Close any modal
+  var modal = document.getElementById('switch-view-modal');
+  if (modal) modal.remove();
+  var imp = document.getElementById('imp-modal');
+  if (imp) { imp.style.display = 'none'; imp.classList.remove('open'); }
+}
+
+function doExitSwitchView() {
+  // Return to admin screen
+  document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
+  var admin = document.getElementById('admin');
+  if (admin) admin.classList.add('active');
+}
+
+function prefillBrief(data) {
+  // Pre-fill brief fields if a brief modal exists — stub since brief gen removed
+  // Just creates a task with the data
+  if (data && window.createTaskFromTopic) {
+    window.createTaskFromTopic(data);
+  }
+}
+
 window.doSwitchView        = doSwitchView;
 window.doExitSwitchView    = doExitSwitchView;
 window.prefillBrief        = prefillBrief;
