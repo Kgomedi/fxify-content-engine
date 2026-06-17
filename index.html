@@ -131,7 +131,8 @@ a:hover{text-decoration:underline;}
 /* ── MAIN LAYOUT ────────────────────────────────────────── */
 .layout{display:flex;flex:1;overflow:hidden;}
 .main{flex:1;overflow-y:auto;background:var(--bg);}
-.pg{padding:24px 28px;display:none;}
+.pg{padding:24px 28px;display:none;min-height:0;}
+.pg.active{display:block;}
 .pg.active{display:block;}
 .pgh{font-size:20px;font-weight:700;color:var(--text);letter-spacing:-.3px;margin-bottom:4px;}
 .pgs{font-size:13px;color:var(--text3);margin-bottom:20px;}
@@ -312,6 +313,7 @@ tr:last-child td{border-bottom:none;}
 .sbov{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:150;}
 .sbov.open{display:block;}
 .cont{flex:1;overflow-y:auto;background:var(--bg);}
+.ma{flex:1;overflow-y:auto;background:var(--bg);}
 
 /* ── MTOGGLE (hamburger) ─────────────────────────────────── */
 .mtoggle{background:none;border:none;cursor:pointer;padding:6px;display:none;flex-direction:column;gap:4px;}
@@ -326,6 +328,43 @@ tr:last-child td{border-bottom:none;}
 .shead{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);}
 
 /* ── PIPELINE SPECIFIC ──────────────────────────────────── */
+/* ── CLICKUP PIPELINE ────────────────────────────────────── */
+.cu-pipeline{display:flex;gap:10px;overflow-x:auto;padding-bottom:12px;align-items:flex-start;min-height:calc(100vh - 220px);}
+.cu-pipeline::-webkit-scrollbar{height:5px;}
+.cu-pipeline::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px;}
+
+/* Column */
+.pcol{width:240px;flex-shrink:0;display:flex;flex-direction:column;background:var(--bg3);border-radius:10px;overflow:hidden;max-height:calc(100vh - 230px);}
+.phead{padding:10px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--bg3);}
+.plbl{font-size:11px;font-weight:700;letter-spacing:.04em;text-transform:capitalize;}
+.pcnt{font-size:11px;font-weight:600;color:var(--text3);background:var(--border);padding:1px 7px;border-radius:10px;min-width:20px;text-align:center;}
+.pbody{padding:8px;overflow-y:auto;flex:1;display:flex;flex-direction:column;gap:6px;}
+.pbody::-webkit-scrollbar{width:3px;}
+.pbody::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* Card — ClickUp card style */
+.pcard{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:10px 11px;cursor:pointer;transition:all .12s;position:relative;}
+.pcard:hover{border-color:var(--border2);box-shadow:0 2px 10px rgba(0,0,0,0.07);transform:translateY(-1px);}
+.pct{font-size:12px;font-weight:500;color:var(--text);line-height:1.45;margin-bottom:6px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.pcm{display:flex;align-items:center;justify-content:space-between;margin-top:6px;}
+.pempty{font-size:11px;color:var(--muted);text-align:center;padding:20px 8px;font-style:italic;}
+
+/* Add task button at bottom of column */
+.padd{display:flex;align-items:center;gap:6px;padding:8px 10px;font-size:12px;color:var(--text3);cursor:pointer;border-radius:6px;transition:.12s;border:none;background:none;width:100%;text-align:left;}
+.padd:hover{background:var(--border);color:var(--text);}
+
+/* Stats row */
+.cu-stats{display:flex;gap:10px;margin-bottom:16px;flex-wrap:wrap;}
+.cu-stat{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 16px;flex:1;min-width:100px;}
+.cu-stat-val{font-size:22px;font-weight:700;color:var(--text);letter-spacing:-.5px;line-height:1;}
+.cu-stat-lbl{font-size:11px;color:var(--text3);margin-top:3px;}
+.cu-stat-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px;}
+
+/* Toolbar */
+.cu-toolbar{display:flex;align-items:center;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.cu-search-wrap{position:relative;flex:1;min-width:180px;max-width:280px;}
+.cu-search-wrap input{padding-left:30px;font-size:13px;}
+.cu-search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px;pointer-events:none;}
 .stage-col{background:var(--bg3);border:1px solid var(--border);border-radius:var(--rl);padding:12px;min-height:200px;}
 .stage-hdr{font-size:12px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
 .cu-card{background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:11px 12px;margin-bottom:7px;cursor:pointer;transition:all .12s;}
@@ -443,12 +482,12 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <!-- Stats -->
-        <div class="srow" style="margin-bottom:16px;">
-          <div class="sc sc-r"><p class="slbl">Briefed</p><p class="sval" id="cu-st-todo">—</p></div>
-          <div class="sc sc-b"><p class="slbl">Drafting</p><p class="sval" id="cu-st-prog">—</p></div>
-          <div class="sc sc-t"><p class="slbl">In review</p><p class="sval" id="cu-st-review">—</p></div>
-          <div class="sc sc-g"><p class="slbl">Live</p><p class="sval" id="cu-st-done">—</p></div>
-        </div>
+        <div class="cu-stats">
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#7C3AED;"></span><span class="cu-stat-lbl">Briefed</span></div><div class="cu-stat-val" id="cu-st-todo">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#2563EB;"></span><span class="cu-stat-lbl">Drafting</span></div><div class="cu-stat-val" id="cu-st-prog">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#D97706;"></span><span class="cu-stat-lbl">In review</span></div><div class="cu-stat-val" id="cu-st-review">—</div></div>
+          <div class="cu-stat"><div style="display:flex;align-items:center;"><span class="cu-stat-dot" style="background:#059669;"></span><span class="cu-stat-lbl">Live</span></div><div class="cu-stat-val" id="cu-st-done">—</div></div>
+        </div><!-- end cu-stats -->
 
         <!-- NEW TASK FORM -->
         <div id="cu-create-panel" style="display:none;background:var(--bg2);border:1px solid rgba(29,155,240,0.2);border-radius:var(--rl);padding:16px 20px;margin-bottom:16px;">
@@ -2156,8 +2195,13 @@ async function loadClickUpBoard(listFilter){
         '</div>';
     });
 
-    if (!colTasks.length) boardHtml += '<p class="pempty">Empty</p>';
-    boardHtml += '</div></div>';
+    if (!colTasks.length) boardHtml += '<p class="pempty">No tasks</p>';
+    if (colTasks.length >= 25) boardHtml += '<p style="font-size:10px;color:var(--muted);text-align:center;padding:4px;">+' + (colTasks.length-25) + ' more</p>';
+    boardHtml += '</div>' +
+      '<div style="padding:4px 8px 8px;">' +
+        '<button class="padd" onclick="event.stopPropagation()">+ Add task</button>' +
+      '</div>' +
+    '</div>';
   });
 
   boardHtml += '</div>';
@@ -2244,7 +2288,7 @@ function cuApplyFilter() {
     return coreStatuses.includes(s.status) || (columns[s.status] && columns[s.status].length > 0);
   });
 
-  var boardHtml = '<div style="display:grid;grid-template-columns:repeat(' + Math.min(visibleStatuses.length, 7) + ',minmax(160px,1fr));gap:8px;">';
+  var boardHtml = '<div class="cu-pipeline">';
 
   visibleStatuses.forEach(function(statusObj) {
     var status   = statusObj.status;
@@ -2252,7 +2296,15 @@ function cuApplyFilter() {
     var colColor = statusObj.color || '#475569';
     var label    = status.split(' ').map(function(w){ return w.charAt(0).toUpperCase()+w.slice(1); }).join(' ');
 
-    boardHtml += '<div class="pcol"><div class="phead"><span class="plbl" style="color:' + colColor + ';text-transform:none;">' + label + '</span><span class="pcnt">' + colTasks.length + '</span></div><div class="pbody">';
+    boardHtml += '<div class="pcol">' +
+      '<div class="phead">' +
+        '<div style="display:flex;align-items:center;gap:6px;">' +
+          '<span style="width:8px;height:8px;border-radius:50%;background:' + colColor + ';flex-shrink:0;"></span>' +
+          '<span class="plbl" style="color:var(--text);">' + label + '</span>' +
+        '</div>' +
+        '<span class="pcnt">' + colTasks.length + '</span>' +
+      '</div>' +
+      '<div class="pbody">';
 
     colTasks.slice(0,25).forEach(function(t) {
       var isVideo  = t._listType === 'video';
@@ -2273,18 +2325,47 @@ function cuApplyFilter() {
       });
 
       boardHtml +=
-        '<div class="pcard" data-taskid="' + t.id + '" data-listtype="' + (t._listType||'blog') + '" style="border-left:2px solid ' + priColor + ';' + (isOverdue ? 'box-shadow:inset 0 0 0 1px rgba(248,113,113,0.3);' : '') + '">' +
-          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:5px;">' +
-            '<span style="font-size:8px;font-weight:700;padding:1px 6px;border-radius:3px;font-family:var(--mono);' + (isVideo ? 'background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.2);' : 'background:var(--tealL);color:var(--teal);border:1px solid rgba(29,155,240,0.2);') + '">' + (isVideo ? '▶ VIDEO' : '✦ BLOG') + '</span>' +
-            (isOverdue ? '<span style="font-size:8px;color:var(--urgent);font-family:var(--mono);">⚠ OVERDUE</span>' : (priority ? '<span style="font-size:8px;color:' + priColor + ';font-family:var(--mono);">' + priority.toUpperCase() + '</span>' : '')) +
+        '<div class="pcard" data-taskid="' + t.id + '" data-listtype="' + (t._listType||'blog') + '"' +
+          ' style="border-left:3px solid ' + (priColor !== 'transparent' ? priColor : colColor) + ';' +
+          (isOverdue ? 'background:#FFF5F5;' : '') + '">' +
+
+          // Top row: type badge + priority
+          '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;">' +
+            '<span style="font-size:9px;font-weight:600;padding:2px 6px;border-radius:4px;' +
+              (isVideo
+                ? 'background:#FEF2F2;color:#DC2626;'
+                : 'background:#EFF6FF;color:#2563EB;') + '">' +
+              (isVideo ? '▶ Video' : '✦ Blog') +
+            '</span>' +
+            (priority && priColor !== 'transparent'
+              ? '<span style="font-size:9px;font-weight:600;color:' + priColor + ';">' + priority + '</span>'
+              : (isOverdue ? '<span style="font-size:9px;color:var(--urgent);">Overdue</span>' : '')) +
           '</div>' +
+
+          // Title
           '<p class="pct">' + (t.name||'Untitled') + '</p>' +
-          (subline ? '<p style="font-size:9px;color:var(--teal);font-family:var(--mono);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + subline + '</p>' : '') +
+
+          // Subline (keyword or shoot date)
+          (subline
+            ? '<p style="font-size:10px;color:var(--teal);font-family:var(--mono);margin-bottom:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + subline + '</p>'
+            : '') +
+
+          // Footer: avatars + due date
           '<div class="pcm">' +
-            '<div style="display:flex;gap:3px;">' +
-              initials.slice(0,2).map(function(ini,idx){ var mc=memberColors[idx]||'#1d9bf0'; return '<span style="width:18px;height:18px;border-radius:50%;background:'+mc+'22;color:'+mc+';font-size:8px;font-weight:700;display:flex;align-items:center;justify-content:center;border:1px solid '+mc+'44;font-family:var(--mono);" title="'+(assignees[idx]||'')+'">'+ini.toUpperCase()+'</span>'; }).join('') +
+            '<div style="display:flex;gap:3px;align-items:center;">' +
+              initials.slice(0,3).map(function(ini, ii) {
+                var mc = memberColors[ii] || '#2563EB';
+                return '<span style="width:20px;height:20px;border-radius:50%;background:' + mc + '20;color:' + mc + ';' +
+                  'font-size:9px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;' +
+                  'border:1.5px solid ' + mc + '40;" title="' + (assignees[ii]||'') + '">' +
+                  ini.toUpperCase() + '</span>';
+              }).join('') +
             '</div>' +
-            (due ? '<span style="font-size:9px;color:' + (isOverdue?'var(--urgent)':'var(--text3)') + ';font-family:var(--mono);">' + (isOverdue?'⚠ ':'') + due + '</span>' : '') +
+            (due
+              ? '<span style="font-size:10px;color:' + (isOverdue ? 'var(--urgent)' : 'var(--text3)') + ';' +
+                'background:' + (isOverdue ? 'var(--urgentL)' : 'var(--bg3)') + ';' +
+                'padding:1px 6px;border-radius:4px;">' + due + '</span>'
+              : '') +
           '</div>' +
         '</div>';
     });
@@ -6484,12 +6565,15 @@ function renderCompetitorIntelligence(data) {
   if (loading) loading.style.display = 'none';
   if (cards) {
     cards.innerHTML = firms.map(function(f) {
-      var tc = f.traffic_est === 'high' ? 'var(--urgent)' : f.traffic_est === 'medium' ? 'var(--high)' : 'var(--text3)';
-      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);padding:12px;">' +
-        '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">' + (f.firm||'') + '</p>' +
-        '<p style="font-size:11px;color:var(--text3);margin-bottom:6px;line-height:1.4;">' + (f.content_angle||'').substring(0,90) + '</p>' +
-        '<p style="font-size:10px;color:var(--text3);font-family:var(--mono);">Freq: ' + (f.publish_frequency||'?') + '</p>' +
-        '<p style="font-size:10px;color:' + tc + ';font-family:var(--mono);font-weight:600;">Traffic est: ' + (f.traffic_est||'?') + '</p>' +
+      var tc = f.traffic_est==='high' ? 'var(--green)' : f.traffic_est==='medium' ? 'var(--amber)' : 'var(--text3)';
+      var domain = f.domain || f.firm || '?';
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px;">' +
+        '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+          '<p style="font-size:13px;font-weight:700;color:var(--text);">' + domain + '</p>' +
+          '<span style="font-size:10px;font-weight:600;color:' + tc + ';background:' + (f.traffic_est==='high'?'var(--greenL)':f.traffic_est==='medium'?'var(--amberL)':'var(--bg3)') + ';padding:1px 7px;border-radius:10px;">' + (f.traffic_est||'?') + '</span>' +
+        '</div>' +
+        '<p style="font-size:11px;color:var(--text3);margin-bottom:8px;line-height:1.45;">' + (f.content_angle||'No data yet').substring(0,100) + '</p>' +
+        '<p style="font-size:10px;color:var(--muted);font-family:var(--mono);">' + (f.publish_frequency||'Freq unknown') + '</p>' +
       '</div>';
     }).join('');
   }
@@ -6504,13 +6588,21 @@ function renderCompetitorIntelligence(data) {
 
   if (gapOut) {
     var allGaps = [];
-    firms.forEach(function(f){ (f.content_gaps||[]).forEach(function(g){ allGaps.push({firm:f.firm,gap:g}); }); });
+    firms.forEach(function(f) {
+      (f.missing||f.content_gaps||[]).forEach(function(g) {
+        allGaps.push({firm:f.domain||f.firm, gap:g, counter:f.fxify_counter||''});
+      });
+    });
     gapOut.innerHTML = allGaps.length ? allGaps.map(function(g){
-      return '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:8px;padding:10px 12px;margin-bottom:8px;display:flex;align-items:flex-start;gap:10px;">' +
-        '<span style="font-size:10px;font-weight:700;color:var(--blue);background:var(--blueL);border-radius:4px;padding:2px 7px;white-space:nowrap;flex-shrink:0;">' + g.firm + '</span>' +
-        '<p style="font-size:13px;color:var(--text);margin:0;">' + g.gap + '</p>' +
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+          '<span style="font-size:10px;font-weight:700;color:var(--brand);background:var(--brandL);border-radius:4px;padding:2px 8px;flex-shrink:0;">' + g.firm + '</span>' +
+          '<span style="font-size:11px;color:var(--text3);">Content gap</span>' +
+        '</div>' +
+        '<p style="font-size:13px;color:var(--text);line-height:1.5;margin-bottom:' + (g.counter?'6px':'0') + ';">' + g.gap + '</p>' +
+        (g.counter ? '<p style="font-size:12px;color:var(--teal);border-left:2px solid var(--teal);padding-left:8px;">→ ' + g.counter + '</p>' : '') +
       '</div>';
-    }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No content gaps found.</p>';
+    }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">Run analysis to find competitor gaps.</p>';
   }
 
   if (kwOut) {
@@ -6566,7 +6658,18 @@ async function runFullCompetitorAnalysis() {
   var btn = document.getElementById('comp-run-btn');
   if (btn) { btn.textContent = 'Analysing...'; btn.disabled = true; }
 
-  var FIRMS = ['FTMO','FundedNext','Apex Trader Funding','Topstep','The5ers','E8 Funding'];
+  // Live forex prop firm competitors — verified active June 2026
+  // Source: Track360, TradersSecondBrain, PropFirmMatch 2026
+  var FIRMS = [
+    'FTMO',           // brand juggernaut, forex/CFD, static drawdown
+    'FundedNext',     // 95% split, news trading allowed, bi-weekly payouts
+    'The5ers',        // 100% split at scale, $4M ceiling, no time limits
+    'FundingPips',    // 2-phase, fast payouts, up to $200k
+    'ThinkCapital',   // broker-backed (ThinkMarkets), 90% split, multi-asset
+    'Blue Guardian',  // multi-asset incl crypto, strong community
+    'Tradeify',       // no consistency rule positioning, KD 3 keyword owner
+    'MyFundedFX',     // instant funding, no evaluation option
+  ];
 
   try {
     // Single comprehensive call — Claude knows these firms from training data
@@ -7180,59 +7283,94 @@ async function testN8nConnection() {
 // Returns array of {keyword, search_volume, competition, cpc, difficulty}
 // Stubs gracefully when credentials not set
 async function dfsKeywords(seedKw) {
-  if (!V2_CONFIG.dfsLogin || !V2_CONFIG.dfsPass) {
-    // Stub: return plausible prop-trading keywords so the rest of the flow still works
-    console.log('DataForSEO: no credentials — using stub data');
-    return [
-      { keyword: seedKw, search_volume: null, competition: null, cpc: null, difficulty: null, stub: true },
-      { keyword: 'how to pass prop firm challenge', search_volume: null, competition: null, cpc: null, difficulty: null, stub: true },
-      { keyword: 'best prop trading firms 2026',   search_volume: null, competition: null, cpc: null, difficulty: null, stub: true },
-      { keyword: 'funded trading account rules',   search_volume: null, competition: null, cpc: null, difficulty: null, stub: true },
-      { keyword: 'prop firm drawdown rules',       search_volume: null, competition: null, cpc: null, difficulty: null, stub: true },
-      { keyword: 'fxify vs ftmo comparison',       search_volume: null, competition: null, cpc: null, difficulty: null, stub: true },
-    ];
-  }
-  // Real DataForSEO call
-  var creds = btoa(V2_CONFIG.dfsLogin + ':' + V2_CONFIG.dfsPass);
-  try {
-    // Step 1: keyword suggestions
-    var r1 = await fetch('https://api.dataforseo.com/v3/dataforseo_labs/google/keyword_suggestions/live', {
-      method: 'POST',
-      headers: { 'Authorization': 'Basic ' + creds, 'Content-Type': 'application/json' },
-      body: JSON.stringify([{ keyword: seedKw, language_code: 'en', location_code: 2840, limit: 30, include_serp_info: false }])
-    });
-    var d1 = await r1.json();
-    var items = (d1.tasks && d1.tasks[0] && d1.tasks[0].result && d1.tasks[0].result[0] && d1.tasks[0].result[0].items) || [];
+  // ── Direct DataForSEO webhook ─────────────────────────────
+  // n8n webhook at /webhook/dataforseo receives {keyword, login, pass}
+  // and calls DataForSEO Labs API server-side — no CORS issues
+  var dfsWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/dataforseo');
 
-    // Step 2: keyword difficulty for top 20
-    var kws = items.slice(0, 20).map(function(i){ return i.keyword; });
-    var difficulties = {};
-    if (kws.length) {
-      var r2 = await fetch('https://api.dataforseo.com/v3/dataforseo_labs/google/bulk_keyword_difficulty/live', {
-        method: 'POST',
-        headers: { 'Authorization': 'Basic ' + creds, 'Content-Type': 'application/json' },
-        body: JSON.stringify([{ keywords: kws, language_code: 'en', location_code: 2840 }])
+  try {
+    console.log('[DFS] calling:', dfsWebhook, 'keyword:', seedKw);
+
+    var r = await fetch(dfsWebhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        keyword:  seedKw,
+        login:    V2_CONFIG.dfsLogin,
+        pass:     V2_CONFIG.dfsPass,
+        location: 2840,   // US
+        language: 'en',
+        limit:    30
+      })
+    });
+
+    console.log('[DFS] HTTP status:', r.status);
+    var raw = await r.text();
+    console.log('[DFS] raw (first 300):', raw.substring(0, 300));
+
+    if (!raw || !raw.trim()) throw new Error('DFS webhook returned empty');
+
+    var data = JSON.parse(raw);
+
+    // Handle both raw DataForSEO response and pre-processed response
+    var items = [];
+    if (data.keywords) {
+      // Pre-processed by n8n
+      items = data.keywords;
+    } else if (data.tasks && data.tasks[0] && data.tasks[0].result) {
+      // Raw DataForSEO format
+      var result = data.tasks[0].result[0] || {};
+      items = (result.items || []).map(function(item) {
+        return {
+          keyword:       item.keyword,
+          search_volume: item.keyword_info && item.keyword_info.search_volume,
+          kd:            item.keyword_properties && item.keyword_properties.keyword_difficulty,
+          cpc:           item.keyword_info && item.keyword_info.cpc,
+          competition:   item.keyword_info && item.keyword_info.competition_level
+        };
       });
-      var d2 = await r2.json();
-      var dItems = (d2.tasks && d2.tasks[0] && d2.tasks[0].result) || [];
-      dItems.forEach(function(di){ difficulties[di.keyword] = di.keyword_difficulty; });
+    } else if (Array.isArray(data)) {
+      items = data;
     }
 
-    return items.map(function(item) {
+    console.log('[DFS] keywords returned:', items.length);
+    return items.map(function(k) {
       return {
-        keyword:        item.keyword,
-        search_volume:  item.keyword_info && item.keyword_info.search_volume,
-        competition:    item.keyword_info && item.keyword_info.competition_level,
-        cpc:            item.keyword_info && item.keyword_info.cpc,
-        difficulty:     difficulties[item.keyword] || null,
-        stub:           false
+        keyword:       k.keyword,
+        search_volume: k.search_volume || k.volume,
+        competition:   k.competition || k.competition_level,
+        cpc:           k.cpc,
+        difficulty:    k.kd || k.keyword_difficulty || k.difficulty,
+        stub:          false
       };
     });
+
   } catch(e) {
-    console.warn('DataForSEO error:', e.message);
-    return [{ keyword: seedKw, search_volume: null, competition: null, cpc: null, difficulty: null, stub: true, error: e.message }];
+    console.warn('[DFS] webhook failed:', e.message, '— falling back to Claude estimate');
+
+    // Fallback: Claude estimates from training knowledge
+    // Marked as stub so UI shows "estimated" warning
+    try {
+      var text = await v2Fetch(
+        'Estimate realistic keyword data for prop trading keywords related to: "' + seedKw + '".\n' +
+        'Use your knowledge of 2026 prop trading search volumes. Be realistic — do not inflate numbers.\n' +
+        'Return ONLY valid JSON no markdown:\n' +
+        '{"keywords":[{"keyword":"exact search term","search_volume":1200,"kd":22,"cpc":1.40,"competition":"LOW|MEDIUM|HIGH"}]}',
+        600
+      );
+      var p = JSON.parse(text.replace(/```json|```/g,'').trim());
+      return (p.keywords || []).map(function(k) {
+        return { keyword:k.keyword, search_volume:k.search_volume, competition:k.competition, cpc:k.cpc, difficulty:k.kd, stub:true };
+      });
+    } catch(e2) {
+      return [{ keyword:seedKw, search_volume:null, competition:null, cpc:null, difficulty:null, stub:true }];
+    }
   }
 }
+
+
+
+
 
 // Also: Google autocomplete + PAA via DataForSEO
 async function dfsAutocomplete(kw) {
@@ -7253,64 +7391,83 @@ async function dfsAutocomplete(kw) {
 // ── FIRECRAWL COMPETITOR SCRAPER ──────────────────────────────────────
 async function v2ScrapeCompetitors(compKey) {
   var competitorMap = {
-    all:       ['FTMO','FundedNext','Apex Trader Funding','Topstep','The5ers','E8 Funding'],
-    ftmo:      ['FTMO'], fundednext:['FundedNext'], apex:['Apex Trader Funding'],
-    topstep:   ['Topstep'], the5ers:['The5ers'], e8:['E8 Funding'],
+    all:        ['FTMO','FundedNext','The5ers','FundingPips','ThinkCapital','Blue Guardian','Tradeify','MyFundedFX'],
+    ftmo:       ['FTMO'],
+    fundednext: ['FundedNext'],
+    the5ers:    ['The5ers'],
+    fundingpips:['FundingPips'],
+    thinkcap:   ['ThinkCapital'],
+    guardian:   ['Blue Guardian'],
+    tradeify:   ['Tradeify'],
+    myfx:       ['MyFundedFX'],
   };
   var firms = competitorMap[compKey || 'all'] || competitorMap.all;
 
-  // Single batched call — ask Claude about ALL firms at once (no web search needed,
-  // Claude knows these firms well from training data)
+  // Single comprehensive batched call — covers ALL content channels
   try {
-    var resp = await fetch(V2_CONFIG.webhook, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        max_tokens: 2000,
-        prompt:
-          'You are a content strategist. Based on your knowledge of prop trading firms, ' +
-          'describe the content strategy of each of these firms: ' + firms.join(', ') + '.\n\n' +
-          'For EACH firm return what topics they publish, what keywords they target, ' +
-          'and critically — what topics they NEVER cover or cover badly that FXIFY could own.\n\n' +
-          'FXIFY advantages to consider for gaps: $19 Instant Funding (cheapest in market), ' +
-          'One Phase no consistency rule, broker-backed via FXPIG since 2010, on-demand payouts, $40M+ paid.\n\n' +
-          'Return ONLY valid JSON, no markdown:\n' +
-          '{"competitors":[{"firm":"FTMO","top_topics":["topic1","topic2","topic3"],' +
-          '"keywords_they_own":["kw1","kw2","kw3"],' +
-          '"content_gaps":["topic FXIFY can own that FTMO misses 1","gap 2","gap 3"],' +
-          '"content_angle":"one sentence describing their overall strategy"}]}'
-      })
-    });
-    var d = await resp.json();
-    var t = d.text || (d.content && d.content[0] && d.content[0].text) || '';
-    var parsed = JSON.parse(t.replace(/```json|```/g, '').trim());
+    var prompt =
+      'You are a content intelligence analyst for FXIFY prop trading firm. June 2026.\n\n' +
+      'Research the content strategy of these live prop trading competitors across ALL channels:\n' +
+      firms.join(', ') + '\n\n' +
+      'For EACH firm, analyse:\n' +
+      '1. BLOG — top topics, publishing frequency, angles they take\n' +
+      '2. YOUTUBE — video topics, most viewed content, what they do on Shorts vs long-form\n' +
+      '3. SOCIAL — Twitter/X, Instagram, TikTok themes\n' +
+      '4. AFFILIATE/SEO — keywords they rank for, review content targeting\n' +
+      '5. GAPS — topics they NEVER cover across any channel that FXIFY could own\n\n' +
+      'FXIFY advantages to find gaps against:\n' +
+      '- $19 Instant Funding Lite (lowest entry in market)\n' +
+      '- One Phase: no consistency rule, on-demand payout, static drawdown\n' +
+      '- Broker-backed via FXPIG since 2010 (most competitors are not broker-backed)\n' +
+      '- $40M+ paid, 250,000+ traders, $117k highest single payout to date\n\n' +
+      'Return ONLY valid JSON no markdown:\n' +
+      '{"competitors":[{' +
+      '"firm":"FTMO",' +
+      '"blog_topics":["exact topic 1","exact topic 2","exact topic 3"],' +
+      '"youtube_topics":["video topic 1","video topic 2"],' +
+      '"social_themes":["theme 1","theme 2"],' +
+      '"keywords_they_own":["kw1","kw2","kw3"],' +
+      '"content_gaps":["topic they never cover 1","gap 2","gap 3"],' +
+      '"publish_frequency":"X blog/month, Y videos/month",' +
+      '"content_angle":"one sentence on their overall positioning",' +
+      '"traffic_est":"high|medium|low",' +
+      '"fxify_counter":"how FXIFY specifically beats them on content"' +
+      '}]}';
+
+    var text = await v2Fetch(prompt, 3000);
+    var parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
     var competitors = parsed.competitors || [];
 
-    // Format for compBlock builder
     return competitors.map(function(c) {
-      var articles = (c.top_topics || []).map(function(topic, i) {
+      var allTopics = [].concat(
+        c.blog_topics || [],
+        (c.youtube_topics||[]).map(function(t){ return '[YT] ' + t; }),
+        (c.social_themes||[]).map(function(t){ return '[Social] ' + t; })
+      );
+      var articles = allTopics.map(function(topic, i) {
         return {
-          title: topic,
-          url: '',
-          subtopics: i === 0 ? (c.keywords_they_own || []) : [],
-          content: i === 0 ? ('Angle: ' + (c.content_angle || '') + ' | Gaps: ' + (c.content_gaps || []).join(', ')) : null
+          title: topic, url: '',
+          subtopics: i===0 ? (c.keywords_they_own||[]) : [],
+          content: i===0 ? ('Angle: ' + (c.content_angle||'') + ' | Counter: ' + (c.fxify_counter||'')) : null
         };
       });
       return {
-        domain: c.firm,
-        source: c.firm,
-        articles: articles,
-        fullArticles: articles.length,
+        domain: c.firm, source: c.firm,
+        articles: articles, fullArticles: articles.length,
         missing: c.content_gaps || [],
         content_angle: c.content_angle || '',
-        traffic_est: 'unknown'
+        publish_frequency: c.publish_frequency || '',
+        traffic_est: c.traffic_est || 'unknown',
+        fxify_counter: c.fxify_counter || ''
       };
     });
   } catch(e) {
-    console.warn('Competitor research failed:', e.message);
+    console.warn('[v2ScrapeCompetitors] error:', e.message);
     return [];
   }
 }
+
+
 
 
 
@@ -7452,68 +7609,95 @@ async function runTopicIdeas() {
   var prompt =
     (feedbackRules ? 'REVIEWER FEEDBACK TO ENFORCE:\n' + feedbackRules + '\n\n' : '') +
 
-    'You are the content strategist for FXIFY, a broker-backed prop trading firm.\n\n' +
+    // ── WHAT YOAST + SURFER ACTUALLY DO ───────────────────────────────
+    // Step 1: NLP entity extraction — what concepts dominate this space
+    // Step 2: Semantic gap analysis — what topics are MISSING vs what ranks
+    // Step 3: Intent clustering — group by Transactional > Commercial > Info
+    // Step 4: FXIFY angle injection — our specific product fact that wins each gap
+    // ─────────────────────────────────────────────────────────────────────
 
-    'TASK: Identify the best content and video topics for FXIFY to produce right now.\n\n' +
+    'You are doing NLP-powered content gap analysis for FXIFY prop firm. June 2026.\n\n' +
 
-    'STEP 1 — Study the competitor content below. What do they cover obsessively? ' +
-    'What do they NEVER cover? What angles do they miss completely?\n\n' +
+    'STEP 1 — ENTITY EXTRACTION\n' +
+    'Read all competitor content below. Extract the key ENTITIES (concepts, features, rules, ' +
+    'pain points) that appear across the majority of competing pages. These are the topics already saturated.\n\n' +
 
-    'STEP 2 — Remove any topic FXIFY already covers (list below).\n\n' +
+    'STEP 2 — SEMANTIC GAP ANALYSIS\n' +
+    'Identify entities and intent clusters that SHOULD exist based on the seed topic but are ' +
+    'MISSING from competitor content. These missing clusters are the gaps.\n' +
+    'Look for: unanswered trader questions, features competitors have but never explain clearly, ' +
+    'comparison angles that no one has mapped side-by-side, rule nuances that confuse traders.\n\n' +
 
-    'STEP 3 — Build topics ONLY from genuine gaps. Every topic must trace to ' +
-    'a specific gap found in Step 1. No generic topics.\n\n' +
+    'STEP 3 — INTENT CLUSTERING\n' +
+    'Group every gap by purchase intent:\n' +
+    '- TRANSACTIONAL: trader is ready to buy (comparison, price, sign up)\n' +
+    '- COMMERCIAL: trader is comparing options (vs, review, best, which)\n' +
+    '- INFORMATIONAL: trader is learning (how, what, why, explain)\n' +
+    'Prioritise Transactional > Commercial > Informational.\n\n' +
+
+    'STEP 4 — PILLAR + CLUSTER STRUCTURE\n' +
+    'For each gap, identify if it is a PILLAR topic (broad, high volume, cornerstone page) ' +
+    'or a CLUSTER topic (specific, supports a pillar, faster to rank).\n' +
+    'We want 2 pillar topics and 6 cluster topics in the output.\n\n' +
 
     'TITLE FORMAT — statement or hook, never a blog headline:\n' +
     'GOOD: "You can get a funded trading account for $19"\n' +
     'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
     'GOOD: "There is a rule that can fail your account on your best trading day"\n' +
     'BAD: "How to Choose the Best Prop Firm in 2026"\n' +
-    'BAD: "A Comprehensive Guide to Prop Trading"\n' +
-    'BANNED WORDS (never use in titles): Mastering, Ultimate, Deep Dive, Unlocking, ' +
-    'Comprehensive, Navigating, Elevate, Transform, Revolutionize, Game-changer, ' +
-    'Seamlessly, Robust, Empowering, Leveraging, Delve\n\n' +
+    'BAD: "A Comprehensive Guide to Drawdown Rules"\n' +
+    'BANNED WORDS: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Navigating, ' +
+    'Elevate, Transform, Revolutionize, Seamlessly, Robust, Empowering, Delve\n\n' +
 
-    'TONE — ESL Grade 5-6. Short sentences. One idea per sentence. ' +
-    'Straight-talking trader mentor. Brand voice not content creator.\n\n' +
+    'TONE: ESL Grade 5-6. Short sentences. Straight-talking trading mentor. ' +
+    'Brand voice — FXIFY is speaking, not a content creator.\n\n' +
 
-    'FXIFY FACTS (cite these exactly — never vague):\n' +
-    '- ONE PHASE: 10% target. Static drawdown. No consistency rule. No time limit. Payout on demand.\n' +
+    'FXIFY VERIFIED FACTS (cite these exactly, never vague):\n' +
+    '- ONE PHASE: 10% target. Static drawdown. No consistency rule. No time limit. Payout on demand after first profitable trade.\n' +
     '- TWO PHASE CLASSIC: 5%+5% targets. Static drawdown. 25% consistency rule on funded stage only.\n' +
     '- TWO PHASE STANDARD: 10%+5% targets. Trailing drawdown. No consistency rule.\n' +
     '- THREE PHASE: 5% targets per phase. Static drawdown.\n' +
-    '- INSTANT FUNDING LITE: $19. $2,500 live account. No challenge. Trailing drawdown. Payout after 14 days.\n' +
-    '- LIGHTNING: 5% target. 30% consistency both eval+funded. No EAs. Payout after 7 days.\n' +
-    '- BROKER-BACKED: FXPIG since 2010. Regulated.\n' +
-    '- $40M+ paid out. 250,000+ traders. Up to 90% performance split.\n' +
+    '- INSTANT FUNDING LITE: $19. $2,500 live account. No evaluation. Trailing drawdown. Payout after 14 days.\n' +
+    '- LIGHTNING: 5% target. 30% consistency both eval+funded. No EAs. 7-day payout.\n' +
+    '- BROKER-BACKED: FXPIG since 2010. Regulated. Real market infrastructure.\n' +
+    '- $40M+ paid. 250,000+ traders. Up to 90% split. $117k highest single payout to date.\n' +
     '- Eval fee refunded with first payout on 1/2/3 Phase.\n' +
-    '- Highest single payout: $117,000 to date.\n\n' +
+    '- EAs allowed: One Phase, Two Phase, Three Phase. NOT Lightning or Instant.\n' +
+    '- News trading allowed: One Phase, Two Phase, Three Phase. Restricted on Lightning/Instant.\n\n' +
 
     'SEED TOPIC: ' + seed + '\n' +
     'CATEGORY: ' + cat + '\n\n' +
 
-    (serpBlock ? '── WHAT IS CURRENTLY RANKING FOR "' + seed + '" ──\n' +
-      'Study what angle each result takes. What are they all doing? What is none of them doing?\n' +
-      serpBlock + '\n\n' : '') +
-    (acBlock ? '── AUTOCOMPLETE — REAL SEARCHES HAPPENING NOW ──\n' +
-      'These are the exact phrases traders type. Build topics around these.\n' +
-      acBlock + '\n\n' : '') +
-    (kwBlock ? '── KEYWORD VOLUME DATA ──\n' + kwBlock + '\n\n' : '') +
-    (compBlock ? '── COMPETITOR CONTENT (identify gaps from this) ──\n' + compBlock + '\n\n' : '') +
-    (fxifyBlock ? '── FXIFY ALREADY PUBLISHED (exclude these) ──\n' + fxifyBlock + '\n\n' : '') +
+    (serpBlock ? '── WHAT CURRENTLY RANKS FOR THIS TOPIC (SERP data) ──\n' +
+      'These are the pages traders find right now. Study their angles — what do ALL of them cover? ' +
+      'What does NONE of them cover?\n' + serpBlock + '\n\n' : '') +
 
-    'Generate 8 topics. Return ONLY valid JSON, no markdown, no preamble:\n' +
+    (acBlock ? '── AUTOCOMPLETE — EXACT SEARCHES HAPPENING NOW ──\n' +
+      'These are real search phrases. Every topic should map to one of these.\n' + acBlock + '\n\n' : '') +
+
+    (kwBlock ? '── KEYWORD VOLUME DATA ──\n' + kwBlock + '\n\n' : '') +
+
+    (compBlock ? '── COMPETITOR CONTENT (blogs + YouTube + social) ──\n' +
+      'Read every entry. What entities appear in 4+ of these? Those are saturated. ' +
+      'What is missing across ALL of them? Those are the gaps.\n' + compBlock + '\n\n' : '') +
+
+    (fxifyBlock ? '── FXIFY ALREADY PUBLISHED (exclude these completely) ──\n' + fxifyBlock + '\n\n' : '') +
+
+    'Generate exactly 8 topics: 2 PILLAR + 6 CLUSTER.\n' +
+    'Return ONLY valid JSON, no markdown, no preamble:\n' +
     '{"topics":[{' +
-    '"title":"Statement hook under 65 chars — not a blog headline",' +
+    '"title":"Statement hook under 65 chars — sounds like a trader said it",' +
+    '"type":"pillar|cluster",' +
     '"intent":"Commercial|Informational|Transactional",' +
     '"conversion_tier":"1|2|3",' +
     '"primary_keyword":"exact keyword traders search",' +
-    '"search_volume":"volume from data or TBC",' +
+    '"search_volume":"volume or TBC",' +
     '"kd_score":"0-100 or TBC",' +
+    '"nlp_entities":["entity1","entity2","entity3"],' +
     '"short_form_hook":"exact first sentence Harry says to camera. Brand voice. Under 15 words.",' +
-    '"competitor_gap":"[Firm] publishes [topic] but never covers [gap]. FXIFY wins because [specific verifiable fact].",' +
+    '"competitor_gap":"[Firm] publishes [topic] but never covers [specific gap]. FXIFY wins because [one verifiable fact].",' +
     '"fxify_angle":"exact FXIFY product name + one verifiable number. One sentence.",' +
-    '"why_now":"specific June 2026 event or data point. Not vague.",' +
+    '"why_now":"specific June 2026 event or stat. Not vague.",' +
     '"opportunity_score":85' +
     '}]}';
 
@@ -7540,100 +7724,116 @@ function renderTopicGrid(topics, isStub, publishedCount) {
   var output = document.getElementById('v2-brief-output');
   if (!output) return;
   if (!topics || !topics.length) {
-    output.innerHTML = '<p style="color:var(--text3);padding:20px 0;font-size:13px;">No topics returned. Check browser console for details.</p>';
+    output.innerHTML =
+      '<div style="padding:40px 24px;text-align:center;color:var(--text3);">' +
+        '<p style="font-size:28px;margin-bottom:12px;opacity:.3;">◈</p>' +
+        '<p style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:4px;">No topics generated</p>' +
+        '<p style="font-size:12px;">Check the browser console for details.</p>' +
+      '</div>';
     return;
   }
 
-  var INTENT_STYLE = {
-    'Commercial':    { bg:'#FECACA', fc:'#991B1B' },
-    'Transactional': { bg:'#FED7AA', fc:'#9A3412' },
-    'Informational': { bg:'#BFDBFE', fc:'#1E40AF' },
+  // ── Yoast-style intent + tier config ────────────────────────
+  var INTENT = {
+    'Commercial':    { label:'⭐ Commercial',    bg:'#FFF7ED', fc:'#C2410C', border:'#FED7AA' },
+    'Transactional': { label:'⭐ Commercial',    bg:'#FFF7ED', fc:'#C2410C', border:'#FED7AA' },
+    'Informational': { label:'ℹ Informational', bg:'#EFF6FF', fc:'#1D4ED8', border:'#BFDBFE' },
   };
-  var TIER_LABEL = { '1':'T1 High intent', '2':'T2 Mid-funnel', '3':'T3 Awareness' };
-  var TIER_COLOR = { '1':'var(--teal)', '2':'var(--amber)', '3':'var(--text3)' };
+  var TIER = {
+    '1': { label:'Tier 1 · High intent',  fc:'#059669' },
+    '2': { label:'Tier 2 · Mid-funnel',   fc:'#D97706' },
+    '3': { label:'Tier 3 · Awareness',    fc:'#6B7280' },
+  };
 
+  var total = topics.length;
+
+  // ── Header ──────────────────────────────────────────────────
   var html =
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">' +
-      '<div>' +
-        '<p style="font-size:14px;font-weight:600;color:var(--text);">' + topics.length + ' topic gaps found</p>' +
-        '<p style="font-size:11px;color:var(--text3);">Ranked by opportunity score · ' + (publishedCount||0) + ' FXIFY articles cross-referenced' +
-        (isStub ? ' · <span style="color:var(--amber);">⚠ Keyword volumes: add DataForSEO credentials for real data</span>' : '') + '</p>' +
+    '<div style="margin-bottom:20px;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+        '<p style="font-size:15px;font-weight:700;color:var(--text);">' + total + ' content suggestions</p>' +
+        '<div style="display:flex;gap:8px;">' +
+          '<button class="btn btn-s" id="v2-export-btn" style="font-size:11px;">Export CSV</button>' +
+          '<button class="btn btn-s" id="v2-refresh-btn" style="font-size:11px;">↻ Refresh</button>' +
+        '</div>' +
       '</div>' +
-      '<div style="display:flex;gap:8px;">' +
-        '<button class="btn btn-s" id="v2-refresh-btn" style="font-size:11px;">↻ Refresh</button>' +
-        '<button class="btn btn-s" id="v2-export-btn" style="font-size:11px;">Export CSV</button>' +
-      '</div>' +
+      '<p style="font-size:12px;color:var(--text3);">' +
+        (publishedCount||0) + ' FXIFY articles cross-referenced · ' +
+        (isStub ? '<span style="color:var(--amber);">Keyword volumes estimated — add DataForSEO for live data</span>' : 'Live keyword data from DataForSEO') +
+      '</p>' +
     '</div>' +
-    '<div style="display:grid;gap:10px;">';
+
+    // ── Pagination counter like Yoast ──
+    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">' +
+      '<span style="font-size:11px;font-weight:600;color:var(--text3);">CONTENT SUGGESTIONS</span>' +
+      '<span style="font-size:10px;background:var(--brand);color:#fff;padding:1px 7px;border-radius:10px;font-weight:700;">' + total + '</span>' +
+    '</div>' +
+
+    '<div style="display:flex;flex-direction:column;gap:1px;border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">';
 
   topics.forEach(function(t, idx) {
-    var score    = t.opportunity_score || 0;
-    var scoreCol = score >= 80 ? 'var(--teal)' : score >= 65 ? 'var(--amber)' : 'var(--text3)';
-    var ist      = INTENT_STYLE[t.intent] || INTENT_STYLE['Informational'];
-    var tier     = String(t.conversion_tier || '3');
-    var tierCol  = TIER_COLOR[tier] || 'var(--text3)';
-    var tierLbl  = TIER_LABEL[tier] || 'T3';
-    var kd       = parseInt(t.kd_score) || 0;
-    var kdCol    = kd < 15 ? 'var(--teal)' : kd < 30 ? 'var(--amber)' : 'var(--urgent)';
+    var ist   = INTENT[t.intent] || INTENT['Informational'];
+    var tier  = TIER[String(t.conversion_tier||'3')] || TIER['3'];
+    var score = t.opportunity_score || 0;
+    var kd    = parseInt(t.kd_score) || 0;
+    var kdCol = kd < 15 ? '#059669' : kd < 30 ? '#D97706' : '#DC2626';
+    var volStr = t.search_volume && t.search_volume !== 'TBC' ? t.search_volume + '/mo' : '';
+
+    // Build "why this converts" paragraph — Yoast style explanation
+    var why = '';
+    if (t.competitor_gap) why += t.competitor_gap + ' ';
+    if (t.fxify_angle) why += t.fxify_angle + ' ';
+    if (t.why_now) why += t.why_now;
+    if (!why.trim() && t.short_form_hook) why = t.short_form_hook;
 
     html +=
-      '<div style="background:var(--bg2);border:0.5px solid var(--border);border-radius:var(--rl);overflow:hidden;">' +
+      '<div style="background:var(--bg2);padding:16px 20px;' +
+        (idx < topics.length-1 ? 'border-bottom:1px solid var(--border);' : '') +
+        'transition:background .1s;cursor:pointer;" ' +
+        'onmouseenter="this.style.background=\'var(--bg3)\'" ' +
+        'onmouseleave="this.style.background=\'var(--bg2)\'" ' +
+        'onclick="handleTopicClick(' + idx + ')">' +
 
-        // ── Header: intent badge + tier + score ──
-        '<div style="padding:12px 14px 10px;border-bottom:0.5px solid var(--border);">' +
-          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
-            '<span style="font-size:10px;font-weight:700;background:' + ist.bg + ';color:' + ist.fc + ';border-radius:4px;padding:2px 8px;">' +
-              (t.intent || 'Informational') +
-            '</span>' +
-            '<span style="font-size:10px;font-weight:600;color:' + tierCol + ';font-family:var(--mono);">' + tierLbl + '</span>' +
-            '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);margin-left:auto;">Score: <strong style="color:' + scoreCol + ';">' + score + '</strong></span>' +
-          '</div>' +
-          // ── Title (the Yoast-style hook) ──
-          '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:6px;">' + (t.title || '') + '</p>' +
-          // ── Short form hook ──
-          (t.short_form_hook ?
-            '<p style="font-size:12px;color:var(--blue);font-style:italic;line-height:1.4;border-left:2px solid var(--blue);padding-left:8px;">' +
-              '"' + t.short_form_hook + '"' +
-            '</p>' : ''
-          ) +
+        // Intent badge row — exactly like Yoast
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">' +
+          '<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:600;' +
+            'background:' + ist.bg + ';color:' + ist.fc + ';border:1px solid ' + ist.border + ';' +
+            'border-radius:4px;padding:2px 9px;">' + ist.label + '</span>' +
+          '<span style="font-size:11px;font-weight:500;color:' + tier.fc + ';">' + tier.label + '</span>' +
+          '<span style="margin-left:auto;display:flex;align-items:center;gap:10px;">' +
+            (volStr ? '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">📊 ' + volStr + '</span>' : '') +
+            (kd ? '<span style="font-size:10px;font-weight:700;color:' + kdCol + ';font-family:var(--mono);">KD ' + kd + '</span>' : '') +
+            '<span style="font-size:11px;font-weight:700;color:' + (score>=80?'#059669':score>=65?'#D97706':'#6B7280') + ';">' + score + '</span>' +
+          '</span>' +
         '</div>' +
 
-        // ── Body: gap + angle ──
-        '<div style="padding:10px 14px;display:grid;gap:8px;">' +
-          // Competitor gap
-          (t.competitor_gap ?
-            '<div>' +
-              '<p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:3px;">Competitor gap</p>' +
-              '<p style="font-size:12px;color:var(--text3);line-height:1.5;">' + t.competitor_gap + '</p>' +
-            '</div>' : ''
-          ) +
-          // FXIFY angle
-          (t.fxify_angle ?
-            '<div>' +
-              '<p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--teal);margin-bottom:3px;">FXIFY angle</p>' +
-              '<p style="font-size:12px;color:var(--text);line-height:1.5;">' + t.fxify_angle + '</p>' +
-            '</div>' : ''
-          ) +
-          // Why now
-          (t.why_now ?
-            '<div>' +
-              '<p style="font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--amber);margin-bottom:3px;">Why now</p>' +
-              '<p style="font-size:12px;color:var(--text3);line-height:1.5;">' + t.why_now + '</p>' +
-            '</div>' : ''
-          ) +
-        '</div>' +
+        // Title — bold, the content hook
+        '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:8px;">' +
+          (t.title || 'Untitled topic') +
+        '</p>' +
 
-        // ── Footer: keyword data + actions ──
-        '<div style="padding:8px 14px;border-top:0.5px solid var(--border);background:var(--bg3);display:flex;align-items:center;gap:12px;flex-wrap:wrap;">' +
+        // Why paragraph — the Yoast explanation text
+        (why.trim() ?
+          '<p style="font-size:13px;color:var(--text3);line-height:1.6;margin-bottom:10px;">' +
+            why.trim() +
+          '</p>' : '') +
+
+        // Hook line — if present, show as italic blue like a video teaser
+        (t.short_form_hook && t.short_form_hook !== why.trim() ?
+          '<p style="font-size:12px;color:var(--teal);font-style:italic;border-left:3px solid var(--teal);' +
+            'padding-left:10px;margin-bottom:10px;line-height:1.5;">"' + t.short_form_hook + '"</p>' : '') +
+
+        // Keyword + action buttons
+        '<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">' +
           (t.primary_keyword ?
-            '<span style="font-size:11px;color:var(--blue);font-family:var(--mono);font-style:italic;">' + t.primary_keyword + '</span>' : '') +
-          (t.search_volume && t.search_volume !== 'TBC' ?
-            '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">Vol: ' + t.search_volume + '</span>' : '') +
-          (t.kd_score && t.kd_score !== 'TBC' ?
-            '<span style="font-size:10px;color:' + kdCol + ';font-family:var(--mono);font-weight:600;">KD: ' + t.kd_score + '</span>' : '') +
+            '<span style="font-size:11px;color:var(--brand);font-family:var(--mono);' +
+              'background:var(--brandL);padding:2px 8px;border-radius:4px;">' +
+              '🔑 ' + t.primary_keyword + '</span>' : '') +
           '<div style="margin-left:auto;display:flex;gap:6px;">' +
-            '<button class="btn btn-s v2-brief-btn" data-idx="' + idx + '" style="font-size:11px;">Brief →</button>' +
-            '<button class="btn btn-s v2-task-btn" data-idx="' + idx + '" style="font-size:11px;">+ Task</button>' +
+            '<button class="btn btn-s" onclick="event.stopPropagation();generateTopicBrief(window._v2Topics[' + idx + '])" ' +
+              'style="font-size:11px;background:var(--teal);border-color:var(--teal);color:#fff;">Generate brief →</button>' +
+            '<button class="btn btn-s btn-ghost" onclick="event.stopPropagation();createTaskFromTopic(window._v2Topics[' + idx + '])" ' +
+              'style="font-size:11px;">+ Task</button>' +
           '</div>' +
         '</div>' +
 
@@ -7642,24 +7842,16 @@ function renderTopicGrid(topics, isStub, publishedCount) {
 
   html += '</div>';
   output.innerHTML = html;
-
-  // Store topics for brief generation
   window._v2Topics = topics;
-
-  // Wire Brief and Task buttons
-  output.querySelectorAll('.v2-brief-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var t = window._v2Topics[parseInt(this.dataset.idx)];
-      if (t) generateTopicBrief(t);
-    });
-  });
-  output.querySelectorAll('.v2-task-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var t = window._v2Topics[parseInt(this.dataset.idx)];
-      if (t) createTaskFromTopic(t);
-    });
-  });
 }
+
+function handleTopicClick(idx) {
+  var t = window._v2Topics && window._v2Topics[idx];
+  if (!t) return;
+  // Expand/collapse — todo: add expanded detail view
+}
+
+
 
 
 
