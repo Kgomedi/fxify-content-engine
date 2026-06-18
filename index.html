@@ -9830,7 +9830,7 @@ function parseJSON(text) {
     }
   } catch(e2) { /* recovery failed */ }
 
-  throw new Error('JSON parse failed: ' + e.message + ' | Preview: ' + clean.substring(0, 100));
+  throw new Error('JSON parse failed — truncated response | Preview: ' + clean.substring(0, 100));
 }
 
 // Competitor analysis page loader
