@@ -20,67 +20,103 @@ html{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;}
 
 /* ── DESIGN TOKENS — Semrush/Surfer inspired ───────────── */
 :root{
-  /* Backgrounds — clean white layering like Semrush */
-  --bg:       #F4F6F9;   /* page background — light grey */
-  --bg2:      #FFFFFF;   /* card/panel background */
-  --bg3:      #F8FAFC;   /* subtle inset / table row */
+  /* ── BACKGROUNDS ─────────────────────────────── */
+  --bg:       #F4F6F9;
+  --bg2:      #FFFFFF;
+  --bg3:      #F8FAFC;
   --surface:  #FFFFFF;
 
-  /* Borders */
+  /* ── BORDERS ─────────────────────────────────── */
   --border:   #E2E8F0;
   --border2:  #CBD5E1;
 
-  /* Text — tight hierarchy like Surfer */
-  --text:     #0F172A;   /* headings — near black */
-  --text2:    #334155;   /* body */
-  --text3:    #64748B;   /* secondary / captions */
-  --muted:    #94A3B8;   /* placeholders */
+  /* ── TEXT ────────────────────────────────────── */
+  --text:     #0F172A;
+  --text2:    #334155;
+  --text3:    #64748B;
+  --muted:    #94A3B8;
 
-  /* Brand — Semrush purple-violet */
-  --brand:    #6B3FA0;   /* primary brand */
-  --brand2:   #8B5CF6;   /* lighter purple accent */
-  --brandL:   #F3EEFF;   /* purple tint bg */
+  /* ── BRAND (purple) ──────────────────────────── */
+  --brand:    #6B3FA0;
+  --brandL:   #F3EEFF;
 
-  /* Accent — Surfer electric blue */
-  --teal:     #2563EB;   /* primary action blue */
+  /* ── PRIMARY ACTION (blue) ───────────────────── */
+  --teal:     #2563EB;
   --tealD:    #1D4ED8;
   --tealL:    #EFF6FF;
   --tealG:    #DBEAFE;
+  /* aliases kept for backward compatibility */
   --blue:     #2563EB;
   --blueL:    #EFF6FF;
+  --g2:       #F8FAFC;
+  --g5:       #64748B;
 
-  /* Status colours */
-  --urgent:   #DC2626;   /* red */
+  /* ── STATUS ──────────────────────────────────── */
+  --urgent:   #DC2626;
   --urgentL:  #FEF2F2;
-  --high:     #D97706;   /* amber */
-  --highL:    #FFFBEB;
-  --green:    #059669;   /* emerald */
-  --greenL:   #ECFDF5;
+  --red:      #DC2626;
+  --redL:     #FEF2F2;
   --amber:    #D97706;
   --amberL:   #FFFBEB;
+  --high:     #D97706;
+  --highL:    #FFFBEB;
+  --green:    #059669;
+  --greenL:   #ECFDF5;
   --purple:   #7C3AED;
   --purpleL:  #EDE9FE;
+  /* brand2 alias kept for compatibility */
+  --brand2:   #7C3AED;
 
-  /* Sidebar */
-  --sb:       #1E1B4B;   /* deep indigo — Semrush sidebar */
+  /* ── SIDEBAR ─────────────────────────────────── */
+  --sb:       #1E1B4B;
   --sbText:   #C7D2FE;
   --sbActive: #4F46E5;
   --sbHover:  rgba(255,255,255,0.07);
 
-  /* Topbar */
+  /* ── TOPBAR ──────────────────────────────────── */
   --top:      #FFFFFF;
   --topBdr:   #E2E8F0;
 
-  /* Spacing / shape */
+  /* ── SHAPE & SPACING ─────────────────────────── */
   --r:        6px;
   --rl:       10px;
   --topH:     56px;
   --sbW:      228px;
 
-  /* Typography */
+  /* ── TYPOGRAPHY ──────────────────────────────── */
   --font:     'Inter', system-ui, -apple-system, sans-serif;
-  --mono:     'JetBrains Mono', 'Fira Code', monospace;
+  --mono:     'IBM Plex Mono', 'Fira Code', monospace;
 }
+
+/* ── DARK MODE ──────────────────────────────────── */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:       #0F172A;
+    --bg2:      #1E293B;
+    --bg3:      #1E293B;
+    --surface:  #1E293B;
+    --border:   #334155;
+    --border2:  #475569;
+    --text:     #F1F5F9;
+    --text2:    #CBD5E1;
+    --text3:    #94A3B8;
+    --muted:    #64748B;
+    --tealL:    #1E3A5F;
+    --tealG:    #1E3A5F;
+    --blueL:    #1E3A5F;
+    --brandL:   #2D1B4E;
+    --urgentL:  #2D0F0F;
+    --redL:     #2D0F0F;
+    --amberL:   #2D1F00;
+    --highL:    #2D1F00;
+    --greenL:   #0D2818;
+    --purpleL:  #1F1040;
+    --top:      #1E293B;
+    --topBdr:   #334155;
+    --g2:       #1E293B;
+  }
+}
+
 
 /* ── BASE ───────────────────────────────────────────────── */
 body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh;font-size:14px;line-height:1.6;}
@@ -435,6 +471,54 @@ tr:last-child td{border-bottom:none;}
   .wcard { padding:12px; }
   .tbr .tbu { display:none; }
 }
+
+/* ── ICONS ──────────────────────────────────────── */
+.ico { display:inline-flex; align-items:center; justify-content:center; flex-shrink:0; }
+.ico svg { width:14px; height:14px; stroke:currentColor; fill:none; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.ico-sm svg { width:12px; height:12px; }
+.ico-lg svg { width:16px; height:16px; }
+
+/* ── UTILITY CLASSES (extracted from inline styles) ─ */
+.flex-center { display:flex; align-items:center; }
+.flex-center-gap6 { display:flex; align-items:center; gap:6px; }
+.flex-center-gap8 { display:flex; align-items:center; gap:8px; }
+.flex-between { display:flex; align-items:center; justify-content:space-between; }
+.txt-11-muted { font-size:11px; color:var(--text3); }
+.txt-12-muted { font-size:12px; color:var(--text3); }
+.txt-13-body  { font-size:13px; color:var(--text2); }
+.txt-13-head  { font-size:13px; font-weight:600; color:var(--text); }
+.mono-sm      { font-size:11px; color:var(--text3); font-family:var(--mono); }
+.card-header  { padding:10px 14px; border-bottom:1px solid var(--border); }
+.card-body    { padding:14px 16px; }
+.empty-state  { color:var(--text3); font-size:13px; padding:20px 0; }
+.badge { display:inline-flex; align-items:center; font-size:10px; font-weight:700; padding:2px 8px; border-radius:10px; }
+.badge-success { background:var(--greenL); color:var(--green); }
+.badge-warn    { background:var(--amberL); color:var(--amber); }
+.badge-danger  { background:var(--urgentL); color:var(--urgent); }
+.badge-info    { background:var(--blueL); color:var(--teal); }
+.badge-neutral { background:var(--bg3); color:var(--text3); }
+.badge-brand   { background:var(--brandL); color:var(--brand); }
+
+/* ── DARK MODE SIDEBAR OVERRIDE ────────────────── */
+@media (prefers-color-scheme: dark) {
+  .sb { background: #0F172A; }
+  .topbar { background: var(--bg2); border-bottom-color: var(--border); }
+  .cu-card { background: var(--bg2); }
+  .finput { background: var(--bg2); color: var(--text); border-color: var(--border); }
+  .finput:focus { border-color: var(--teal); }
+  pre { color: var(--text2); }
+  .pbox { background: var(--bg2); border-color: var(--border); }
+}
+
+/* ── LOGIN CARD — always light regardless of OS dark mode ── */
+@media (prefers-color-scheme: dark) {
+  .lcard { background: #FFFFFF !important; color: #334155 !important; }
+  .lsub  { color: #6B3FA0 !important; }
+  .lnote { color: #64748B !important; }
+  .lcard p { color: #334155 !important; }
+  .gbtn  { background: #FFFFFF !important; color: #0F172A !important; border-color: #E2E8F0 !important; }
+  .gbtn:hover { background: #F8FAFC !important; }
+}
 </style>
 </head>
 <body>
@@ -447,7 +531,7 @@ tr:last-child td{border-bottom:none;}
   </div>
   <div class="lcard">
     <p class="lsub">Content Engine</p>
-    <p style="font-size:12px;color:#475569;margin-bottom:24px;">Sign in with your Google account</p>
+    <p style="font-size:12px;color:var(--text2);margin-bottom:24px;">Sign in with your Google account</p>
     <button class="gbtn" id="login-btn" style="margin-bottom:10px;">
       <svg width="18" height="18" viewBox="0 0 16 16"><path d="M15.68 8.18c0-.57-.05-1.11-.14-1.64H8v3.1h4.31a3.68 3.68 0 01-1.6 2.42v2h2.58c1.51-1.39 2.38-3.44 2.38-5.88z" fill="#4285F4"/><path d="M8 16c2.16 0 3.97-.72 5.29-1.94l-2.58-2A4.8 4.8 0 018 12.75a4.8 4.8 0 01-4.52-3.32H.83v2.07A8 8 0 008 16z" fill="#34A853"/><path d="M3.48 9.43A4.84 4.84 0 013.23 8c0-.52.09-1.02.25-1.49V4.44H.83A8 8 0 000 8c0 1.29.31 2.51.83 3.56l2.65-2.13z" fill="#FBBC05"/><path d="M8 3.18c1.22 0 2.31.42 3.17 1.24l2.37-2.37A8 8 0 008 0 8 8 0 00.83 4.44l2.65 2.07A4.8 4.8 0 018 3.18z" fill="#EA4335"/></svg>
       Continue with Google
@@ -465,7 +549,7 @@ tr:last-child td{border-bottom:none;}
       <div class="tblogo" id="admin-logo" style="display:flex;align-items:center;gap:10px;" style="cursor:pointer;"><img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjM0IiB2aWV3Qm94PSIwIDAgMTgyIDM0IiB3aWR0aD0iMTgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGl0bGU+RlhJRlkgUHJvcCBUcmFkaW5nIEZpcm08L3RpdGxlPgo8cGF0aCBkPSJNMjcuOTU2OSAwLjVIMC45MDM2ODJDMC40MDQ1OTIgMC41IDAgMC44ODYzOTkgMCAxLjM2MzA1VjUuNjc4MjhDMCA2LjE1NDkzIDAuNDA0NTkyIDYuNTQxMzMgMC45MDM2ODIgNi41NDEzM0gyNy45NTY5QzI4LjQ1NTkgNi41NDEzMyAyOC44NjA1IDYuMTU0OTMgMjguODYwNSA1LjY3ODI4VjEuMzYzMDVDMjguODYwNSAwLjg4NjM5OSAyOC40NTU5IDAuNSAyNy45NTY5IDAuNVoiIGZpbGw9IiMxRTFCNEIiIGlkPSJwYXRoLTEtbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMjcuOTYzMSA4LjQ3NDEySDUuNDE1NjRDNC45MTY1NSA4LjQ3NDEyIDQuNTExOTYgOC44NjA1MiA0LjUxMTk2IDkuMzM3MTdWMTMuNjUyNEM0LjUxMTk2IDE0LjEyOTEgNC45MTY1NSAxNC41MTU0IDUuNDE1NjQgMTQuNTE1NEgyNy45NjMxQzI4LjQ2MjIgMTQuNTE1NCAyOC44NjY4IDE0LjEyOTEgMjguODY2OCAxMy42NTI0VjkuMzM3MTdDMjguODY2OCA4Ljg2MDUyIDI4LjQ2MjIgOC40NzQxMiAyNy45NjMxIDguNDc0MTJaIiBmaWxsPSIjMUUxQjRCIiBpZD0icGF0aC0yLWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTI3Ljk1NjggMTYuNDQxOUg5LjkyMTM4QzkuNDIyMjkgMTYuNDQxOSA5LjAxNzcgMTYuODI4MyA5LjAxNzcgMTcuMzA0OVYyMS42MjAyQzkuMDE3NyAyMi4wOTY4IDkuNDIyMjkgMjIuNDgzMiA5LjkyMTM4IDIyLjQ4MzJIMjcuOTU2OEMyOC40NTU5IDIyLjQ4MzIgMjguODYwNSAyMi4wOTY4IDI4Ljg2MDUgMjEuNjIwMlYxNy4zMDQ5QzI4Ljg2MDUgMTYuODI4MyAyOC40NTU5IDE2LjQ0MTkgMjcuOTU2OCAxNi40NDE5WiIgZmlsbD0iIzFFMUI0QiIgaWQ9InBhdGgtMy1sb2dvIj48L3BhdGg+CjxwYXRoIGQ9Ik0yNy45NTY5IDI0LjQxNkgxNC40MzM1QzEzLjkzNDQgMjQuNDE2IDEzLjUyOTggMjQuODAyNCAxMy41Mjk4IDI1LjI3OTFWMjkuNTk0M0MxMy41Mjk4IDMwLjA3MDkgMTMuOTM0NCAzMC40NTczIDE0LjQzMzUgMzAuNDU3M0gyNy45NTY5QzI4LjQ1NiAzMC40NTczIDI4Ljg2MDYgMzAuMDcwOSAyOC44NjA2IDI5LjU5NDNWMjUuMjc5MUMyOC44NjA2IDI0LjgwMjQgMjguNDU2IDI0LjQxNiAyNy45NTY5IDI0LjQxNloiIGZpbGw9IiMxRTFCNEIiIGlkPSJwYXRoLTQtbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMzYuOTgxIDMwLjVWMC41SDU4Ljg3OTNWNy40NzEyM0g0NS4zMTc3VjEzLjI3NTVINTUuODE4M1YxOS44Mzk1SDQ1LjMxNzdWMzAuNUgzNi45ODFWMzAuNVoiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTYwLjEwMTIgMzAuNUw3MC43OTI3IDE1LjE2NTdMNjAuMTAxMiAwLjVINzAuMzY2M0w3NS41OTExIDguMjc5NThMODAuNjMxMyAwLjVIODkuOTFMODAuMTYwNCAxNC4zOTk5TDkxLjk3ODMgMzAuNUg4MS41NzMyTDc1LjMxMTEgMjEuMjhMNjkuMjMzNSAzMC41SDYwLjA5NDhINjAuMTAxMloiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTk1LjA5MDIgMzAuNVYwLjVIMTAzLjQyN1YzMC41SDk1LjA5MDJaIiBmaWxsPSIjMUUxQjRCIj48L3BhdGg+CjxwYXRoIGQ9Ik0xMDkuMDc4IDMwLjVWMC41SDEzMC45NzZWNy40NzEyM0gxMTcuNDE1VjEzLjI3NTVIMTI3LjkxNVYxOS44Mzk1SDExNy40MTVWMzAuNUgxMDkuMDc4WiIgZmlsbD0iIzFFMUI0QiI+PC9wYXRoPgo8cGF0aCBkPSJNMTQzLjQ1NiAzMC41VjE4LjUzMjhMMTMyLjI5NCAwLjVIMTQxLjg1M0wxNDcuOTc1IDExLjIwM0wxNTMuNzIxIDAuNUgxNjNMMTUxLjc5MyAxOC40OTAzVjMwLjVIMTQzLjQ1NloiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTcwLjc5MjYgMTUuMTU5Nkw2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OE04MC4xNjA0IDE0LjM5MzhMOTEuOTc4MiAzMC40OTM5SDgxLjU3MzJMNzUuMzExIDIxLjI3MzkiIGZpbGw9IiMxRTFCNEIiPjwvcGF0aD4KPHBhdGggZD0iTTE3Mi41ODcgMC40NTQ1OUgxNzQuMDM4TDE3NS45ODEgNS4xOTc0OUgxNzYuMDU4TDE3OC4wMDEgMC40NTQ1OUgxNzkuNDUyVjcuMDAwMDRIMTc4LjMxNFYyLjUwMzI0SDE3OC4yNTNMMTc2LjQ0NSA2Ljk4MDg3SDE3NS41OTRMMTczLjc4NSAyLjQ5MzY1SDE3My43MjVWNy4wMDAwNEgxNzIuNTg3VjAuNDU0NTlaIiBmaWxsPSIjMUUxQjRCIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjwvcGF0aD4KPHBhdGggZD0iTTE2Ni4zNTggMS40NDg1NVYwLjQ1NDU5SDE3MS41OFYxLjQ0ODU1SDE2OS41NTdWNy4wMDAwNEgxNjguMzgxVjEuNDQ4NTVIMTY2LjM1OFoiIGZpbGw9IiMxRTFCNEIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8L3N2Zz4=" height="20" style="display:block;"></div>
       <div class="tbsep"></div><span class="tbctx" id="admin-ctx">Content Lead</span>
     </div>
-    <div class="tbr"><button id="imp-btn" class="btn btn-s" style="font-size:12px;padding:5px 14px;" onclick="openSwitchViewModal();">👁 Switch view</button><span class="tbu" id="admin-tbu">—</span><div class="tbav b" id="admin-tbav">—</div></div>
+    <div class="tbr"><button id="imp-btn" class="btn btn-s" style="font-size:12px;padding:5px 14px;" onclick="openSwitchViewModal();"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span> Switch view</button><span class="tbu" id="admin-tbu">—</span><div class="tbav b" id="admin-tbav">—</div></div>
   </div>
   <div class="awrap">
     <div class="sbov" id="admin-ov"></div>
@@ -474,24 +558,24 @@ tr:last-child td{border-bottom:none;}
         <img src="data:image/svg+xml;base64,PHN2ZyBmaWxsPSJub25lIiBoZWlnaHQ9IjM0IiB2aWV3Qm94PSIwIDAgMTgyIDM0IiB3aWR0aD0iMTgyIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPgo8dGl0bGU+RlhJRlkgUHJvcCBUcmFkaW5nIEZpcm08L3RpdGxlPgo8cGF0aCBkPSJNMjcuOTU2OSAwLjVIMC45MDM2ODJDMC40MDQ1OTIgMC41IDAgMC44ODYzOTkgMCAxLjM2MzA1VjUuNjc4MjhDMCA2LjE1NDkzIDAuNDA0NTkyIDYuNTQxMzMgMC45MDM2ODIgNi41NDEzM0gyNy45NTY5QzI4LjQ1NTkgNi41NDEzMyAyOC44NjA1IDYuMTU0OTMgMjguODYwNSA1LjY3ODI4VjEuMzYzMDVDMjguODYwNSAwLjg4NjM5OSAyOC40NTU5IDAuNSAyNy45NTY5IDAuNVoiIGZpbGw9IndoaXRlIiBpZD0icGF0aC0xLWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTI3Ljk2MzEgOC40NzQxMkg1LjQxNTY0QzQuOTE2NTUgOC40NzQxMiA0LjUxMTk2IDguODYwNTIgNC41MTE5NiA5LjMzNzE3VjEzLjY1MjRDNC41MTE5NiAxNC4xMjkxIDQuOTE2NTUgMTQuNTE1NCA1LjQxNTY0IDE0LjUxNTRIMjcuOTYzMUMyOC40NjIyIDE0LjUxNTQgMjguODY2OCAxNC4xMjkxIDI4Ljg2NjggMTMuNjUyNFY5LjMzNzE3QzI4Ljg2NjggOC44NjA1MiAyOC40NjIyIDguNDc0MTIgMjcuOTYzMSA4LjQ3NDEyWiIgZmlsbD0id2hpdGUiIGlkPSJwYXRoLTItbG9nbyI+PC9wYXRoPgo8cGF0aCBkPSJNMjcuOTU2OCAxNi40NDE5SDkuOTIxMzhDOS40MjIyOSAxNi40NDE5IDkuMDE3NyAxNi44MjgzIDkuMDE3NyAxNy4zMDQ5VjIxLjYyMDJDOS4wMTc3IDIyLjA5NjggOS40MjIyOSAyMi40ODMyIDkuOTIxMzggMjIuNDgzMkgyNy45NTY4QzI4LjQ1NTkgMjIuNDgzMiAyOC44NjA1IDIyLjA5NjggMjguODYwNSAyMS42MjAyVjE3LjMwNDlDMjguODYwNSAxNi44MjgzIDI4LjQ1NTkgMTYuNDQxOSAyNy45NTY4IDE2LjQ0MTlaIiBmaWxsPSJ3aGl0ZSIgaWQ9InBhdGgtMy1sb2dvIj48L3BhdGg+CjxwYXRoIGQ9Ik0yNy45NTY5IDI0LjQxNkgxNC40MzM1QzEzLjkzNDQgMjQuNDE2IDEzLjUyOTggMjQuODAyNCAxMy41Mjk4IDI1LjI3OTFWMjkuNTk0M0MxMy41Mjk4IDMwLjA3MDkgMTMuOTM0NCAzMC40NTczIDE0LjQzMzUgMzAuNDU3M0gyNy45NTY5QzI4LjQ1NiAzMC40NTczIDI4Ljg2MDYgMzAuMDcwOSAyOC44NjA2IDI5LjU5NDNWMjUuMjc5MUMyOC44NjA2IDI0LjgwMjQgMjguNDU2IDI0LjQxNiAyNy45NTY5IDI0LjQxNloiIGZpbGw9IndoaXRlIiBpZD0icGF0aC00LWxvZ28iPjwvcGF0aD4KPHBhdGggZD0iTTM2Ljk4MSAzMC41VjAuNUg1OC44NzkzVjcuNDcxMjNINDUuMzE3N1YxMy4yNzU1SDU1LjgxODNWMTkuODM5NUg0NS4zMTc3VjMwLjVIMzYuOTgxVjMwLjVaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNNjAuMTAxMiAzMC41TDcwLjc5MjcgMTUuMTY1N0w2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OEw4MC42MzEzIDAuNUg4OS45MUw4MC4xNjA0IDE0LjM5OTlMOTEuOTc4MyAzMC41SDgxLjU3MzJMNzUuMzExMSAyMS4yOEw2OS4yMzM1IDMwLjVINjAuMDk0OEg2MC4xMDEyWiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTk1LjA5MDIgMzAuNVYwLjVIMTAzLjQyN1YzMC41SDk1LjA5MDJaIiBmaWxsPSJ3aGl0ZSI+PC9wYXRoPgo8cGF0aCBkPSJNMTA5LjA3OCAzMC41VjAuNUgxMzAuOTc2VjcuNDcxMjNIMTE3LjQxNVYxMy4yNzU1SDEyNy45MTVWMTkuODM5NUgxMTcuNDE1VjMwLjVIMTA5LjA3OFoiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xNDMuNDU2IDMwLjVWMTguNTMyOEwxMzIuMjk0IDAuNUgxNDEuODUzTDE0Ny45NzUgMTEuMjAzTDE1My43MjEgMC41SDE2M0wxNTEuNzkzIDE4LjQ5MDNWMzAuNUgxNDMuNDU2WiIgZmlsbD0id2hpdGUiPjwvcGF0aD4KPHBhdGggZD0iTTcwLjc5MjYgMTUuMTU5Nkw2MC4xMDEyIDAuNUg3MC4zNjYzTDc1LjU5MTEgOC4yNzk1OE04MC4xNjA0IDE0LjM5MzhMOTEuOTc4MiAzMC40OTM5SDgxLjU3MzJMNzUuMzExIDIxLjI3MzkiIGZpbGw9IndoaXRlIj48L3BhdGg+CjxwYXRoIGQ9Ik0xNzIuNTg3IDAuNDU0NTlIMTc0LjAzOEwxNzUuOTgxIDUuMTk3NDlIMTc2LjA1OEwxNzguMDAxIDAuNDU0NTlIMTc5LjQ1MlY3LjAwMDA0SDE3OC4zMTRWMi41MDMyNEgxNzguMjUzTDE3Ni40NDUgNi45ODA4N0gxNzUuNTk0TDE3My43ODUgMi40OTM2NUgxNzMuNzI1VjcuMDAwMDRIMTcyLjU4N1YwLjQ1NDU5WiIgZmlsbD0id2hpdGUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8cGF0aCBkPSJNMTY2LjM1OCAxLjQ0ODU1VjAuNDU0NTlIMTcxLjU4VjEuNDQ4NTVIMTY5LjU1N1Y3LjAwMDA0SDE2OC4zODFWMS40NDg1NUgxNjYuMzU4WiIgZmlsbD0id2hpdGUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PC9wYXRoPgo8L3N2Zz4=" height="22" style="opacity:.9;" alt="FXIFY">
       </div>
       <div class="ngrp">Workflow</div>
-      <div class="nlink" data-pg="w-drafts" data-sc="admin" id="hybrid-drafts-link" style="display:none;"><span class="nico">✦</span>My Drafts<span class="nbadge" id="nb-hybrid"></span></div>
-      <div class="nlink active" data-pg="a-pipeline" data-sc="admin"><span class="nico">◈</span>Pipeline<span class="nbadge" id="nb-pipeline">0</span></div>
+      <div class="nlink" data-pg="w-drafts" data-sc="admin" id="hybrid-drafts-link" style="display:none;"><span class="nico"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span></span>My Drafts<span class="nbadge" id="nb-hybrid"></span></div>
+      <div class="nlink active" data-pg="a-pipeline" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span></span>Pipeline<span class="nbadge" id="nb-pipeline">0</span></div>
       <div class="ndiv"></div>
       <div class="ngrp">Content Engine</div>
-      <div class="nlink" data-pg="a-generate" data-sc="admin"><span class="nico">⚡</span>Content Intelligence</div>
+      <div class="nlink" data-pg="a-generate" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></span>Content Intelligence</div>
       
-      <div class="nlink" data-pg="a-live" data-sc="admin"><span class="nico">🌐</span>Published</div>
+      <div class="nlink" data-pg="a-live" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span></span>Published</div>
       <div class="ndiv"></div>
       <div class="ngrp">Insights</div>
-      <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico">▲</span>Analytics</div>
-      <div class="nlink" data-pg="a-keywords" data-sc="admin"><span class="nico">🔑</span>Keyword Analysis</div>
+      <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span></span>Analytics</div>
+      <div class="nlink" data-pg="a-keywords" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></span></span>Keyword Analysis</div>
       
-      <div class="nlink" data-pg="a-competitors" data-sc="admin"><span class="nico">📡</span>Competitor Pulse</div>
+      <div class="nlink" data-pg="a-competitors" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5.19 11.19A7 7 0 0 1 12 4a7 7 0 0 1 6.81 7.19"/><path d="M8.76 14.76A3 3 0 0 1 12 12a3 3 0 0 1 3.24 2.76"/><circle cx="12" cy="20" r="1"/><line x1="12" y1="16" x2="12" y2="19"/></svg></span></span>Competitor Pulse</div>
 
       <div class="ndiv"></div>
       <div class="ngrp">Settings</div>
-      <div class="nlink" data-pg="a-writers" data-sc="admin"><span class="nico">≡</span>Team</div>
-      <div class="nlink" data-pg="a-prompts" data-sc="admin"><span class="nico">⚙</span>AI Config</div>
+      <div class="nlink" data-pg="a-writers" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></span>Team</div>
+      <div class="nlink" data-pg="a-prompts" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span></span>AI Config</div>
     </nav>
     <div class="ma">
 
@@ -506,11 +590,11 @@ tr:last-child td{border-bottom:none;}
             <!-- List toggle -->
             <div style="display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:2px;">
               <button class="btn btn-s pipeline-list-btn active" data-list="both"   style="font-size:11px;padding:3px 10px;border:none;background:var(--teal);color:var(--bg);">All</button>
-              <button class="btn btn-s pipeline-list-btn"        data-list="blog"   style="font-size:11px;padding:3px 10px;border:none;background:transparent;color:var(--text3);">✦ Blog</button>
-              <button class="btn btn-s pipeline-list-btn"        data-list="video"  style="font-size:11px;padding:3px 10px;border:none;background:transparent;color:var(--text3);">▶ Video</button>
+              <button class="btn btn-s pipeline-list-btn"        data-list="blog"   style="font-size:11px;padding:3px 10px;border:none;background:transparent;color:var(--text3);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> Blog</button>
+              <button class="btn btn-s pipeline-list-btn"        data-list="video"  style="font-size:11px;padding:3px 10px;border:none;background:transparent;color:var(--text3);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> Video</button>
             </div>
             <button class="btn btn-p btn-s" id="cu-new-task-btn">+ New task</button>
-            <button class="btn btn-s" id="cu-refresh-btn">↻ Refresh</button>
+            <button class="btn btn-s" id="cu-refresh-btn"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span> Refresh</button>
             <button class="btn btn-s" id="cu-sync-btn" style="color:var(--teal);border-color:rgba(29,155,240,0.3);">⇅ Sync</button>
             <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">Blog ↗</a>
             <a href="https://app.clickup.com/9005041798/v/li/901603213575" target="_blank" class="btn btn-s" style="text-decoration:none;">Video ↗</a>
@@ -532,8 +616,8 @@ tr:last-child td{border-bottom:none;}
             <div style="display:flex;align-items:center;gap:10px;">
               <p style="font-size:13px;font-weight:600;color:var(--text);">New task</p>
               <div style="display:flex;gap:2px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:2px;">
-                <button class="new-task-list-btn active" data-list="blog"  style="padding:3px 10px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:var(--teal);color:var(--bg);">✦ Blog</button>
-                <button class="new-task-list-btn"        data-list="video" style="padding:3px 10px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">▶ Video</button>
+                <button class="new-task-list-btn active" data-list="blog"  style="padding:3px 10px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:var(--teal);color:var(--bg);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> Blog</button>
+                <button class="new-task-list-btn"        data-list="video" style="padding:3px 10px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> Video</button>
               </div>
             </div>
             <button style="background:none;border:none;font-size:18px;color:var(--text3);cursor:pointer;" id="cu-create-close">×</button>
@@ -655,8 +739,8 @@ tr:last-child td{border-bottom:none;}
           <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap;">
             <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);" id="hub-dfs-status">DataForSEO ✓</span>
             <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--greenL);color:var(--green);border:1px solid rgba(52,211,153,0.2);font-family:var(--mono);">Firecrawl ✓</span>
-            <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;">📚 History</button>
-            <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;">★ Bookmarks</button>
+            <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span> History</button>
+            <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span> Bookmarks</button>
           </div>
         </div>
 
@@ -668,14 +752,14 @@ tr:last-child td{border-bottom:none;}
               <p style="font-size:11px;color:var(--text3);line-height:1.5;">Pulls Reddit, X, Google Ads, YouTube, blogs — no seed needed.</p>
             </div>
             <button class="btn btn-s" id="trending-btn" style="flex-shrink:0;white-space:nowrap;gap:6px;font-size:12px;">
-              🔥 Scan trends
+              <span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M8.5 14.5A6 6 0 0 0 18 8c0-3-2-5.5-5-6 1 2 .5 4-1 5.5s-3.5 2-3.5 4.5c0 1 .5 2 1 2.5A6 6 0 0 0 8.5 14.5z"/><path d="M9 18c0 1.657 1.343 3 3 3s3-1.343 3-3-3-6-3-6-3 4.343-3 6z"/></svg></span> Scan trends
             </button>
           </div>
           <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
             <span style="font-size:11px;font-weight:600;color:var(--text3);">Output for:</span>
             <div style="display:flex;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:2px;">
-              <button class="trend-format-btn active" data-fmt="blog" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:var(--teal);color:#fff;">✦ Blog</button>
-              <button class="trend-format-btn" data-fmt="video" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">▶ Video</button>
+              <button class="trend-format-btn active" data-fmt="blog" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:var(--teal);color:#fff;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> Blog</button>
+              <button class="trend-format-btn" data-fmt="video" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> Video</button>
               <button class="trend-format-btn" data-fmt="both" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">Both</button>
             </div>
             <span style="font-size:11px;color:var(--text3);">Signals:</span>
@@ -728,7 +812,7 @@ tr:last-child td{border-bottom:none;}
         <div style="display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:20px;">
           <button class="hub-tab active" data-tab="blog" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--bg3);color:var(--teal);">Blog Topics</button>
           <button class="hub-tab" data-tab="youtube" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">YouTube Topics</button>
-          <button class="hub-tab" data-tab="crosspost" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">Cross-Pollinate ⚡</button>
+          <button class="hub-tab" data-tab="crosspost" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">Cross-Pollinate <span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></button>
         </div>
 
         <!-- BLOG TAB -->
@@ -801,7 +885,7 @@ tr:last-child td{border-bottom:none;}
                 <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-fxify" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--tealL);color:var(--teal);border:1px solid rgba(29,155,240,0.2);font-family:var(--mono);">FXIFY published</span> Dedup check</label>
               </div>
             </div>
-            <button class="btn btn-p" id="v2-research-btn" style="min-width:200px;">⚡ Find topic gaps →</button>
+            <button class="btn btn-p" id="v2-research-btn" style="min-width:200px;"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Find topic gaps →</button>
           </div>
           <div id="v2-brief-output"></div>
         </div>
@@ -847,15 +931,15 @@ tr:last-child td{border-bottom:none;}
               <p class="flbl" style="margin-bottom:8px;">Active signals</p>
               <div style="display:flex;gap:8px;flex-wrap:wrap;">
                 <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-seo" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);">SEO</span> YouTube keyword volume</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-x" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:#f0fdf4;color:#15803d;border:1px solid rgba(21,128,61,0.2);font-family:var(--mono);">X</span> Viral angles</label>
+                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-x" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:#f0fdf4;color:var(--green);border:1px solid rgba(21,128,61,0.2);font-family:var(--mono);">X</span> Viral angles</label>
                 <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-reddit" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--highL);color:var(--high);border:1px solid rgba(251,146,60,0.2);font-family:var(--mono);">Reddit</span> Trader pain points</label>
                 <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-comp" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--urgentL);color:var(--urgent);border:1px solid rgba(248,113,113,0.2);font-family:var(--mono);">Competitors</span> FTMO / FundedNext / Apex channels</label>
               </div>
             </div>
-            <button class="btn btn-p" style="min-width:200px;" id="ayt-research-btn">⚡ Discover YouTube topics →</button>
+            <button class="btn btn-p" style="min-width:200px;" id="ayt-research-btn"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Discover YouTube topics →</button>
           </div>
           <div id="yt-loading" style="display:none;background:var(--bg2);border:1px solid rgba(29,155,240,0.2);border-radius:var(--rl);padding:20px 24px;">
-            <p style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:14px;">⚡ Pulling signals...</p>
+            <p style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:14px;"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Pulling signals...</p>
             <div id="yt-signal-steps"></div>
           </div>
           <div id="yt-results" style="display:none;"></div>
@@ -901,7 +985,7 @@ tr:last-child td{border-bottom:none;}
             <p class="pgs" style="margin-bottom:0;">Pipeline velocity, content output, and writer performance. Live from ClickUp and Supabase.</p>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="btn btn-s" id="an-refresh-btn">↻ Refresh</button>
+            <button class="btn btn-s" id="an-refresh-btn"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span> Refresh</button>
             <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">Blog ↗</a>
             <a href="https://app.clickup.com/9005041798/v/li/901603213575" target="_blank" class="btn btn-s" style="text-decoration:none;">Video ↗</a>
           </div>
@@ -937,7 +1021,7 @@ tr:last-child td{border-bottom:none;}
         <!-- VELOCITY -->
         <div class="shead" style="margin-bottom:10px;">Pipeline velocity</div>
         <div id="an-velocity" style="margin-bottom:24px;">
-          <p style="color:var(--text3);font-size:13px;">Click ↻ Refresh to load velocity data.</p>
+          <p style="color:var(--text3);font-size:13px;">Click <span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span> Refresh to load velocity data.</p>
         </div>
 
         <!-- BY WRITER -->
@@ -955,7 +1039,7 @@ tr:last-child td{border-bottom:none;}
               </tr>
             </thead>
             <tbody id="an-by-writer-body">
-              <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Click ↻ Refresh to load writer stats</td></tr>
+              <tr><td colspan="6" style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Click <span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span> Refresh to load writer stats</td></tr>
             </tbody>
           </table>
         </div>
@@ -974,7 +1058,7 @@ tr:last-child td{border-bottom:none;}
               </tr>
             </thead>
             <tbody>
-              <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Click ↻ Refresh to load recent articles</td></tr>
+              <tr><td colspan="5" style="text-align:center;color:var(--text3);padding:20px;font-size:12px;">Click <span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span> Refresh to load recent articles</td></tr>
             </tbody>
           </table>
         </div>
@@ -994,7 +1078,7 @@ tr:last-child td{border-bottom:none;}
             <div class="pgh">Team</div>
             <p class="pgs" style="margin-bottom:0;">Content team roster. Stats pulled live from ClickUp.</p>
           </div>
-          <button class="btn btn-s" onclick="loadTeamStats()" id="team-refresh-btn">↻ Refresh stats</button>
+          <button class="btn btn-s" onclick="loadTeamStats()" id="team-refresh-btn"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span> Refresh stats</button>
         </div>
         <div class="wgrid" id="team-grid">
           <!-- Populated by loadTeamStats() — static fallback below -->
@@ -1016,7 +1100,7 @@ tr:last-child td{border-bottom:none;}
           <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;">
             <div>
               <p style="font-size:13px;font-weight:600;color:#fff;margin-bottom:4px;">AI Feedback Loop</p>
-              <p style="font-size:12px;color:#475569;line-height:1.5;">Claude reads all Send Back notes, inline comments and suggestions from Liam and David — extracts recurring patterns — and injects them into every new generation automatically.</p>
+              <p style="font-size:12px;color:var(--text2);line-height:1.5;">Claude reads all Send Back notes, inline comments and suggestions from Liam and David — extracts recurring patterns — and injects them into every new generation automatically.</p>
               <p style="font-size:11px;color:var(--teal);margin-top:6px;" id="feedback-count">Loading feedback data...</p>
             </div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:16px;">
@@ -1032,11 +1116,11 @@ tr:last-child td{border-bottom:none;}
             <button class="btn btn-p" id="train-ai-btn" style="white-space:nowrap;flex-shrink:0;">Train AI on feedback →</button>
           </div>
           <div id="train-loading" style="display:none;margin-top:12px;padding:10px;background:rgba(255,255,255,.04);border-radius:var(--r);">
-            <p style="font-size:12px;color:#94a3b8;">Claude is reading all reviewer feedback...</p>
+            <p style="font-size:12px;color:var(--muted);">Claude is reading all reviewer feedback...</p>
           </div>
           <div id="train-result" style="display:none;margin-top:12px;">
             <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px;">Active prompt rules (learned from feedback)</p>
-            <div id="train-rules" style="background:rgba(255,255,255,.04);border-radius:var(--r);padding:12px 14px;font-size:12px;color:#94a3b8;line-height:1.8;"></div>
+            <div id="train-rules" style="background:rgba(255,255,255,.04);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.8;"></div>
           </div>
         </div>
         <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:13px;font-weight:500;">FXIFY Blog Draft Prompt</span><span class="badge bt">Active</span></div>
@@ -1045,7 +1129,7 @@ tr:last-child td{border-bottom:none;}
             <p style="font-size:12px;font-weight:600;color:var(--text);">FXIFY Blog Draft Prompt</p>
             <div style="display:flex;gap:6px;align-items:center;">
               <span class="badge bt" style="font-size:10px;">Active</span>
-              <button class="btn btn-s" id="prompt-edit-btn" onclick="togglePromptEdit()" style="font-size:11px;">✏ Edit</button>
+              <button class="btn btn-s" id="prompt-edit-btn" onclick="togglePromptEdit()" style="font-size:11px;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span> Edit</button>
               <button class="btn btn-p btn-s" id="prompt-save-btn" onclick="savePromptTemplate()" style="font-size:11px;display:none;">Save →</button>
             </div>
           </div>
@@ -1087,10 +1171,10 @@ tr:last-child td{border-bottom:none;}
       <!-- PUBLISHED ARTICLES (ADMIN) -->
       <div id="a-live" class="pg">
         <div class="pgh">Published</div>
-        <p class="pgs">Everything live on fxify.com/blog — indexed for duplicate detection in Content Hub. 🌐</p>
+        <p class="pgs">Everything live on fxify.com/blog — indexed for duplicate detection in Content Hub. <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span></p>
         <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
           <button class="btn btn-p btn-s" id="a-scrape-btn">🔄 Refresh from fxify.com/blog</button>
-          <button class="btn btn-s" id="a-canonical-btn" onclick="runCanonicalCheck()" style="border-color:rgba(239,68,68,.3);color:var(--urgent);">🔍 Check canonicals</button>
+          <button class="btn btn-s" id="a-canonical-btn" onclick="runCanonicalCheck()" style="border-color:rgba(239,68,68,.3);color:var(--urgent);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Check canonicals</button>
           <input class="finput" id="a-live-search" type="text" placeholder="Search articles..." style="max-width:220px;"/>
           <span style="font-size:12px;color:var(--text3);align-self:center;" id="a-live-count"></span>
         </div>
@@ -1111,7 +1195,7 @@ tr:last-child td{border-bottom:none;}
           </div>
           <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">
             <input id="kw-seed-input" type="text" placeholder="e.g. prop firm challenge, funded trading 2026" onkeydown="if(event.key==='Enter')runKeywordAnalysis()" style="width:320px;font-size:13px;"/>
-            <button class="btn btn-p" id="kw-run-btn" onclick="runKeywordAnalysis()" style="white-space:nowrap;">🔍 Analyse keywords</button>
+            <button class="btn btn-p" id="kw-run-btn" onclick="runKeywordAnalysis()" style="white-space:nowrap;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Analyse keywords</button>
           </div>
         </div>
 
@@ -1128,7 +1212,7 @@ tr:last-child td{border-bottom:none;}
         <!-- RESULTS -->
         <div id="kw-output">
           <div style="text-align:center;padding:48px 24px;color:var(--text3);">
-            <p style="font-size:28px;margin-bottom:12px;opacity:.3;">🔑</p>
+            <p style="font-size:28px;margin-bottom:12px;opacity:.3;"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></span></p>
             <p style="font-size:14px;font-weight:500;color:var(--text2);margin-bottom:4px;">Enter a keyword to start</p>
             <p style="font-size:12px;">Uses DataForSEO — returns volume, KD, CPC, trend, and related keyword clusters</p>
           </div>
@@ -1141,20 +1225,20 @@ tr:last-child td{border-bottom:none;}
             <div class="pgh">Competitor Pulse</div>
             <p class="pgs" style="margin-bottom:0;">Live research on FTMO, FundedNext, Apex, Topstep, The5ers and E8. Content gaps, keyword gaps, recent moves, strategic opportunities. Powered by Claude web search.</p>
           </div>
-          <button class="btn btn-p btn-s" id="comp-run-btn" style="font-size:13px;">⚡ Run analysis</button>
+          <button class="btn btn-p btn-s" id="comp-run-btn" style="font-size:13px;"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span>⚡ Run analysis</button>
         </div>
 
         <!-- COMPETITOR OVERVIEW CARDS -->
         <div class="shead" style="margin-bottom:10px;">Tracked competitors</div>
         <div id="comp-cards" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px;margin-bottom:24px;">
           <div id="comp-cards-loading" style="text-align:center;padding:40px;grid-column:1/-1;">
-            <p style="font-size:28px;margin-bottom:10px;">📡</p>
+            <p style="font-size:28px;margin-bottom:10px;"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5.19 11.19A7 7 0 0 1 12 4a7 7 0 0 1 6.81 7.19"/><path d="M8.76 14.76A3 3 0 0 1 12 12a3 3 0 0 1 3.24 2.76"/><circle cx="12" cy="20" r="1"/><line x1="12" y1="16" x2="12" y2="19"/></svg></span></p>
             <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;">No competitor analysis run yet</p>
             <p style="font-size:12px;color:var(--text3);line-height:1.6;max-width:340px;margin:0 auto 16px;">Run an analysis to surface content gaps, keyword opportunities, and recent competitor moves from FTMO, FundedNext, Apex and others.</p>
             <button class="btn btn-p btn-s" id="comp-run-empty-btn" style="font-size:12px;">Run Analysis →</button>
           </div>
           <div id="comp-empty-state" style="display:none;grid-column:1/-1;padding:32px;text-align:center;background:var(--bg2);border:1px dashed var(--border);border-radius:var(--rl);margin-top:8px;">
-            <p style="font-size:28px;margin-bottom:8px;">📡</p>
+            <p style="font-size:28px;margin-bottom:8px;"><span class="ico"><svg viewBox="0 0 24 24"><path d="M5.19 11.19A7 7 0 0 1 12 4a7 7 0 0 1 6.81 7.19"/><path d="M8.76 14.76A3 3 0 0 1 12 12a3 3 0 0 1 3.24 2.76"/><circle cx="12" cy="20" r="1"/><line x1="12" y1="16" x2="12" y2="19"/></svg></span></p>
             <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:6px;">No competitor analysis run yet</p>
             <p style="font-size:12px;color:var(--text3);line-height:1.6;max-width:380px;margin:0 auto 16px;">Run an analysis to surface content gaps, keyword opportunities, and recent moves from FTMO, FundedNext, Apex and others.</p>
             <button class="btn btn-p btn-s" id="comp-run-empty-btn" style="font-size:12px;">Run Competitor Analysis →</button>
@@ -1221,14 +1305,14 @@ tr:last-child td{border-bottom:none;}
     <div class="sbov" id="writer-ov"></div>
     <nav class="sb" id="writer-sb">
       <div class="ngrp">My Work</div>
-      <div class="nlink active" data-pg="w-drafts" data-sc="writer"><span class="nico">✦</span>My Drafts<span class="nbadge" id="nb-wdrafts">0</span></div>
+      <div class="nlink active" data-pg="w-drafts" data-sc="writer"><span class="nico"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span></span>My Drafts<span class="nbadge" id="nb-wdrafts">0</span></div>
       <div class="nlink" data-pg="w-submitted" data-sc="writer"><span class="nico">◎</span>Submitted</div>
       <div class="ndiv"></div>
       <div class="ngrp" id="hybrid-content-grp" style="display:none;">Content Engine</div>
-      <div class="nlink" data-pg="a-generate" data-sc="admin" id="hybrid-content-link" style="display:none;"><span class="nico">⚡</span>Content Hub</div>
+      <div class="nlink" data-pg="a-generate" data-sc="admin" id="hybrid-content-link" style="display:none;"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></span>Content Hub</div>
       <div class="ndiv"></div>
       <div class="ngrp">Resources</div>
-      <div class="nlink" data-pg="w-style" data-sc="writer"><span class="nico">≡</span>Style Guide</div>
+      <div class="nlink" data-pg="w-style" data-sc="writer"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></span>Style Guide</div>
     </nav>
     <div class="ma">
       <div id="w-drafts" class="pg active">
@@ -1239,7 +1323,7 @@ tr:last-child td{border-bottom:none;}
             <p style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--text3);margin-bottom:3px;font-family:var(--mono);" id="greet">Good morning</p>
             <h1 style="font-size:24px;font-weight:700;color:var(--text);margin-bottom:0;letter-spacing:-.4px;" id="writer-greeting">Your assignments</h1>
           </div>
-          <button class="btn btn-s" onclick="loadWriterDrafts()">↻ Refresh</button>
+          <button class="btn btn-s" onclick="loadWriterDrafts()"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span> Refresh</button>
         </div>
 
         <!-- ── WRITER STATS ROW ───────────────────────── -->
@@ -1322,7 +1406,7 @@ tr:last-child td{border-bottom:none;}
         <div style="display:grid;gap:12px;">
 
           <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
-            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">✦ Required in every article</p>
+            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> Required in every article</p>
             <div style="display:flex;flex-direction:column;gap:12px;">
               <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Summary table</p><p style="font-size:12px;color:var(--text3);">For articles over 800 words. 4 columns, 4-5 rows of key facts at the top.</p></div></div>
               <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Table of contents</p><p style="font-size:12px;color:var(--text3);">For articles over 800 words. Anchor links to each H2 section.</p></div></div>
@@ -1334,7 +1418,7 @@ tr:last-child td{border-bottom:none;}
           </div>
 
           <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
-            <p style="font-size:11px;font-weight:600;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">◈ Keywords &amp; SEO</p>
+            <p style="font-size:11px;font-weight:600;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span> Keywords &amp; SEO</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
               <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--blueL);">Primary keyword in <strong style="color:var(--text);">H1 and at least 2 H2 headings</strong></p>
               <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--blueL);">Secondary keywords in H2s and body — <strong style="color:var(--text);">naturally, never stuffed</strong></p>
@@ -1344,7 +1428,7 @@ tr:last-child td{border-bottom:none;}
           </div>
 
           <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
-            <p style="font-size:11px;font-weight:600;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">≡ Scannability rules</p>
+            <p style="font-size:11px;font-weight:600;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;"><span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span> Scannability rules</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
               <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--purpleL);"><strong style="color:var(--text);">Max 25 words</strong> per sentence</p>
               <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--purpleL);"><strong style="color:var(--text);">Max 3 sentences</strong> per paragraph</p>
@@ -1354,7 +1438,7 @@ tr:last-child td{border-bottom:none;}
           </div>
 
           <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
-            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">⚡ FXIFY voice</p>
+            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> FXIFY voice</p>
             <div style="display:flex;flex-direction:column;gap:10px;">
               <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--tealL);"><strong style="color:var(--text);">Confident.</strong> We know trading. No hedging or over-qualifying.</p>
               <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--tealL);"><strong style="color:var(--text);">Direct.</strong> Short sentences. Get to the point fast.</p>
@@ -1395,12 +1479,12 @@ tr:last-child td{border-bottom:none;}
     <div class="sbov" id="david-ov"></div>
     <nav class="sb" id="david-sb">
       <div class="ngrp">Pipeline</div>
-      <div class="nlink active" data-pg="d-pipeline" data-sc="david"><span class="nico">◈</span>Pipeline<span class="nbadge" id="nb-dpipeline">0</span></div>
-      <div class="nlink" data-pg="d-analytics" data-sc="david"><span class="nico">▲</span>Analytics</div>
+      <div class="nlink active" data-pg="d-pipeline" data-sc="david"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span></span>Pipeline<span class="nbadge" id="nb-dpipeline">0</span></div>
+      <div class="nlink" data-pg="d-analytics" data-sc="david"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span></span>Analytics</div>
       <div class="ndiv"></div>
       <div class="ngrp">Approvals</div>
       <div class="nlink" data-pg="d-approval" data-sc="david"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>
-      <div class="nlink" data-pg="d-log" data-sc="david"><span class="nico">▲</span>Approved Log</div>
+      <div class="nlink" data-pg="d-log" data-sc="david"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span></span>Approved Log</div>
     </nav>
     <div class="ma">
       <!-- DAVID PIPELINE -->
@@ -1433,7 +1517,7 @@ tr:last-child td{border-bottom:none;}
       <!-- DAVID ANALYTICS -->
       <div id="d-analytics" class="pg">
         <div class="pgh">Team Analytics</div>
-        <p class="pgs">Writer output and pipeline health 📊</p>
+        <p class="pgs">Writer output and pipeline health <span class="ico ico-sm"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span></p>
         <div class="agrid">
           <div class="acard"><p class="albl">Total articles</p><p class="aval" id="dan-total">—</p></div>
           <div class="acard"><p class="albl">Live & published</p><p class="aval cu" id="dan-live">—</p></div>
@@ -1522,10 +1606,10 @@ tr:last-child td{border-bottom:none;}
 <!-- EDITOR -->
 <div id="editor" class="screen">
   <div class="etop">
-    <div class="ebc"><span style="cursor:pointer;color:#475569;flex-shrink:0;" id="ed-back">← Back</span><span style="color:#1e3a5f;flex-shrink:0;">/</span><span class="active" id="ed-title">Draft</span></div>
+    <div class="ebc"><span style="cursor:pointer;color:var(--text2);flex-shrink:0;" id="ed-back">← Back</span><span style="color:#1e3a5f;flex-shrink:0;">/</span><span class="active" id="ed-title">Draft</span></div>
     <div class="eacts" id="ed-writer-acts">
-      <span style="font-size:11px;color:#334155;" id="ed-save-txt"></span>
-      <button class="btn" style="border-color:#334155;color:#94a3b8;" id="ed-save-btn">Save</button>
+      <span style="font-size:11px;color:var(--text2);" id="ed-save-txt"></span>
+      <button class="btn" style="border-color:var(--text2);color:var(--muted);" id="ed-save-btn">Save</button>
       <button class="btn btn-p btn-s" id="ed-submit-btn">Submit →</button>
     </div>
     <div class="eacts" id="ed-rv-acts" style="display:none;">
@@ -1541,7 +1625,7 @@ tr:last-child td{border-bottom:none;}
   <div id="writer-instruction-card" style="display:none;padding:16px 20px 0;background:#fff;">
     <div class="writer-card">
       <button class="writer-card-dismiss" id="wic-dismiss">×</button>
-      <p class="writer-card-title">✍️ Your job on this draft</p>
+      <p class="writer-card-title"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span>️ Your job on this draft</p>
       <div class="writer-task"><div class="writer-task-num">1</div><div><p class="writer-task-title">Fact-check everything</p><p class="writer-task-desc">Verify all stats, rules and claims against fxify.com. Flag or fix anything that looks invented. Drawdown rules especially.</p></div></div>
       <div class="writer-task"><div class="writer-task-num">2</div><div><p class="writer-task-title">Humanise the intro &amp; conclusion</p><p class="writer-task-desc">Rewrite the opening paragraph in your own voice. Add a real trading observation or hook. The AI draft is a skeleton — make it sound like a person.</p></div></div>
       <div class="writer-task"><div class="writer-task-num">3</div><div><p class="writer-task-title">Add experience signals</p><p class="writer-task-desc">Insert at least one "At FXIFY, we've seen..." or a real trader scenario. This is what makes us credible to Google and readers.</p></div></div>
@@ -1558,12 +1642,12 @@ tr:last-child td{border-bottom:none;}
       <div class="esblk"><p class="eslbl">Keyword</p><span class="eschip" id="ed-kw">—</span></div>
       <div class="esblk">
         <p class="eslbl">Word count</p>
-        <p style="font-size:13px;color:#cbd5e1;" id="ed-wc">0 words</p>
+        <p style="font-size:13px;color:var(--border2);" id="ed-wc">0 words</p>
         <div id="ed-wc-target-row" style="display:none;margin-top:4px;">
           <div style="background:#1e3a5f;border-radius:4px;height:4px;overflow:hidden;">
             <div id="ed-wc-bar" style="height:100%;border-radius:4px;background:var(--teal);width:0%;transition:width .3s;"></div>
           </div>
-          <p id="ed-wc-target-label" style="font-size:9px;color:#475569;margin-top:3px;"></p>
+          <p id="ed-wc-target-label" style="font-size:9px;color:var(--text2);margin-top:3px;"></p>
         </div>
       </div>
       <div class="esdiv"></div>
@@ -1575,7 +1659,7 @@ tr:last-child td{border-bottom:none;}
           <span id="ed-brief-toggle" style="font-size:9px;color:var(--teal);cursor:pointer;">▼ Show</span>
         </p>
         <div id="ed-brief-body" style="display:none;">
-          <div id="ed-brief-hook" style="background:rgba(14,196,173,.08);border-left:2px solid var(--teal);border-radius:0 4px 4px 0;padding:7px 9px;margin-bottom:8px;font-size:11px;color:#94a3b8;line-height:1.5;font-style:italic;"></div>
+          <div id="ed-brief-hook" style="background:rgba(14,196,173,.08);border-left:2px solid var(--teal);border-radius:0 4px 4px 0;padding:7px 9px;margin-bottom:8px;font-size:11px;color:var(--muted);line-height:1.5;font-style:italic;"></div>
           <div id="ed-brief-sections" style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px;"></div>
           <div id="ed-brief-fxify" style="background:rgba(29,155,240,0.08);border-radius:4px;padding:6px 8px;font-size:10px;color:var(--teal);line-height:1.5;display:none;"></div>
         </div>
@@ -1598,7 +1682,7 @@ tr:last-child td{border-bottom:none;}
         <p class="eslbl" style="margin-bottom:8px;">SEO Score <span class="snum" style="color:var(--blue);font-size:18px;" id="ed-seo">—</span></p>
         <div style="background:var(--bg2);border-radius:4px;height:4px;margin-bottom:8px;overflow:hidden;"><div id="ed-seo-bar" style="height:100%;border-radius:4px;background:var(--blue);width:0%;transition:width .4s;"></div></div>
         <div id="seo-checklist" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;"></div>
-        <button class="btn btn-p btn-s" id="improve-seo-btn" style="width:100%;font-size:11px;display:none;">⚡ Auto-improve SEO</button>
+        <button class="btn btn-p btn-s" id="improve-seo-btn" style="width:100%;font-size:11px;display:none;"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Auto-improve SEO</button>
         <div id="improve-seo-loading" style="display:none;font-size:11px;color:var(--teal);margin-top:6px;text-align:center;">Claude is improving SEO...</div>
       </div>
       <div class="esblk" style="width:100%;margin-top:8px;">
@@ -1611,17 +1695,17 @@ tr:last-child td{border-bottom:none;}
       </div>
       <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
-        <p class="eslbl" style="margin-bottom:8px;">ESL Readability <span class="snum" style="font-size:18px;" id="ed-esl">—</span> <span style="font-size:9px;color:#334155;">aim for A</span></p>
+        <p class="eslbl" style="margin-bottom:8px;">ESL Readability <span class="snum" style="font-size:18px;" id="ed-esl">—</span> <span style="font-size:9px;color:var(--text2);">aim for A</span></p>
         <div style="background:var(--bg2);border-radius:4px;height:4px;margin-bottom:8px;overflow:hidden;"><div id="ed-esl-bar" style="height:100%;border-radius:4px;background:var(--green);width:0%;transition:width .4s;"></div></div>
         <div id="esl-issues" style="display:flex;flex-direction:column;gap:4px;margin-bottom:8px;"></div>
-        <button class="btn btn-p btn-s" id="improve-esl-btn" style="width:100%;font-size:11px;display:none;">✍️ Fix Grammar &amp; Readability</button>
+        <button class="btn btn-p btn-s" id="improve-esl-btn" style="width:100%;font-size:11px;display:none;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg></span>️ Fix Grammar &amp; Readability</button>
         <div id="improve-esl-loading" style="display:none;font-size:11px;color:var(--teal);margin-top:6px;text-align:center;">Fixing grammar &amp; readability...</div>
       </div>
       <div class="esdiv"></div>
       <div class="esblk" style="width:100%;">
         <p class="eslbl" style="margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;">
           Internal links
-          <button id="il-refresh" style="font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;">↻ Refresh</button>
+          <button id="il-refresh" style="font-size:9px;padding:2px 6px;border-radius:4px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg></span> Refresh</button>
         </p>
         <input id="il-search" class="finput" type="text" placeholder="Search links..." style="margin-bottom:6px;padding:5px 8px;font-size:11px;"/>
         <div style="display:flex;gap:4px;margin-bottom:6px;flex-wrap:wrap;" id="il-tabs">
@@ -1629,7 +1713,7 @@ tr:last-child td{border-bottom:none;}
           <button class="il-tab" data-iltab="blog" style="font-size:9px;padding:2px 8px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;font-family:inherit;">Blog posts</button>
         </div>
         <div class="il-panel" id="il-panel">
-          <p style="font-size:11px;color:#475569;font-style:italic;">Loading...</p>
+          <p style="font-size:11px;color:var(--text2);font-style:italic;">Loading...</p>
         </div>
       </div>
       <div class="esdiv"></div>
@@ -1680,7 +1764,7 @@ tr:last-child td{border-bottom:none;}
         <button class="tb-btn" id="tb-underline" title="Underline"><u>U</u></button>
         <button class="tb-btn" id="tb-highlight" title="Highlight" style="font-size:11px;">🖊</button>
         <div class="tb-sep"></div>
-        <button class="tb-btn" id="tb-ul" title="Bullet list">≡</button>
+        <button class="tb-btn" id="tb-ul" title="Bullet list"><span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span></button>
         <button class="tb-btn" id="tb-ol" title="Numbered list">1.</button>
         <button class="tb-btn" id="tb-quote" title="Blockquote">"</button>
         <div class="tb-sep"></div>
@@ -1691,9 +1775,9 @@ tr:last-child td{border-bottom:none;}
         <button class="tb-btn" id="tb-redo" title="Redo">↪</button>
         <div class="tb-sep"></div>
         <button class="tb-btn" id="tb-copy-html" title="Copy HTML for WordPress" style="font-size:10px;width:auto;padding:0 8px;color:var(--teal);font-weight:600;">Copy HTML</button>
-        <button class="tb-btn" id="tb-preview" title="Preview article (Cmd+Shift+P)" style="font-size:10px;width:auto;padding:0 8px;color:#94a3b8;font-weight:600;">Preview</button>
+        <button class="tb-btn" id="tb-preview" title="Preview article (Cmd+Shift+P)" style="font-size:10px;width:auto;padding:0 8px;color:var(--muted);font-weight:600;">Preview</button>
         <div class="tb-sep"></div>
-        <button class="tb-btn" id="tb-read-mode" title="Read Mode" style="font-size:10px;width:auto;padding:0 8px;color:#94a3b8;font-weight:600;">👁 Read</button>
+        <button class="tb-btn" id="tb-read-mode" title="Read Mode" style="font-size:10px;width:auto;padding:0 8px;color:var(--muted);font-weight:600;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></span> Read</button>
       </div>
       <!-- Editor body -->
       <div style="display:flex;flex:1;overflow:hidden;">
@@ -1749,7 +1833,7 @@ tr:last-child td{border-bottom:none;}
 <!-- INLINE COMMENT TOOLTIP -->
 <div class="comment-tooltip" id="comment-tooltip">
   <button class="ct-btn ct-comment" id="ct-comment-btn">💬 Comment</button>
-  <button class="ct-btn ct-suggest" id="ct-suggest-btn">✏️ Suggest</button>
+  <button class="ct-btn ct-suggest" id="ct-suggest-btn"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></span>️ Suggest</button>
 </div>
 
 <!-- SUGGESTION MODAL -->
@@ -2178,7 +2262,11 @@ function goPage(sc,pg,navEl){
   }
   if(pg==='w-youtube') initYouTubePage('yt');
   if(pg==='a-youtube') initYouTubePage('ayt');
-  if(pg==='a-planner') loadDailyIdeas('daily-ideas-list', 'daily-ideas-date');
+  if(pg==='a-planner')    loadDailyIdeas('daily-ideas-list', 'daily-ideas-date');
+  if(pg==='a-keywords')   { /* static page — seed input receives focus */ var kw = document.getElementById('kw-seed-input'); if(kw) setTimeout(function(){ kw.focus(); }, 100); }
+  if(pg==='a-live')       { renderPublishedArticles(); }
+  if(pg==='a-writers')    { if(typeof loadTeamStats === 'function') loadTeamStats(); }
+  if(pg==='w-style')      { /* static editorial guide — no data load needed */ }
 }
 
 function closeSB(){
@@ -2342,7 +2430,7 @@ async function loadClickUpBoard(listFilter){
               (isVideo
                 ? 'background:rgba(248,113,113,0.12);color:#f87171;border:1px solid rgba(248,113,113,0.2);'
                 : 'background:var(--tealL);color:var(--teal);border:1px solid rgba(29,155,240,0.2);') +
-            '">' + (isVideo ? '▶ VIDEO' : '✦ BLOG') + '</span>' +
+            '">' + (isVideo ? '<span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> VIDEO' : '<span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> BLOG') + '</span>' +
             (priority ? '<span style="font-size:8px;color:' + priColor + ';font-family:var(--mono);">' + priority.toUpperCase() + '</span>' : '') +
           '</div>' +
           '<p class="pct">' + (t.name||'Untitled') + '</p>' +
@@ -2499,7 +2587,7 @@ function cuApplyFilter() {
               (isVideo
                 ? 'background:#FEF2F2;color:#DC2626;'
                 : 'background:#EFF6FF;color:#2563EB;') + '">' +
-              (isVideo ? '▶ Video' : '✦ Blog') +
+              (isVideo ? ' Video' : ' Blog') +
             '</span>' +
             (priority && priColor !== 'transparent'
               ? '<span style="font-size:9px;font-weight:600;color:' + priColor + ';">' + priority + '</span>'
@@ -2742,7 +2830,7 @@ async function openTaskPanel(task, listType) {
 
       // Video-specific fields (shown only for video tasks)
       (listType === 'video' ? (
-        '<div style=\"padding:0;\"><div style=\"font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:4px;font-family:var(--mono);\">▶ VIDEO FIELDS</div>' +
+        '<div style=\"padding:0;\"><div style=\"font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;margin-top:4px;font-family:var(--mono);\"> VIDEO FIELDS</div>' +
         '<div style=\"display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;\">' +
           '<div><label class=\"flbl\">Production type</label><select class=\"finput\" id=\"tp-prod-type\">' +
             '<option value=\"\">—</option>' +
@@ -3075,7 +3163,7 @@ async function loadDavidQ(){
         '<div style="flex:1;min-width:0;">' +
           '<p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">' + (a.title||'Untitled') + '</p>' +
           '<div style="display:flex;gap:12px;flex-wrap:wrap;">' +
-            '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">✦ ' + (a.category||'—') + '</span>' +
+            '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> ' + (a.category||'—') + '</span>' +
             '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">By ' + (a.assignee||'—') + '</span>' +
             (a.word_count ? '<span style="font-size:11px;color:var(--text3);font-family:var(--mono);">' + a.word_count.toLocaleString() + ' words</span>' : '') +
             (a.seo_score ? '<span style="font-size:11px;color:var(--blue);font-family:var(--mono);">SEO ' + a.seo_score + '/100</span>' : '') +
@@ -3186,7 +3274,7 @@ async function loadWriterDrafts() {
   set('ws-active',  active.length);
   set('ws-done',    published.length);
   set('ws-overdue', overdue.length);
-  set('ws-streak',  published.length >= 4 ? '🔥' + Math.min(published.length, 12) : published.length);
+  set('ws-streak',  published.length >= 4 ? '' + Math.min(published.length, 12) : published.length);
 
   var nb = document.getElementById('nb-wdrafts');
   if (nb) nb.textContent = active.length || '';
@@ -3340,7 +3428,7 @@ async function loadWriterDrafts() {
         '<div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;">' +
           '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:' + statusColor + '22;color:' + statusColor + ';font-family:var(--mono);">' + status.toUpperCase() + '</span>' +
           (intent ? '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:' + (intent==='Commercial'?'#FFF7ED':intent==='Transactional'?'#FFF7ED':'#EFF6FF') + ';color:' + (intent==='Informational'?'#1D4ED8':'#C2410C') + ';">' + (intent==='Informational'?'ℹ':'⭐') + ' ' + intent + '</span>' : '') +
-          (pkw ? '<span style="font-size:11px;color:var(--brand);font-family:var(--mono);background:var(--brandL);padding:2px 8px;border-radius:4px;">🔑 ' + pkw + '</span>' : '') +
+          (pkw ? '<span style="font-size:11px;color:var(--brand);font-family:var(--mono);background:var(--brandL);padding:2px 8px;border-radius:4px;"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></span> ' + pkw + '</span>' : '') +
           (due ? '<span style="font-size:11px;color:' + (isOverdue?'var(--urgent)':'var(--text3)') + ';font-family:var(--mono);">' + (isOverdue?'⚠ OVERDUE · ':'📅 ') + due + '</span>' : '') +
           (wc ? '<span style="font-size:11px;color:var(--text3);">~' + wc + ' words</span>' : '') +
         '</div>' +
@@ -3454,19 +3542,19 @@ function openEditor(art,role){
           briefSects.innerHTML = briefData.sections.map(function(s,i) {
             return '<div style="border-left:2px solid #1e3a5f;padding-left:8px;margin-bottom:4px;">' +
               '<p style="font-size:10px;font-weight:600;color:var(--teal);">H2 '+(i+1)+': '+s.h2+'</p>' +
-              '<p style="font-size:10px;color:#475569;line-height:1.4;">'+s.angle+'</p>' +
+              '<p style="font-size:10px;color:var(--text2);line-height:1.4;">'+s.angle+'</p>' +
               '</div>';
           }).join('');
         }
         if (briefFxify && briefData.fxify_angle) {
           briefFxify.style.display = 'block';
-          briefFxify.textContent = '⚡ ' + briefData.fxify_angle;
+          briefFxify.textContent = ' ' + briefData.fxify_angle;
         }
         if (briefToggle) {
           briefToggle.addEventListener('click', function() {
             var open = briefBody.style.display !== 'none';
             briefBody.style.display = open ? 'none' : 'block';
-            briefToggle.textContent = open ? '▼ Show' : '▲ Hide';
+            briefToggle.textContent = open ? '▼ Show' : ' Hide';
           });
         }
       }
@@ -4202,7 +4290,7 @@ function updateScoreDisplay(scores) {
     var icon = item.pass ? '✓' : '✗';
     var color = item.pass ? 'var(--green)' : 'var(--text3)';
     row.innerHTML = '<span style="font-size:10px;font-weight:700;color:'+color+';width:12px;flex-shrink:0;">'+icon+'</span>' +
-      '<span style="font-size:10px;color:'+(item.pass?'#94a3b8':'#475569')+';">'+item.label+'</span>';
+      '<span style="font-size:10px;color:'+(item.pass?'var(--muted)':'var(--text2)')+';">'+item.label+'</span>';
     cl.appendChild(row);
   });
 }
@@ -4445,7 +4533,7 @@ function displayMeta(meta, wordCount) {
   var body = document.getElementById('meta-panel-body');
   if (body) body.classList.add('open');
   var toggle = document.querySelector('.mp-toggle');
-  if (toggle) toggle.textContent = '▲';
+  if (toggle) toggle.textContent = '';
 }
 
 function wireMeta() {
@@ -4455,7 +4543,7 @@ function wireMeta() {
     var body = document.getElementById('meta-panel-body');
     var toggle = document.querySelector('.mp-toggle');
     if (body) body.classList.toggle('open');
-    if (toggle) toggle.textContent = body.classList.contains('open') ? '▲' : '▼';
+    if (toggle) toggle.textContent = body.classList.contains('open') ? '' : '▼';
   });
   // Copy all meta
   var copyBtn = document.getElementById('m-copy-all');
@@ -4573,17 +4661,17 @@ function openReadMode() {
   body.innerHTML = 
     '<div style="margin-bottom:28px;">' +
       '<span style="display:inline-block;font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#1d9bf0;background:rgba(29,155,240,0.10);padding:4px 12px;border-radius:20px;margin-bottom:16px;">' + cat + '</span>' +
-      '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid #e2e8f0;border-bottom:1px solid #e2e8f0;flex-wrap:wrap;">' +
+      '<div style="display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border);flex-wrap:wrap;">' +
         '<div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#1d9bf0,#1d9bf0);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0;">' + (authorName.split(' ').map(function(n){return n[0];}).join('').toUpperCase()) + '</div>' +
         '<div>' +
           '<p style="font-size:13px;font-weight:600;color:#0f172a;margin:0;">' + authorName + '</p>' +
-          '<p style="font-size:11px;color:#64748b;margin:0;">Senior Copywriter · FXIFY</p>' +
+          '<p style="font-size:11px;color:var(--text3);margin:0;">Senior Copywriter · FXIFY</p>' +
         '</div>' +
-        '<div style="width:1px;height:28px;background:#e2e8f0;margin:0 4px;"></div>' +
-        '<span style="font-size:12px;color:#64748b;">' + date + '</span>' +
-        '<div style="width:1px;height:28px;background:#e2e8f0;margin:0 4px;"></div>' +
-        '<span style="font-size:12px;color:#64748b;">' + rt + ' min read</span>' +
-        '<span style="font-size:12px;color:#64748b;">· ' + wc.toLocaleString() + ' words</span>' +
+        '<div style="width:1px;height:28px;background:var(--border);margin:0 4px;"></div>' +
+        '<span style="font-size:12px;color:var(--text3);">' + date + '</span>' +
+        '<div style="width:1px;height:28px;background:var(--border);margin:0 4px;"></div>' +
+        '<span style="font-size:12px;color:var(--text3);">' + rt + ' min read</span>' +
+        '<span style="font-size:12px;color:var(--text3);">· ' + wc.toLocaleString() + ' words</span>' +
       '</div>' +
     '</div>' +
     cleanHtml;
@@ -5048,12 +5136,12 @@ function wireSuggestionSpans() {
       ui.style.top = (rect.bottom + 8 + window.scrollY) + 'px';
       ui.style.left = Math.min(rect.left, window.innerWidth - 340) + 'px';
       ui.innerHTML = 
-        '<p style="font-size:11px;color:#475569;margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Suggested change</p>' +
+        '<p style="font-size:11px;color:var(--text2);margin-bottom:6px;font-weight:600;text-transform:uppercase;letter-spacing:.08em;">Suggested change</p>' +
         '<p style="font-size:12px;color:var(--urgent);margin-bottom:4px;text-decoration:line-through;">' + (newSpan.textContent) + '</p>' +
         '<p style="font-size:12px;color:var(--green);margin-bottom:10px;">→ ' + suggestion + '</p>' +
         '<div style="display:flex;gap:8px;">' +
           '<button id="sug-accept" style="flex:1;padding:6px;border-radius:6px;border:none;background:var(--green);color:#fff;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;">done Accept</button>' +
-          '<button id="sug-reject" style="flex:1;padding:6px;border-radius:6px;border:1px solid #334155;background:transparent;color:#94a3b8;font-size:12px;cursor:pointer;font-family:inherit;"> Reject</button>' +
+          '<button id="sug-reject" style="flex:1;padding:6px;border-radius:6px;border:1px solid var(--text2);background:transparent;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;">✗ Reject</button>' +
         '</div>';
       document.body.appendChild(ui);
       // Accept
@@ -5486,8 +5574,8 @@ function ytShowLoader(steps) {
   if (!loadEl || !stepsEl) return;
   stepsEl.innerHTML = steps.map(function(s, i) {
     return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-      '<div style="width:6px;height:6px;border-radius:50%;background:#334155;flex-shrink:0;" id="yt-dot-'+i+'"></div>' +
-      '<span style="font-size:12px;color:#334155;" id="yt-txt-'+i+'">'+s+'</span>' +
+      '<div style="width:6px;height:6px;border-radius:50%;background:var(--text2);flex-shrink:0;" id="yt-dot-'+i+'"></div>' +
+      '<span style="font-size:12px;color:var(--text2);" id="yt-txt-'+i+'">'+s+'</span>' +
       '</div>';
   }).join('');
   loadEl.style.display = 'block';
@@ -5545,7 +5633,7 @@ async function runYouTubeDiscovery() {
       '</div>';
   }
 
-  if (btn) { btn.disabled = false; btn.textContent = '🔍 Research'; }
+  if (btn) { btn.disabled = false; btn.textContent = ' Research'; }
 }
 
 
@@ -5562,7 +5650,7 @@ function renderYouTubeDiscovery(topics, signals) {
   // Signal sources bar
   var sigBadges = [
     signals.hasSEO    ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--blueL);color:var(--blue);font-weight:600;">SEO ✓</span>' : '',
-    signals.hasX      ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:#15803d;font-weight:600;">X ✓</span>' : '',
+    signals.hasX      ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:#f0fdf4;color:var(--green);font-weight:600;">X ✓</span>' : '',
     signals.hasReddit ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--highL);color:var(--high);font-weight:600;">Reddit ✓</span>' : '',
     signals.hasComp   ? '<span style="font-size:10px;padding:2px 8px;border-radius:20px;background:var(--urgentL);color:var(--urgent);font-weight:600;">Competitors ✓</span>' : '',
   ].filter(Boolean).join(' ');
@@ -5607,7 +5695,7 @@ function renderYouTubeDiscovery(topics, signals) {
           // Signal badges
           '<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;">' +
             '<span class="mkw">' + (t.keyword||'') + '</span>' +
-            '<span class="badge bl">📊 ' + (t.yt_volume||'TBC') + ' searches</span>' +
+            '<span class="badge bl"> ' + (t.yt_volume||'TBC') + ' searches</span>' +
             (t.format ? '<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:4px;background:rgba(29,155,240,0.12);color:var(--blue);font-family:var(--mono);">' + t.format + '</span>' : '') +
             '<span class="badge" style="background:rgba(0,0,0,.04);color:'+xc+';">X: ' + (t.x_momentum||'—') + '</span>' +
             (t.reddit_signals && t.reddit_signals !== 'None' ? '<span class="badge" style="background:var(--highL);color:var(--high);">Reddit: ' + t.reddit_signals + '</span>' : '') +
@@ -5721,7 +5809,7 @@ function renderYTSEOPackage(pkg, topic) {
         '<p style="font-size:10px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:10px;">Title options</p>' +
         (pkg.title_options||[]).map(function(t, i){
           return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);">' +
-            '<p style="font-size:13px;color:#cbd5e1;">' + t + '</p>' +
+            '<p style="font-size:13px;color:var(--border2);">' + t + '</p>' +
             '<button class="btn btn-s" style="font-size:10px;" onclick="navigator.clipboard.writeText(\''+t.replace(/'/g,"\\'")+'\')" >Copy</button>' +
           '</div>';
         }).join('') +
@@ -5969,7 +6057,7 @@ async function improveArticleSEO() {
     console.error(e);
   }
 
-  btn.disabled = false; btn.textContent = '⚡ Auto-improve SEO';
+  btn.disabled = false; btn.textContent = ' Auto-improve SEO';
   loading.style.display = 'none';
 }
 
@@ -6085,7 +6173,7 @@ function updateESLDisplay(esl) {
       var icon = item.pass ? '✓' : '✗';
       var color = item.pass ? 'var(--green)' : 'var(--urgent)';
       row.innerHTML = '<span style="font-size:10px;font-weight:700;color:'+color+';width:12px;flex-shrink:0;">'+icon+'</span>' +
-        '<span style="font-size:10px;color:'+(item.pass?'#94a3b8':'#475569')+';">'+item.label+'</span>';
+        '<span style="font-size:10px;color:'+(item.pass?'var(--muted)':'var(--text2)')+';">'+item.label+'</span>';
       issuesEl.appendChild(row);
     });
   }
@@ -6157,7 +6245,7 @@ async function improveESL() {
 
   } catch(e) { toast('Error: ' + e.message); }
 
-  btn.disabled = false; btn.textContent = '✍️ Fix Grammar & Readability';
+  btn.disabled = false; btn.textContent = ' Fix Grammar & Readability';
   loading.style.display = 'none';
 }
 
@@ -6204,11 +6292,86 @@ var USERS = {
 
 // ── INIT ──────────────────────────────────────────────────────────────────
 // ── STUBS for removed v1 functions ──────────────────────────────────────
-function generateOutline() { toast('Outline feature removed — use Content Hub'); }
+function generateOutline() {
+  // Generate outline for current article in editor
+  var kw = (document.getElementById('ed-kw') || {}).textContent || '';
+  var title = (document.getElementById('ed-title') || {}).textContent || '';
+  if (!title || title === 'Draft') { v2Toast('Open an article first', 'error'); return; }
+  var editor = document.getElementById('tiptap-editor');
+  if (!editor) return;
+  var content = editor.innerText || '';
+  v2ShowLoader(document.getElementById('improve-seo-loading'), []);
+  var loadEl = document.getElementById('improve-seo-loading');
+  if (loadEl) loadEl.style.display = 'block';
+  v2Fetch(
+    'You are a content strategist for FXIFY prop firm. Generate a clean H2 outline for this article.\n' +
+    'Title: ' + title + '\nKeyword: ' + kw + '\n' +
+    'Current content (first 500 words): ' + content.substring(0, 1500) + '\n\n' +
+    'Return ONLY valid JSON: {"outline":["H2 heading 1","H2 heading 2","H2 heading 3",...]}\n' +
+    'Rules: 5-7 H2s, each makes one clear argument, keyword in at least 2 H2s, include FAQ and Bottom Line sections.',
+    800
+  ).then(function(text) {
+    try {
+      var result = parseJSON(text);
+      var headings = result.outline || [];
+      if (!headings.length) throw new Error('no headings');
+      var html = headings.map(function(h) { return '<h2>' + h + '</h2><p><br></p>'; }).join('');
+      if (editor.innerHTML.trim().length < 100) {
+        editor.innerHTML = html;
+      } else {
+        navigator.clipboard.writeText(headings.join('\n')).then(function() {
+          v2Toast('Outline copied — paste into article ✓', 'success');
+        });
+      }
+    } catch(e) { v2Toast('Outline failed: ' + e.message, 'error'); }
+    if (loadEl) loadEl.style.display = 'none';
+  }).catch(function(e) {
+    v2Toast('Outline error: ' + e.message, 'error');
+    if (loadEl) loadEl.style.display = 'none';
+  });
+}
 function generate() { toast('Use Content Hub → Build brief'); }
 function runSEOOptimizer() { toast('Use Content Hub for SEO research'); }
 function runPlanner() { toast('Use Content Hub for topic planning'); }
-function loadDailyIdeas() { /* stub — removed */ }// ── CROSS-POLLINATE: Blog ↔ YouTube ─────────────────────────────────────────
+function loadDailyIdeas(listId, dateId) {
+  // Daily planner — load today's pipeline tasks and suggest priorities
+  var listEl = listId ? document.getElementById(listId) : null;
+  var dateEl = dateId ? document.getElementById(dateId) : null;
+  if (dateEl) {
+    var today = new Date();
+    dateEl.textContent = today.toLocaleDateString('en-GB', {weekday:'long', day:'numeric', month:'long'});
+  }
+  if (!listEl) return;
+  listEl.innerHTML = '<p style="color:var(--text3);font-size:12px;padding:16px 0;">Loading pipeline...</p>';
+  // Load from ClickUp
+  if (typeof cuGetTasks === 'function') {
+    cuGetTasks().then(function(tasks) {
+      // Filter to in-progress and review tasks
+      var active = tasks.filter(function(t) {
+        var s = (t.status && t.status.status || '').toLowerCase();
+        return s.includes('draft') || s.includes('progress') || s.includes('review') || s.includes('editing');
+      }).slice(0, 8);
+      if (!active.length) {
+        listEl.innerHTML = '<p style="color:var(--text3);font-size:12px;">No active tasks today.</p>';
+        return;
+      }
+      listEl.innerHTML = active.map(function(t) {
+        var s = (t.status && t.status.status) || '';
+        var sColor = s.toLowerCase().includes('review') ? 'var(--amber)' : 'var(--teal)';
+        var assignee = (t.assignees && t.assignees[0] && t.assignees[0].username) || 'Unassigned';
+        return '<div style="padding:10px 12px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;">' +
+          '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:8px;">' +
+            '<p style="font-size:13px;font-weight:500;color:var(--text);line-height:1.4;">' + (t.name||'Untitled') + '</p>' +
+            '<span style="font-size:10px;font-weight:600;color:' + sColor + ';white-space:nowrap;flex-shrink:0;">' + s + '</span>' +
+          '</div>' +
+          '<p style="font-size:11px;color:var(--text3);margin-top:4px;">' + assignee + '</p>' +
+        '</div>';
+      }).join('');
+    }).catch(function(e) {
+      listEl.innerHTML = '<p style="color:var(--urgent);font-size:12px;">Error: ' + e.message + '</p>';
+    });
+  }
+}// ── CROSS-POLLINATE: Blog ↔ YouTube ─────────────────────────────────────────
 async function runCrossPost(direction) {
   var input, outputEl, prompt;
   if (direction === 'blog-to-yt') {
@@ -6259,7 +6422,7 @@ async function runCrossPost(direction) {
         '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">' +
           '<div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">' +
             '<p style="font-size:13px;font-weight:600;color:var(--text);">YouTube Package — ' + input + '</p>' +
-            '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:#f0fdf4;color:#15803d;border:1px solid rgba(21,128,61,0.2);font-family:var(--mono);">Blog → YouTube</span>' +
+            '<span style="font-size:10px;padding:2px 8px;border-radius:4px;background:#f0fdf4;color:var(--green);border:1px solid rgba(21,128,61,0.2);font-family:var(--mono);">Blog → YouTube</span>' +
           '</div>' +
           '<div style="padding:14px 16px;border-bottom:1px solid var(--border);">' +
             '<p class="flbl" style="margin-bottom:6px;">Title</p>' +
@@ -6467,7 +6630,7 @@ async function runTrendingDiscovery() {
 
     // Show data source badge
     var sourceBadge = hasLive
-      ? '<div style="background:#DCFCE7;border:1px solid #86EFAC;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#166534;">✓ Based on live web research — ' + new Date().toLocaleTimeString() + '</div>'
+      ? '<div style="background:#DCFCE7;border:1px solid #86EFAC;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--green);">✓ Based on live web research — ' + new Date().toLocaleTimeString() + '</div>'
       : '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--text3);">ℹ Using Claude knowledge for research — publish /webhook/research in n8n to enable live web search.</div>';
 
     var tempDiv = document.createElement('div');
@@ -6491,7 +6654,7 @@ async function runTrendingDiscovery() {
       '</div>';
   }
 
-  if (btn) { btn.disabled = false; btn.textContent = '🔥 Quick trends scan'; }
+  if (btn) { btn.disabled = false; btn.textContent = ' Quick trends scan'; }
 }
 
 
@@ -6501,7 +6664,7 @@ function renderTrendingOutput(topics) {
   if (!output) return;
 
   var typeColor = { Blog: 'var(--blue)', YouTube: 'var(--urgent)', Either: 'var(--teal)' };
-  var typeLabel = { Blog: '✦ Blog', YouTube: '▶ YouTube', Either: '⚡ Blog or YouTube' };
+  var typeLabel = { Blog: ' Blog', YouTube: ' YouTube', Either: ' Blog or YouTube' };
   var scoreColor = function(s) { return s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--amber)' : 'var(--urgent)'; };
 
   var html =
@@ -6537,7 +6700,7 @@ function renderTrendingOutput(topics) {
               '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
                 '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.05);color:' + tc + ';border:1px solid rgba(255,255,255,0.08);font-family:var(--mono);">' + tl + '</span>' +
                 '<span class="badge bl">' + (t.primary_keyword || '') + '</span>' +
-                (t.search_volume && t.search_volume !== 'TBC' ? '<span class="badge bn">📊 ' + t.search_volume + '/mo</span>' : '') +
+                (t.search_volume && t.search_volume !== 'TBC' ? '<span class="badge bn"> ' + t.search_volume + '/mo</span>' : '') +
               '</div>' +
               '<p class="ctitle" style="font-size:14px;font-weight:600;">' + t.title + '</p>' +
             '</div>' +
@@ -6639,7 +6802,7 @@ function renderTrendingOutput(topics) {
 // ── BRIEF MODAL — writer views brief + copies for Google Docs ───────────────
 var _briefModalArt = null;
 
-function openBriefModal() { /* removed */ }
+// openBriefModal moved above
 
 
 function v2Toast(msg, type) {
@@ -7490,7 +7653,7 @@ async function runTopicIdeas() {
     '</div>';
     v2Toast('Error: ' + e.message);
   }
-  btn.disabled = false; btn.textContent = '⚡ Find topic gaps →';
+  btn.disabled = false; btn.textContent = ' Find topic gaps →';
 }
 
 // ── STAGE 2: TOPIC GRID ───────────────────────────────────────────────
@@ -7582,8 +7745,8 @@ function renderTopicGrid(topics, isStub, publishedCount) {
           '<div style="margin-bottom:6px;">' +
             '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;' +
               'background:' + ({Blog:'var(--blueL)',YouTube:'#FEF2F2','Google Ads':'var(--greenL)',Reddit:'var(--highL)',X:'#F0FDF4',Mixed:'var(--brandL)'}[t.signal_type]||'var(--bg3)') + ';' +
-              'color:' + ({Blog:'var(--blue)',YouTube:'var(--urgent)','Google Ads':'var(--green)',Reddit:'var(--high)',X:'#15803d',Mixed:'var(--brand)'}[t.signal_type]||'var(--text3)') + ';">' +
-              ({'Blog':'✦ Blog','YouTube':'▶ YouTube','Google Ads':'📣 Google Ads','Reddit':'💬 Reddit','X':'𝕏 X/Twitter','Mixed':'⚡ Multi-signal'}[t.signal_type]||t.signal_type) +
+              'color:' + ({Blog:'var(--blue)',YouTube:'var(--urgent)','Google Ads':'var(--green)',Reddit:'var(--high)',X:'var(--green)',Mixed:'var(--brand)'}[t.signal_type]||'var(--text3)') + ';">' +
+              ({'Blog':' Blog','YouTube':' YouTube','Google Ads':'📣 Google Ads','Reddit':'💬 Reddit','X':'𝕏 X/Twitter','Mixed':' Multi-signal'}[t.signal_type]||t.signal_type) +
             '</span>' +
             (t.signal_source ? '<span style="font-size:10px;color:var(--text3);margin-left:8px;">' + t.signal_source.substring(0,80) + '</span>' : '') +
           '</div>' : '') +
@@ -7609,7 +7772,7 @@ function renderTopicGrid(topics, isStub, publishedCount) {
         (t.youtube_title || t.ad_headline ?
           '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">' +
             (t.youtube_title ? '<div style="background:#FEF2F2;border-radius:4px;padding:5px 10px;flex:1;min-width:0;">' +
-              '<p style="font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.07em;margin-bottom:2px;">▶ YOUTUBE ANGLE</p>' +
+              '<p style="font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.07em;margin-bottom:2px;"> YOUTUBE ANGLE</p>' +
               '<p style="font-size:11px;color:var(--text2);">' + t.youtube_title + '</p>' +
             '</div>' : '') +
             (t.ad_headline ? '<div style="background:var(--greenL);border-radius:4px;padding:5px 10px;flex:1;min-width:0;">' +
@@ -7621,7 +7784,7 @@ function renderTopicGrid(topics, isStub, publishedCount) {
         // ── Row 5: Keyword pill + actions ──
         '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
           (t.primary_keyword ?
-            '<span style="font-size:11px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 9px;font-family:var(--mono);">🔑 ' + t.primary_keyword + '</span>' : '') +
+            '<span style="font-size:11px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 9px;font-family:var(--mono);"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></span> ' + t.primary_keyword + '</span>' : '') +
           ((t.nlp_entities||[]).slice(0,3).map(function(e){
             return '<span style="font-size:10px;background:var(--g2);color:var(--g5);border-radius:4px;padding:1px 7px;">' + e + '</span>';
           })).join('') +
@@ -7775,7 +7938,7 @@ async function runKeywordAnalysis() {
       '</div>';
   }
 
-  if (btn) { btn.disabled=false; btn.textContent='🔍 Analyse keywords'; }
+  if (btn) { btn.disabled=false; btn.textContent=' Analyse keywords'; }
 }
 
 function renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub) {
@@ -8094,7 +8257,7 @@ function renderBriefOutput(brief, topicFallback, writer) {
           '<div>' +
             '<p style="font-size:16px;font-weight:700;color:#fff;margin-bottom:10px;line-height:1.3;">' + (brief.title || topicFallback) + '</p>' +
             '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px;">' + kwHtml + '</div>' +
-            '<div style="display:flex;gap:10px;font-size:11px;color:#475569;flex-wrap:wrap;">' +
+            '<div style="display:flex;gap:10px;font-size:11px;color:var(--text2);flex-wrap:wrap;">' +
               '<span>' + (brief.search_intent || 'Informational') + '</span>' +
               '<span>·</span><span>' + (brief.word_count || '1200') + ' words</span>' +
               (writer && writer !== '— Unassigned —' ? '<span>·</span><span>' + writer + '</span>' : '') +
@@ -8207,13 +8370,13 @@ function v2ShowLoader(output, steps) {
   if (!output) return;
   var stepsHtml = steps.map(function(s, i){
     return '<div style="display:flex;align-items:center;gap:8px;margin-bottom:5px;" id="v2-step-' + i + '">' +
-      '<div style="width:6px;height:6px;border-radius:50%;background:' + (i===0?'var(--teal)':'#334155') + ';flex-shrink:0;" id="v2-step-dot-' + i + '"></div>' +
-      '<span style="font-size:12px;color:' + (i===0?'#cbd5e1':'#334155') + ';" id="v2-step-txt-' + i + '">' + s + '</span>' +
+      '<div style="width:6px;height:6px;border-radius:50%;background:' + (i===0?'var(--teal)':'var(--text2)') + ';flex-shrink:0;" id="v2-step-dot-' + i + '"></div>' +
+      '<span style="font-size:12px;color:' + (i===0?'var(--border2)':'var(--text2)') + ';" id="v2-step-txt-' + i + '">' + s + '</span>' +
       '</div>';
   }).join('');
   output.innerHTML =
     '<div style="background:var(--bg2);border:1px solid rgba(29,155,240,0.2);border-radius:var(--rl);padding:20px 24px;">' +
-      '<p style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:14px;">⚡ Running research...</p>' +
+      '<p style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:14px;">⏳ Running research...</p>' +
       stepsHtml +
     '</div>';
   var i = 0;
@@ -8415,6 +8578,61 @@ function v2WireCustomBtn() {
     // ── Writer submit overlay close ────────────────────────────
     if (e.target.id === 'ws-overlay') { e.target.style.display='none'; return; }
 
+    // Preview button
+    if (e.target.id === 'tb-preview') { e.preventDefault(); if(typeof openReadMode==='function') openReadMode(); return; }
+
+    // Writer submit modal close
+    if (e.target.id === 'ws-close-btn') {
+      var ov = document.getElementById('ws-overlay');
+      if (ov) ov.style.display = 'none';
+      return;
+    }
+
+    // Writer submit modal confirm
+    if (e.target.id === 'ws-confirm-btn') {
+      (async function() {
+        var btn = document.getElementById('ws-confirm-btn');
+        var errEl = document.getElementById('ws-error');
+        var draftUrl    = (document.getElementById('ws-draft-url')||{}).value || '';
+        var contentUrl  = (document.getElementById('ws-content-url')||{}).value || '';
+        var metaInfo    = (document.getElementById('ws-meta-info')||{}).value || '';
+        var notes       = (document.getElementById('ws-notes')||{}).value || '';
+        var taskId      = (document.getElementById('ws-overlay')||{}).dataset && (document.getElementById('ws-overlay')||{}).dataset.taskId;
+
+        if (!draftUrl && !contentUrl) {
+          if (errEl) { errEl.textContent = 'Please provide a draft URL or live URL.'; errEl.style.display = 'block'; }
+          return;
+        }
+        if (btn) { btn.disabled = true; btn.textContent = 'Submitting...'; }
+        if (errEl) errEl.style.display = 'none';
+
+        try {
+          // Update ClickUp status to review
+          if (taskId) {
+            await cuFetch('/task/' + taskId, 'PUT', { status: 'review' });
+            // Update custom fields
+            if (draftUrl)   await cuUpdateField(taskId, CU.fields.draftUrl    && CU.fields.draftUrl.id,    draftUrl);
+            if (contentUrl) await cuUpdateField(taskId, CU.fields.contentUrl  && CU.fields.contentUrl.id,  contentUrl);
+            if (metaInfo)   await cuUpdateField(taskId, CU.fields.metaStatus  && CU.fields.metaStatus.id,  metaInfo);
+            if (notes)      await cuUpdateField(taskId, CU.fields.notes       && CU.fields.notes.id,       notes);
+          }
+          // Update Supabase
+          var artTitle = (document.getElementById('ws-article-title')||{}).textContent || '';
+          if (artTitle) {
+            await supa.from('articles').update({ status: 'Sheperd Review', draft_url: draftUrl, notes: notes }).ilike('title', artTitle);
+          }
+          var ov2 = document.getElementById('ws-overlay');
+          if (ov2) ov2.style.display = 'none';
+          v2Toast('Submitted for review ✓', 'success');
+          loadWriterDrafts();
+        } catch(e2) {
+          if (errEl) { errEl.textContent = 'Error: ' + e2.message; errEl.style.display = 'block'; }
+        }
+        if (btn) { btn.disabled = false; btn.textContent = 'Submit for review →'; }
+      })();
+      return;
+    }
+
     if (e.target.closest('#v2-run-btn') || e.target.closest('#v2-research-btn')) {
       var seed = (document.getElementById('v2-seed')||{}).value || '';
       if (!seed.trim()) { v2Toast('Enter a seed keyword first'); return; }
@@ -8590,7 +8808,7 @@ async function openWriterBriefModal(task) {
           (category ? '<span style="font-size:9px;font-weight:600;color:var(--text3);font-family:var(--mono);">' + category + '</span>' : '') +
         '</div>' +
         '<p style="font-size:16px;font-weight:700;color:var(--text);line-height:1.3;margin-bottom:4px;">' + (task.name||'Untitled') + '</p>' +
-        (pkw ? '<p style="font-size:12px;color:var(--blue);font-family:var(--mono);">🔑 ' + pkw + '</p>' : '') +
+        (pkw ? '<p style="font-size:12px;color:var(--blue);font-family:var(--mono);"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></span> ' + pkw + '</p>' : '') +
       '</div>' +
       '<button id="wb-close" style="background:none;border:none;font-size:22px;color:var(--text3);cursor:pointer;flex-shrink:0;line-height:1;">×</button>' +
     '</div>' +
@@ -8634,7 +8852,172 @@ async function openWriterBriefModal(task) {
   if (newDocBtn) newDocBtn.addEventListener('click', function(){ window.open('https://docs.google.com/document/create', '_blank'); });
 }
 
-function buildBriefHTML() { /* removed */ }
+
+// ── BRIEF FUNCTIONS ───────────────────────────────────────────────────────
+
+function buildBriefHTML(brief, task) {
+  if (!brief) return buildRawBriefHTML(task, {});
+  var b = brief;
+
+  var kws = '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px;">' +
+    '<span style="font-size:13px;font-weight:700;color:var(--teal);background:var(--tealL);padding:3px 10px;border-radius:20px;">' + (b.primary_keyword || '') + '</span>' +
+    (b.secondary_keywords||[]).map(function(k){ return '<span style="font-size:11px;color:var(--text2);background:var(--bg3);padding:2px 8px;border-radius:10px;border:1px solid var(--border);">' + k + '</span>'; }).join('') +
+  '</div>';
+
+  var meta = [
+    b.search_intent && _bRow('Intent', b.search_intent),
+    b.word_count    && _bRow('Target length', b.word_count),
+    b.geo_angle     && _bRow('GEO angle', b.geo_angle),
+    b.aeo_question  && _bRow('AEO question', b.aeo_question),
+  ].filter(Boolean).join('');
+
+  var hook = b.hook_angle ? (
+    '<div style="border-left:3px solid var(--teal);padding:10px 14px;background:var(--tealL);border-radius:0 8px 8px 0;margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--teal);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Hook angle</p>' +
+      '<p style="font-size:13px;color:var(--teal);line-height:1.6;">' + b.hook_angle + '</p>' +
+    '</div>'
+  ) : '';
+
+  var fxify = b.fxify_angle ? (
+    '<div style="border-left:3px solid var(--brand);padding:10px 14px;background:var(--brandL);border-radius:0 8px 8px 0;margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--brand);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">FXIFY unique angle</p>' +
+      '<p style="font-size:13px;color:var(--text2);line-height:1.6;">' + b.fxify_angle + '</p>' +
+    '</div>'
+  ) : '';
+
+  var gaps = b.competitor_gaps ? (
+    '<div style="border-left:3px solid var(--urgent);padding:10px 14px;background:var(--urgentL);border-radius:0 8px 8px 0;margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--urgent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Competitor gap to exploit</p>' +
+      '<p style="font-size:12px;color:var(--text2);line-height:1.6;">' + b.competitor_gaps + '</p>' +
+    '</div>'
+  ) : '';
+
+  var toc = (b.toc||[]).length ? (
+    '<div style="margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Table of contents</p>' +
+      (b.toc||[]).map(function(item, i){
+        return '<div style="display:flex;gap:10px;padding:5px 0;border-bottom:1px solid var(--border);">' +
+          '<span style="font-size:10px;font-weight:700;color:var(--teal);min-width:18px;">' + (i+1) + '</span>' +
+          '<span style="font-size:12px;color:var(--text2);">' + item + '</span>' +
+        '</div>';
+      }).join('') +
+    '</div>'
+  ) : '';
+
+  var sections = (b.sections||[]).length ? (
+    '<div style="margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;">Section guide</p>' +
+      (b.sections||[]).map(function(s, i){
+        return '<div style="border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:8px;">' +
+          '<p style="font-size:11px;font-weight:700;color:var(--text);margin-bottom:4px;">H2 ' + (i+1) + ': ' + s.h2 + '</p>' +
+          (s.angle ? '<p style="font-size:11px;color:var(--text2);line-height:1.55;margin-bottom:4px;">' + s.angle + '</p>' : '') +
+          (s.what_to_check ? '<p style="font-size:10px;color:var(--teal);"><strong>Check:</strong> ' + s.what_to_check + '</p>' : '') +
+        '</div>';
+      }).join('') +
+    '</div>'
+  ) : '';
+
+  var terms = (b.key_terms||[]).length ? (
+    '<div style="margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Key terms to define</p>' +
+      '<table style="width:100%;border-collapse:collapse;">' +
+        (b.key_terms||[]).map(function(t){
+          return '<tr>' +
+            '<td style="font-weight:600;color:var(--text);padding:6px 12px 6px 0;font-size:12px;white-space:nowrap;vertical-align:top;border-bottom:1px solid var(--border);">' + t.term + '</td>' +
+            '<td style="font-size:12px;color:var(--text2);padding:6px 0;line-height:1.5;border-bottom:1px solid var(--border);">' + t.definition + '</td>' +
+          '</tr>';
+        }).join('') +
+      '</table>' +
+    '</div>'
+  ) : '';
+
+  var faqs = (b.faqs||[]).length ? (
+    '<div style="margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">FAQ to include</p>' +
+      (b.faqs||[]).map(function(f){
+        return '<div style="padding:8px 0;border-bottom:1px solid var(--border);">' +
+          '<p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">Q: ' + f.q + '</p>' +
+          '<p style="font-size:11px;color:var(--text2);line-height:1.55;">A: ' + f.a + '</p>' +
+        '</div>';
+      }).join('') +
+    '</div>'
+  ) : '';
+
+  var bottom = b.bottom_line ? (
+    '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:16px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">Bottom line for reader</p>' +
+      '<p style="font-size:12px;color:var(--text2);line-height:1.6;">' + b.bottom_line + '</p>' +
+    '</div>'
+  ) : '';
+
+  var metaPkg = (b.meta_title || b.meta_desc || b.slug) ? (
+    '<div style="margin-top:4px;">' +
+      '<p style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Meta package</p>' +
+      (b.meta_title ? _bRow('SEO title', b.meta_title) : '') +
+      (b.meta_desc  ? _bRow('Meta description', b.meta_desc) : '') +
+      (b.slug       ? _bRow('Slug', '/' + b.slug) : '') +
+    '</div>'
+  ) : '';
+
+  return '<div style="display:grid;gap:0;">' +
+    kws + meta + hook + fxify + gaps + toc + sections + terms + faqs + bottom + metaPkg +
+  '</div>';
+}
+
+function _bRow(label, val) {
+  return '<div style="display:flex;gap:8px;padding:5px 0;border-bottom:1px solid var(--border);align-items:baseline;">' +
+    '<p style="font-size:9px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;min-width:110px;flex-shrink:0;">' + label + '</p>' +
+    '<p style="font-size:12px;color:var(--text2);line-height:1.5;">' + val + '</p>' +
+  '</div>';
+}
+
+function buildBriefText(brief, task, cfVals) {
+  if (!brief) return (task && task.name) ? task.name + '\n\nNo brief data available.' : 'No brief available.';
+  var b = brief;
+  var lines = [];
+  lines.push('BRIEF: ' + b.title);
+  lines.push('Primary keyword: ' + (b.primary_keyword || ''));
+  if (b.secondary_keywords && b.secondary_keywords.length)
+    lines.push('Secondary: ' + b.secondary_keywords.join(', '));
+  lines.push('Target length: ' + (b.word_count || ''));
+  lines.push('Hook angle: ' + (b.hook_angle || ''));
+  lines.push('FXIFY angle: ' + (b.fxify_angle || ''));
+  lines.push('Competitor gap: ' + (b.competitor_gaps || ''));
+  lines.push('\nTABLE OF CONTENTS:');
+  (b.toc||[]).forEach(function(h, i){ lines.push((i+1) + '. ' + h); });
+  lines.push('\nSECTIONS:');
+  (b.sections||[]).forEach(function(s, i){
+    lines.push('\nH2 ' + (i+1) + ': ' + s.h2);
+    if (s.angle) lines.push('Angle: ' + s.angle);
+    if (s.what_to_check) lines.push('Check: ' + s.what_to_check);
+  });
+  lines.push('\nFAQs:');
+  (b.faqs||[]).forEach(function(f){ lines.push('Q: ' + f.q + '\nA: ' + f.a); });
+  lines.push('\nBottom line: ' + (b.bottom_line || ''));
+  lines.push('\nMETA:\nSEO title: ' + (b.meta_title||'') + '\nMeta desc: ' + (b.meta_desc||'') + '\nSlug: /' + (b.slug||''));
+  return lines.join('\n');
+}
+
+function openBriefModal(topic) {
+  // Route: if topic is a string/object, pre-fill the brief seed and run
+  if (!topic) return;
+  var topicTitle = typeof topic === 'string' ? topic : (topic.title || '');
+  
+  // Scroll to Content Intelligence and trigger brief generation
+  var genLink = document.querySelector('.nlink[data-pg="a-generate"]');
+  if (genLink) genLink.click();
+  
+  // After nav, seed the input and trigger
+  setTimeout(function() {
+    var seedEl = document.getElementById('v2-seed');
+    if (seedEl) seedEl.value = topicTitle;
+    if (typeof runBriefResearch === 'function') {
+      runBriefResearch(typeof topic === 'object' ? topic : { title: topicTitle });
+    }
+  }, 200);
+}
+
+
 
 
 function buildRawBriefHTML(task, cfVals) {
@@ -8649,7 +9032,7 @@ function buildRawBriefHTML(task, cfVals) {
   '</div>';
 }
 
-function buildBriefText() { /* removed */ }
+// buildBriefText moved above
 
 
 // ── WRITER SUBMIT ──────────────────────────────────────────────────────────
@@ -8731,8 +9114,8 @@ function init(){
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
-    // David: inject his approval links into the admin sidebar
-    if (user.role === 'david') {
+    // David + Chris (CEO): inject approval links into admin sidebar
+    if (user.role === 'david' || (user.role === 'admin' && user.email && (user.email.includes('chris@fxify') || user.email.includes('chris@fxpig')))) {
       var adminSb = document.getElementById('admin-sb');
       if (adminSb && !document.getElementById('david-nav-items')) {
         var davidNav = document.createElement('div');
@@ -8741,7 +9124,7 @@ function init(){
           '<div class="ndiv"></div>' +
           '<div class="ngrp">My Approvals</div>' +
           '<div class="nlink" data-pg="da-approval" data-sc="admin" id="david-approval-link"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>' +
-          '<div class="nlink" data-pg="da-log" data-sc="admin" id="david-log-link"><span class="nico">▲</span>Approved Log</div>';
+          '<div class="nlink" data-pg="da-log" data-sc="admin" id="david-log-link"><span class="nico"></span>Approved Log</div>';
         adminSb.appendChild(davidNav);
         // Wire these links — they load David pages but show in admin screen
         davidNav.querySelectorAll('.nlink[data-pg]').forEach(function(link){
@@ -8763,11 +9146,23 @@ function init(){
       }
     }
 
+    // CEO greeting for Chris
+    if (user.email && (user.email.includes('chris@fxify') || user.email.includes('chris@fxpig'))) {
+      var chrisGreetings = [
+        'Pipeline is live. ' + (new Date().getHours() < 12 ? 'Morning' : 'Afternoon') + ', Chris.',
+        'Content operation is running. Here\'s the full view.',
+        'Everything\'s tracked. Articles, pipeline, performance — all here.',
+        'The team is on it. Here\'s where things stand.',
+      ];
+      var dg = document.getElementById('david-greeting');
+      if (dg) dg.textContent = chrisGreetings[Math.floor(Math.random() * chrisGreetings.length)];
+    }
+
     // David greeting
     if (user.role === 'david') {
       var davidGreetings = [
         "The boss is in. Liam did his part — now it\'s your call. 👔",
-        "Morning, David. The pipeline awaits your signature. ✍️",
+        "Morning, David. The pipeline awaits your signature. ",
         "Articles are queued up. One tap from you and they\'re off to publish. 💼",
         "The SEO is clean, the copy is tight. Just need the big boss stamp. 🏆",
         "Good to see you, David. Liam says these are ready. He\'s usually right. 👀",
@@ -8849,7 +9244,7 @@ function init(){
         btn.id = btnId;
         btn.className = 'btn btn-s';
         btn.style.cssText = 'font-size:10px;border-color:rgba(255,255,255,.1);color:#94a3b8;background:transparent;';
-        btn.textContent = '👁 Switch view';
+        btn.textContent = ' Switch view';
         btn.addEventListener('click', openSwitchViewModal);
         tbr.insertBefore(btn, tbr.firstChild);
       }
@@ -9297,7 +9692,7 @@ function openSwitchViewModal() {
   modal.appendChild(sep0);
 
   var views = [
-    { label:'Admin view',  screen:'admin',  icon:'⚙' },
+    { label:'Admin view',  screen:'admin',  icon:'' },
     { label:'David view',  screen:'david',  icon:'📋' },
   ];
   views.forEach(function(v) {
@@ -9400,11 +9795,18 @@ function doExitSwitchView() {
 }
 
 function prefillBrief(data) {
-  // Pre-fill brief fields if a brief modal exists — stub since brief gen removed
-  // Just creates a task with the data
-  if (data && window.createTaskFromTopic) {
-    window.createTaskFromTopic(data);
-  }
+  // Route to brief generation in Content Intelligence
+  if (!data) return;
+  var topicObj = typeof data === 'string' ? { title: data } : data;
+  // Navigate to Content Intelligence
+  var genLink = document.querySelector('.nlink[data-pg="a-generate"]');
+  if (genLink) genLink.click();
+  // Run brief research after short nav delay
+  setTimeout(function() {
+    if (typeof runBriefResearch === 'function') {
+      runBriefResearch(topicObj);
+    }
+  }, 300);
 }
 
 // ── GLOBAL FUNCTION EXPOSURE ────────────────────────────────
@@ -9714,7 +10116,13 @@ async function saveTopicRun(seed, audience, goal, wordcount, topics) {
       created_at: new Date().toISOString()
     }]);
     console.log('[History] Run saved:', seed, topics.length, 'topics');
-  } catch(e) { console.warn('[History] Save failed:', e.message); }
+  } catch(e) {
+    if (e && e.message && e.message.includes('403')) {
+      console.warn('[History] 403 — topic_runs table missing. Run SQL in Supabase: CREATE TABLE topic_runs (id bigint generated always as identity primary key, seed text, audience text, goal text, wordcount text, topics text, topic_count int, created_at timestamptz default now()); ALTER TABLE topic_runs ENABLE ROW LEVEL SECURITY; CREATE POLICY "allow all" ON topic_runs FOR ALL USING (true) WITH CHECK (true);');
+    } else {
+      console.warn('[History] Save failed:', e && e.message);
+    }
+  }
 }
 window.saveTopicRun = saveTopicRun;
 
@@ -9739,7 +10147,14 @@ async function bookmarkTopic(topic, seed) {
       created_at:      new Date().toISOString()
     }]);
     v2Toast('Bookmarked ✓');
-  } catch(e) { v2Toast('Bookmark failed: ' + e.message); }
+  } catch(e) {
+    if (e && e.message && e.message.includes('403')) {
+      v2Toast('Bookmark table missing — check console for SQL', 'error');
+      console.warn('[Bookmarks] 403 — topic_bookmarks table missing. Run SQL in Supabase: CREATE TABLE topic_bookmarks (id bigint generated always as identity primary key, title text, primary_keyword text, intent text, fxify_angle text, competitor_gap text, opportunity_score int, seed text, topic_data text, created_at timestamptz default now()); ALTER TABLE topic_bookmarks ENABLE ROW LEVEL SECURITY; CREATE POLICY "allow all" ON topic_bookmarks FOR ALL USING (true) WITH CHECK (true);');
+    } else {
+      v2Toast('Bookmark failed: ' + (e && e.message), 'error');
+    }
+  }
 }
 window.bookmarkTopic = bookmarkTopic;
 
@@ -9763,7 +10178,7 @@ async function loadTopicHistory() {
           '<button class="hist-tab-btn active" data-htab="runs" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:var(--bg3);color:var(--teal);">History (' + runs.length + ')</button>' +
           '<button class="hist-tab-btn" data-htab="bookmarks" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">Bookmarks (' + bookmarks.length + ')</button>' +
         '</div>' +
-        '<button class="btn btn-s" onclick="window.loadTopicHistory()" style="font-size:11px;">↻ Refresh</button>' +
+        '<button class="btn btn-s" onclick="window.loadTopicHistory()" style="font-size:11px;"> Refresh</button>' +
       '</div>' +
 
       // RUNS TAB
@@ -9775,7 +10190,7 @@ async function loadTopicHistory() {
           return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;">' +
             '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;">' +
               '<div style="flex:1;">' +
-                '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">🔑 ' + r.seed + '</p>' +
+                '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></span> ' + r.seed + '</p>' +
                 '<div style="display:flex;gap:8px;flex-wrap:wrap;">' +
                   '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">' + r.topic_count + ' topics</span>' +
                   '<span style="font-size:10px;color:var(--text3);">·</span>' +
@@ -9808,7 +10223,7 @@ async function loadTopicHistory() {
               '<div style="flex:1;">' +
                 '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">' + b.title + '</p>' +
                 '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:6px;">' +
-                  (b.primary_keyword ? '<span style="font-size:10px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 8px;font-family:var(--mono);">🔑 ' + b.primary_keyword + '</span>' : '') +
+                  (b.primary_keyword ? '<span style="font-size:10px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 8px;font-family:var(--mono);"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></span> ' + b.primary_keyword + '</span>' : '') +
                   (b.intent ? '<span style="font-size:10px;background:var(--bg3);color:var(--text3);border-radius:4px;padding:2px 8px;">' + b.intent + '</span>' : '') +
                   '<span style="font-size:10px;color:var(--muted);">Saved from: ' + (b.seed||'—') + '</span>' +
                 '</div>' +
@@ -9820,7 +10235,7 @@ async function loadTopicHistory() {
               '</div>' +
             '</div>' +
           '</div>';
-        }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No bookmarks yet — click ★ on any topic card to bookmark it.</p>') +
+        }).join('') : '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No bookmarks yet — click <span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span> on any topic card to bookmark it.</p>') +
       '</div>';
 
     output.innerHTML = html;
@@ -10065,7 +10480,7 @@ async function loadTeamStats() {
     v2Toast('Stats failed: ' + e.message);
   }
 
-  if (btn) { btn.disabled = false; btn.textContent = '↻ Refresh stats'; }
+  if (btn) { btn.disabled = false; btn.textContent = ' Refresh stats'; }
 }
 window.loadTeamStats = loadTeamStats;
 
@@ -10119,7 +10534,7 @@ async function runCanonicalCheck() {
 
     if (!cuTasks.length && !pubArts.length) {
       resultsEl.innerHTML = '<p style="color:var(--urgent);padding:16px;">Could not load data. Refresh pipeline first.</p>';
-      if (btn) { btn.disabled=false; btn.textContent='🔍 Check canonicals'; }
+      if (btn) { btn.disabled=false; btn.textContent=' Check canonicals'; }
       return;
     }
 
@@ -10274,7 +10689,7 @@ async function runCanonicalCheck() {
     resultsEl.innerHTML = '<p style="color:var(--urgent);padding:16px;">Error: ' + e.message + '</p>';
   }
 
-  if (btn) { btn.disabled=false; btn.textContent='🔍 Check canonicals'; }
+  if (btn) { btn.disabled=false; btn.textContent=' Check canonicals'; }
 }
 window.runCanonicalCheck = runCanonicalCheck;
 
@@ -10372,7 +10787,7 @@ async function savePromptTemplate() {
     var editBtn  = document.getElementById('prompt-edit-btn');
     if (display)  display.style.display  = 'block';
     if (editArea) editArea.style.display = 'none';
-    if (editBtn)  editBtn.textContent    = '✏ Edit';
+    if (editBtn)  editBtn.textContent    = ' Edit';
     if (saveBtn)  { saveBtn.style.display = 'none'; saveBtn.disabled = false; saveBtn.textContent = 'Save →'; }
 
     v2Toast('Prompt saved — active on next generation ✓', 'success');
