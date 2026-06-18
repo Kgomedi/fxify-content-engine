@@ -5723,7 +5723,7 @@ async function runYTFullSEO(t) {
     '"cta":"Primary call to action for the video"}';
 
   try {
-    var text = await v2Fetch(prompt, 4000);
+    var text = await v2Fetch(prompt, 6000);
     var pkg = parseJSON(text);
     renderYTSEOPackage(pkg, t);
   } catch(e) {
@@ -6566,7 +6566,7 @@ async function runTrendingDiscovery() {
       '"source":"' + (hasLive ? 'live_research' : 'training_knowledge') + '"' +
       '}]}';
 
-    var text   = await v2Fetch(prompt, 4000);
+    var text   = await v2Fetch(prompt, 6000);
     var result = parseJSON(text);
     var topics = result.topics || [];
 
@@ -6989,7 +6989,7 @@ async function dfsKeywords(seedKw) {
         'Use your knowledge of 2026 prop trading search volumes. Be realistic — do not inflate numbers.\n' +
         'Return ONLY valid JSON no markdown:\n' +
         '{"keywords":[{"keyword":"exact search term","search_volume":1200,"kd":22,"cpc":1.40,"competition":"LOW|MEDIUM|HIGH"}]}',
-        600
+        2000
       );
       var p = JSON.parse(text.replace(/```json|```/g,'').trim());
       return (p.keywords || []).map(function(k) {
@@ -7353,7 +7353,7 @@ async function v2SerpResearch(keyword) {
         'Based on your knowledge, what pages typically rank in the top 10 Google results for: "' + keyword + '" in prop trading?\n' +
         'List 6 results with their approximate title and the angle they take.\n' +
         'Return ONLY valid JSON no markdown: {"results":[{"title":"page title","url":"example.com","description":"their angle in one sentence"}]}',
-        400
+        2000
       );
       var p = JSON.parse(text.replace(/```json|```/g,'').trim());
       return p.results || [];
@@ -7578,7 +7578,7 @@ async function runTopicIdeas() {
     '}]}';
 
   try {
-    var text   = await v2Fetch(prompt, 4000);
+    var text   = await v2Fetch(prompt, 6000);
     var result = parseJSON(text);
     var topics = result.topics || [];
     // Sort by opportunity score descending
@@ -7865,10 +7865,10 @@ async function runKeywordAnalysis() {
       'Also flag any keywords showing rising trend in 2026.\n\n' +
       'Return ONLY valid JSON:\n' +
       '{"summary":"2 sentence overview","opportunities":[{"keyword":"term","volume":"number","kd":"0-100","cpc":"$X.XX","intent":"Commercial|Informational|Transactional","priority":"High|Medium|Low","notes":"why this matters for FXIFY"}],"missing_keywords":["kw1","kw2","kw3"],"rising":["kw1","kw2"],"strategy":"2-3 sentence content strategy for this cluster"}',
-      1500
+      6000
     );
 
-    var analysis = JSON.parse(analysisText.replace(/```json|```/g,'').trim());
+    var analysis = parseJSON(analysisText);
     renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub);
 
   } catch(e) {
@@ -8081,7 +8081,7 @@ async function runBriefResearch(topicObj) {
     'Return ONLY valid JSON — no markdown, no preamble:\n'+
     '{"title":"","primary_keyword":"","secondary_keywords":[],"search_intent":"","word_count":"","hook_angle":"","key_terms":[{"term":"","definition":""}],"toc":[],"sections":[{"h2":"","angle":"","what_to_check":""}],"fxify_angle":"","faqs":[{"q":"","a":""}],"bottom_line":"","competitor_gaps":"","meta_title":"","meta_desc":"","slug":"","geo_angle":"","aeo_question":""}';
   try {
-    var text  = await v2Fetch(prompt, 4000);
+    var text  = await v2Fetch(prompt, 6000);
     var brief = parseJSON(text);
     // Save to Supabase + ClickUp
     var briefData = {
@@ -10310,7 +10310,7 @@ async function runSERPIntelligence(keyword) {
       '"ad_description":"90 char Google Ads description",' +
       '"opportunity_score":85}';
 
-    var text   = await v2Fetch(prompt, 1500);
+    var text   = await v2Fetch(prompt, 3000);
     var result = parseJSON(text);
     renderSERPIntelligence(result, serpData);
 
