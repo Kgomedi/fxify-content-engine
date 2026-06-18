@@ -6281,7 +6281,7 @@ async function doGoogleLogin() {
 
 var USERS = {
   'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
-  'david.xavier@fxify.com':      { role:'admin',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
+  'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
   'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
   'harrison.hosking@fxify.com':  { role:'hybrid', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
   'imran.najib@fxify.com':       { role:'writer', name:'Imran Muhd Najib', screen:'writer', initials:'IN', av:''  },
@@ -8740,6 +8740,29 @@ window.v2WireCustomBtn = v2WireCustomBtn;
 
 
 // ── AUTH STATE LISTENER — IIFE level ────────────────────────────────────
+function resolveUserFromEmail(email) {
+  window.resolveUserFromEmail = resolveUserFromEmail; // ensure callable from auth callback
+    var errEl = document.getElementById('login-error');
+    var isApproved = email.endsWith('@fxify.com') || email === 'liam@quirkydigital.com';
+    if (!isApproved) {
+      if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
+      supa.auth.signOut();
+      return;
+    }
+    var userDef = USERS[email];
+    // Unknown @fxify.com → new writer
+    if (!userDef && email.endsWith('@fxify.com')) {
+      var nameParts = email.split('@')[0].split('.');
+      var name = nameParts.map(function(p){ return p.charAt(0).toUpperCase() + p.slice(1); }).join(' ');
+      userDef = { role:'writer', name: name, screen:'writer', initials: nameParts.map(function(p){ return p[0].toUpperCase(); }).join(''), av:'' };
+    }
+    if (!userDef) { if (errEl) { errEl.textContent = 'Access denied.'; errEl.style.display = 'block'; } return; }
+    var user = { email: email, role: userDef.role, name: userDef.name, screen: userDef.screen, initials: userDef.initials, av: userDef.av };
+    sessionStorage.setItem('fxify_user', JSON.stringify(user));
+    bootUser(user);
+  }
+window.resolveUserFromEmail = resolveUserFromEmail;
+
 supa.auth.onAuthStateChange(function(event, session) {
   if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
     var email = session.user.email.toLowerCase();
@@ -9231,8 +9254,8 @@ function init(){
   }
 
   function showImpersonateBtn() {
-    // Add "Switch view" button to both admin and david topbars
-    [['admin','imp-btn'],['david','imp-btn-d']].forEach(function(pair) {
+    // Add "Switch view" button to admin, david, and writer topbars
+    [['admin','imp-btn'],['david','imp-btn-d'],['writer','imp-btn-w']].forEach(function(pair) {
       var sc = pair[0], btnId = pair[1];
       var tbr = document.querySelector('#' + sc + ' .tbr');
       if (tbr && !document.getElementById(btnId)) {
@@ -9261,27 +9284,7 @@ function init(){
     }
   }
 
-  function resolveUserFromEmail(email) {
-  window.resolveUserFromEmail = resolveUserFromEmail; // ensure callable from auth callback
-    var errEl = document.getElementById('login-error');
-    var isApproved = email.endsWith('@fxify.com') || email === 'liam@quirkydigital.com';
-    if (!isApproved) {
-      if (errEl) { errEl.textContent = 'Access denied — FXIFY or approved emails only.'; errEl.style.display = 'block'; }
-      supa.auth.signOut();
-      return;
-    }
-    var userDef = USERS[email];
-    // Unknown @fxify.com → new writer
-    if (!userDef && email.endsWith('@fxify.com')) {
-      var nameParts = email.split('@')[0].split('.');
-      var name = nameParts.map(function(p){ return p.charAt(0).toUpperCase() + p.slice(1); }).join(' ');
-      userDef = { role:'writer', name: name, screen:'writer', initials: nameParts.map(function(p){ return p[0].toUpperCase(); }).join(''), av:'' };
-    }
-    if (!userDef) { if (errEl) { errEl.textContent = 'Access denied.'; errEl.style.display = 'block'; } return; }
-    var user = { email: email, role: userDef.role, name: userDef.name, screen: userDef.screen, initials: userDef.initials, av: userDef.av };
-    sessionStorage.setItem('fxify_user', JSON.stringify(user));
-    bootUser(user);
-  }
+  /* resolveUserFromEmail hoisted — defined above auth listener */
 
   // Listen for auth state changes (handles redirect callback automatically)
   supa.auth.onAuthStateChange(function(event, session) {
@@ -9687,24 +9690,14 @@ function openSwitchViewModal() {
   sep0.textContent = 'Role views';
   modal.appendChild(sep0);
 
-  var views = [
-    { label:'Admin view',  screen:'admin',  icon:'' },
-    { label:'David view',  screen:'david',  icon:'📋' },
-  ];
-  views.forEach(function(v) {
-    var btn = document.createElement('button');
-    btn.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text2);cursor:pointer;border-radius:6px;text-align:left;';
-    btn.innerHTML = '<span>' + v.icon + '</span><span>' + v.label + '</span>';
-    btn.onmouseenter = function(){ this.style.background='var(--bg3)'; };
-    btn.onmouseleave = function(){ this.style.background='none'; };
-    btn.onclick = function() {
-      modal.remove();
-      document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
-      var target = document.getElementById(v.screen);
-      if (target) target.classList.add('active');
-    };
-    modal.appendChild(btn);
-  });
+  // Back to my view button
+  var backMyView = document.createElement('button');
+  backMyView.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--teal);cursor:pointer;border-radius:6px;font-weight:500;';
+  backMyView.innerHTML = '← Back to my view';
+  backMyView.onmouseenter = function(){ this.style.background='var(--bg3)'; };
+  backMyView.onmouseleave = function(){ this.style.background='none'; };
+  backMyView.onclick = function() { modal.remove(); doExitSwitchView(); };
+  modal.appendChild(backMyView);
 
   // Divider
   var divider = document.createElement('div');
@@ -9785,16 +9778,20 @@ function doSwitchView(role) {
 }
 
 function doExitSwitchView() {
-  // Return to admin screen
+  // Return to admin screen and restore original user
   document.querySelectorAll('.screen').forEach(function(s){ s.classList.remove('active'); });
   var admin = document.getElementById('admin');
   if (admin) admin.classList.add('active');
-  // Hide back button + reset writer topbar
+  // Hide back buttons
   var backBtn = document.getElementById('writer-back-btn');
   if (backBtn) backBtn.style.display = 'none';
   var davidBack = document.getElementById('david-back-btn');
   if (davidBack) davidBack.style.display = 'none';
   currentWriterEmail = null;
+  // Restore admin topbar with current user
+  if (currentUser) updateTopbars(currentUser);
+  // Reload pipeline to show admin's own view
+  if (typeof loadPipeline === 'function') loadPipeline();
 }
 
 function prefillBrief(data) {
