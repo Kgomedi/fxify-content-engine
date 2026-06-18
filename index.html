@@ -2235,7 +2235,7 @@ function goPage(sc,pg,navEl){
   document.querySelectorAll('#'+sc+' .nlink').forEach(function(n){n.classList.remove('active');});
   if(navEl) navEl.classList.add('active');
   document.querySelectorAll('#'+sc+' .pg').forEach(function(p){p.classList.remove('active');});
-  document.getElementById(pg).classList.add('active');
+  var pgEl = document.getElementById(pg); if(pgEl) pgEl.classList.add('active');
   window.scrollTo(0,0); closeSB();
   if(pg==='a-pipeline') loadPipeline();
   if(pg==='w-drafts') {
@@ -9114,8 +9114,8 @@ function init(){
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
-    // David + Chris (CEO): inject approval links into admin sidebar
-    if (user.role === 'david' || (user.role === 'admin' && user.email && (user.email.includes('chris@fxify') || user.email.includes('chris@fxpig')))) {
+    // David only: inject his approval links into admin sidebar
+    if (user.role === 'david') {
       var adminSb = document.getElementById('admin-sb');
       if (adminSb && !document.getElementById('david-nav-items')) {
         var davidNav = document.createElement('div');
@@ -9144,18 +9144,6 @@ function init(){
           });
         });
       }
-    }
-
-    // CEO greeting for Chris
-    if (user.email && (user.email.includes('chris@fxify') || user.email.includes('chris@fxpig'))) {
-      var chrisGreetings = [
-        'Pipeline is live. ' + (new Date().getHours() < 12 ? 'Morning' : 'Afternoon') + ', Chris.',
-        'Content operation is running. Here\'s the full view.',
-        'Everything\'s tracked. Articles, pipeline, performance — all here.',
-        'The team is on it. Here\'s where things stand.',
-      ];
-      var dg = document.getElementById('david-greeting');
-      if (dg) dg.textContent = chrisGreetings[Math.floor(Math.random() * chrisGreetings.length)];
     }
 
     // David greeting
@@ -10106,7 +10094,7 @@ async function _runTopicRefine(idx, topic, instruction) {
 
 async function saveTopicRun(seed, audience, goal, wordcount, topics) {
   try {
-    await supa.from('topic_runs').insert([{
+    var { error: trError } = await supa.from('topic_runs').insert({
       seed:       seed,
       audience:   audience || 'all',
       goal:       goal || 'rank',
@@ -10114,14 +10102,13 @@ async function saveTopicRun(seed, audience, goal, wordcount, topics) {
       topics:     JSON.stringify(topics),
       topic_count: topics.length,
       created_at: new Date().toISOString()
-    }]);
+    });
+    if (trError) throw new Error(trError.message || trError.code || JSON.stringify(trError));
     console.log('[History] Run saved:', seed, topics.length, 'topics');
   } catch(e) {
-    if (e && e.message && e.message.includes('403')) {
-      console.warn('[History] 403 — topic_runs table missing. Run SQL in Supabase: CREATE TABLE topic_runs (id bigint generated always as identity primary key, seed text, audience text, goal text, wordcount text, topics text, topic_count int, created_at timestamptz default now()); ALTER TABLE topic_runs ENABLE ROW LEVEL SECURITY; CREATE POLICY "allow all" ON topic_runs FOR ALL USING (true) WITH CHECK (true);');
-    } else {
-      console.warn('[History] Save failed:', e && e.message);
-    }
+    console.warn('[History] topic_runs save failed:', e && e.message);
+    // If 42501 = insufficient privilege / RLS blocking anon inserts
+    // Run in Supabase SQL: drop policy if exists "allow all" on topic_runs; create policy "anon_all" on topic_runs for all to anon using (true) with check (true);
   }
 }
 window.saveTopicRun = saveTopicRun;
@@ -10135,7 +10122,7 @@ async function bookmarkTopic(topic, seed) {
       v2Toast('Already bookmarked ✓');
       return;
     }
-    await supa.from('topic_bookmarks').insert([{
+    var { error: bmError } = await supa.from('topic_bookmarks').insert({
       title:           topic.title,
       primary_keyword: topic.primary_keyword || '',
       intent:          topic.intent || '',
@@ -10145,7 +10132,8 @@ async function bookmarkTopic(topic, seed) {
       seed:            seed || '',
       topic_data:      JSON.stringify(topic),
       created_at:      new Date().toISOString()
-    }]);
+    });
+    if (bmError) throw new Error(bmError.message || bmError.code || JSON.stringify(bmError));
     v2Toast('Bookmarked ✓');
   } catch(e) {
     if (e && e.message && e.message.includes('403')) {
