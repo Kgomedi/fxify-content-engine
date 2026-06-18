@@ -3090,40 +3090,14 @@ async function loadDavidAnalytics(){
 }
 
 async function loadDavidApprovalAdmin(){
-  // David's approval queue shown inside admin screen
-  var nb = document.getElementById('nb-david');
-  var res = await supa.from('articles').select('*').eq('status','David Approval').order('created_at',{ascending:false});
+  // Approval system removed — David has full admin view
   var l = document.getElementById('da-approval-list');
-  if (!l) return;
-  // Set greeting
-  var greet = document.getElementById('david-greeting-2');
-  if (greet && !greet.textContent) {
-    var msgs = ["The boss is in. Liam did his part — now it's your call. 👔","Articles are queued up. One tap and they're off to publish. 💼","The SEO is clean, the copy is tight. Just need the big boss stamp. 🏆","Good to see you, David. Liam says these are ready. He's usually right. 👀"];
-    greet.textContent = msgs[Math.floor(Math.random()*msgs.length)];
-  }
-  if (res.error || !res.data || !res.data.length) {
-    l.innerHTML='<p class="pempty" style="padding:40px 0;">No articles awaiting approval.</p>';
-    if(nb) nb.textContent=''; return;
-  }
-  l.innerHTML='';
-  res.data.forEach(function(a){ l.appendChild(makeReviewCard(a,{role:'david',fwdLabel:'Final approval done',nextStatus:'Publishing',listId:'da-approval-list'})); });
-  if(nb) nb.textContent=res.data.length;
+  if (l) l.innerHTML = '<p style="color:var(--text3);font-size:13px;padding:20px;">Approval queue has been moved. Use the Pipeline page to review articles.</p>';
 }
 
 async function loadDavidLogAdmin(){
   var l = document.getElementById('da-log-list');
-  if (!l) return;
-  var res = await supa.from('articles').select('*').in('status',['Publishing','Live']).order('updated_at',{ascending:false});
-  if (res.error || !res.data || !res.data.length) { l.innerHTML='<p style="font-size:13px;color:var(--text3);padding:20px 0;">No approved articles yet.</p>'; return; }
-  l.innerHTML='';
-  res.data.forEach(function(a){
-    var c=document.createElement('div'); c.className='card'; c.style.cursor='default';
-    var color=a.status==='Live'?'var(--green)':'var(--teal)';
-    c.innerHTML='<div class="cbody"><div class="ctop"><p class="ctitle">'+(a.title||'Untitled')+'</p><span class="badge" style="background:rgba(0,0,0,.05);color:'+color+';">'+a.status+'</span></div></div>'+
-      '<div class="cmeta"><span class="mkw">'+(a.primary_kw||'')+'</span><span class="mtime">'+(a.word_count||0)+' words</span></div>'+
-      '<div class="cfoot"><span class="cfi">'+(a.category||'')+'</span><span style="font-size:11px;color:var(--text3);">Approved by David ✓</span></div>';
-    l.appendChild(c);
-  });
+  if (l) l.innerHTML = '<p style="color:var(--text3);font-size:13px;padding:20px;">Log moved — use Analytics page.</p>';
 }
 
 async function loadDavidLog(){
@@ -4309,103 +4283,69 @@ var publishedCache = null;
 
 async function scrapePublishedArticles(listId, countId) {
   var list = document.getElementById(listId);
+  var count = document.getElementById(countId);
   if (!list) return;
-  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping fxify.com/blog — this takes ~30 seconds...</p>';
+  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Loading articles from fxify.com/blog...</p>';
 
   try {
+    // Use Firecrawl search — much faster than scraping individual pages
     var allLinks = [];
     var seen = {};
-    var totalPages = 32;
-    var BATCH = 4; // scrape 4 pages at a time
+    var queries = [
+      'site:fxify.com/blog prop firm',
+      'site:fxify.com/blog trading account',
+      'site:fxify.com/blog funded trader',
+      'site:fxify.com/blog challenge',
+      'site:fxify.com/blog drawdown',
+    ];
 
-    for (var page = 1; page <= totalPages; page += BATCH) {
-      // Build batch of page URLs
-      var batch = [];
-      for (var p = page; p < page + BATCH && p <= totalPages; p++) {
-        batch.push(p === 1 ? 'https://fxify.com/blog' : 'https://fxify.com/blog/page/' + p);
-      }
-
-      // Update status
-      if (list) list.innerHTML = '<p class="pempty" style="padding:40px 0;">Scraping pages ' + page + '–' + Math.min(page+BATCH-1, totalPages) + ' of ' + totalPages + '... (' + allLinks.length + ' found so far)</p>';
-      console.log('Scraping batch starting page', page, '— links so far:', allLinks.length);
-
-      // Scrape batch in parallel
-      var batchResults = await Promise.allSettled(batch.map(function(url) {
-        return fetch('https://api.firecrawl.dev/v1/scrape', {
+    for (var qi = 0; qi < queries.length; qi++) {
+      try {
+        var fc = await fetch('https://api.firecrawl.dev/v1/search', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
-          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
-        }).then(function(r){ return r.json(); });
-      }));
-
-      var pageHadLinks = false;
-      batchResults.forEach(function(result) {
-        if (result.status !== 'fulfilled') return;
-        var data = result.value;
-        if (!data.success || !data.data || !data.data.markdown) return;
-        var md = data.data.markdown;
-        // Match [title](https://fxify.com/blog/article-slug/)
-        // Extract all fxify.com/blog/ links from markdown
-        var re = /\[([^\]]{5,150})\]\((https?:\/\/fxify\.com\/blog\/[^)\s]+)\)/g;
-        var match;
-        while ((match = re.exec(md)) !== null) {
-          var title = match[1].trim();
-          var url = match[2].trim().replace(/\/$/, '') + '/';
-          // Skip category/pagination/tag links
-          if (url.includes('/category/') || url.includes('/page/') || url.includes('/tag/') || url.includes('/?')) continue;
-          // Skip nav/footer text
-          if (title.match(/^(Read More|Guides|Updates|Spotlight|Trading Culture|Prop Trading|General|Programs|Support|Blog$)/i)) continue;
-          if (title.length < 8) continue;
-          if (!seen[url]) {
+          body: JSON.stringify({ query: queries[qi], limit: 10 })
+        });
+        if (!fc.ok) continue;
+        var fcData = await fc.json();
+        var results = Array.isArray(fcData) ? fcData : (fcData.data || fcData.results || []);
+        results.forEach(function(r) {
+          var url = r.url || '';
+          var title = r.title || r.metadata && r.metadata.title || '';
+          if (url && url.includes('fxify.com/blog/') && !url.includes('/category/') && !url.includes('/page/') && title && !seen[url]) {
             seen[url] = true;
-            allLinks.push({ title: title, url: url });
-            pageHadLinks = true;
+            allLinks.push({ url: url, title: title });
           }
-        }
-      });
-
-      // If no links found in this batch and we're past page 8, stop early
-      if (!pageHadLinks && page > 8) break;
+        });
+      } catch(e) { console.warn('[Scrape] query failed:', e.message); }
     }
 
-    publishedCache = allLinks;
-
-    // Render in the dedicated list page
-    renderPublishedArticles(allLinks, listId, countId);
-
-    // ── SAVE TO SUPABASE published_articles table ───────────────────────
-    if (allLinks.length > 0) {
-      var rows = allLinks.map(function(a) {
-        return { title: a.title, url: a.url, scraped_at: new Date().toISOString() };
-      });
-      // Clear old records then insert fresh batch
-      var deleteRes = await supa.from('published_articles').delete().neq('url', '');
-      if (deleteRes.error) {
-        console.error('Delete error:', deleteRes.error);
-        toast('Save failed (delete): ' + deleteRes.error.message);
-      } else {
-        // Insert in batches of 50
-        var insertErrors = [];
-        for (var b = 0; b < rows.length; b += 50) {
-          var batch = rows.slice(b, b + 50);
-          var insertRes = await supa.from('published_articles').insert(batch);
-          if (insertRes.error) { insertErrors.push(insertRes.error.message); console.error('Insert error:', insertRes.error); }
-        }
-        if (insertErrors.length) {
-          toast('Save failed: ' + insertErrors[0]);
-        } else {
-          console.log('Saved', rows.length, 'articles to Supabase');
-    toast(rows.length + ' articles saved to Supabase ✓ — permanent from now on');
-        }
+    if (!allLinks.length) {
+      // Fallback: use already-loaded publishedCache from Supabase
+      if (window.publishedCache && window.publishedCache.length) {
+        allLinks = window.publishedCache.map(function(a) {
+          return { url: 'https://fxify.com/blog/' + (a.slug || '') + '/', title: a.title || '' };
+        }).filter(function(a) { return a.title; });
       }
     }
 
-    // ── RENDER IN PIPELINE LIVE COLUMN ──────────────────────────────────
-    renderLiveColumnFromPublished(allLinks);
+    if (count) count.textContent = allLinks.length;
+
+    if (!allLinks.length) {
+      list.innerHTML = '<p class="pempty">No articles found. Try again or check Firecrawl key.</p>';
+      return;
+    }
+
+    list.innerHTML = allLinks.map(function(a) {
+      return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">' +
+        '<a href="' + a.url + '" target="_blank" style="font-size:13px;color:var(--teal);text-decoration:none;">' + a.title + '</a>' +
+        '<span style="font-size:11px;color:var(--text3);">' + (a.url.split('/blog/')[1] || '').replace(/\/$/,'') + '</span>' +
+      '</div>';
+    }).join('');
 
   } catch(e) {
-    if (list) list.innerHTML = '<p class="pempty" style="padding:20px 0;">Error: ' + e.message + '</p>';
-    toast('Scrape failed — check Firecrawl key');
+    list.innerHTML = '<p class="pempty" style="color:var(--urgent);">Error: ' + e.message + '</p>';
+    console.error('[Scrape] scrapePublishedArticles failed:', e);
   }
 }
 
@@ -4773,24 +4713,26 @@ async function loadInternalLinks() {
   } else if (!internalLinksCache) {
     // Try a quick scrape of the blog index
     try {
-      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      // Use /v1/search — faster than scraping the blog index page
+      var fc = await fetch('https://api.firecrawl.dev/v1/search', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
-        body: JSON.stringify({ url: 'https://fxify.com/blog', formats: ['markdown'], onlyMainContent: true })
+        body: JSON.stringify({ query: 'site:fxify.com/blog prop firm funded trader', limit: 10 })
       });
-      var data = await res.json();
-      if (data.success && data.data && data.data.markdown) {
+      var fcData = await fc.json();
+      var results = Array.isArray(fcData) ? fcData : (fcData.data || fcData.results || []);
+      if (results.length) {
         var links = [];
         var seen = {};
-        var re = /\[([^\]]{10,100})\]\((https:\/\/fxify\.com\/blog\/[a-z0-9][a-z0-9\-]+\/)\)/g;
-        var match;
-        while ((match = re.exec(data.data.markdown)) !== null) {
-          var title = match[1].trim();
-          var url = match[2].trim();
-          if (url.includes('/category/') || title.match(/^Read More/i)) continue;
-          if (!seen[url]) { seen[url] = true; links.push({ title: title, url: url }); }
-        }
-        internalLinksCache = links;
+        results.forEach(function(r) {
+          var url = r.url || '';
+          var title = r.title || '';
+          if (url.includes('fxify.com/blog/') && !url.includes('/category/') && title && !seen[url]) {
+            seen[url] = true;
+            links.push({ title: title, url: url });
+          }
+        });
+        if (links.length) internalLinksCache = links;
       }
     } catch(e) { console.warn("[Engine silent catch]", e && e.message); }
     if (!internalLinksCache) internalLinksCache = [];
@@ -5481,29 +5423,25 @@ async function scrapeUrls(urls) {
     var url = urls[i].trim();
     if (!url) continue;
     try {
-      var res = await fetch('https://api.firecrawl.dev/v1/scrape', {
+      // Use /v1/search instead of /v1/scrape — faster, no timeout issues
+      var domain = url.replace('https://','').replace('http://','').split('/')[0];
+      var fc = await fetch('https://api.firecrawl.dev/v1/search', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + FIRECRAWL_KEY
-        },
-        body: JSON.stringify({
-          url: url,
-          formats: ['markdown'],
-          onlyMainContent: true
-        })
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + FIRECRAWL_KEY },
+        body: JSON.stringify({ query: 'site:' + domain + ' prop firm funded trader', limit: 5 })
       });
-      var data = await res.json();
-      if (data.success && data.data && data.data.markdown) {
-        // Truncate to 2000 chars per URL to keep prompt manageable
-        var content = data.data.markdown.substring(0, 2000);
-        results.push('--- SOURCE: ' + url + ' ---\n' + content);
+      if (!fc.ok) { console.warn('[scrapeUrls] Firecrawl error', fc.status); continue; }
+      var data = await fc.json();
+      var items = Array.isArray(data) ? data : (data.data || data.results || []);
+      if (items.length) {
+        var text = items.slice(0, 3).map(function(r) {
+          return (r.title || '') + ': ' + (r.description || r.markdown || '').substring(0, 300);
+        }).join('\n\n');
+        results.push('### ' + domain + '\n' + text);
       }
-    } catch(e) {
-      console.warn('Firecrawl failed for', url, e);
-    }
+    } catch(e) { console.warn('[scrapeUrls] failed for', url, e.message); }
   }
-  return results.join('\n\n');
+  return results.join('\n\n---\n\n');
 }
 
 // ── QUEUE HEALTH CHECK ───────────────────────────────────────────────────
@@ -6281,7 +6219,7 @@ async function doGoogleLogin() {
 
 var USERS = {
   'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
-  'david.xavier@fxify.com':      { role:'david',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
+  'david.xavier@fxify.com':      { role:'admin',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
   'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
   'harrison.hosking@fxify.com':  { role:'hybrid', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
   'imran.najib@fxify.com':       { role:'writer', name:'Imran Muhd Najib', screen:'writer', initials:'IN', av:''  },
@@ -7096,7 +7034,7 @@ async function v2ScrapeCompetitors(compKey) {
   };
   var firms = competitorMap[compKey || 'all'] || competitorMap.all;
   var serpWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/serp');
-  var researchWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/research');
+  var researchWebhook = V2_CONFIG.webhook; // /research has CORS issues — use generate-draft
 
   // Try DataForSEO SERP for competitor content — search each firm's blog
   // Run 2 SERP searches: competitor general content + trader Reddit questions
@@ -7444,7 +7382,7 @@ async function runTopicIdeas() {
   if (!seed.trim()) { v2Toast('Add a seed keyword or topic area first'); return; }
 
   btn.disabled = true; btn.textContent = 'Researching...';
-  var researchWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/research');
+  var researchWebhook = V2_CONFIG.webhook /* /research CORS blocked — using generate-draft */;
   console.log('[Topics] Starting with seed:', seed);
   console.log('[Topics] Research webhook:', researchWebhook);
 
@@ -9136,12 +9074,12 @@ function init(){
     currentBriefData = null; currentOutline = '';
 
     goScreen(user.screen);
-    loadPipeline(); loadWriterDrafts(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts();
   loadPublishingBadge();
     setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
 
-    // David only: inject his approval links into admin sidebar
-    if (user.role === 'david') {
+    // David is full admin — no special injection needed
+    if (false && user.role === 'david') {
       var adminSb = document.getElementById('admin-sb');
       if (adminSb && !document.getElementById('david-nav-items')) {
         var davidNav = document.createElement('div');
@@ -9172,8 +9110,8 @@ function init(){
       }
     }
 
-    // David greeting
-    if (user.role === 'david') {
+    // David greeting (disabled — David is full admin)
+    if (false && user.role === 'david') {
       var davidGreetings = [
         "The boss is in. Liam did his part — now it\'s your call. 👔",
         "Morning, David. The pipeline awaits your signature. ",
@@ -9484,7 +9422,7 @@ function init(){
     if (res.error) { toast('Delete failed'); return; }
     closeDrawer();
     toast('Gone. Deleted. Never existed. ');
-    loadPipeline(); loadWriterDrafts(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts();
   });
   document.getElementById('d-save').addEventListener('click',async function(){
     if(!drawerArt) return;
@@ -9494,7 +9432,7 @@ function init(){
     var due=document.getElementById('d-due')?document.getElementById('d-due').value||null:null;
     await dbUpdate(drawerArt.id,{assignee:assignee,priority:priority,status:status,due_date:due});
     closeDrawer(); toast('Updated — looking good ');
-    loadPipeline(); loadWriterDrafts(); loadDavidQ();
+    loadPipeline(); loadWriterDrafts();
   });
 
   // Sendback modal
@@ -9702,25 +9640,11 @@ function openSwitchViewModal() {
     backMyView.onmouseleave = function(){ this.style.background='none'; };
     backMyView.onclick = function() { modal.remove(); if(isInDavidPreview) exitDavidView(); else doExitSwitchView(); };
     modal.appendChild(backMyView);
-    var divider0 = document.createElement('div');
-    divider0.style.cssText = 'height:1px;background:var(--border);margin:6px 8px;';
-    modal.appendChild(divider0);
   }
 
-  // Role views section
-  var sep0 = document.createElement('p');
-  sep0.style.cssText = 'font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--text3);padding:6px 12px 2px;';
-  sep0.textContent = 'Role views';
-  modal.appendChild(sep0);
 
-  // David view button
-  var davidBtn = document.createElement('button');
-  davidBtn.style.cssText = 'display:flex;align-items:center;gap:8px;width:100%;padding:7px 12px;border:none;background:none;font-size:13px;color:var(--text2);cursor:pointer;border-radius:6px;text-align:left;';
-  davidBtn.innerHTML = '<span>📋</span><span>David Xavier view</span>';
-  davidBtn.onmouseenter = function(){ this.style.background='var(--bg3)'; };
-  davidBtn.onmouseleave = function(){ this.style.background='none'; };
-  davidBtn.onclick = function() { modal.remove(); simulateDavidView(); };
-  modal.appendChild(davidBtn);
+
+
 
   // Divider
   var divider = document.createElement('div');
@@ -10838,60 +10762,6 @@ window.loadPromptTemplate = loadPromptTemplate;
 
 
 
-// ── DAVID VIEW SIMULATION ─────────────────────────────────────────────────
-function simulateDavidView() {
-  // Inject David's approval nav into admin sidebar if not already there
-  var adminSb = document.getElementById('admin-sb');
-  if (adminSb && !document.getElementById('david-nav-items')) {
-    var davidNav = document.createElement('div');
-    davidNav.id = 'david-nav-items';
-    davidNav.innerHTML =
-      '<div class="ndiv"></div>' +
-      '<div class="ngrp">My Approvals</div>' +
-      '<div class="nlink" data-pg="da-approval" data-sc="admin" id="david-approval-link"><span class="nico">✅</span>Final Approval<span class="nbadge" id="nb-david">0</span></div>' +
-      '<div class="nlink" data-pg="da-log" data-sc="admin" id="david-log-link"><span class="nico">📋</span>Approved Log</div>';
-    adminSb.appendChild(davidNav);
-    // Wire these links
-    davidNav.querySelectorAll('.nlink[data-pg]').forEach(function(link) {
-      link.addEventListener('click', function() {
-        document.querySelectorAll('#admin .pg').forEach(function(p){ p.classList.remove('active'); });
-        document.querySelectorAll('#admin .nlink').forEach(function(n){ n.classList.remove('active'); });
-        link.classList.add('active');
-        var pg = link.getAttribute('data-pg');
-        var existing = document.getElementById(pg);
-        if (existing) {
-          existing.classList.add('active');
-          if (pg === 'da-approval') { if(typeof loadDavidApprovalAdmin === 'function') loadDavidApprovalAdmin(); }
-          if (pg === 'da-log')      { if(typeof loadDavidLogAdmin === 'function') loadDavidLogAdmin(); }
-        }
-      });
-    });
-  }
-  // Show a visual indicator that we're in David preview mode
-  var topCtx = document.querySelector('#admin .tbctx');
-  if (topCtx) { topCtx._origText = topCtx.textContent; topCtx.textContent = 'David Xavier view'; topCtx.style.color = 'var(--amber)'; }
-  // Auto-load approval queue
-  if (typeof loadDavidApprovalAdmin === 'function') {
-    setTimeout(function() {
-      // Navigate to da-approval
-      var approvalLink = document.getElementById('david-approval-link');
-      if (approvalLink) approvalLink.click();
-    }, 100);
-  }
-}
-window.simulateDavidView = simulateDavidView;
-
-function exitDavidView() {
-  // Remove injected nav
-  var davidItems = document.getElementById('david-nav-items');
-  if (davidItems) davidItems.remove();
-  // Restore topbar context label
-  var topCtx = document.querySelector('#admin .tbctx');
-  if (topCtx && topCtx._origText) { topCtx.textContent = topCtx._origText; topCtx.style.color = ''; }
-  // Return to pipeline
-  if (typeof goPage === 'function') goPage('a-pipeline', 'admin');
-}
-window.exitDavidView = exitDavidView;
 
 })();
 </script>
