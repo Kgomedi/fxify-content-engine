@@ -5723,7 +5723,7 @@ async function runYTFullSEO(t) {
     '"cta":"Primary call to action for the video"}';
 
   try {
-    var text = await v2Fetch(prompt, 3000);
+    var text = await v2Fetch(prompt, 4000);
     var pkg = parseJSON(text);
     renderYTSEOPackage(pkg, t);
   } catch(e) {
@@ -6566,7 +6566,7 @@ async function runTrendingDiscovery() {
       '"source":"' + (hasLive ? 'live_research' : 'training_knowledge') + '"' +
       '}]}';
 
-    var text   = await v2Fetch(prompt, 2500);
+    var text   = await v2Fetch(prompt, 4000);
     var result = parseJSON(text);
     var topics = result.topics || [];
 
@@ -7578,7 +7578,7 @@ async function runTopicIdeas() {
     '}]}';
 
   try {
-    var text   = await v2Fetch(prompt, 3500);
+    var text   = await v2Fetch(prompt, 4000);
     var result = parseJSON(text);
     var topics = result.topics || [];
     // Sort by opportunity score descending
@@ -8081,7 +8081,7 @@ async function runBriefResearch(topicObj) {
     'Return ONLY valid JSON — no markdown, no preamble:\n'+
     '{"title":"","primary_keyword":"","secondary_keywords":[],"search_intent":"","word_count":"","hook_angle":"","key_terms":[{"term":"","definition":""}],"toc":[],"sections":[{"h2":"","angle":"","what_to_check":""}],"fxify_angle":"","faqs":[{"q":"","a":""}],"bottom_line":"","competitor_gaps":"","meta_title":"","meta_desc":"","slug":"","geo_angle":"","aeo_question":""}';
   try {
-    var text  = await v2Fetch(prompt, 3500);
+    var text  = await v2Fetch(prompt, 4000);
     var brief = parseJSON(text);
     // Save to Supabase + ClickUp
     var briefData = {
@@ -9802,15 +9802,35 @@ function parseJSON(text) {
   if (!text) throw new Error('No text to parse');
   // Strip markdown code fences
   var clean = text.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
-  // Find first { and last }
   var start = clean.indexOf('{');
   var end   = clean.lastIndexOf('}');
   if (start < 0 || end < 0) throw new Error('No JSON object found in response');
+  var jsonStr = clean.slice(start, end + 1);
+
+  // Try clean parse first
+  try { return JSON.parse(jsonStr); } catch(e) { /* truncated — try recovery */ }
+
+  // Recovery: truncated JSON — find the last complete object in an array
+  // and close the structure cleanly
   try {
-    return JSON.parse(clean.slice(start, end + 1));
-  } catch(e) {
-    throw new Error('JSON parse failed: ' + e.message + ' | Preview: ' + clean.substring(0, 100));
-  }
+    // Find the key array (topics, keywords, sections etc)
+    var arrMatch = jsonStr.match(/"(topics|keywords|sections|faqs|checks|results|items)"\s*:\s*\[/);
+    if (arrMatch) {
+      var arrKey = arrMatch[1];
+      var arrStart = jsonStr.indexOf(arrMatch[0]) + arrMatch[0].length;
+      // Find last complete object: last '}'  before truncation
+      var lastComplete = jsonStr.lastIndexOf('},', jsonStr.length);
+      if (lastComplete < 0) lastComplete = jsonStr.lastIndexOf('}');
+      if (lastComplete > arrStart) {
+        var recovered = jsonStr.slice(0, lastComplete + 1) + ']}';
+        var result = JSON.parse(recovered);
+        console.warn('[parseJSON] Recovered truncated JSON — partial', arrKey, 'array');
+        return result;
+      }
+    }
+  } catch(e2) { /* recovery failed */ }
+
+  throw new Error('JSON parse failed: ' + e.message + ' | Preview: ' + clean.substring(0, 100));
 }
 
 // Competitor analysis page loader
