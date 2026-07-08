@@ -5221,9 +5221,9 @@ async function loadAnalytics() {
   var totalWc  = arts.reduce(function(s,a){ return s + (a.word_count||0); }, 0);
   var avgWc    = total ? Math.round(totalWc / total) : 0;
 
-  set('an-total', total);
-  set('an-live',  live);
-  set('an-wc',    avgWc ? avgWc.toLocaleString() + ' words' : '—');
+  set('an-published', total || '—');
+  set('an-live',      live  || '—');
+  set('an-wc',        avgWc ? avgWc.toLocaleString() + ' words' : '—');
 
   // ── By writer — merge ClickUp + Supabase ───────────────────────────────
   var byWriter = {};
@@ -5311,10 +5311,7 @@ async function loadAnalytics() {
     var review   = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('review')||s.includes('approval'); }).length;
     var liveCnt  = blogTasks.filter(function(t){ var s=(t.status&&t.status.status||'').toLowerCase(); return s.includes('live')||s.includes('publish'); }).length;
     // cu-st-* IDs are on the pipeline page, not analytics
-    var pubCount = (typeof allArticles !== 'undefined' && allArticles) ? allArticles.length : 0;
-    set('an-published', pubCount || '—');
-    set('an-art-count', pubCount || '—');
-    set('an-pipe-count', blogTasks.length + (typeof videoTasks !== 'undefined' ? videoTasks.length : 0));
+    set('an-pipe-count', blogTasks.length + videoTasks.length);
 
     // Velocity: average days per stage
     var velocityHtml = '<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(160px,1fr));gap:12px;">';
