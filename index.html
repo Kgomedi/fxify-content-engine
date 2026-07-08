@@ -1146,14 +1146,7 @@ tr:last-child td{border-bottom:none;}
           </table>
         </div>
 
-        <!-- KEYWORD TRACKING -->
-        <div class="shead" style="margin-bottom:10px;">Keyword rank tracking</div>
-        <div id="an-keywords" style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-bottom:24px;">
-          <p style="color:var(--text3);font-size:12px;margin-bottom:12px;">Keywords tracked after running Keyword Analysis. Results persist here across sessions.</p>
-          <div id="an-kw-tracked" style="display:flex;flex-direction:column;gap:8px;">
-            <p style="font-size:12px;color:var(--muted);">No tracked keywords yet. Run a keyword analysis to start tracking.</p>
-          </div>
-        </div>
+        
 
       id="a-writers" class="pg">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
@@ -4394,14 +4387,14 @@ async function scrapePublishedArticles(listId, countId) {
       }
     }
 
-    if (count) count.textContent = allLinks.length;
+    if (count && !silent) count.textContent = allLinks.length;
 
     if (!allLinks.length) {
-      list.innerHTML = '<p class="pempty">No articles found. Try again or check Firecrawl key.</p>';
+      if (list) list.innerHTML = '<p class="pempty">No articles found. Try again or check Firecrawl key.</p>';
       return;
     }
 
-    list.innerHTML = allLinks.map(function(a) {
+    if (list) list.innerHTML = allLinks.map(function(a) {
       return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">' +
         '<a href="' + a.url + '" target="_blank" style="font-size:13px;color:var(--teal);text-decoration:none;">' + a.title + '</a>' +
         '<span style="font-size:11px;color:var(--text3);">' + (a.url.split('/blog/')[1] || '').replace(/\/$/,'') + '</span>' +
@@ -4409,7 +4402,7 @@ async function scrapePublishedArticles(listId, countId) {
     }).join('');
 
   } catch(e) {
-    list.innerHTML = '<p class="pempty" style="color:var(--urgent);">Error: ' + e.message + '</p>';
+    if (list) list.innerHTML = '<p class="pempty" style="color:var(--urgent);">Error: ' + e.message + '</p>';
     console.error('[Scrape] scrapePublishedArticles failed:', e);
   }
 }
@@ -5715,7 +5708,10 @@ function renderYouTubeDiscovery(topics, signals) {
       '<div class="card" style="border-left:3px solid '+sc+';cursor:default;margin-bottom:10px;" id="yt-card-'+i+'">' +
         '<div class="cbody">' +
           '<div class="ctop">' +
-            '<p class="ctitle" style="font-size:14px;font-weight:600;">' + t.title + '</p>' +
+            '<div style="display:flex;align-items:flex-start;gap:6px;">' +
+              '<p class="ctitle" style="font-size:14px;font-weight:600;flex:1;">' + t.title + '</p>' +
+              '<button class="btn btn-s" style="font-size:10px;flex-shrink:0;" onclick="v2Copy(' + JSON.stringify(t.title||'') + ', \'Title copied\')">Copy</button>' +
+            '</div>' +
             '<div style="text-align:center;flex-shrink:0;">' +
               '<p style="font-size:20px;font-weight:800;color:'+sc+';line-height:1;">' + (t.score||'—') + '</p>' +
               '<p style="font-size:9px;color:var(--text3);">score</p>' +
@@ -5840,7 +5836,7 @@ function renderYTSEOPackage(pkg, topic) {
         (pkg.title_options||[]).map(function(t, i){
           return '<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;padding:6px 0;border-bottom:1px solid rgba(255,255,255,.04);">' +
             '<p style="font-size:13px;color:var(--border2);">' + t + '</p>' +
-            '<button class="btn btn-s" style="font-size:10px;" onclick="navigator.clipboard.writeText(\''+t.replace(/'/g,"\\'")+'\')" >Copy</button>' +
+            '<button class="btn btn-s" style="font-size:10px;" onclick="v2Copy(\''+t.replace(/'/g,"\\'")+'\', \'Copied\')" >Copy</button>' +
           '</div>';
         }).join('') +
       '</div>' +
@@ -5860,7 +5856,7 @@ function renderYTSEOPackage(pkg, topic) {
         return '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
             '<p style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;">'+section+'</p>' +
-            '<button class="btn btn-s" style="font-size:10px;" onclick="navigator.clipboard.writeText('+JSON.stringify(copyVal||'')+')" >Copy</button>' +
+            '<button class="btn btn-s" style="font-size:10px;" onclick="v2Copy('+JSON.stringify(copyVal||'')+', \'Copied\')" >Copy</button>' +
           '</div>' +
           '<p style="font-size:13px;color:var(--text2);line-height:1.65;white-space:pre-wrap;'+(mono?'font-family:monospace;font-size:12px;':'')+'">'+val+'</p>' +
         '</div>';
@@ -6349,8 +6345,9 @@ function generateOutline() {
       if (editor.innerHTML.trim().length < 100) {
         editor.innerHTML = html;
       } else {
-        navigator.clipboard.writeText(headings.join('\n')).then(function() {
-          v2Toast('Outline copied — paste into article ✓', 'success');
+        v2Copy(headings.join('\n'), 'Outline copied');
+          (function() {
+          var _dummy = 'Outline copied — paste into article ✓', 'success');
         });
       }
     } catch(e) { v2Toast('Outline failed: ' + e.message, 'error'); }
@@ -6557,6 +6554,31 @@ function v2Toast(msg, type) {
   }
 }
 window.v2Toast = v2Toast;
+
+// ── GLOBAL COPY HELPER — works on HTTP + HTTPS + all browsers ────────────
+function v2Copy(text, label) {
+  label = label || 'Copied';
+  function fallback(t) {
+    var ta = document.createElement('textarea');
+    ta.value = t;
+    ta.style.cssText = 'position:fixed;top:-9999px;left:-9999px;opacity:0;';
+    document.body.appendChild(ta);
+    ta.focus(); ta.select();
+    try {
+      var ok = document.execCommand('copy');
+      v2Toast(ok ? label + ' ✓' : 'Copy failed — select and copy manually');
+    } catch(e) { v2Toast('Copy failed — select and copy manually'); }
+    document.body.removeChild(ta);
+  }
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text)
+      .then(function(){ v2Toast(label + ' ✓'); })
+      .catch(function(){ fallback(text); });
+  } else {
+    fallback(text);
+  }
+}
+window.v2Copy = v2Copy;
 
 
 // ── V2 ENGINE CONFIG ─────────────────────────────────────────────────────
@@ -7409,7 +7431,10 @@ async function renderTopicGrid(topics, isStub, publishedCount) {
 
         // Search title (H1)
         '<p class="ci-title-label seo">H1 · Search Title</p>' +
-        '<p class="ci-search-title">' + (t.title || 'Untitled') + '</p>' +
+        '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">' +
+          '<p class="ci-search-title" style="margin-bottom:0;flex:1;">' + (t.title || 'Untitled') + '</p>' +
+          '<button class="btn btn-s" style="font-size:10px;flex-shrink:0;margin-top:2px;" onclick="v2Copy(' + JSON.stringify(t.title||'') + ', \'H1 copied\')">Copy</button>' +
+        '</div>' +
 
         // Hook title (social/intro)
         (t.hook_title ?
@@ -7494,6 +7519,7 @@ async function renderTopicGrid(topics, isStub, publishedCount) {
     }
   } catch(e) {}
 }
+window.renderTopicGrid = renderTopicGrid;
 
 
 window.handleTopicClick = function handleTopicClick(idx) {
@@ -7778,7 +7804,7 @@ async function runBriefResearch(topicObj) {
     'CATEGORY: '+cat+'\n\n'+
     extraContext+
 
-    'FXIFY BRAND FACTS (verified — use these exact figures):\n- Broker-backed since 2023 via FXPIG™ (established forex broker since 2010)\n- Programs: One Phase (no consistency rule, payout on demand), Two Phase Standard (trailing drawdown), Two Phase Classic (static drawdown), Three Phase Challenge (lowest assessment fee), Instant Funding (immediate access, two tiers), Lightning Challenge\n- Performance split up to 90%\n- $40M+ paid out to 250K+ traders\n- Daily drawdown limit: 5% | Max drawdown: 10%\n- All-In or Raw pricing model — trader chooses at checkout\n- First payout on demand across all evaluation programs\n- Maximum account size: $400,000 from a single account on day one of funded stage\n- Public demo account for spread verification\n- Platform support: MT4, MT5, DXTrade, TradingView\n- Ranked #1 Best Instant Funding Prop Firm on propfirms.com (83/100)\n\nTHE FXIFY VOICE — study these real published sentences and write at this level:\n\nOPENING: Reader sees: You are about to buy your first prop firm challenge. You have seen the ads.\n→ Opens with the reader\'s exact situation. No preamble. No question. No stat.\n\nSPECIFICITY: Cite exact figures and dates. Instant Funding Lite starts at $19 for a $2,500 account.\n→ Exact figures. Exact dates. Comparative context. Never vague.\n\nTRADER LOGIC: Explain the consequence to the trader\'s P&L, not the rule in abstract.\n\nBANNED PHRASES — output fails if any appear:\n- delve into, dive into, explore\n- it\'s worth noting, it is important to\n- in today\'s landscape, in the world of trading\n- FXIFY offers competitive conditions (cite the actual condition)\n- Sentences over 25 words\n- Paragraphs over 3 sentences\n- Em-dashes (use comma or new sentence)\n- profit split (always: performance split)\n\nWRITING RULES:\n1. One idea per sentence. Full stop. Next sentence.\n2. Write to a trader who already trades.\n3. Every FXIFY mention cites a specific verifiable fact.\n4. ESL Grade 5-6 reading level. Short words. Short sentences.\n5. Active voice only.\n6. Numbers are specific: 20 to 50 pips, not significant slippage.\n7. The hook is a scene the reader recognises from their own trading life.'
+    'FXIFY BRAND FACTS (verified — use these exact figures):\n- Broker-backed since 2023 via FXPIG™ (established forex broker since 2010)\n- Programs: One Phase (no consistency rule, payout on demand), Two Phase Standard (trailing drawdown), Two Phase Classic (static drawdown), Three Phase Challenge (lowest assessment fee), Instant Funding (immediate access, two tiers), Lightning Challenge\n- Performance split up to 90%\n- $40M+ paid out to 250K+ traders\n- Daily drawdown limit: 5% | Max drawdown: 10%\n- All-In or Raw pricing model — trader chooses at checkout\n- First payout on demand across all evaluation programs\n- Maximum account size: $400,000 from a single account on day one of funded stage\n- Public demo account for spread verification\n- Platform support: MT4, MT5, DXTrade, TradingView\n- Ranked #1 Best Instant Funding Prop Firm on propfirms.com (83/100)\n\nTHE FXIFY VOICE — study these real published sentences and write at this level:\n\nOPENING: Reader sees: You are about to buy your first prop firm challenge. You have seen the ads.\n→ Opens with the reader\'s exact situation. No preamble. No question. No stat.\n\nSPECIFICITY: Cite exact figures and dates. Instant Funding Lite starts at $19 for a $2,500 account.\n→ Exact figures. Exact dates. Comparative context. Never vague.\n\nTRADER LOGIC: Explain the consequence to the trader\'s P&L, not the rule in abstract.\n\nBANNED PHRASES — output fails if any appear:\n- delve into, dive into, explore\n- it\'s worth noting, it is important to\n- in today\'s landscape, in the world of trading\n- FXIFY offers competitive conditions (cite the actual condition)\n- Sentences over 25 words\n- Paragraphs over 3 sentences\n- Em-dashes (use comma or new sentence)\n- profit split (always: performance split)\n\nWRITING RULES:\n1. One idea per sentence. Full stop. Next sentence.\n2. Write to a trader who already trades.\n3. Every FXIFY mention cites a specific verifiable fact.\n4. ESL Grade 5-6 reading level. Short words. Short sentences.\n5. Active voice only.\n6. Numbers are specific: 20 to 50 pips, not significant slippage.\n7. The hook is a scene the reader recognises from their own trading life.' +
 
     '\n\nFXIFY BLOG FORMAT — this is the structure every article follows:\n\n'+
 
@@ -8028,7 +8054,8 @@ function renderBriefOutput(brief, topicFallback, writer) {
 
   var copyBtn = document.getElementById('v2-copy-brief-btn');
   if (copyBtn) copyBtn.addEventListener('click', function(){
-    navigator.clipboard.writeText(copyText).then(function(){ v2Toast('Brief copied to clipboard ✓'); });
+    v2Copy(copyText, 'Brief copied');
+    (function(){ v2Toast('Brief copied to clipboard ✓'); });
   });
 
   var metaBtn = document.getElementById('v2-copy-meta-btn');
@@ -8041,7 +8068,7 @@ function renderBriefOutput(brief, topicFallback, writer) {
       'AEO Snippet: '     + (brief.aeo_question  || ''),
       'GEO Angle: '       + (brief.geo_angle     || ''),
     ].join('\n');
-    navigator.clipboard.writeText(meta).then(function(){ v2Toast('SEO meta copied ✓'); });
+    v2Copy(meta, 'SEO meta copied');
   });
 }
 
@@ -8159,6 +8186,47 @@ function v2WireCustomBtn() {
     if (e.target.closest('#cu-sync-btn'))        { cuSyncFromClickUp(); return; }
     if (e.target.closest('#cu-export-btn'))      { cuExportCSV(); return; }
     if (e.target.closest('#an-refresh-btn'))     { loadAnalytics(); return; }
+
+    // ── Topic card handlers ──────────────────────────────────────────────
+    var openRefineBtn = e.target.closest('.v2-open-refine-btn');
+    if (openRefineBtn) {
+      var ridx = parseInt(openRefineBtn.dataset.idx);
+      var panel = document.getElementById('v2-refine-' + ridx);
+      if (panel) {
+        var isOpen = panel.style.display !== 'none';
+        document.querySelectorAll('[id^="v2-refine-"]').forEach(function(p){ if(!p.id.includes('loading')) p.style.display='none'; });
+        document.querySelectorAll('.v2-open-refine-btn').forEach(function(b){ b.textContent='Refine'; });
+        if (!isOpen) { panel.style.display='block'; openRefineBtn.textContent='✕ Close'; }
+      }
+      return;
+    }
+    var useSeedBtn = e.target.closest('.kw-use-seed-btn');
+    if (useSeedBtn) {
+      var seedEl = document.getElementById('v2-seed');
+      if (seedEl) seedEl.value = useSeedBtn.dataset.kw || '';
+      var genLink = document.querySelector('.nlink[data-pg="a-generate"]');
+      if (genLink) genLink.click();
+      v2Toast('Keyword seeded — hit Find Gaps');
+      return;
+    }
+    var serpBtn = e.target.closest('.v2-serp-btn');
+    if (serpBtn) { if (serpBtn.dataset.kw) runSERPIntelligence(serpBtn.dataset.kw); return; }
+    var bookmarkBtn = e.target.closest('.v2-bookmark-btn');
+    if (bookmarkBtn) {
+      var bidx = parseInt(bookmarkBtn.dataset.idx);
+      var btopic = window._v2Topics && window._v2Topics[bidx];
+      if (btopic) {
+        bookmarkTopic(btopic, (document.getElementById('v2-seed')||{}).value||'');
+        bookmarkBtn.textContent='★'; bookmarkBtn.style.color='var(--amber)';
+        bookmarkBtn.style.background='rgba(245,158,11,.15)'; bookmarkBtn.disabled=true;
+      }
+      return;
+    }
+    var presetBtn = e.target.closest('.v2-refine-preset-btn');
+    if (presetBtn) { refineTopicPreset(parseInt(presetBtn.dataset.idx), presetBtn.dataset.preset); return; }
+    var customBtn = e.target.closest('.v2-refine-custom-btn');
+    if (customBtn) { refineTopicCustom(parseInt(customBtn.dataset.idx)); return; }
+
     if (e.target.closest('#comp-run-btn') || e.target.closest('#comp-run-empty-btn')) { runFullCompetitorAnalysis(); return; }
     if (e.target.closest('#comp-refresh-btn'))   { loadCompetitorAnalysis(); return; }
 
@@ -8333,75 +8401,6 @@ function v2WireCustomBtn() {
       runYouTubeDiscovery();
       return;
     }
-    if (e.target.closest('#kw-run-btn')) {
-      runKeywordAnalysis();
-      return;
-    }
-    // Topic refine panel toggle
-    var openRefineBtn = e.target.closest('.v2-open-refine-btn');
-    if (openRefineBtn) {
-      var ridx = parseInt(openRefineBtn.dataset.idx);
-      var panel = document.getElementById('v2-refine-' + ridx);
-      if (panel) {
-        var isOpen = panel.style.display !== 'none';
-        document.querySelectorAll('[id^="v2-refine-"]').forEach(function(p){ if(!p.id.includes('loading')) p.style.display='none'; });
-        document.querySelectorAll('.v2-open-refine-btn').forEach(function(b){ b.textContent='✏ Refine'; });
-        if (!isOpen) { panel.style.display='block'; openRefineBtn.textContent='✕ Close'; }
-      }
-      return;
-    }
-    // Use keyword as seed in Blog Topics
-    var useSeedBtn = e.target.closest('.kw-use-seed-btn');
-    if (useSeedBtn) {
-      var kw = useSeedBtn.dataset.kw;
-      var seedEl = document.getElementById('v2-seed');
-      if (seedEl) seedEl.value = kw;
-      // Navigate to Content Intelligence
-      var genLink = document.querySelector('.nlink[data-pg="a-generate"]');
-      if (genLink) genLink.click();
-      v2Toast('Seed filled: "' + kw + '" — hit Find topic gaps →');
-      return;
-    }
-    // SERP Intelligence
-    var serpBtn = e.target.closest('.v2-serp-btn');
-    if (serpBtn) {
-      var kw = serpBtn.dataset.kw;
-      if (kw) runSERPIntelligence(kw);
-      return;
-    }
-    // Bookmark topic
-    var bookmarkBtn = e.target.closest('.v2-bookmark-btn');
-    if (bookmarkBtn) {
-      var bidx = parseInt(bookmarkBtn.dataset.idx);
-      var btopic = window._v2Topics && window._v2Topics[bidx];
-      var bseed  = (document.getElementById('v2-seed')||{}).value || '';
-      if (btopic) {
-        bookmarkTopic(btopic, bseed);
-        bookmarkBtn.textContent = '★';
-        bookmarkBtn.style.color = 'var(--amber)';
-        bookmarkBtn.style.background = 'rgba(245,158,11,.15)';
-        bookmarkBtn.style.border = '1px solid rgba(245,158,11,.3)';
-        bookmarkBtn.title = 'Bookmarked ✓';
-        bookmarkBtn.disabled = true;
-      }
-      return;
-    }
-    // Topic refine preset chips
-    var presetBtn = e.target.closest('.v2-refine-preset-btn');
-    if (presetBtn) {
-      refineTopicPreset(parseInt(presetBtn.dataset.idx), presetBtn.dataset.preset);
-      return;
-    }
-    // Topic custom refine apply
-    var customBtn = e.target.closest('.v2-refine-custom-btn');
-    if (customBtn) {
-      refineTopicCustom(parseInt(customBtn.dataset.idx));
-      return;
-    }
-    if (e.target.closest('#an-refresh-btn')) {
-      loadAnalytics();
-      return;
-    }
     if (e.target.closest('#comp-run-btn')) {
       runFullCompetitorAnalysis();
       return;
@@ -8541,8 +8540,8 @@ async function openWriterBriefModal(task) {
   document.getElementById('wb-close').addEventListener('click', function(){ overlay.remove(); });
   document.getElementById('wb-copy-btn').addEventListener('click', function() {
     var text = buildBriefText(brief, task, cfVals);
-    navigator.clipboard.writeText(text).then(function(){
-      toast('Brief copied — paste into Google Docs ✓');
+    v2Copy(text, 'Brief copied — paste into Google Docs');
+      (function(){
       var btn = document.getElementById('wb-copy-btn');
       if (btn) { btn.textContent = '✓ Copied!'; setTimeout(function(){ btn.textContent = '📋 Copy brief for Google Docs'; }, 2000); }
     }).catch(function(){
@@ -10190,7 +10189,8 @@ function renderCICompetitorWatch(result, firms) {
             (t.fxify_angle ? '<p style="font-size:11px;color:var(--teal);">FXIFY angle: ' + t.fxify_angle + '</p>' : '') +
           '</div>' +
           '<div style="flex-shrink:0;">' +
-            (t.suggested_title ? '<button class="btn btn-p btn-s" onclick="document.getElementById(\'v2-seed\').value=' + JSON.stringify(t.suggested_title).replace(/"/g,'&quot;') + ';document.querySelector(\'[data-tab=blog]\').click()" style="font-size:11px;">Use as seed →</button>' : '') +
+            (t.suggested_title ? '<button class="btn btn-s" style="font-size:10px;" onclick="v2Copy(' + JSON.stringify(t.suggested_title||'') + ', \'Title copied\')">Copy title</button> ' +
+            '<button class="btn btn-p btn-s" onclick="document.getElementById(\'v2-seed\').value=' + JSON.stringify(t.suggested_title).replace(/"/g,'&quot;') + ';document.querySelector(\'[data-tab=blog]\').click()" style="font-size:11px;">Use as seed →</button>' : '') +
           '</div>' +
         '</div>' +
       '</div>';
@@ -10280,32 +10280,67 @@ async function runSERPIntelligence(keyword) {
       return (i+1) + '. ' + r.title + (r.url ? ' | ' + r.url.replace(/https?:\/\/(www\.)?/,'').split('/')[0] : '') + (r.description ? '\n   ' + r.description.substring(0,100) : '');
     }).join('\n');
 
+    // Pull Firecrawl content on top 3 results for deeper gap analysis
+    var firecrawlData = '';
+    if (serpData.length) {
+      var topUrls = serpData.slice(0,3).map(function(r){ return r.url; }).filter(Boolean);
+      var fcResults = await Promise.allSettled(topUrls.map(function(url){
+        return fetch('https://api.firecrawl.dev/v1/scrape', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
+          body: JSON.stringify({ url: url, formats: ['markdown'], onlyMainContent: true })
+        }).then(function(r){ return r.json(); })
+        .then(function(d){ return d.data && d.data.markdown ? d.data.markdown.substring(0,600) : ''; })
+        .catch(function(){ return ''; });
+      }));
+      firecrawlData = fcResults
+        .filter(function(r){ return r.status === 'fulfilled' && r.value; })
+        .map(function(r, i){ return 'RESULT ' + (i+1) + ' CONTENT:\n' + r.value; })
+        .join('\n\n');
+    }
+
     var prompt =
-      'You are a content strategist for FXIFY prop firm. Analyse these top Google results for "' + keyword + '".\n\n' +
-      'SERP DATA:\n' + (serpSummary || 'No live SERP data — use training knowledge for this keyword.') + '\n\n' +
-      'Analyse:\n' +
-      '1. TITLE FORMULA — what pattern do all top results follow? (e.g. "Best X for Y in 2026", "How to X without Y")\n' +
-      '2. CONTENT ANGLE — what argument do they all make? What do they ALL skip?\n' +
-      '3. PROP FIRM PRESENCE — which prop firms rank? What exactly do they cover?\n' +
-      '4. FXIFY GAP — the one angle NO competitor covers that FXIFY can own completely\n' +
-      '5. WINNING TITLE — write the exact H1 FXIFY should use to outrank these\n' +
-      '6. YOUTUBE ANGLE — what video title would dominate for this keyword\n' +
-      '7. AD ANGLE — what Google ad headline would convert for this keyword\n\n' +
+      'You are an SEO content gap analyst for FXIFY prop firm. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
+      'EDITORIAL RULE: Answer what traders search for first. FXIFY enters as the best answer, not the opener.\n\n' +
+      'KEYWORD: "' + keyword + '"\n\n' +
+      'TOP RANKING PAGES:\n' + (serpSummary || 'No live SERP — use training knowledge.') + '\n\n' +
+      (firecrawlData ? 'SCRAPED CONTENT FROM TOP RESULTS:\n' + firecrawlData + '\n\n' : '') +
+      'ANALYSE:\n' +
+      '1. TITLE FORMULA — exact pattern top results use. Match one of:\n' +
+      '   · Best [X] for [Y] in 2026\n' +
+      '   · [Firm A] vs [Firm B]: [specific comparison]\n' +
+      '   · How to [outcome] without [pain point]\n' +
+      '   · [N] Prop Firms With [specific feature] in 2026\n' +
+      '   · [Topic] Explained: [what trader learns]\n' +
+      '2. WHAT THEY ALL COVER — topics every ranking page includes (saturated)\n' +
+      '3. WHAT NONE COVER — the specific gap no ranking page addresses\n' +
+      '4. PROP FIRMS RANKING — which firms appear, what angle they use, where they fall short\n' +
+      '5. FXIFY GAP — the exact angle FXIFY can own. Must name a specific FXIFY program and a specific fact.\n' +
+      '6. WINNING SEARCH TITLE — keyword-first H1, under 65 chars, traders search this exact phrase\n' +
+      '7. HOOK TITLE — brand voice statement for article intro + social. Different from H1.\n' +
+      '8. YOUTUBE TITLE — searchable: Firm vs Firm OR How to X OR Top N for Y. Under 60 chars.\n\n' +
+      'FXIFY FACTS (use exactly — never fabricate):\n' +
+      '- One Phase: 10% target, static drawdown, no consistency rule, payout on demand\n' +
+      '- Two Phase Classic: static drawdown, 25% consistency rule on funded stage only\n' +
+      '- Two Phase Standard: trailing drawdown, no consistency rule\n' +
+      '- Instant Funding Lite: $19, $2,500 live account, no evaluation\n' +
+      '- Broker-backed by FXPIG since 2010. $40M+ paid. 90% performance split.\n\n' +
       'Return ONLY valid JSON:\n' +
       '{"keyword":"' + keyword + '",' +
-      '"title_formula":"the pattern all top results follow",' +
-      '"what_they_all_cover":["topic1","topic2","topic3"],' +
-      '"what_none_cover":["gap1","gap2","gap3"],' +
-      '"prop_firms_ranking":[{"firm":"name","angle":"what they cover","weakness":"what they miss"}],' +
-      '"fxify_gap":"the specific angle FXIFY owns",' +
-      '"winning_title":"exact H1 for FXIFY to rank #1",' +
-      '"winning_meta":"155 char meta description",' +
-      '"youtube_angle":"exact YouTube video title",' +
+      '"title_formula":"exact pattern from top results — name the pattern type",' +
+      '"what_they_all_cover":["specific topic 1","specific topic 2","specific topic 3"],' +
+      '"what_none_cover":["specific gap 1 — be precise","gap 2","gap 3"],' +
+      '"prop_firms_ranking":[{"firm":"name","angle":"what they cover specifically","weakness":"exact gap in their coverage"}],' +
+      '"fxify_gap":"specific FXIFY angle — name the program and the fact",' +
+      '"winning_title":"SEARCH TITLE — keyword-first, under 65 chars, exact trader search phrase",' +
+      '"hook_title":"HOOK TITLE — brand voice statement, under 65 chars, for article intro",' +
+      '"winning_meta":"Under 155 chars. Opens with keyword. Answers search intent directly.",' +
+      '"youtube_title":"Searchable YouTube title — Firm vs Firm OR How to X OR Top N for Y",' +
       '"ad_headline":"30 char Google Ads headline",' +
       '"ad_description":"90 char Google Ads description",' +
       '"opportunity_score":85}';
 
-    var text   = await v2Fetch(prompt, 3000);
+    var text   = await v2Fetch(prompt, 4000);
     var result = parseJSON(text);
     renderSERPIntelligence(result, serpData);
 
@@ -10319,58 +10354,102 @@ function renderSERPIntelligence(result, serpData) {
   var output = document.getElementById('v2-brief-output');
   if (!output) return;
 
-  var scoreColor = result.opportunity_score >= 75 ? 'var(--green)' : result.opportunity_score >= 50 ? 'var(--amber)' : 'var(--urgent)';
+  var score = result.opportunity_score || 0;
+  var scoreColor = score >= 75 ? 'var(--green)' : score >= 50 ? 'var(--amber)' : 'var(--urgent)';
 
   var html =
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">' +
-      '<p style="font-size:14px;font-weight:700;color:var(--text);">SERP Intelligence — "' + result.keyword + '"</p>' +
-      '<span style="font-size:18px;font-weight:800;color:' + scoreColor + ';font-family:var(--mono);">' + result.opportunity_score + '</span>' +
+    // Header — keyword + score + back button
+    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">' +
+      '<div style="display:flex;align-items:center;gap:10px;">' +
+        (window._v2Topics ? '<button class="btn btn-s" onclick="window.renderTopicGrid(window._v2Topics,false,0)">← Back to gaps</button>' : '') +
+        '<p style="font-size:14px;font-weight:700;color:var(--text);">SERP: &ldquo;' + (result.keyword||'') + '&rdquo;</p>' +
+      '</div>' +
+      '<span style="font-size:22px;font-weight:800;color:' + scoreColor + ';font-family:var(--mono);">' + score + '</span>' +
     '</div>' +
 
-    // What's working
-    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:16px;">' +
+    // Title formula + gap — 2 col
+    '<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px;">' +
       '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">' +
-        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Title formula in top 5</p>' +
-        '<p style="font-size:13px;color:var(--text);font-style:italic;">"' + result.title_formula + '"</p>' +
+        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:6px;">Title formula in top results</p>' +
+        '<p style="font-size:13px;color:var(--text);font-style:italic;">&ldquo;' + (result.title_formula||'') + '&rdquo;</p>' +
       '</div>' +
-      '<div style="background:var(--urgentL);border:1px solid rgba(239,68,68,.15);border-radius:var(--rl);padding:14px 16px;">' +
-        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--urgent);margin-bottom:8px;">Gap — none of them cover</p>' +
+      '<div style="background:rgba(239,68,68,.07);border:1px solid rgba(239,68,68,.15);border-radius:var(--rl);padding:14px 16px;">' +
+        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--urgent);margin-bottom:6px;">Gap — none cover this</p>' +
         (result.what_none_cover||[]).map(function(g){ return '<p style="font-size:12px;color:var(--text2);padding:2px 0;">· ' + g + '</p>'; }).join('') +
       '</div>' +
     '</div>' +
 
+    // Winning titles
+    '<div style="background:rgba(37,99,235,.08);border:1px solid rgba(37,99,235,.2);border-radius:var(--rl);padding:14px 16px;margin-bottom:14px;">' +
+      '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:8px;">Winning titles for FXIFY</p>' +
+      (result.winning_title ?
+        '<p style="font-size:10px;font-weight:700;color:var(--teal);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;">H1 · Search Title</p>' +
+        '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;">' +
+          '<p style="font-size:14px;font-weight:600;color:var(--text);flex:1;">' + result.winning_title + '</p>' +
+          '<button class="btn btn-s" style="font-size:10px;flex-shrink:0;" onclick="v2Copy(' + JSON.stringify(result.winning_title) + ', \'H1 copied\')">Copy H1</button>' +
+        '</div>'
+      : '') +
+      (result.hook_title ?
+        '<p style="font-size:10px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;">Hook · Intro + Social</p>' +
+        '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;">' +
+          '<p style="font-size:13px;color:var(--text2);font-style:italic;flex:1;">' + result.hook_title + '</p>' +
+          '<button class="btn btn-s" style="font-size:10px;flex-shrink:0;" onclick="v2Copy(' + JSON.stringify(result.hook_title) + ', \'Hook copied\')">Copy</button>' +
+        '</div>'
+      : '') +
+      (result.winning_meta ?
+        '<p style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;">Meta description</p>' +
+        '<p style="font-size:12px;color:var(--text3);">' + result.winning_meta + '</p>'
+      : '') +
+    '</div>' +
+
+    // FXIFY gap
+    (result.fxify_gap ?
+      '<div style="background:rgba(107,63,160,.1);border:1px solid rgba(107,63,160,.2);border-radius:var(--rl);padding:14px 16px;margin-bottom:14px;">' +
+        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--brand);margin-bottom:6px;">⚡ FXIFY angle</p>' +
+        '<p style="font-size:13px;color:var(--text);">' + result.fxify_gap + '</p>' +
+      '</div>'
+    : '') +
+
+    // YouTube + Ad
+    (result.youtube_title || result.ad_headline ?
+      '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">' +
+        (result.youtube_title ?
+          '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;">' +
+            '<p style="font-size:9px;font-weight:700;color:var(--urgent);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">▶ YouTube title</p>' +
+            '<p style="font-size:12px;color:var(--text2);">' + result.youtube_title + '</p>' +
+          '</div>'
+        : '') +
+        (result.ad_headline ?
+          '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:12px 14px;">' +
+            '<p style="font-size:9px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px;">📣 Ad headline</p>' +
+            '<p style="font-size:12px;color:var(--text2);">' + result.ad_headline + '</p>' +
+            (result.ad_description ? '<p style="font-size:11px;color:var(--text3);margin-top:4px;">' + result.ad_description + '</p>' : '') +
+          '</div>'
+        : '') +
+      '</div>'
+    : '') +
+
     // Prop firms ranking
     (result.prop_firms_ranking && result.prop_firms_ranking.length ?
-      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:12px;">' +
-        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;">Prop firms in top 5</p>' +
+      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:14px;">' +
+        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:10px;">Prop firms ranking for this keyword</p>' +
         result.prop_firms_ranking.map(function(f) {
-          return '<div style="display:flex;gap:12px;padding:6px 0;border-bottom:0.5px solid var(--border);">' +
-            '<p style="font-size:12px;font-weight:600;color:var(--text);min-width:100px;">' + f.firm + '</p>' +
-            '<p style="font-size:12px;color:var(--text2);flex:1;">' + f.angle + '</p>' +
-            '<p style="font-size:11px;color:var(--urgent);">Gap: ' + f.weakness + '</p>' +
+          return '<div style="padding:8px 0;border-bottom:1px solid var(--border);">' +
+            '<p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">' + f.firm + '</p>' +
+            '<p style="font-size:11px;color:var(--text3);">Covers: ' + f.angle + '</p>' +
+            (f.weakness ? '<p style="font-size:11px;color:var(--urgent);">Gap: ' + f.weakness + '</p>' : '') +
           '</div>';
         }).join('') +
-      '</div>' : '') +
+      '</div>'
+    : '') +
 
-    // FXIFY winning angle
-    '<div style="background:var(--tealL);border:1px solid rgba(37,99,235,.2);border-radius:var(--rl);padding:14px 16px;margin-bottom:12px;">' +
-      '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--teal);margin-bottom:6px;">FXIFY wins with</p>' +
-      '<p style="font-size:13px;color:var(--teal);line-height:1.55;">' + result.fxify_gap + '</p>' +
-    '</div>' +
-
-    // Output package
-    '<div style="display:grid;gap:8px;">' +
-      renderSERPRow('Winning H1', result.winning_title, 'var(--text)', true) +
-      renderSERPRow('Meta description', result.winning_meta, 'var(--text2)', false) +
-      renderSERPRow('YouTube title', result.youtube_angle, 'var(--urgent)', false) +
-      renderSERPRow('Google Ads headline', result.ad_headline, 'var(--green)', false) +
-      renderSERPRow('Ad description', result.ad_description, 'var(--text3)', false) +
-    '</div>' +
-
-    // Back button
-    '<div style="margin-top:16px;">' +
-      '<button class="btn btn-s" onclick="if(window._v2Topics) renderTopicGrid(window._v2Topics, false, 0)">← Back to topics</button>' +
-    '</div>';
+    // What they all cover
+    (result.what_they_all_cover && result.what_they_all_cover.length ?
+      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">' +
+        '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Saturated — all results cover this</p>' +
+        result.what_they_all_cover.map(function(t){ return '<p style="font-size:12px;color:var(--muted);padding:2px 0;">· ' + t + '</p>'; }).join('') +
+      '</div>'
+    : '');
 
   output.innerHTML = html;
 }
@@ -10380,7 +10459,7 @@ function renderSERPRow(label, value, color, bold) {
   return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;display:flex;gap:12px;align-items:baseline;">' +
     '<span style="font-size:10px;font-weight:700;color:var(--text3);min-width:120px;flex-shrink:0;">' + label.toUpperCase() + '</span>' +
     '<span style="font-size:' + (bold?'14px':'12px') + ';' + (bold?'font-weight:600;':'') + 'color:' + color + ';flex:1;">' + value + '</span>' +
-    '<button class="btn btn-s" style="font-size:10px;padding:2px 8px;flex-shrink:0;" onclick="navigator.clipboard.writeText(' + JSON.stringify(value) + ')">Copy</button>' +
+    '<button class="btn btn-s" style="font-size:10px;padding:2px 8px;flex-shrink:0;" onclick="v2Copy(' + JSON.stringify(value) + ', \'Copied\')">Copy</button>' +
   '</div>';
 }
 window.renderSERPRow = renderSERPRow;
