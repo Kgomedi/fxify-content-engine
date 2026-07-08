@@ -734,7 +734,7 @@ tr:last-child td{border-bottom:none;}
         <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:20px;">
           <div>
             <div class="pgh">Content Intelligence</div>
-            <p class="pgs" style="margin-bottom:0;">Blog + YouTube, one engine. Research real gaps, cross-pollinate topics, build briefs that convert.</p>
+            <p class="pgs" style="margin-bottom:0;">Find real content gaps — what traders are searching for that FXIFY doesn't have yet. Blog gaps, video gaps, competitor watch.</p>
           </div>
           <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;flex-wrap:wrap;">
             <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);" id="hub-dfs-status">DataForSEO ✓</span>
@@ -809,169 +809,230 @@ tr:last-child td{border-bottom:none;}
           </div>
         </div>
 
+        <!-- TAB NAV -->
         <div style="display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:20px;">
-          <button class="hub-tab active" data-tab="blog" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--bg3);color:var(--teal);">Blog Topics</button>
-          <button class="hub-tab" data-tab="youtube" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">YouTube Topics</button>
-          <button class="hub-tab" data-tab="crosspost" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">Cross-Pollinate <span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></button>
+          <button class="hub-tab active" data-tab="blog" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:var(--bg3);color:var(--teal);">
+            <span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> Blog Gaps
+          </button>
+          <button class="hub-tab" data-tab="youtube" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">
+            <span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> Video Gaps
+          </button>
+          <button class="hub-tab" data-tab="competitors" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">
+            <span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Competitor Watch
+          </button>
+          <button class="hub-tab" data-tab="crosspost" style="padding:6px 16px;border-radius:6px;border:none;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;background:transparent;color:var(--text3);">
+            <span class="ico ico-sm"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Cross-Pollinate
+          </button>
         </div>
 
-        <!-- BLOG TAB -->
+        <!-- ═══════════════════════════════════════════
+             BLOG GAP FINDER
+        ═══════════════════════════════════════════ -->
         <div class="hub-panel active" id="hub-blog">
           <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:12px;">
-            <div class="frow fg">
+
+            <!-- Header -->
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
               <div>
-                <label class="flbl">Seed keyword</label>
-                <input class="finput" id="v2-seed" type="text" placeholder="e.g. prop trading drawdown, how to pass FXIFY"/>
+                <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Blog Gap Finder</p>
+                <p style="font-size:11px;color:var(--text3);line-height:1.5;">Find what traders are searching for that FXIFY doesn't have yet. Evidence-based — not invented topics.</p>
               </div>
-              <div>
-                <label class="flbl">Category</label>
-                <select class="finput" id="v2-cat">
-                  <option>Guides</option>
-                  <option>Explainers</option>
-                  <option>Comparisons</option>
-                  <option>News & Updates</option>
-                  <option>Trading Psychology</option>
-                  <option>Platform Tutorials</option>
-                </select>
-              </div>
-              <div>
-                <label class="flbl">Competitor focus</label>
-                <select class="finput" id="v2-comp-focus">
-                  <option value="all">All 6 competitors</option>
-                  <option value="ftmo">FTMO only</option>
-                  <option value="fundednext">FundedNext only</option>
-                  <option value="apex">Apex only</option>
-                  <option value="topstep">Topstep only</option>
-                  <option value="the5ers">The5ers only</option>
-                  <option value="e8">E8 Funding only</option>
-                </select>
-              </div>
+              <button class="btn btn-p" id="v2-research-btn" style="white-space:nowrap;font-size:12px;gap:6px;">
+                <span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Find Gaps
+              </button>
             </div>
-            <div class="frow fg" style="margin-top:10px;">
+
+            <!-- Inputs row -->
+            <div class="frow fg" style="margin-bottom:12px;">
               <div>
-                <label class="flbl">Target audience</label>
+                <label class="flbl">Keyword or topic</label>
+                <input class="finput" id="v2-seed" type="text" placeholder="e.g. prop firm drawdown, how to pass FXIFY, instant funding"/>
+              </div>
+              <div>
+                <label class="flbl">Trader type</label>
                 <select class="finput" id="v2-audience">
                   <option value="all">All traders</option>
-                  <option value="beginner">Beginner traders</option>
-                  <option value="experienced">Experienced traders</option>
-                  <option value="researcher">Prop firm researchers</option>
-                  <option value="funded">Already funded traders</option>
+                  <option value="beginner">Beginners — new to prop firms</option>
+                  <option value="experienced">Experienced — passed challenges before</option>
+                  <option value="researcher">Researchers — comparing firms</option>
+                  <option value="funded">Funded — managing live accounts</option>
                 </select>
               </div>
               <div>
                 <label class="flbl">Content goal</label>
                 <select class="finput" id="v2-goal">
-                  <option value="rank">Rank for keyword</option>
-                  <option value="authority">Build authority</option>
+                  <option value="rank">Rank on Google</option>
                   <option value="convert">Drive challenge signups</option>
+                  <option value="authority">Build FXIFY authority</option>
                   <option value="retention">Retain funded traders</option>
                 </select>
               </div>
               <div>
-                <label class="flbl">Word count target</label>
+                <label class="flbl">Word count</label>
                 <select class="finput" id="v2-wordcount">
-                  <option value="800">800 words (quick read)</option>
-                  <option value="1200" selected>1200 words (standard)</option>
-                  <option value="2000">2000 words (pillar)</option>
-                  <option value="3000">3000+ words (cornerstone)</option>
+                  <option value="800">800 words — cluster</option>
+                  <option value="1200" selected>1200 words — standard</option>
+                  <option value="2000">2000 words — pillar</option>
+                  <option value="3000">3000 words — cornerstone</option>
                 </select>
               </div>
             </div>
-            <div style="margin-bottom:14px;">
-              <p class="flbl" style="margin-bottom:8px;">Research signals</p>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-dfs" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);">DataForSEO</span> Keyword volumes + KD</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-comp" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--urgentL);color:var(--urgent);border:1px solid rgba(248,113,113,0.2);font-family:var(--mono);">Competitors</span> FTMO / FundedNext / Apex</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-fxify" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--tealL);color:var(--teal);border:1px solid rgba(29,155,240,0.2);font-family:var(--mono);">FXIFY published</span> Dedup check</label>
-              </div>
+
+            <!-- Data source toggles -->
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);">
+              <span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;">Data sources</span>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-dfs" checked style="width:13px;height:13px;accent-color:var(--brand);"> <span id="hub-dfs-status">DataForSEO</span></label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-comp" checked> Competitor research</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-fxify" checked> FXIFY gap check</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-cat"> Category filter</label>
+              <span style="font-size:10px;color:var(--text3);margin-left:auto;">Finds gaps competitors have that FXIFY doesn't · prioritised by volume × opportunity</span>
             </div>
-            <button class="btn btn-p" id="v2-research-btn" style="min-width:200px;"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Find topic gaps →</button>
           </div>
+
+          <!-- Output -->
           <div id="v2-brief-output"></div>
         </div>
 
-        <!-- YOUTUBE TAB -->
+        <!-- ═══════════════════════════════════════════
+             VIDEO GAP FINDER
+        ═══════════════════════════════════════════ -->
         <div class="hub-panel" id="hub-youtube" style="display:none;">
           <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:12px;">
-            <div class="frow fg">
+
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
               <div>
-                <label class="flbl">Seed topic or keyword</label>
-                <input class="finput" id="yt-topic" type="text" placeholder="e.g. prop trading drawdown, how to pass FXIFY challenge"/>
+                <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Video Gap Finder</p>
+                <p style="font-size:11px;color:var(--text3);line-height:1.5;">Find what traders are watching that FXIFY doesn't have on YouTube yet. Searchable titles, proven demand.</p>
+              </div>
+              <button class="btn btn-p" id="ayt-research-btn" style="white-space:nowrap;font-size:12px;gap:6px;">
+                <span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Find Video Gaps
+              </button>
+            </div>
+
+            <div class="frow fg" style="margin-bottom:12px;">
+              <div>
+                <label class="flbl">Topic or keyword</label>
+                <input class="finput" id="yt-topic" type="text" placeholder="e.g. prop firm challenge, FXIFY review, trailing drawdown"/>
               </div>
               <div>
-                <label class="flbl">Video type</label>
+                <label class="flbl">Video format</label>
                 <select class="finput" id="yt-type">
-                  <option>Tutorial / How-to</option>
-                  <option>Market analysis</option>
-                  <option>Prop firm explainer</option>
-                  <option>Trader psychology</option>
-                  <option>News / Update</option>
-                  <option>Challenge walkthrough</option>
+                  <option value="long">Long-form (5–15 mins)</option>
+                  <option value="short">Short-form (15–60 secs)</option>
+                  <option value="both">Both formats</option>
                 </select>
               </div>
               <div>
-                <label class="flbl">Format</label>
-                <div style="display:flex;gap:6px;margin-top:6px;">
-                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 12px;flex:1;justify-content:center;">
-                    <input type="radio" name="yt-format" value="short" style="accent-color:var(--teal);"> 
-                    <span>Short<br><span style="font-size:10px;color:var(--text3);">&lt;60s · Hooks, tips</span></span>
-                  </label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 12px;flex:1;justify-content:center;">
-                    <input type="radio" name="yt-format" value="long" checked style="accent-color:var(--teal);">
-                    <span>Long<br><span style="font-size:10px;color:var(--text3);">5–15min · Deep dives</span></span>
-                  </label>
-                  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--text2);cursor:pointer;background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:7px 12px;flex:1;justify-content:center;">
-                    <input type="radio" name="yt-format" value="both" style="accent-color:var(--teal);">
-                    <span>Both<br><span style="font-size:10px;color:var(--text3);">Ideas for both</span></span>
-                  </label>
-                </div>
+                <label class="flbl">Competitor focus</label>
+                <select class="finput" id="yt-comp-focus">
+                  <option value="all">All competitors</option>
+                  <option value="ftmo">FTMO channel</option>
+                  <option value="fundednext">FundedNext channel</option>
+                  <option value="goat">Goat Funded Trader</option>
+                  <option value="the5ers">The5ers channel</option>
+                </select>
               </div>
             </div>
-            <div style="margin-bottom:14px;">
-              <p class="flbl" style="margin-bottom:8px;">Active signals</p>
-              <div style="display:flex;gap:8px;flex-wrap:wrap;">
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-seo" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);">SEO</span> YouTube keyword volume</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-x" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:#f0fdf4;color:var(--green);border:1px solid rgba(21,128,61,0.2);font-family:var(--mono);">X</span> Viral angles</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-reddit" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--highL);color:var(--high);border:1px solid rgba(251,146,60,0.2);font-family:var(--mono);">Reddit</span> Trader pain points</label>
-                <label style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-comp" checked style="accent-color:var(--teal);"> <span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--urgentL);color:var(--urgent);border:1px solid rgba(248,113,113,0.2);font-family:var(--mono);">Competitors</span> FTMO / FundedNext / Apex channels</label>
-              </div>
+
+            <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);">
+              <span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;">Signals</span>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-seo" checked style="accent-color:var(--brand);"> YouTube search demand</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-comp" checked> Competitor channels</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-reddit" checked> Reddit trader questions</label>
+              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-x"> X/Twitter signals</label>
+              <span style="font-size:10px;color:var(--text3);margin-left:auto;">Outputs searchable titles · hook lines · thumbnail text — not invented content</span>
             </div>
-            <button class="btn btn-p" style="min-width:200px;" id="ayt-research-btn"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Discover YouTube topics →</button>
           </div>
-          <div id="yt-loading" style="display:none;background:var(--bg2);border:1px solid rgba(29,155,240,0.2);border-radius:var(--rl);padding:20px 24px;">
-            <p style="font-size:13px;font-weight:600;color:var(--teal);margin-bottom:14px;"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> Pulling signals...</p>
-            <div id="yt-signal-steps"></div>
-          </div>
-          <div id="yt-results" style="display:none;"></div>
+
+          <div id="yt-loading" style="display:none;padding:20px;text-align:center;"><div class="loader-spinner"></div><div id="yt-signal-steps"></div></div>
+          <div id="yt-results"></div>
         </div>
 
-        <!-- CROSS-POLLINATE TAB -->
+        <!-- ═══════════════════════════════════════════
+             COMPETITOR WATCH
+        ═══════════════════════════════════════════ -->
+        <div class="hub-panel" id="hub-competitors-ci" style="display:none;">
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:12px;">
+
+            <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:16px;">
+              <div>
+                <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Competitor Watch</p>
+                <p style="font-size:11px;color:var(--text3);line-height:1.5;">See what competitors published recently. Find what topics are gaining traction that FXIFY doesn't have.</p>
+              </div>
+              <button class="btn btn-p" id="ci-comp-btn" style="white-space:nowrap;font-size:12px;gap:6px;" onclick="runCICompetitorWatch()">
+                <span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Run Competitor Watch
+              </button>
+            </div>
+
+            <!-- Competitor grid -->
+            <div style="margin-bottom:14px;">
+              <p style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px;">Tracking 10 competitors</p>
+              <div style="display:flex;gap:6px;flex-wrap:wrap;">
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">FTMO</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">FundedNext</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">FundingPips</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">The5ers</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">Goat Funded Trader</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">Alpha Capital</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">My Funded Futures</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">Blue Guardian</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">Apex Trader Funding</span>
+                <span style="font-size:10px;padding:3px 10px;border-radius:12px;background:var(--bg3);color:var(--text2);border:1px solid var(--border);">E8 Funding</span>
+              </div>
+            </div>
+
+            <div style="padding:10px;background:var(--bg3);border-radius:6px;font-size:11px;color:var(--text3);">
+              <strong style="color:var(--text2);">What this does:</strong> Searches each competitor for recent blog posts and YouTube content → clusters by topic → flags what multiple competitors are publishing that FXIFY doesn't have → ranks by urgency (how many competitors are covering it)
+            </div>
+          </div>
+
+          <div id="ci-comp-output"></div>
+        </div>
+
+        <!-- ═══════════════════════════════════════════
+             CROSS-POLLINATE (utility)
+        ═══════════════════════════════════════════ -->
         <div class="hub-panel" id="hub-crosspost" style="display:none;">
-          <div style="display:grid;gap:12px;grid-template-columns:1fr 1fr;">
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:12px;">
+            <div style="margin-bottom:16px;">
+              <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Cross-Pollinate</p>
+              <p style="font-size:11px;color:var(--text3);">Convert a proven blog topic into a YouTube package, or a YouTube topic into a blog structure.</p>
+            </div>
 
             <!-- Blog → YouTube -->
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-                <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--tealL);color:var(--teal);border:1px solid rgba(29,155,240,0.2);font-family:var(--mono);">Blog → YouTube</span>
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:10px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--tealL);color:var(--teal);border:1px solid rgba(20,184,166,.2);font-weight:700;">BLOG → VIDEO</span>
+                <span style="font-size:11px;color:var(--text3);">Turn a ranking blog topic into a YouTube package</span>
               </div>
-              <p style="font-size:12px;color:var(--text3);margin-bottom:14px;line-height:1.6;">Paste a blog topic or title — get a YouTube script angle, thumbnail concept, and SEO package automatically adapted from it.</p>
-              <label class="flbl">Blog topic or title</label>
-              <input class="finput fg" id="cp-blog-input" type="text" placeholder="e.g. How to Pass a Funded Trader Challenge"/>
-              <button class="btn btn-p btn-f" id="cp-blog-btn">Convert to YouTube →</button>
+              <div style="display:flex;gap:8px;align-items:flex-end;">
+                <div style="flex:1;">
+                  <label class="flbl">Blog topic or title</label>
+                  <input class="finput" id="cp-blog-input" type="text" placeholder="e.g. Best Prop Firm for Swing Traders in 2026"/>
+                </div>
+                <button class="btn btn-p btn-s" id="cp-blog-btn" style="white-space:nowrap;flex-shrink:0;">Convert to Video →</button>
+              </div>
             </div>
 
             <!-- YouTube → Blog -->
-            <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;">
-              <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-                <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--purpleL);color:var(--purple);border:1px solid rgba(167,139,250,0.2);font-family:var(--mono);">YouTube → Blog</span>
+            <div style="background:var(--bg3);border:1px solid var(--border);border-radius:8px;padding:14px;">
+              <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:rgba(239,68,68,.1);color:var(--urgent);border:1px solid rgba(239,68,68,.2);font-weight:700;">VIDEO → BLOG</span>
+                <span style="font-size:11px;color:var(--text3);">Turn a high-view YouTube topic into a blog structure</span>
               </div>
-              <p style="font-size:12px;color:var(--text3);margin-bottom:14px;line-height:1.6;">Paste a video title or topic — get a full blog brief with keyword targets, SEO metadata, and sections adapted from the video angle.</p>
-              <label class="flbl">YouTube title or topic</label>
-              <input class="finput fg" id="cp-yt-input" type="text" placeholder="e.g. TradeLocker Drawdown Explained (2026)"/>
-              <button class="btn btn-p btn-f" id="cp-yt-btn">Convert to Blog Brief →</button>
+              <div style="display:flex;gap:8px;align-items:flex-end;">
+                <div style="flex:1;">
+                  <label class="flbl">YouTube topic or video title</label>
+                  <input class="finput" id="cp-yt-input" type="text" placeholder="e.g. FXIFY vs FTMO: Which Prop Firm Is Better in 2026"/>
+                </div>
+                <button class="btn btn-p btn-s" id="cp-yt-btn" style="white-space:nowrap;flex-shrink:0;">Convert to Blog Brief →</button>
+              </div>
             </div>
           </div>
+
           <div id="cp-output" style="margin-top:16px;display:none;"></div>
+        </div>
+
         </div>
       </div>
 
@@ -5527,8 +5588,8 @@ function ytShowLoader(steps) {
 async function runYouTubeDiscovery() {
   var btn    = document.getElementById('ayt-research-btn');
   var output = document.getElementById('v2-brief-output');
-  var topic  = (document.getElementById('ayt-topic') || {}).value || 'prop trading funded accounts';
-  var vidType = (document.getElementById('ayt-format') || {}).value || 'short';
+  var topic  = (document.getElementById('yt-topic') || {}).value || 'prop trading funded accounts';
+  var vidType = (document.getElementById('yt-type') || {}).value || 'short';
 
   if (btn) { btn.disabled = true; btn.textContent = 'Discovering...'; }
 
@@ -7046,12 +7107,12 @@ async function dfsAutocomplete(kw) {
 // ── FIRECRAWL COMPETITOR SCRAPER ──────────────────────────────────────
 async function v2ScrapeCompetitors(compKey) {
   var competitorMap = {
-    all:        ['FTMO','FundedNext','The5ers','FundingPips','ThinkCapital','Tradeify'],
+    all:        ['FTMO','FundedNext','The5ers','FundingPips','Goat Funded Trader','Alpha Capital Group','My Funded Futures','Blue Guardian','Apex Trader Funding','E8 Funding'],
     ftmo:       ['FTMO'],
     fundednext: ['FundedNext'],
     the5ers:    ['The5ers'],
     fundingpips:['FundingPips'],
-    thinkcap:   ['ThinkCapital'],
+    goat:       ['Goat Funded Trader'],
     tradeify:   ['Tradeify'],
   };
   var firms = competitorMap[compKey || 'all'] || competitorMap.all;
@@ -8472,7 +8533,7 @@ function v2WireCustomBtn() {
       });
       document.querySelectorAll('.hub-panel').forEach(function(p) { p.style.display='none'; p.classList.remove('active'); });
       // hub-blog doesn't have class hub-panel — handle separately
-      var panels = { blog:'hub-blog', youtube:'hub-youtube', crosspost:'hub-crosspost' };
+      var panels = { blog:'hub-blog', youtube:'hub-youtube', competitors:'hub-competitors-ci', crosspost:'hub-crosspost' };
       var panelId = panels[tab] || ('hub-' + tab);
       var panel = document.getElementById(panelId);
       if (panel) { panel.style.display='block'; panel.classList.add('active'); }
@@ -9952,7 +10013,7 @@ async function runFullCompetitorAnalysis() {
   }
 
   try {
-    var firms = ['FTMO', 'FundedNext', 'Apex', 'Topstep', 'The5ers', 'E8 Funding', 'FundingPips', 'ThinkCapital'];
+    var firms = ['FTMO', 'FundedNext', 'FundingPips', 'The5ers', 'Goat Funded Trader', 'Alpha Capital Group', 'My Funded Futures', 'Blue Guardian', 'Apex Trader Funding', 'E8 Funding'];
 
     var liveData = await v2LiveResearch(
       'prop trading blog articles 2026 ' + firms.slice(0,4).join(' '),
@@ -10353,6 +10414,134 @@ async function loadTopicHistory() {
   }
 }
 window.loadTopicHistory = loadTopicHistory;
+
+// ── CI COMPETITOR WATCH ───────────────────────────────────────────────────
+async function runCICompetitorWatch() {
+  var btn    = document.getElementById('ci-comp-btn');
+  var output = document.getElementById('ci-comp-output');
+  if (!output) return;
+  if (btn) { btn.disabled = true; btn.textContent = 'Scanning...'; }
+
+  output.innerHTML = '<div style="padding:24px;text-align:center;"><div class="loader-spinner"></div><p style="font-size:12px;color:var(--text3);margin-top:12px;">Scanning 10 competitors for recent content...</p></div>';
+
+  var firms = ['FTMO', 'FundedNext', 'FundingPips', 'The5ers', 'Goat Funded Trader',
+               'Alpha Capital Group', 'My Funded Futures', 'Blue Guardian',
+               'Apex Trader Funding', 'E8 Funding'];
+
+  try {
+    // Firecrawl search for recent competitor content
+    var liveData = await v2LiveResearch(
+      'prop trading blog articles 2026 ' + firms.slice(0,5).join(' OR ') + ' site content',
+      'Search for recent blog articles and YouTube content from these prop trading competitors: ' + firms.join(', ') +
+      '. Find their most recent articles — title, topic, angle.'
+    );
+
+    var prompt =
+      'You are a content intelligence analyst for FXIFY prop firm. July 2026.\n\n' +
+      'COMPETITORS ANALYSED: ' + firms.join(', ') + '\n\n' +
+      (liveData ? 'LIVE COMPETITOR CONTENT FOUND:\n' + liveData.substring(0, 3000) + '\n\n' : '') +
+      'TASK: Identify content opportunities for FXIFY based on what competitors are publishing.\n\n' +
+      'Classify each topic found into:\n' +
+      '1. COVERED BY FXIFY ALREADY — skip\n' +
+      '2. GAP — competitors have it, FXIFY does not\n' +
+      '3. TRENDING — multiple competitors publishing on same topic right now\n\n' +
+      'For each GAP and TRENDING topic output:\n' +
+      '- What the topic is\n' +
+      '- Which competitors are covering it\n' +
+      '- The FXIFY angle (how FXIFY wins this topic specifically)\n' +
+      '- Priority: HIGH (3+ competitors) / MEDIUM (2 competitors) / LOW (1 competitor)\n' +
+      '- Suggested search title for FXIFY blog article (keyword-first, under 65 chars)\n\n' +
+      'Return ONLY valid JSON:\n' +
+      '{"gaps":[{"topic":"","competitors":[""],"fxify_angle":"","priority":"HIGH|MEDIUM|LOW","suggested_title":"","intent":"Transactional|Commercial|Informational"}],' +
+      '"trending":[{"topic":"","competitors":[""],"why_trending":"","fxify_angle":"","suggested_title":""}],' +
+      '"summary":"2 sentences — what is the biggest opportunity FXIFY is missing right now"}';
+
+    var text   = await v2Fetch(prompt, 3000);
+    var result = v2SafeParseJSON(text);
+    renderCICompetitorWatch(result, firms);
+
+  } catch(e) {
+    output.innerHTML = '<p style="color:var(--urgent);padding:20px;">Error: ' + (e && e.message) + '</p>';
+  }
+
+  if (btn) { btn.disabled = false; btn.innerHTML = '<span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Run Competitor Watch'; }
+}
+window.runCICompetitorWatch = runCICompetitorWatch;
+
+function v2SafeParseJSON(text) {
+  try { return parseJSON(text); } catch(e) { return {}; }
+}
+
+function renderCICompetitorWatch(result, firms) {
+  var output = document.getElementById('ci-comp-output');
+  if (!output) return;
+
+  var gaps     = result.gaps     || [];
+  var trending = result.trending || [];
+  var summary  = result.summary  || '';
+
+  var priColor = { HIGH: 'var(--urgent)', MEDIUM: 'var(--amber)', LOW: 'var(--text3)' };
+  var priBg    = { HIGH: 'rgba(239,68,68,.1)', MEDIUM: 'rgba(245,158,11,.1)', LOW: 'var(--bg3)' };
+
+  var html = '';
+
+  if (summary) {
+    html += '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:var(--rl);padding:14px 16px;margin-bottom:16px;">' +
+      '<p style="font-size:10px;font-weight:700;color:var(--brand);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px;">Key Finding</p>' +
+      '<p style="font-size:13px;color:var(--text);line-height:1.6;">' + summary + '</p>' +
+    '</div>';
+  }
+
+  if (trending.length) {
+    html += '<p style="font-size:10px;font-weight:700;color:var(--urgent);letter-spacing:.1em;text-transform:uppercase;margin-bottom:8px;">🔥 Trending Now — Multiple Competitors Covering This</p>';
+    html += trending.map(function(t) {
+      return '<div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;">' +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">' +
+          '<div style="flex:1;">' +
+            '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">' + t.topic + '</p>' +
+            '<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">Competitors: ' + (t.competitors||[]).join(' · ') + '</p>' +
+            '<p style="font-size:11px;color:var(--urgent);margin-bottom:4px;">' + (t.why_trending||'') + '</p>' +
+            (t.fxify_angle ? '<p style="font-size:11px;color:var(--teal);">FXIFY angle: ' + t.fxify_angle + '</p>' : '') +
+          '</div>' +
+          '<div style="flex-shrink:0;">' +
+            (t.suggested_title ? '<button class="btn btn-p btn-s" onclick="document.getElementById(\'v2-seed\').value=' + JSON.stringify(t.suggested_title).replace(/"/g,'&quot;') + ';document.querySelector(\'[data-tab=blog]\').click()" style="font-size:11px;">Use as seed →</button>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  if (gaps.length) {
+    html += '<p style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;margin:16px 0 8px;">Content Gaps — FXIFY Missing These</p>';
+    html += gaps.map(function(g) {
+      var pc = priColor[g.priority] || 'var(--text3)';
+      var pb = priBg[g.priority]   || 'var(--bg3)';
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;">' +
+        '<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;">' +
+          '<div style="flex:1;">' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
+              '<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:10px;background:' + pb + ';color:' + pc + ';">' + (g.priority||'MEDIUM') + '</span>' +
+              '<p style="font-size:13px;font-weight:600;color:var(--text);">' + g.topic + '</p>' +
+            '</div>' +
+            '<p style="font-size:11px;color:var(--text3);margin-bottom:4px;">Competitors: ' + (g.competitors||[]).join(' · ') + '</p>' +
+            (g.fxify_angle ? '<p style="font-size:11px;color:var(--teal);">FXIFY wins: ' + g.fxify_angle + '</p>' : '') +
+            (g.suggested_title ? '<p style="font-size:11px;color:var(--text2);margin-top:4px;font-family:var(--mono);">→ ' + g.suggested_title + '</p>' : '') +
+          '</div>' +
+          '<div style="flex-shrink:0;display:flex;gap:6px;">' +
+            (g.suggested_title ? '<button class="btn btn-s" onclick="document.getElementById(\'v2-seed\').value=' + JSON.stringify(g.topic).replace(/"/g,'&quot;') + ';document.querySelector(\'[data-tab=blog]\').click()" style="font-size:11px;">Find gaps →</button>' : '') +
+          '</div>' +
+        '</div>' +
+      '</div>';
+    }).join('');
+  }
+
+  if (!gaps.length && !trending.length) {
+    html = '<p style="color:var(--text3);font-size:13px;padding:20px 0;">No competitor data returned. Try again — Firecrawl may need a moment.</p>';
+  }
+
+  output.innerHTML = html;
+}
+window.renderCICompetitorWatch = renderCICompetitorWatch;
 
 async function loadTopicBookmarks() {
   // Load history panel then auto-switch to Bookmarks tab
