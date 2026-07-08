@@ -6794,24 +6794,29 @@ async function dfsKeywords(seedKw) {
     });
 
   } catch(e) {
-    console.warn('[DFS] webhook failed:', e.message, '— falling back to Claude estimate');
-
-    // Fallback: Claude estimates from training knowledge
-    // Marked as stub so UI shows "estimated" warning
+    console.error('[DFS] webhook failed:', e.message);
+    v2Toast('DataForSEO unreachable — showing estimated data only');
+    // Fallback: Claude estimates — clearly flagged, never mistaken for real data
     try {
-      var text = await v2Fetch(
-        'Estimate realistic keyword data for prop trading keywords related to: "' + seedKw + '".\n' +
-        'Use your knowledge of 2026 prop trading search volumes. Be realistic — do not inflate numbers.\n' +
-        'Return ONLY valid JSON no markdown:\n' +
-        '{"keywords":[{"keyword":"exact search term","search_volume":1200,"kd":22,"cpc":1.40,"competition":"LOW|MEDIUM|HIGH"}]}',
-        2000
+      var est = await v2Fetch(
+        'Estimate keyword research data for prop trading terms related to: "' + seedKw + '".\n' +
+        'Use realistic 2026 search volume ranges. Do NOT inflate.\n' +
+        'Return ONLY valid JSON: {"keywords":[{"keyword":"term","search_volume":1200,"kd":22,"cpc":1.40}]}',
+        1500
       );
-      var p = JSON.parse(text.replace(/```json|```/g,'').trim());
+      var p = JSON.parse(est.replace(/```json|```/g,'').trim());
       return (p.keywords || []).map(function(k) {
-        return { keyword:k.keyword, search_volume:k.search_volume, competition:k.competition, cpc:k.cpc, difficulty:k.kd, stub:true };
+        return {
+          keyword:       '[EST] ' + k.keyword,
+          search_volume: k.search_volume,
+          competition:   null,
+          cpc:           k.cpc,
+          difficulty:    k.kd,
+          stub:          true
+        };
       });
     } catch(e2) {
-      return [{ keyword:seedKw, search_volume:null, competition:null, cpc:null, difficulty:null, stub:true }];
+      throw new Error('DataForSEO and fallback both failed: ' + e.message);
     }
   }
 }
@@ -7580,7 +7585,7 @@ async function runKeywordAnalysis() {
   try {
     // Step 1: Get keyword data from DFS
     var kwData = await dfsKeywords(seed);
-    var isStub  = kwData.length > 0 && kwData[0].stub;
+    var isStub = kwData.length > 0 && kwData[0].stub;
 
     // Step 2: Get SERP for the seed (what ranks)
     var serpData = await v2SerpResearch(seed);
@@ -7617,8 +7622,11 @@ async function runKeywordAnalysis() {
   } catch(e) {
     console.error('[Keywords]', e);
     output.innerHTML =
-      '<div style="background:var(--bg2);border:1px solid var(--urgent);border-radius:var(--rl);padding:16px;">' +
-        '<p style="color:var(--urgent);font-weight:600;">Error: ' + e.message + '</p>' +
+      '<div style="background:var(--bg2);border:1px solid rgba(239,68,68,.3);border-radius:var(--rl);padding:24px;text-align:center;">' +
+        '<p style="font-size:20px;margin-bottom:8px;opacity:.4;">⚠</p>' +
+        '<p style="font-size:13px;font-weight:600;color:var(--urgent);margin-bottom:6px;">Keyword data unavailable</p>' +
+        '<p style="font-size:12px;color:var(--text3);margin-bottom:16px;">' + e.message + '</p>' +
+        '<p style="font-size:11px;color:var(--text3);">Check that the DataForSEO n8n webhook is active at <code>/webhook/dataforseo</code></p>' +
       '</div>';
   }
 
@@ -7638,7 +7646,7 @@ function renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub) {
       '<div>' +
         '<p style="font-size:15px;font-weight:700;color:var(--text);">' + opps.length + ' keyword opportunities for "' + seed + '"</p>' +
         '<p style="font-size:12px;color:var(--text3);">' +
-          (isStub ? '⚠ Estimated volumes — DataForSEO SERP webhook needed for live data' : '✓ Live DataForSEO data') +
+          (isStub ? '⚠ Estimated data — DataForSEO unreachable. All volumes marked [EST] and should not be used for decisions.' : '✓ Live DataForSEO data') +
         '</p>' +
       '</div>' +
       '<button class="btn btn-s" onclick="exportKeywordCSV()" style="font-size:11px;">Export CSV</button>' +
