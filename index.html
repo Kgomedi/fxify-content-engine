@@ -649,7 +649,6 @@ tr:last-child td{border-bottom:none;}
       <div class="ngrp">Content Engine</div>
       <div class="nlink" data-pg="a-generate" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span></span>Content Intelligence</div>
       
-      <div class="nlink" data-pg="a-live" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span></span>Published</div>
       <div class="ndiv"></div>
       <div class="ngrp">Insights</div>
       <div class="nlink" data-pg="a-analytics" data-sc="admin"><span class="nico"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span></span>Analytics</div>
@@ -684,6 +683,7 @@ tr:last-child td{border-bottom:none;}
             <a href="https://app.clickup.com/9005041798/v/li/901603213790" target="_blank" class="btn btn-s" style="text-decoration:none;">Blog ↗</a>
             <a href="https://app.clickup.com/9005041798/v/li/901603213575" target="_blank" class="btn btn-s" style="text-decoration:none;">Video ↗</a>
             <button class="btn btn-s" id="cu-export-btn" style="font-size:11px;">Export CSV</button>
+          <button class="btn btn-s" id="a-canonical-btn" onclick="runCanonicalCheck()" style="font-size:11px;">✓ Canonicals</button>
           </div>
         </div>
 
@@ -803,6 +803,7 @@ tr:last-child td{border-bottom:none;}
         <div id="cu-board-loading" style="padding:40px 0;text-align:center;">
           <p style="font-size:13px;color:var(--text3);">Loading from ClickUp...</p>
         </div>
+        <div id="canonical-results" style="margin-bottom:12px;"></div>
         <div id="cu-board" style="display:none;overflow-x:auto;padding-bottom:4px;"></div>
         <div id="cu-board-error" style="display:none;background:var(--urgentL);border:1px solid rgba(248,113,113,0.2);border-radius:var(--rl);padding:14px 16px;margin-top:12px;">
           <p style="font-size:13px;font-weight:500;color:var(--urgent);margin-bottom:4px;">Could not load ClickUp tasks</p>
@@ -1251,24 +1252,6 @@ tr:last-child td{border-bottom:none;}
       </div>
 
       <!-- PUBLISHED ARTICLES (ADMIN) -->
-      <div id="a-live" class="pg">
-        <div class="pgh">Published</div>
-        <p class="pgs">Everything live on fxify.com/blog — indexed for duplicate detection in Content Hub. <span class="ico"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span></p>
-        <div style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center;">
-          <button class="btn btn-p btn-s" id="a-scrape-btn">🔄 Refresh from fxify.com/blog</button>
-          <button class="btn btn-s" id="a-canonical-btn" onclick="runCanonicalCheck()" style="border-color:rgba(239,68,68,.3);color:var(--urgent);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span> Check canonicals</button>
-          <input class="finput" id="a-live-search" type="text" placeholder="Search articles..." style="max-width:220px;"/>
-          <span style="font-size:12px;color:var(--text3);align-self:center;" id="a-live-count"></span>
-        </div>
-        <div id="canonical-results" style="display:none;margin-bottom:20px;"></div>
-        <div id="a-live-list"><p class="pempty" style="padding:40px 0;">Click refresh to load published articles from fxify.com/blog.</p></div>
-      </div>
-
-      
-
-      <!-- DAVID APPROVAL (accessible when David uses admin screen) -->
-      
-      <!-- COMPETITOR ANALYSIS PAGE -->
       <div id="a-keywords" class="pg">
         <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;margin-bottom:20px;">
           <div>
@@ -2350,7 +2333,6 @@ function goPage(sc,pg,navEl){
   if(pg==='a-youtube') initYouTubePage('ayt');
   if(pg==='a-planner')    loadDailyIdeas('daily-ideas-list', 'daily-ideas-date');
   if(pg==='a-keywords')   { /* static page — seed input receives focus */ var kw = document.getElementById('kw-seed-input'); if(kw) setTimeout(function(){ kw.focus(); }, 100); }
-  if(pg==='a-live')       { renderPublishedArticles(); }
   if(pg==='a-writers')    { if(typeof loadTeamStats === 'function') loadTeamStats(); }
   if(pg==='w-style')      { /* static editorial guide — no data load needed */ }
 }
@@ -4364,10 +4346,11 @@ function updateScoreDisplay(scores) {
 var publishedCache = null;
 
 async function scrapePublishedArticles(listId, countId) {
-  var list = document.getElementById(listId);
-  var count = document.getElementById(countId);
-  if (!list) return;
-  list.innerHTML = '<p class="pempty" style="padding:40px 0;">Loading articles from fxify.com/blog...</p>';
+  var silent = listId === '_silent';
+  var list  = silent ? null : document.getElementById(listId);
+  var count = silent ? null : document.getElementById(countId);
+  if (!silent && !list) return;
+  if (list) list.innerHTML = '<p class="pempty" style="padding:40px 0;">Loading articles from fxify.com/blog...</p>';
 
   try {
     // Use Firecrawl search — much faster than scraping individual pages
@@ -6423,7 +6406,7 @@ async function runCrossPost(direction) {
   var input, outputEl, prompt;
   if (direction === 'blog-to-yt') {
     input = (document.getElementById('cp-blog-input')||{}).value || '';
-    if (!input.trim()) { toast('Enter a blog topic first'); return; }
+    if (!input.trim()) { v2Toast('Enter a blog topic first'); return; }
     prompt =
       'You are a YouTube strategist for FXIFY. Convert this blog topic into a full YouTube package.\n\n' +
       'BLOG TOPIC: ' + input + '\n\n' +
@@ -6439,7 +6422,7 @@ async function runCrossPost(direction) {
       '"cta":"End screen call to action"}';
   } else {
     input = (document.getElementById('cp-yt-input')||{}).value || '';
-    if (!input.trim()) { toast('Enter a YouTube topic first'); return; }
+    if (!input.trim()) { v2Toast('Enter a YouTube topic first'); return; }
     prompt =
       'You are an SEO content strategist for FXIFY. Convert this YouTube topic into a full blog brief.\n\n' +
       'YOUTUBE TOPIC: ' + input + '\n\n' +
@@ -6547,317 +6530,14 @@ async function runCrossPost(direction) {
 }
 
 
-// ── TRENDING DISCOVERY — no seed needed ────────────────────────────────────
-var TRENDING_SOURCES = {
-  reddit: [
-    'https://www.reddit.com/r/Forex/top/?t=week',
-    'https://www.reddit.com/r/propfirms/top/?t=week',
-    'https://www.reddit.com/r/Daytrading/top/?t=week',
-    'https://www.reddit.com/r/algotrading/top/?t=week',
-  ],
-  x: [
-    'https://x.com/search?q=prop+firm+2026&f=top',
-    'https://x.com/search?q=funded+trader+challenge&f=top',
-    'https://x.com/search?q=FTMO+OR+FXIFY+OR+FundedNext&f=top',
-    'https://x.com/search?q=prop+trading+payout&f=top',
-  ],
-  trends: [
-    'https://trends.google.com/trends/explore?q=prop+trading&date=now+7-d&geo=US',
-    'https://trends.google.com/trends/explore?q=funded+trader&date=now+7-d&geo=US',
-  ],
-  competitors: [
-    { name: 'FTMO Blog',       url: 'https://ftmo.com/en/blog/' },
-    { name: 'FundedNext Blog', url: 'https://fundednext.com/blog/' },
-    { name: 'Apex Blog',       url: 'https://apextraderfunding.com/blog/' },
-    { name: 'Topstep Blog',    url: 'https://www.topstep.com/blog/' },
-  ],
-};
-
-function trendingStep(idx, steps, status) {
-  var dot = document.getElementById('trd-dot-' + idx);
-  var txt = document.getElementById('trd-txt-' + idx);
-  if (!dot || !txt) return;
-  if (status === 'active') { dot.style.background = 'var(--teal)'; dot.style.boxShadow = '0 0 6px rgba(29,155,240,0.4)'; txt.style.color = 'var(--text2)'; }
-  if (status === 'done')   { dot.style.background = 'var(--green)'; dot.style.boxShadow = 'none'; txt.style.color = 'var(--green)'; txt.textContent += ' ✓'; }
-  if (status === 'warn')   { dot.style.background = 'var(--amber)'; dot.style.boxShadow = 'none'; txt.style.color = 'var(--amber)'; txt.textContent += ' (partial)'; }
-}
-
-async function runTrendingDiscovery() {
-  var btn       = document.getElementById('trending-btn');
-  var output    = document.getElementById('v2-brief-output');
-  var trendFmt  = window._trendFormat || 'blog';
-  var useBlog   = (document.getElementById('sig-blogs')||{}).checked !== false;
-  var useYT     = (document.getElementById('sig-youtube-trend')||{}).checked !== false;
-  var useAds    = (document.getElementById('sig-google-ads')||{}).checked !== false;
-  var useReddit = (document.getElementById('sig-reddit-trend')||{}).checked !== false;
-  var useX      = (document.getElementById('sig-x-trend')||{}).checked !== false;
-  var activeSignals = [useBlog&&'blog',useYT&&'youtube',useAds&&'google_ads',useReddit&&'reddit',useX&&'x'].filter(Boolean);
-  if (btn) { btn.disabled = true; btn.textContent = 'Scanning...'; }
-
-  v2ShowLoader(output, [
-    'Scanning live competitor content...',
-    'Checking Reddit trader discussions...',
-    'Finding what is trending right now...'
-  ]);
-
-  try {
-    // Try live research first
-    var liveData = await v2LiveResearch(
-      'prop trading 2026 new blog posts YouTube videos Reddit discussions trending topics June ' + new Date().getFullYear(),
-      'Search for what prop trading firms published in the last 2-4 weeks. ' +
-      'Also search Reddit r/Forex r/PropTrading for what traders are discussing RIGHT NOW in June 2026. ' +
-      'Find specific article titles, video titles, and Reddit post titles. ' +
-      'What questions are traders asking that have no good content answer yet? ' +
-      'Be specific — list actual titles and post names you find, not categories. ' +
-      'Focus on: payout issues, rule changes, new products, trader complaints.'
-    );
-
-    var hasLive = liveData && liveData.length > 200;
-    console.log('[Trending] live data length:', liveData ? liveData.length : 0);
-
-    var prompt =
-      'You are the content strategist for FXIFY prop trading firm. Today is ' + new Date().toLocaleDateString('en-GB', {day:'numeric',month:'long',year:'numeric'}) + '.\n\n' +
-      'FXIFY ADVANTAGES:\n' +
-      '- $19 Instant Funding Lite (cheapest in market)\n' +
-      '- One Phase: no consistency rule, static drawdown, payout on demand\n' +
-      '- Broker-backed via FXPIG since 2010\n' +
-      '- $40M+ paid, 250,000+ traders, $117k highest single payout to date\n\n' +
-
-      (hasLive
-        ? '── LIVE RESEARCH DATA (scraped right now) ──\n' + liveData.substring(0, 3000) + '\n\n' +
-          'Based on this REAL, CURRENT data above, identify 8 trending content opportunities for FXIFY.\n' +
-          'Every topic MUST trace to something specific in the live research data above.\n' +
-          'Do NOT use generic prop trading topics. Use what you actually found above.\n\n'
-        : '── No live data available — use your most recent knowledge of June 2026 prop trading trends.\n' +
-          'Focus on: recent industry news, trader pain points, new competitor moves.\n' +
-          'Be specific and avoid the obvious topics like "$19 funding" or "payout speed" — find fresher angles.\n\n'
-      ) +
-      '── MULTI-SIGNAL REQUIREMENT ──\n' +
-      'For each topic, identify which signal surfaces it:\n' +
-      '- BLOG: competitor firms publishing heavily on this (signals saturation OR opportunity)\n' +
-      '- YOUTUBE: video titles getting traction — what hooks work on camera vs article\n' +
-      '- GOOGLE ADS: what prop firms are bidding on = commercial intent gold, high conversion\n' +
-      '- REDDIT: trader complaints, questions, or frustrations = real pain points to address\n' +
-      '- X/TWITTER: viral angles, hot debates, fast-moving news in prop trading\n\n' +
-      'Include a signal_source field for each topic that names WHICH signal(s) it came from and WHY.\n\n' +
-
-      'CRITICAL — AVOID THESE OVERUSED ANGLES (already covered):\n' +
-      '- $19 instant funding price comparison\n' +
-      '- Generic "payout speed" comparison with FTMO\n' +
-      '- Consistency rule explanation\n' +
-      '- Basic swing trader drawdown explainer\n' +
-      '- "What is a prop firm" beginner explainer\n' +
-      '- $117k payout proof\n\n' +
-
-      'TITLE RULES — EVERY topic needs TWO titles:\n' +
-      '\n' +
-      'SEARCH TITLE (H1 + meta — how traders actually Google this):\n' +
-      'Pattern 1: "Best [X] for [trader type] in 2026" — e.g. "Best Prop Firm for Swing Traders in 2026"\n' +
-      'Pattern 2: "[Firm] vs [Firm]: [specific comparison point]" — e.g. "FXIFY vs FTMO: Rules, Payouts and Drawdown"\n' +
-      'Pattern 3: "How to [outcome] without [pain point]" — e.g. "How to Pass a Prop Challenge Without a Consistency Rule"\n' +
-      'Pattern 4: "[N] Prop Firms With [specific feature] in 2026" — e.g. "5 Prop Firms With No Daily Drawdown Limit"\n' +
-      'Pattern 5: "[Specific topic] Explained: [what trader learns]" — e.g. "Trailing Drawdown Explained: How It Ends Funded Accounts"\n' +
-      'Under 65 chars. Keyword traders actually search in Google. No click-bait. No generic.\n' +
-      '\n' +
-      'HOOK TITLE (intro paragraph + social + email subject — brand voice):\n' +
-      'This is the statement or scene that opens the article. Different from the H1.\n' +
-      'GOOD: "The consistency rule ends accounts. FXIFY One Phase does not have one."\n' +
-      'GOOD: "FTMO just changed its rules. Here is what that means for your account."\n' +
-      'GOOD: "You can get a funded account for $19. Here is exactly what you are buying."\n' +
-      '\n' +
-      'BANNED in both titles: Mastering, Ultimate, Comprehensive, Deep Dive, Unlocking,\n' +
-      'Navigating, Revolutionize, Seamlessly, Robust, Empowering, Delve\n\n' +
-
-      'Return ONLY valid JSON, no markdown:\n' +
-      '{"topics":[{' +
-      '"title":"SEARCH TITLE — keyword-first, under 65 chars, exact phrase traders type in Google",' +
-      '"hook_title":"HOOK TITLE — statement or trader scene, brand voice, under 65 chars, for article intro + social",' +
-      '"intent":"Commercial|Informational|Transactional",' +
-      '"conversion_tier":"1|2|3",' +
-      '"why_trending":"specific reason this is relevant RIGHT NOW in July 2026 — cite actual event or data",' +
-      '"short_form_hook":"exact first sentence Harry says to camera. Brand voice. Under 15 words.",' +
-      '"fxify_angle":"specific FXIFY product + verifiable fact. One sentence.",' +
-      '"opportunity_score":80,' +
-      '"signal_type":"Blog|YouTube|Google Ads|Reddit|X|Mixed",' +
-      '"signal_source":"which specific signal surfaced this topic and why it matters",' +
-      '"youtube_title":"Searchable YouTube title — Firm vs Firm format OR How to X OR Top N for Y",' +
-      '"ad_headline":"30 char Google Ads headline if this has commercial intent",' +
-      '"source":"' + (hasLive ? 'live_research' : 'training_knowledge') + '"' +
-      '}]}';
-
-    var text   = await v2Fetch(prompt, 6000);
-    var result = parseJSON(text);
-    var topics = result.topics || [];
-
-    // Show data source badge
-    var sourceBadge = hasLive
-      ? '<div style="background:#DCFCE7;border:1px solid #86EFAC;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--green);">✓ Based on live web research — ' + new Date().toLocaleTimeString() + '</div>'
-      : '<div style="background:var(--bg3);border:1px solid var(--border);border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:var(--text3);">ℹ Using Claude knowledge for research — publish /webhook/research in n8n to enable live web search.</div>';
-
-    var tempDiv = document.createElement('div');
-    tempDiv.innerHTML = sourceBadge;
-    output.innerHTML = '';
-    output.appendChild(tempDiv);
-
-    var gridDiv = document.createElement('div');
-    output.appendChild(gridDiv);
-    renderTopicGrid(topics, false, 0);
-
-    // Prepend the badge
-    var existingContent = output.innerHTML;
-    output.innerHTML = sourceBadge + existingContent.replace(sourceBadge, '');
-
-  } catch(e) {
-    console.error('[runTrendingDiscovery]', e);
-    if (output) output.innerHTML =
-      '<div style="background:var(--bg2);border:1px solid var(--urgent);border-radius:var(--rl);padding:16px;">' +
-        '<p style="color:var(--urgent);font-weight:600;">Error: ' + e.message + '</p>' +
-      '</div>';
-  }
-
-  if (btn) { btn.disabled = false; btn.textContent = ' Quick trends scan'; }
-}
 
 
 
-function renderTrendingOutput(topics) {
-  var output = document.getElementById('trending-output');
-  if (!output) return;
 
-  var typeColor = { Blog: 'var(--blue)', YouTube: 'var(--urgent)', Either: 'var(--teal)' };
-  var typeLabel = { Blog: ' Blog', YouTube: ' YouTube', Either: ' Blog or YouTube' };
-  var scoreColor = function(s) { return s >= 75 ? 'var(--green)' : s >= 50 ? 'var(--amber)' : 'var(--urgent)'; };
 
-  var html =
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;flex-wrap:wrap;gap:8px;">' +
-      '<div>' +
-        '<p style="font-size:14px;font-weight:600;color:var(--text);">' + topics.length + ' trending opportunities this week</p>' +
-        '<p style="font-size:11px;color:var(--text3);margin-top:2px;">Reddit · X · Google Trends · DataForSEO · Competitor new posts</p>' +
-      '</div>' +
-      '<div style="display:flex;gap:8px;">' +
-        '<button class="btn btn-s" id="trending-rerun-btn">↻ Re-run</button>' +
-        '<button class="btn btn-s" id="trending-export-btn">Export CSV</button>' +
-      '</div>' +
-    '</div>';
 
-  topics.forEach(function(t, i) {
-    var sc = scoreColor(t.score || 0);
-    var tc = typeColor[t.type] || 'var(--teal)';
-    var tl = typeLabel[t.type] || t.type;
 
-    // Signal chips with source links
-    var signalChips = (t.signals || []).map(function(sig, si) {
-      var src = t.signal_sources && t.signal_sources[si];
-      return src
-        ? '<a href="' + src + '" target="_blank" style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);text-decoration:none;font-family:var(--mono);">' + sig + ' ↗</a>'
-        : '<span style="font-size:10px;padding:2px 7px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);">' + sig + '</span>';
-    }).join(' ');
 
-    html +=
-      '<div class="card" style="border-left:3px solid ' + sc + ';margin-bottom:10px;">' +
-        '<div class="cbody">' +
-          '<div class="ctop">' +
-            '<div style="flex:1;">' +
-              '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">' +
-                '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;background:rgba(255,255,255,0.05);color:' + tc + ';border:1px solid rgba(255,255,255,0.08);font-family:var(--mono);">' + tl + '</span>' +
-                '<span class="badge bl">' + (t.primary_keyword || '') + '</span>' +
-                (t.search_volume && t.search_volume !== 'TBC' ? '<span class="badge bn"> ' + t.search_volume + '/mo</span>' : '') +
-              '</div>' +
-              '<p class="ctitle" style="font-size:14px;font-weight:600;">' + t.title + '</p>' +
-            '</div>' +
-            '<div style="text-align:center;flex-shrink:0;padding-left:12px;">' +
-              '<p style="font-family:var(--mono);font-size:22px;font-weight:700;color:' + sc + ';line-height:1;">' + (t.score || '—') + '</p>' +
-              '<p style="font-size:9px;color:var(--text3);font-family:var(--mono);">score</p>' +
-            '</div>' +
-          '</div>' +
-
-          // Signals row with source links
-          (signalChips ? '<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:10px;"><span style="font-size:9px;color:var(--text3);font-family:var(--mono);">Sources:</span>' + signalChips + '</div>' : '') +
-
-          // Hook
-          '<div style="background:var(--tealL);border-left:3px solid var(--teal);border-radius:0 6px 6px 0;padding:10px 12px;margin-bottom:8px;">' +
-            '<p style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:.1em;text-transform:uppercase;margin-bottom:4px;font-family:var(--mono);">Opening hook</p>' +
-            '<p style="font-size:12px;color:var(--teal);font-style:italic;line-height:1.55;">' + (t.hook || '') + '</p>' +
-          '</div>' +
-
-          '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">' +
-            // Competitor gap
-            '<div style="background:var(--urgentL);border-radius:6px;padding:8px 10px;">' +
-              '<p style="font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;font-family:var(--mono);">Competitor gap</p>' +
-              '<p style="font-size:11px;color:var(--text2);line-height:1.45;">' + (t.competitor_gap || '') + '</p>' +
-            '</div>' +
-            // FXIFY angle
-            '<div style="background:var(--tealL);border-radius:6px;padding:8px 10px;">' +
-              '<p style="font-size:9px;font-weight:700;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:3px;font-family:var(--mono);">FXIFY angle</p>' +
-              '<p style="font-size:11px;color:var(--teal);line-height:1.45;">' + (t.fxify_angle || '') + '</p>' +
-            '</div>' +
-          '</div>' +
-
-          '<p style="font-size:11px;color:var(--amber);padding:4px 0;">⏱ ' + (t.why_now || '') + '</p>' +
-
-        '</div>' +
-        '<div class="cfoot">' +
-          '<span class="badge bl">' + (t.priority || 'Normal') + ' priority</span>' +
-          '<div style="display:flex;gap:6px;">' +
-            '<button class="btn btn-s trending-use-blog-btn" data-idx="' + i + '">Use for blog →</button>' +
-            '<button class="btn btn-s btn-p trending-use-yt-btn" data-idx="' + i + '" style="font-size:11px;">Use for YouTube →</button>' +
-          '</div>' +
-        '</div>' +
-      '</div>';
-  });
-
-  output.innerHTML = html;
-  output.style.display = 'block';
-
-  // Rerun
-  var rerunBtn = document.getElementById('trending-rerun-btn');
-  if (rerunBtn) rerunBtn.addEventListener('click', runTrendingDiscovery);
-
-  // Export
-  var exportBtn = document.getElementById('trending-export-btn');
-  if (exportBtn) exportBtn.addEventListener('click', function() {
-    var rows = [['Score','Title','Type','Keyword','Vol','Competitor Gap','FXIFY Angle','Why Now','Priority']];
-    topics.forEach(function(t) {
-      rows.push([
-        t.score || '',
-        '"' + (t.title || '').replace(/"/g,'""') + '"',
-        t.type || '',
-        '"' + (t.primary_keyword || '') + '"',
-        t.search_volume || 'TBC',
-        '"' + (t.competitor_gap || '').replace(/"/g,'""') + '"',
-        '"' + (t.fxify_angle || '').replace(/"/g,'""') + '"',
-        '"' + (t.why_now || '').replace(/"/g,'""') + '"',
-        t.priority || '',
-      ].join(','));
-    });
-    var blob = new Blob([rows.join('\n')], {type:'text/csv'});
-    var a = document.createElement('a');
-    a.href = URL.createObjectURL(blob);
-    a.download = 'fxify-trending-' + new Date().toISOString().split('T')[0] + '.csv';
-    a.click();
-    toast('CSV downloaded ✓');
-  });
-
-  // Use for blog — prefills the seed input and switches to blog tab
-  output.querySelectorAll('.trending-use-blog-btn').forEach(function(btn) {
-    btn.addEventListener('click', function() {
-      var t = topics[parseInt(btn.dataset.idx)];
-      var seedInput = document.getElementById('v2-seed');
-      if (seedInput) seedInput.value = t.primary_keyword || t.title;
-      // Switch to blog tab
-      document.querySelectorAll('.hub-tab').forEach(function(b) {
-        var isActive = b.dataset.tab === 'blog';
-        b.style.background = isActive ? 'var(--bg3)' : 'transparent';
-        b.style.color = isActive ? 'var(--teal)' : 'var(--text3)';
-        if (isActive) b.classList.add('active'); else b.classList.remove('active');
-      });
-      document.querySelectorAll('.hub-panel').forEach(function(p) { p.style.display = 'none'; });
-      var blogPanel = document.getElementById('hub-blog');
-      if (blogPanel) { blogPanel.style.display = 'block'; blogPanel.classList.add('active'); }
-      toast('Topic filled — hit Discover YouTube topics →');
-    });
-  });
-}
 
 
 // ── BRIEF MODAL — writer views brief + copies for Google Docs ───────────────
@@ -7533,7 +7213,7 @@ async function runTopicIdeas() {
     // Step 4: FXIFY angle injection — our specific product fact that wins each gap
     // ─────────────────────────────────────────────────────────────────────
 
-    'You are doing NLP-powered content gap analysis for FXIFY prop firm. June 2026.\n\n' +
+    'You are doing NLP-powered content gap analysis for FXIFY prop firm. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
 
     'STEP 1 — ENTITY EXTRACTION\n' +
     'Read all competitor content below. Extract the key ENTITIES (concepts, features, rules, ' +
@@ -7701,13 +7381,13 @@ async function renderTopicGrid(topics, isStub, publishedCount) {
 
   topics.forEach(function(t, idx) {
     var score    = parseInt(t.opportunity_score) || 0;
-    var scoreCol = score >= 75 ? '#10B981' : score >= 55 ? 'var(--amber)' : 'var(--text3)';
+    var scoreCol = score >= 75 ? 'var(--green)' : score >= 55 ? 'var(--amber)' : 'var(--text3)';
     var iClass   = intentClass[t.intent] || 'ci-badge-informational';
     var tClass   = tierClass[String(t.conversion_tier||'3')] || 'ci-badge-tier3';
     var tLabel   = tierLabel[String(t.conversion_tier||'3')] || 'Awareness';
     var kd       = t.kd_score && t.kd_score !== 'TBC' ? t.kd_score : null;
     var vol      = t.search_volume && t.search_volume !== 'TBC' ? t.search_volume : null;
-    var kdCol    = kd ? (parseInt(kd)<20?'#10B981':parseInt(kd)<40?'var(--amber)':'var(--urgent)') : 'var(--text3)';
+    var kdCol    = kd ? (parseInt(kd)<20?'var(--green)':parseInt(kd)<40?'var(--amber)':'var(--urgent)') : 'var(--text3)';
 
     // Build why paragraph from best available field
     var why = t.competitor_gap || t.why_trending || t.why_now || '';
@@ -7895,7 +7575,7 @@ async function runKeywordAnalysis() {
     }).join('\n');
 
     var analysisText = await v2Fetch(
-      'Keyword analysis for FXIFY prop trading firm. June 2026.\n\n' +
+      'Keyword analysis for FXIFY prop trading firm. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
       'SEED KEYWORD: "' + seed + '"\n\n' +
       'DATAFORSEO DATA:\n' + (kwSummary || 'No DFS data available') + '\n\n' +
       (serpSummary ? 'CURRENTLY RANKING (top 6):\n' + serpSummary + '\n\n' : '') +
@@ -8647,20 +8327,11 @@ function v2WireCustomBtn() {
       runTopicIdeas();
       return;
     }
-    if (e.target.closest('#trending-btn')) {
-      runTrendingDiscovery();
-      return;
-    }
     if (e.target.closest('#ayt-research-btn')) {
       var ytTopic = (document.getElementById('yt-topic')||{}).value || '';
       if (!ytTopic.trim()) { v2Toast('Enter a YouTube topic or keyword first'); return; }
       runYouTubeDiscovery();
       return;
-    }
-    if (e.target.closest('#v2-custom-btn')) {
-      var val = ((document.getElementById('v2-custom-topic')||{}).value || '').trim();
-      if (!val) { v2Toast('Type a topic in the field first'); return; }
-      runBriefResearch(val);
     }
     if (e.target.closest('#kw-run-btn')) {
       runKeywordAnalysis();
@@ -9147,7 +8818,16 @@ function init(){
     goScreen(user.screen);
     loadPipeline(); loadWriterDrafts();
   loadPublishingBadge();
-    setTimeout(function(){ loadPublishedFromSupabase(); }, 500);
+    setTimeout(function(){
+      loadPublishedFromSupabase();
+      // Silent background scrape — populates publishedCache from live site
+      // Only runs if Supabase cache is empty
+      setTimeout(function(){
+        if (!window.publishedCache || !window.publishedCache.length) {
+          scrapePublishedArticles('_silent', '_silent');
+        }
+      }, 3000);
+    }, 500);
 
     // David is full admin — no special injection needed
     if (false && user.role === 'david') {
@@ -9535,21 +9215,8 @@ function init(){
     });
   });
 
-  // Published articles — admin
-  var aScrapeBtn = document.getElementById('a-scrape-btn');
-  if (aScrapeBtn) aScrapeBtn.addEventListener('click', function(){
-    scrapePublishedArticles('a-live-list', 'a-live-count');
-  });
-
-
   // Test save button — saves 1 row and reports exact result
-  var aSearch = document.getElementById('a-live-search');
-  if (aSearch) aSearch.addEventListener('input', function(){
-    if (publishedCache) renderPublishedArticles(publishedCache, 'a-live-list', 'a-live-count', aSearch.value);
-  });
-
-
-  // Liam topic submission
+ // Liam topic submission
 
   // v2 Topic Intelligence Hub init
   v2WireCredentials();
@@ -9946,7 +9613,7 @@ async function runFullCompetitorAnalysis() {
     );
 
     var prompt =
-      'You are a content intelligence analyst for FXIFY prop firm. June 2026.\n\n' +
+      'You are a content intelligence analyst for FXIFY prop firm. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
       'COMPETITORS TO ANALYSE: ' + firms.join(', ') + '\n\n' +
       (liveData ? 'LIVE RESEARCH:\n' + liveData.substring(0, 2000) + '\n\n' : '') +
       'FXIFY ADVANTAGES: $19 Instant Funding, One Phase no consistency rule, broker-backed FXPIG 2010, on-demand payouts, $40M+ paid.\n\n' +
@@ -10385,7 +10052,7 @@ async function runCICompetitorWatch() {
       competitors.slice(0,4).map(function(c) {
         return fetch('https://api.firecrawl.dev/v1/search', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer fc-918ef0f7ffac439caca532272347e770' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
           body: JSON.stringify({ query: c.query, limit: 5, scrapeOptions: { formats: ['markdown'] } })
         })
         .then(function(r) { return r.json(); })
@@ -10400,7 +10067,7 @@ async function runCICompetitorWatch() {
       competitors.slice(4).map(function(c) {
         return fetch('https://api.firecrawl.dev/v1/search', {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer fc-918ef0f7ffac439caca532272347e770' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
           body: JSON.stringify({ query: c.query, limit: 5, scrapeOptions: { formats: ['markdown'] } })
         })
         .then(function(r) { return r.json(); })
