@@ -5549,16 +5549,24 @@ async function runYouTubeDiscovery() {
       '3. What are traders searching for but not finding good video answers?\n\n' +
       'FXIFY advantages: $19 Instant Funding, One Phase no consistency rule, ' +
       'broker-backed FXPIG 2010, on-demand payouts, $40M+ paid. $117k highest payout to date.\n\n' +
+      'YOUTUBE TITLE FORMAT — searchable titles only. People must actually search this on YouTube.\n' +
+      'PATTERN 1 — Comparison: "FXIFY vs FTMO: Which Prop Firm is Better in 2026" (gets searches)\n' +
+      'PATTERN 2 — How to: "How to Pass a Prop Firm Challenge in 2026 (Step by Step)"\n' +
+      'PATTERN 3 — List: "Top 5 Prop Firms With the Fastest Payouts in 2026"\n' +
+      'PATTERN 4 — Experience: "I Tested FXIFY For 30 Days — Here Is What Happened"\n' +
+      'PATTERN 5 — Warning: "Do NOT Buy a Prop Firm Challenge Before Watching This"\n' +
+      'BANNED: statement hooks that sound like ads, anything under 30 chars, anything with Mastering/Ultimate/Dive\n\n' +
       'Generate 8 YouTube video ideas. Return ONLY valid JSON no markdown:\n' +
       '{"topics":[{' +
-      '"title":"Hook statement — exact video title",' +
+      '"title":"SEARCHABLE YouTube title — use: Firm vs Firm format OR How to X OR Top N for Y OR I tested X. Under 60 chars. People must actually search this.",' +
+      '"thumbnail_hook":"3-6 words for thumbnail text — punchy, visible at 100px",' +
       '"intent":"Commercial|Informational|Transactional",' +
       '"conversion_tier":"1|2|3",' +
-      '"primary_keyword":"youtube search term",' +
-      '"short_form_hook":"exact opening line Harry says to camera",' +
-      '"competitor_gap":"What competitors cover and what they miss",' +
-      '"fxify_angle":"FXIFY specific fact that wins this angle",' +
-      '"why_now":"why this topic matters in June 2026",' +
+      '"primary_keyword":"exact phrase traders type on YouTube to find this video",' +
+      '"short_form_hook":"exact first 2 sentences Harry says to camera. Trader scenario not a definition. Under 20 words.",' +
+      '"competitor_gap":"What FTMO/FundedNext/Apex channel covers and what specific angle they miss",' +
+      '"fxify_angle":"FXIFY specific fact that wins this angle — name the program and the number",' +
+      '"why_now":"why this topic matters in July 2026 — cite specific event or data",' +
       '"opportunity_score":80' +
       '}]}';
 
@@ -5710,7 +5718,7 @@ async function runYTFullSEO(t) {
     'COMPETITOR GAP: ' + (t.competitor_gap||'') + '\n\n' +
     'FXIFY FACTS: One Phase (no consistency rule, payout on demand), Instant Funding from $19, broker-backed via FXPIG, performance split up to 90%.\n\n' +
     'Return ONLY valid JSON:\n' +
-    '{"title_options":["option1","option2","option3"],' +
+    '{"title_options":["Searchable title option 1 — use Firm vs Firm OR How to X OR Top N format","Searchable option 2","Searchable option 3"],' +
     '"description":"Full 250-word YouTube description. Keyword in first 2 sentences. Includes chapters, links, CTA.",' +
     '"tags":["tag1","tag2","tag3","tag4","tag5","tag6","tag7","tag8","tag9","tag10"],' +
     '"chapters":["0:00 Intro","1:30 Section"],' +
@@ -6544,24 +6552,38 @@ async function runTrendingDiscovery() {
       '- "What is a prop firm" beginner explainer\n' +
       '- $117k payout proof\n\n' +
 
-      'TITLE FORMAT: statement or hook, not a blog headline.\n' +
-      'GOOD: "Most traders are failing the funded stage, not the challenge"\n' +
-      'GOOD: "FTMO just changed its rules. Here is what that means for you."\n' +
-      'BAD: "Top 5 Prop Firms in 2026"\n' +
-      'BAD: "Comprehensive Guide to Drawdown"\n\n' +
+      'TITLE RULES — EVERY topic needs TWO titles:\n' +
+      '\n' +
+      'SEARCH TITLE (H1 + meta — how traders actually Google this):\n' +
+      'Pattern 1: "Best [X] for [trader type] in 2026" — e.g. "Best Prop Firm for Swing Traders in 2026"\n' +
+      'Pattern 2: "[Firm] vs [Firm]: [specific comparison point]" — e.g. "FXIFY vs FTMO: Rules, Payouts and Drawdown"\n' +
+      'Pattern 3: "How to [outcome] without [pain point]" — e.g. "How to Pass a Prop Challenge Without a Consistency Rule"\n' +
+      'Pattern 4: "[N] Prop Firms With [specific feature] in 2026" — e.g. "5 Prop Firms With No Daily Drawdown Limit"\n' +
+      'Pattern 5: "[Specific topic] Explained: [what trader learns]" — e.g. "Trailing Drawdown Explained: How It Ends Funded Accounts"\n' +
+      'Under 65 chars. Keyword traders actually search in Google. No click-bait. No generic.\n' +
+      '\n' +
+      'HOOK TITLE (intro paragraph + social + email subject — brand voice):\n' +
+      'This is the statement or scene that opens the article. Different from the H1.\n' +
+      'GOOD: "The consistency rule ends accounts. FXIFY One Phase does not have one."\n' +
+      'GOOD: "FTMO just changed its rules. Here is what that means for your account."\n' +
+      'GOOD: "You can get a funded account for $19. Here is exactly what you are buying."\n' +
+      '\n' +
+      'BANNED in both titles: Mastering, Ultimate, Comprehensive, Deep Dive, Unlocking,\n' +
+      'Navigating, Revolutionize, Seamlessly, Robust, Empowering, Delve\n\n' +
 
       'Return ONLY valid JSON, no markdown:\n' +
       '{"topics":[{' +
-      '"title":"Statement hook under 65 chars",' +
+      '"title":"SEARCH TITLE — keyword-first, under 65 chars, exact phrase traders type in Google",' +
+      '"hook_title":"HOOK TITLE — statement or trader scene, brand voice, under 65 chars, for article intro + social",' +
       '"intent":"Commercial|Informational|Transactional",' +
       '"conversion_tier":"1|2|3",' +
-      '"why_trending":"specific reason this is relevant RIGHT NOW in June 2026 — cite actual event or data",' +
-      '"short_form_hook":"exact first sentence for a 15-30s video. Brand voice.",' +
+      '"why_trending":"specific reason this is relevant RIGHT NOW in July 2026 — cite actual event or data",' +
+      '"short_form_hook":"exact first sentence Harry says to camera. Brand voice. Under 15 words.",' +
       '"fxify_angle":"specific FXIFY product + verifiable fact. One sentence.",' +
       '"opportunity_score":80,' +
       '"signal_type":"Blog|YouTube|Google Ads|Reddit|X|Mixed",' +
       '"signal_source":"which specific signal surfaced this topic and why it matters",' +
-      '"youtube_title":"exact YouTube video title for this topic",' +
+      '"youtube_title":"Searchable YouTube title — Firm vs Firm format OR How to X OR Top N for Y",' +
       '"ad_headline":"30 char Google Ads headline if this has commercial intent",' +
       '"source":"' + (hasLive ? 'live_research' : 'training_knowledge') + '"' +
       '}]}';
@@ -7494,13 +7516,22 @@ async function runTopicIdeas() {
     'or a CLUSTER topic (specific, supports a pillar, faster to rank).\n' +
     'We want 2 pillar topics and 6 cluster topics in the output.\n\n' +
 
-    'TITLE FORMAT — statement or hook, not a blog headline:\n' +
-    'GOOD: "You can get a funded trading account for $19"\n' +
-    'GOOD: "Most prop firms make you wait weeks for your money. We don\'t."\n' +
-    'GOOD: "There is a rule that can fail your account on your best trading day"\n' +
-    'BAD: "How to Choose the Best Prop Firm in 2026"\n' +
-    'BAD: "A Comprehensive Guide to Drawdown Rules"\n' +
-    'BANNED WORDS: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Navigating, ' +
+    'TITLE RULES — TWO titles per topic required:\n' +
+    '\n' +
+    'SEARCH TITLE (H1 + meta): how traders actually search Google. Keyword-first. Under 65 chars.\n' +
+    'PATTERN 1 — Best X for Y: "Best Prop Firm for Swing Traders in 2026"\n' +
+    'PATTERN 2 — Comparison: "FXIFY vs FTMO: Drawdown, Rules and Payouts Compared"\n' +
+    'PATTERN 3 — How to: "How to Pass a Prop Firm Challenge Without a Consistency Rule"\n' +
+    'PATTERN 4 — List: "5 Prop Firms With No Daily Drawdown Limit in 2026"\n' +
+    'PATTERN 5 — Explained: "Trailing Drawdown Explained: How It Ends Funded Accounts"\n' +
+    'BANNED in search title: vague hooks, brand voice, anything that sounds like an ad.\n' +
+    '\n' +
+    'HOOK TITLE (article intro + social + email): brand voice statement. Under 65 chars.\n' +
+    'GOOD: "The consistency rule ends accounts. FXIFY One Phase does not have one."\n' +
+    'GOOD: "FTMO just changed its rules. Here is what it means for your account."\n' +
+    'GOOD: "You can get a funded account for $19. Here is exactly what you get."\n' +
+    '\n' +
+    'BANNED WORDS in both: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Navigating, ' +
     'Elevate, Transform, Revolutionize, Seamlessly, Robust, Empowering, Delve\n\n' +
 
     'CRITICAL — AVOID THESE OVERUSED TOPICS (already produced, do not repeat):\n' +
@@ -7563,18 +7594,20 @@ async function runTopicIdeas() {
     '- The fxify_angle must use a specific product name and a specific number\n\n' +
     'Return ONLY valid JSON, no markdown:\n' +
     '{"topics":[{' +
-    '"title":"Statement hook — trader voice, under 65 chars, NOT a blog headline",' +
+    '"title":"SEARCH TITLE — keyword-first, under 65 chars, exact phrase traders type in Google",' +
+    '"hook_title":"HOOK TITLE — brand voice statement or trader scene, under 65 chars, for article intro + social",' +
     '"type":"pillar|cluster",' +
     '"intent":"Commercial|Informational|Transactional",' +
     '"conversion_tier":"1|2|3",' +
-    '"primary_keyword":"exact phrase traders type",' +
+    '"primary_keyword":"exact phrase traders type in Google — must match the search title keyword",' +
     '"search_volume":"number from DFS data or TBC",' +
     '"kd_score":"0-100 or TBC",' +
-    '"short_form_hook":"First sentence Harry says to camera. Under 15 words. Brand voice.",' +
+    '"short_form_hook":"First sentence Harry says to camera. Under 15 words. Brand voice. NOT the search title.",' +
     '"competitor_gap":"[Firm name] covers [specific topic] but never addresses [specific gap]. FXIFY wins because [specific fact with number].",' +
     '"fxify_angle":"[Exact FXIFY account type] + [one verifiable number]. One sentence max.",' +
-    '"why_now":"Specific event or stat from June 2026. Never vague. Cite the source.",' +
-    '"opportunity_score":0' +
+    '"why_now":"Specific event or stat from July 2026. Never vague. Cite the source.",' +
+    '"opportunity_score":0,' +
+    '"youtube_title":"Searchable YouTube title — use Firm vs Firm OR How to X OR Top N for Y format. Under 60 chars."' +
     '}]}';
 
   try {
@@ -7692,10 +7725,17 @@ async function renderTopicGrid(topics, isStub, publishedCount) {
             (t.signal_source ? '<span style="font-size:10px;color:var(--text3);margin-left:8px;">' + t.signal_source.substring(0,80) + '</span>' : '') +
           '</div>' : '') +
 
-        // ── Row 2: Title — bold, the content hook ──
-        '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:' + (why?'8px':'10px') + ';">' +
+        // ── Row 2: Search Title (SEO/H1) + Hook Title (intro/social) ──
+        '<p style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;">H1 · Search Title</p>' +
+        '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:6px;">' +
           (t.title || 'Untitled') +
         '</p>' +
+        (t.hook_title ?
+          '<p style="font-size:11px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;">Hook · Intro + Social</p>' +
+          '<p style="font-size:13px;color:var(--text2);line-height:1.45;margin-bottom:' + (why?'8px':'10px') + ';font-style:italic;">' +
+            t.hook_title +
+          '</p>'
+        : '') +
 
         // ── Row 3: Why paragraph — Yoast's one-para explanation ──
         (why ?
@@ -8063,6 +8103,13 @@ async function runBriefResearch(topicObj) {
   var prompt =
     (feedbackRules ? 'LEARNED RULES FROM REVIEWER FEEDBACK — apply these strictly in this brief:\n' + feedbackRules + '\n\n' : '') +
     'You are a Senior Content Strategist at FXIFY. You write briefs that writers can execute without coming back with questions. Every field must be specific enough that a writer who has never heard of this topic knows exactly what argument to make, what facts to use, and how FXIFY wins.\n\n'+
+    'CRITICAL ARTICLE OPENING RULE:\n' +
+    'The first 400 words answer the trader\'s search query completely and objectively.\n' +
+    'FXIFY enters as the answer in the second half — never in the opening.\n' +
+    'WRONG: "At FXIFY, we offer the best conditions for swing traders..." (sounds like an ad — Google demotes this)\n' +
+    'RIGHT: "Swing traders need firms with no forced position close, static drawdown, and no consistency rule.\n' +
+    'Here is how the major firms compare on each of these three points." — then FXIFY wins the comparison.\n\n' +
+    'The article must read like an editorial, not a sales page. FXIFY wins through evidence, not assertion.\n\n'+
 
     'TOPIC: '+topic+'\n'+
     'CATEGORY: '+cat+'\n\n'+
@@ -8099,7 +8146,24 @@ async function runBriefResearch(topicObj) {
     'Two sentences. First: the conclusion a trader should take away. Second: what FXIFY specifically offers for this situation, with a named program or fact.\n\n'+
 
     'Return ONLY valid JSON — no markdown, no preamble:\n'+
-    '{"title":"","primary_keyword":"","secondary_keywords":[],"search_intent":"","word_count":"","hook_angle":"","key_terms":[{"term":"","definition":""}],"toc":[],"sections":[{"h2":"","angle":"","what_to_check":""}],"fxify_angle":"","faqs":[{"q":"","a":""}],"bottom_line":"","competitor_gaps":"","meta_title":"","meta_desc":"","slug":"","geo_angle":"","aeo_question":""}';
+    '{"title":"SEARCH TITLE — keyword-first H1, how traders search Google, under 65 chars",' +
+    '"hook_title":"HOOK TITLE — brand voice statement for article intro and social, under 65 chars",' +
+    '"primary_keyword":"","secondary_keywords":[],' +
+    '"search_intent":"Transactional|Commercial|Informational",' +
+    '"word_count":"",' +
+    '"hook_angle":"The opening scene — trader situation, not a stat, not a question, not In this article",' +
+    '"key_terms":[{"term":"","definition":""}],' +
+    '"toc":[],' +
+    '"sections":[{"h2":"","angle":"","what_to_check":""}],' +
+    '"fxify_angle":"",' +
+    '"faqs":[{"q":"","a":""}],' +
+    '"bottom_line":"",' +
+    '"competitor_gaps":"",' +
+    '"meta_title":"Keyword-first meta title under 60 chars",' +
+    '"meta_desc":"Under 155 chars. Opens with keyword. Answers search intent directly.",' +
+    '"slug":"",' +
+    '"geo_angle":"",' +
+    '"aeo_question":""}';
   try {
     var text  = await v2Fetch(prompt, 6000);
     var brief = parseJSON(text);
@@ -10167,6 +10231,8 @@ async function loadTopicHistory() {
 
     var runs      = runsRes.data || [];
     var bookmarks = bookmarksRes.data || [];
+    console.log('[Bookmarks] query result:', bookmarksRes.data, 'error:', bookmarksRes.error);
+    if (bookmarksRes.error) console.warn('[Bookmarks] RLS or table issue:', bookmarksRes.error.message || bookmarksRes.error.code);
 
     var html =
       '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">' +
