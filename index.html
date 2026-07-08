@@ -740,7 +740,7 @@ tr:last-child td{border-bottom:none;}
             <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--blueL);color:var(--blue);border:1px solid rgba(59,130,246,0.2);font-family:var(--mono);" id="hub-dfs-status">DataForSEO ✓</span>
             <span style="font-size:10px;padding:2px 8px;border-radius:4px;background:var(--greenL);color:var(--green);border:1px solid rgba(52,211,153,0.2);font-family:var(--mono);">Firecrawl ✓</span>
             <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span> History</button>
-            <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span> Bookmarks</button>
+            <button class="btn btn-s" onclick="loadTopicBookmarks()" style="font-size:11px;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span> Bookmarks</button>
           </div>
         </div>
 
@@ -7598,7 +7598,7 @@ async function runTopicIdeas() {
 }
 
 // ── STAGE 2: TOPIC GRID ───────────────────────────────────────────────
-function renderTopicGrid(topics, isStub, publishedCount) {
+async function renderTopicGrid(topics, isStub, publishedCount) {
   var output = document.getElementById('v2-brief-output');
   if (!output) return;
   if (!topics || !topics.length) {
@@ -7769,6 +7769,26 @@ function renderTopicGrid(topics, isStub, publishedCount) {
   html += '</div>';
   output.innerHTML = html;
   window._v2Topics = topics;
+
+  // Check which topics are already bookmarked and mark their stars
+  try {
+    var titlesRes = await supa.from('topic_bookmarks').select('title');
+    if (titlesRes.data && titlesRes.data.length) {
+      var bookmarkedTitles = titlesRes.data.map(function(r) { return r.title; });
+      output.querySelectorAll('.v2-bookmark-btn').forEach(function(btn) {
+        var bidx = parseInt(btn.dataset.idx);
+        var t = window._v2Topics && window._v2Topics[bidx];
+        if (t && bookmarkedTitles.indexOf(t.title) !== -1) {
+          btn.textContent = '★';
+          btn.style.color = 'var(--amber)';
+          btn.style.background = 'rgba(245,158,11,.15)';
+          btn.style.border = '1px solid rgba(245,158,11,.3)';
+          btn.title = 'Already bookmarked';
+          btn.disabled = true;
+        }
+      });
+    }
+  } catch(e) { /* silent — bookmark check is non-critical */ }
 }
 
 
@@ -8641,6 +8661,10 @@ function v2WireCustomBtn() {
         bookmarkTopic(btopic, bseed);
         bookmarkBtn.textContent = '★';
         bookmarkBtn.style.color = 'var(--amber)';
+        bookmarkBtn.style.background = 'rgba(245,158,11,.15)';
+        bookmarkBtn.style.border = '1px solid rgba(245,158,11,.3)';
+        bookmarkBtn.title = 'Bookmarked ✓';
+        bookmarkBtn.disabled = true;
       }
       return;
     }
@@ -10263,6 +10287,23 @@ async function loadTopicHistory() {
   }
 }
 window.loadTopicHistory = loadTopicHistory;
+
+async function loadTopicBookmarks() {
+  // Load history panel then auto-switch to Bookmarks tab
+  await loadTopicHistory();
+  // Wait for DOM to render then click the Bookmarks tab
+  setTimeout(function() {
+    var output = document.getElementById('v2-brief-output');
+    if (!output) return;
+    var tabs = output.querySelectorAll('.hist-tab-btn');
+    tabs.forEach(function(btn) {
+      if (btn.dataset.htab === 'bookmarks') {
+        btn.click();
+      }
+    });
+  }, 120);
+}
+window.loadTopicBookmarks = loadTopicBookmarks;
 
 
 
