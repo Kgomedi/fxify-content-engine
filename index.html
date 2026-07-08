@@ -794,7 +794,7 @@ tr:last-child td{border-bottom:none;}
       <div class="hub-panel active" id="hub-blog">
 
         <!-- Primary action row — keyword + button, always visible -->
-        <div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:12px;">
+        <div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:8px;">
           <div style="flex:1;">
             <label class="flbl">Keyword or topic</label>
             <input class="finput" id="v2-seed" type="text"
@@ -805,6 +805,19 @@ tr:last-child td{border-bottom:none;}
             <span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg></span>
             Find Gaps
           </button>
+        </div>
+
+        <!-- Seed suggestions — click to pre-fill -->
+        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px;align-items:center;">
+          <span style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-right:2px;">Try:</span>
+          <button class="btn btn-xs" onclick="document.getElementById('v2-seed').value='prop firm drawdown rules';document.getElementById('v2-research-btn').click();" style="font-size:10px;border-radius:10px;padding:2px 10px;background:var(--bg2);border-color:var(--border);color:var(--text3);">prop firm drawdown rules</button>
+          <button class="btn btn-xs" onclick="document.getElementById('v2-seed').value='FXIFY review';document.getElementById('v2-research-btn').click();" style="font-size:10px;border-radius:10px;padding:2px 10px;background:var(--bg2);border-color:var(--border);color:var(--text3);">FXIFY review</button>
+          <button class="btn btn-xs" onclick="document.getElementById('v2-seed').value='instant funding prop firm';document.getElementById('v2-research-btn').click();" style="font-size:10px;border-radius:10px;padding:2px 10px;background:var(--bg2);border-color:var(--border);color:var(--text3);">instant funding prop firm</button>
+          <button class="btn btn-xs" onclick="document.getElementById('v2-seed').value='how to pass prop firm challenge';document.getElementById('v2-research-btn').click();" style="font-size:10px;border-radius:10px;padding:2px 10px;background:var(--bg2);border-color:var(--border);color:var(--text3);">how to pass prop firm challenge</button>
+          <button class="btn btn-xs" onclick="document.getElementById('v2-seed').value='prop firm for scalpers';document.getElementById('v2-research-btn').click();" style="font-size:10px;border-radius:10px;padding:2px 10px;background:var(--bg2);border-color:var(--border);color:var(--text3);">prop firm for scalpers</button>
+          <button class="btn btn-xs" onclick="document.getElementById('v2-seed').value='funded trading account';document.getElementById('v2-research-btn').click();" style="font-size:10px;border-radius:10px;padding:2px 10px;background:var(--bg2);border-color:var(--border);color:var(--text3);">funded trading account</button>
+          <button class="btn btn-xs" onclick="document.getElementById('v2-seed').value='prop firm no consistency rule';document.getElementById('v2-research-btn').click();" style="font-size:10px;border-radius:10px;padding:2px 10px;background:var(--bg2);border-color:var(--border);color:var(--text3);">no consistency rule</button>
+          <button class="btn btn-xs" onclick="document.getElementById('v2-seed').value='FXIFY vs FTMO';document.getElementById('v2-research-btn').click();" style="font-size:10px;border-radius:10px;padding:2px 10px;background:var(--bg2);border-color:var(--border);color:var(--text3);">FXIFY vs FTMO</button>
         </div>
 
         <!-- Advanced options — collapsed by default -->
@@ -7100,147 +7113,84 @@ async function dfsAutocomplete(kw) {
 
 // ── FIRECRAWL COMPETITOR SCRAPER ──────────────────────────────────────
 async function v2ScrapeCompetitors(compKey) {
-  var competitorMap = {
-    all:        ['FTMO','FundedNext','The5ers','FundingPips','Goat Funded Trader','Alpha Capital Group','My Funded Futures','Blue Guardian','Apex Trader Funding','E8 Funding'],
-    ftmo:       ['FTMO'],
-    fundednext: ['FundedNext'],
-    the5ers:    ['The5ers'],
-    fundingpips:['FundingPips'],
-    goat:       ['Goat Funded Trader'],
-    tradeify:   ['Tradeify'],
+  // Map competitor keys to their blog domains for Firecrawl searches
+  var competitorDomains = {
+    all:        [
+      { name: 'FTMO',               query: 'prop trading funded account blog FTMO 2026' },
+      { name: 'FundedNext',         query: 'prop firm blog FundedNext funded trader 2026' },
+      { name: 'FundingPips',        query: 'prop trading FundingPips blog content 2026' },
+      { name: 'The5ers',            query: 'prop firm blog The5ers funded trading 2026' },
+      { name: 'Goat Funded Trader', query: 'Goat Funded Trader blog prop trading 2026' },
+    ],
+    ftmo:       [{ name: 'FTMO',       query: 'site:ftmo.com blog prop trading 2026' }],
+    fundednext: [{ name: 'FundedNext', query: 'site:fundednext.com blog prop trading 2026' }],
+    the5ers:    [{ name: 'The5ers',    query: 'site:the5ers.com blog prop trading 2026' }],
+    fundingpips:[{ name: 'FundingPips',query: 'site:fundingpips.com blog prop trading 2026' }],
+    goat:       [{ name: 'Goat Funded Trader', query: 'site:goatfundedtrader.com blog 2026' }],
+    alpha:      [{ name: 'Alpha Capital', query: 'site:alphacapitalgroup.uk blog 2026' }],
   };
-  var firms = competitorMap[compKey || 'all'] || competitorMap.all;
-  var serpWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/serp');
-  var researchWebhook = V2_CONFIG.webhook; // /research has CORS issues — use generate-draft
 
-  // Try DataForSEO SERP for competitor content — search each firm's blog
-  // Run 2 SERP searches: competitor general content + trader Reddit questions
-  var serpSearches = [
-    'prop firm blog 2026 ' + firms.slice(0,3).join(' OR '),
-    'site:reddit.com prop firm funded trading 2026 trader question advice'
-  ];
+  var targets = competitorDomains[compKey] || competitorDomains.all;
 
-  var serpResults = await Promise.allSettled(
-    serpSearches.map(function(kw) {
-      return fetch(serpWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          keyword: kw,
-          login:   V2_CONFIG.dfsLogin,
-          pass:    V2_CONFIG.dfsPass,
-          location: 2840,
-          language: 'en',
-          depth:   10
-        })
-      }).then(function(r) { return r.json(); }).then(function(data) {
-        if (data.tasks && data.tasks[0] && data.tasks[0].result && data.tasks[0].result[0]) {
-          return (data.tasks[0].result[0].items || [])
-            .filter(function(i) { return i.type === 'organic'; })
-            .slice(0, 8)
-            .map(function(i) { return i.title + ' — ' + (i.description || '').substring(0, 80); })
-            .join('\n');
-        }
-        return '';
-      });
-    })
-  );
-
-  var liveCompContent = serpResults
-    .filter(function(r) { return r.status === 'fulfilled' && r.value; })
-    .map(function(r) { return r.value; })
-    .join('\n\n');
-
-  var hasLiveSERP = liveCompContent.length > 100;
-  console.log('[Competitors] live SERP data:', hasLiveSERP ? 'YES (' + liveCompContent.length + ' chars)' : 'NO');
-
-  // Try live research webhook (Claude with web search) if available
-  var liveResearch = '';
-  if (researchWebhook !== serpWebhook) {
-    try {
-      var rr = await fetch(researchWebhook, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          query: firms.join(' OR ') + ' prop firm blog YouTube 2026',
-          instructions:
-            'Search for recent content from these prop trading firms: ' + firms.join(', ') + '. ' +
-            'Find actual article titles and video topics they published recently. ' +
-            'What topics do they cover? What questions do traders ask in comments? ' +
-            'What are they NOT covering that FXIFY could own? ' +
-            'Be specific — list actual titles you find, not general topics.',
-          max_tokens: 1000
-        })
-      });
-      if (rr.ok) {
-        var rd = await rr.json();
-        liveResearch = rd.text || (rd.content && rd.content[0] && rd.content[0].text) || '';
-        console.log('[Competitors] live research:', liveResearch.length, 'chars');
-      }
-    } catch(re) {
-      console.warn('[Competitors] research webhook failed:', re.message);
-    }
-  }
-
-  var hasAnyLiveData = hasLiveSERP || liveResearch.length > 100;
-
-  if (hasAnyLiveData) {
-    // Build structured response from live data
-    var combinedData =
-      (hasLiveSERP ? '=== LIVE SERP DATA (DataForSEO ' + new Date().toLocaleDateString() + ') ===\n' + liveCompContent + '\n\n' : '') +
-      (liveResearch ? '=== LIVE WEB RESEARCH ===\n' + liveResearch + '\n\n' : '');
-
-    return [{
-      domain: 'Live Research',
-      source: 'DataForSEO SERP + Web Search',
-      articles: [{ title: combinedData.substring(0, 2000), url: '', subtopics: [], content: null }],
-      fullArticles: 1,
-      missing: [],
-      content_angle: 'Live data — ' + new Date().toLocaleDateString(),
-      publish_frequency: 'Live',
-      traffic_est: 'live',
-      fxify_counter: ''
-    }];
-  }
-
-  // Fallback: Claude training knowledge
-  console.warn('[Competitors] no live data — using Claude training knowledge');
   try {
-    var text = await v2Fetch(
-      'Content intelligence for FXIFY prop firm. June 2026.\n\n' +
-      'Based on your knowledge, what have these prop firms published recently: ' + firms.join(', ') + '?\n\n' +
-      'For each firm, list:\n' +
-      '1. Actual recent article or video titles (be specific)\n' +
-      '2. Keywords they target\n' +
-      '3. Topics they NEVER cover — gaps FXIFY could own\n\n' +
-      'Also: what are traders asking on Reddit/Discord about prop firms that no one has answered well?\n\n' +
-      'Return ONLY valid JSON:\n' +
-      '{"competitors":[{"firm":"FTMO","recent_titles":["title1","title2"],"gaps":["gap1","gap2"]}],' +
-      '"trader_questions":["question1","question2"]}',
-      2000
+    // Run Firecrawl searches in parallel for each competitor
+    var searches = await Promise.allSettled(
+      targets.map(function(t) {
+        return fetch('https://api.firecrawl.dev/v1/search', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + V2_CONFIG.firecrawl
+          },
+          body: JSON.stringify({ query: t.query, limit: 5 })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(d) { return { name: t.name, data: d, live: true }; })
+        .catch(function() { return { name: t.name, data: null, live: false }; });
+      })
     );
-    var parsed = JSON.parse(text.replace(/```json|```/g,'').trim());
-    var articles = [];
-    (parsed.trader_questions || []).forEach(function(q) {
-      articles.push({ title: '[Trader question] ' + q, url: '', subtopics: [], content: null });
+
+    var results = [];
+    searches.forEach(function(s) {
+      if (s.status !== 'fulfilled') return;
+      var r = s.value;
+      var articles = [];
+
+      if (r.live && r.data && r.data.data && r.data.data.length) {
+        // Real Firecrawl results
+        articles = r.data.data.slice(0,5).map(function(item) {
+          return {
+            title: item.title || item.url || '',
+            url:   item.url || '',
+            desc:  (item.description || '').substring(0,150)
+          };
+        }).filter(function(a) { return a.title; });
+      }
+
+      if (articles.length) {
+        results.push({
+          domain: r.name,
+          articles: articles,
+          traffic_est: 'live'
+        });
+      }
     });
-    (parsed.competitors || []).forEach(function(c) {
-      (c.recent_titles || []).forEach(function(t) {
-        articles.push({ title: '[' + c.firm + '] ' + t, url: '', subtopics: [], content: null });
-      });
-    });
-    return [{
-      domain: 'Competitor Research',
-      source: 'Claude training knowledge',
-      articles: articles,
-      fullArticles: articles.length,
-      missing: (parsed.competitors || []).reduce(function(acc,c){ return acc.concat(c.gaps||[]); }, []),
-      content_angle: 'Training knowledge — add /webhook/serp for live data',
-      publish_frequency: 'Estimated',
-      traffic_est: 'unknown',
-      fxify_counter: ''
-    }];
-  } catch(e) { return []; }
+
+    // If Firecrawl returned nothing, fall back to Claude's knowledge
+    if (!results.length) {
+      results = [{
+        domain: 'Competitor knowledge (Firecrawl unavailable)',
+        articles: [{ title: 'FIRECRAWL_EMPTY — Claude will use training knowledge for competitor analysis', url: '' }],
+        traffic_est: 'training_knowledge'
+      }];
+    }
+
+    return results;
+
+  } catch(e) {
+    console.warn('[v2ScrapeCompetitors] error:', e);
+    return [];
+  }
 }
 
 
@@ -7448,7 +7398,7 @@ async function v2SerpResearch(keyword) {
 
 async function runTopicIdeas() {
   var seed      = (document.getElementById('v2-seed')||{}).value || '';
-  var cat       = (document.getElementById('v2-cat')||{}).value  || 'All';
+  var cat       = 'General'; // v2-cat is a toggle — not a category selector yet
   var compKey   = (document.getElementById('v2-comp-focus')||{}).value || 'all';
   var audience  = (document.getElementById('v2-audience')||{}).value || 'all';
   var goal      = (document.getElementById('v2-goal')||{}).value || 'rank';
@@ -7486,6 +7436,12 @@ async function runTopicIdeas() {
   var serpData      = results[4].status === 'fulfilled' ? results[4].value : [];
 
   var isStub = kwData.length > 0 && kwData[0].stub;
+  var stubNote = isStub
+    ? '⚠ STUB MODE: DataForSEO returned no keyword volume data for this seed. ' +
+      'Do NOT reference volume numbers — they are not available. ' +
+      'Rely on SERP rankings, competitor content, and autocomplete phrases instead. ' +
+      'Mark search_volume and kd_score as "TBC" in every topic.\n\n'
+    : '';
 
   // Build Claude analysis prompt
   window._v2CompData = compData;
@@ -7539,6 +7495,7 @@ async function runTopicIdeas() {
 
   var prompt =
     (feedbackRules ? 'REVIEWER FEEDBACK TO ENFORCE:\n' + feedbackRules + '\n\n' : '') +
+    stubNote +
 
     // ── WHAT YOAST + SURFER ACTUALLY DO ───────────────────────────────
     // Step 1: NLP entity extraction — what concepts dominate this space
@@ -7589,17 +7546,11 @@ async function runTopicIdeas() {
     'BANNED WORDS in both: Mastering, Ultimate, Deep Dive, Unlocking, Comprehensive, Navigating, ' +
     'Elevate, Transform, Revolutionize, Seamlessly, Robust, Empowering, Delve\n\n' +
 
-    'CRITICAL — AVOID THESE OVERUSED TOPICS (already produced, do not repeat):\n' +
-    '- $19 instant funding (already covered)\n' +
-    '- payout speed comparison with FTMO (already covered)\n' +
-    '- consistency rule failing accounts (already covered)\n' +
-    '- swing trader drawdown rules (already covered)\n' +
-    '- broker-backed prop firm explainer (already covered)\n' +
-    '- how much traders spend on challenges (already covered)\n' +
-    '- $117k payout proof (already covered)\n' +
-    '- what is a prop firm explainer (already covered)\n\n' +
-    'Find FRESH angles from the seed keyword and competitor gaps. ' +
-    'Every topic must be something we have NOT produced before.\n\n' +
+    (fxifyBlock ? 'FXIFY ALREADY HAS THESE — DO NOT SUGGEST THEM:\n' +
+      'The following titles are already published. Do not suggest the same topic, angle, or keyword.\n' +
+      fxifyBlock + '\n\n' +
+      'Find FRESH angles from the seed keyword and competitor gaps. ' +
+      'Every topic must be a gap that FXIFY does not have yet.\n\n' : '') +
 
     'TONE: ESL Grade 5-6. Short sentences. Straight-talking trading mentor. ' +
     'Brand voice — FXIFY is speaking, not a content creator.\n\n' +
@@ -7618,7 +7569,7 @@ async function runTopicIdeas() {
     '- News trading allowed: One Phase, Two Phase, Three Phase. Restricted on Lightning/Instant.\n\n' +
 
     'SEED TOPIC: ' + seed + '\n' +
-    'CATEGORY: ' + cat + '\n' +
+    // Category: not yet wired to a real selector
     'TARGET AUDIENCE: ' + ({all:'All traders',beginner:'Beginner traders (new to prop firms)',experienced:'Experienced traders (passed challenges before)',researcher:'Prop firm researchers (comparing firms)',funded:'Already funded traders (managing live accounts)'}[audience]||'All traders') + '\n' +
     'CONTENT GOAL: ' + ({rank:'Rank for keyword in Google',authority:'Build FXIFY authority and trust',convert:'Drive challenge signups and conversions',retention:'Retain and educate funded traders'}[goal]||'Rank for keyword') + '\n' +
     'TARGET WORD COUNT: ' + wordcount + ' words\n\n' +
@@ -7666,7 +7617,7 @@ async function runTopicIdeas() {
     '}]}';
 
   try {
-    var text   = await v2Fetch(prompt, 6000);
+    var text   = await v2Fetch(prompt, 8000);
     var result = parseJSON(text);
     var topics = result.topics || [];
     // Sort by opportunity score descending
