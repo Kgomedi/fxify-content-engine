@@ -209,17 +209,89 @@ select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='ht
 .hub-tab.active{color:var(--teal);border-bottom-color:var(--teal);}
 
 /* ── HUB PANELS — Content Intelligence ─────────────────────── */
+/* ── CONTENT INTELLIGENCE ───────────────────────────────── */
 .hub-panel{display:none;}
 .hub-panel.active{display:block;}
-.ci-frow{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;}
-.ci-adv{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-top:8px;}
-.ci-seed-chips{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:14px;}
-.ci-chip{font-size:10px;border-radius:10px;padding:3px 10px;background:var(--bg2);border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .12s;}
-.ci-chip:hover{border-color:var(--teal);color:var(--teal);background:var(--tealL);}
-.ci-summary{font-size:11px;font-weight:600;color:var(--text3);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:6px 0;user-select:none;}
-.ci-summary::-webkit-details-marker{display:none;}
-.ci-adv-icon{display:inline-flex;align-items:center;justify-content:center;width:14px;height:14px;border:1px solid var(--border);border-radius:3px;font-size:9px;color:var(--text3);}
-.ci-adv-hint{font-size:10px;color:var(--muted);font-weight:400;}
+
+/* Tab nav */
+.ci-tabnav{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);margin-bottom:24px;}
+.ci-tabs{display:flex;align-items:center;gap:0;}
+.hub-tab{padding:10px 16px;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .15s;white-space:nowrap;}
+.hub-tab:hover{color:var(--text2);}
+.hub-tab.active{color:var(--teal);border-bottom-color:var(--teal);font-weight:600;}
+.hub-tab.primary{font-size:13px;}
+.ci-tab-divider{width:1px;height:16px;background:var(--border);margin:0 4px;}
+.ci-tab-actions{display:flex;align-items:center;gap:2px;padding-bottom:1px;}
+.ci-ghost-btn{background:none;border:none;font-size:11px;color:var(--text3);cursor:pointer;padding:4px 8px;border-radius:var(--r);transition:all .12s;}
+.ci-ghost-btn:hover{color:var(--text);background:var(--bg2);}
+
+/* Input area */
+.ci-input-row{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px;}
+.ci-input-row .finput{height:38px;font-size:13px;}
+.ci-find-btn{height:38px;padding:0 20px;white-space:nowrap;flex-shrink:0;font-size:13px;font-weight:600;}
+
+/* Seed chips */
+.ci-chips{display:flex;gap:5px;flex-wrap:wrap;align-items:center;margin-bottom:18px;}
+.ci-chip-label{font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.07em;flex-shrink:0;}
+.ci-chip{font-size:11px;border-radius:20px;padding:4px 12px;background:transparent;border:1px solid var(--border);color:var(--text3);cursor:pointer;transition:all .12s;line-height:1.2;}
+.ci-chip:hover{border-color:var(--teal);color:var(--teal);}
+
+/* Advanced details */
+.ci-details{margin-bottom:20px;}
+.ci-details summary{font-size:11px;font-weight:500;color:var(--text3);cursor:pointer;list-style:none;display:flex;align-items:center;gap:6px;padding:5px 0;user-select:none;width:fit-content;}
+.ci-details summary::-webkit-details-marker{display:none;}
+.ci-adv-body{background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;margin-top:8px;}
+.ci-adv-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-bottom:14px;}
+.ci-adv-checks{display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:12px;border-top:1px solid var(--border);}
+.ci-adv-check-label{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);cursor:pointer;}
+
+/* Topic cards — list style like Semrush */
+.ci-card-list{margin-top:4px;}
+.ci-card{padding:18px 0;border-bottom:1px solid var(--border);}
+.ci-card:last-child{border-bottom:none;}
+.ci-card-meta{display:flex;align-items:center;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.ci-badge{display:inline-flex;align-items:center;font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;letter-spacing:.02em;}
+.ci-badge-commercial{background:rgba(245,158,11,.15);color:var(--amber);border:1px solid rgba(245,158,11,.2);}
+.ci-badge-transactional{background:rgba(239,68,68,.15);color:var(--urgent);border:1px solid rgba(239,68,68,.2);}
+.ci-badge-informational{background:rgba(37,99,235,.15);color:var(--teal);border:1px solid rgba(37,99,235,.2);}
+.ci-badge-tier1{background:rgba(5,150,105,.12);color:#10B981;border:1px solid rgba(5,150,105,.2);}
+.ci-badge-tier2{background:rgba(217,119,6,.12);color:var(--amber);border:1px solid rgba(217,119,6,.2);}
+.ci-badge-tier3{background:var(--bg3);color:var(--text3);border:1px solid var(--border);}
+.ci-card-stats{margin-left:auto;display:flex;align-items:center;gap:12px;}
+.ci-stat{font-size:11px;color:var(--text3);font-family:var(--mono);}
+.ci-score{font-size:12px;font-weight:700;font-family:var(--mono);}
+.ci-title-label{font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px;}
+.ci-title-label.seo{color:var(--teal);}
+.ci-title-label.hook{color:var(--amber);}
+.ci-search-title{font-size:15px;font-weight:600;color:var(--text);line-height:1.4;margin-bottom:8px;}
+.ci-hook-title{font-size:13px;color:var(--text2);line-height:1.5;margin-bottom:8px;font-style:italic;}
+.ci-why{font-size:12px;color:var(--text3);line-height:1.7;margin-bottom:10px;}
+.ci-quote{font-size:12px;color:var(--teal);font-style:italic;border-left:2px solid var(--teal);padding-left:10px;margin-bottom:10px;line-height:1.5;}
+.ci-angles{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;}
+.ci-angle{flex:1;min-width:0;background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:8px 10px;}
+.ci-angle-label{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;margin-bottom:3px;}
+.ci-angle-text{font-size:11px;color:var(--text2);line-height:1.4;}
+.ci-card-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+.ci-kw-pill{font-size:11px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 9px;font-family:var(--mono);}
+.ci-action-primary{font-size:11px;font-weight:600;padding:5px 12px;}
+.ci-action-ghost{font-size:11px;padding:5px 10px;color:var(--text3);}
+
+/* Stub warning */
+.ci-stub-warn{background:rgba(245,158,11,.08);border:1px solid rgba(245,158,11,.2);border-radius:6px;padding:8px 12px;margin-bottom:16px;font-size:11px;color:var(--amber);}
+
+/* Output header */
+.ci-output-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding-bottom:14px;border-bottom:1px solid var(--border);}
+.ci-output-count{display:flex;align-items:center;gap:8px;}
+
+/* Refine panel */
+.ci-refine{border-top:1px solid var(--border);padding:12px 0 4px;margin-top:10px;}
+.ci-refine-presets{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px;}
+.chip{font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text3);cursor:pointer;transition:all .12s;}
+.chip:hover{border-color:var(--teal);color:var(--teal);}
+
+/* Competitor watch */
+.ci-comp-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap;}
+.ci-comp-pills{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:20px;align-items:center;}
 
 /* ── BADGES — Yoast/Semrush intent badges ───────────────── */
 .badge{display:inline-flex;align-items:center;gap:4px;font-size:10px;font-weight:700;padding:2px 8px;border-radius:4px;letter-spacing:.04em;}
@@ -746,93 +818,87 @@ tr:last-child td{border-bottom:none;}
       <div id="a-generate" class="pg">
 
       <!-- PAGE HEADER -->
-      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:24px;flex-wrap:wrap;">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
         <div>
           <div class="pgh">Content Intelligence</div>
-          <p class="pgs" style="margin-bottom:0;">Find real content gaps — what traders search for that FXIFY doesn't have yet.</p>
+          <p class="pgs" style="margin-bottom:0;">Find real content gaps — what traders search for that FXIFY doesn't rank for yet.</p>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;">
-          <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono);">
-            <span style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;" id="hub-dfs-dot"></span>
-            <span id="hub-dfs-status">DFS</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);">
+            <span style="width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block;" id="hub-dfs-dot"></span>
+            <span id="hub-dfs-status">DataForSEO</span>
           </span>
-          <span style="display:flex;align-items:center;gap:5px;font-size:10px;color:var(--text3);font-family:var(--mono);">
-            <span style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;"></span>
+          <span style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text3);">
+            <span style="width:7px;height:7px;border-radius:50%;background:var(--teal);display:inline-block;"></span>
             Firecrawl
           </span>
         </div>
       </div>
 
       <!-- TAB NAV -->
-      <div style="display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--border);margin-bottom:20px;">
-        <div style="display:flex;align-items:center;">
-          <button class="hub-tab active" data-tab="blog" style="padding:10px 18px;font-size:13px;font-weight:600;">Blog Gaps</button>
-          <button class="hub-tab" data-tab="youtube" style="padding:10px 18px;font-size:13px;font-weight:600;">Video Gaps</button>
-          <div style="width:1px;height:18px;background:var(--border);margin:0 6px;"></div>
-          <button class="hub-tab" data-tab="competitors" style="padding:8px 14px;font-size:12px;">Competitor Watch</button>
-          <button class="hub-tab" data-tab="crosspost" style="padding:8px 14px;font-size:12px;">Cross-Pollinate</button>
+      <div class="ci-tabnav">
+        <div class="ci-tabs">
+          <button class="hub-tab active primary" data-tab="blog">Blog Gaps</button>
+          <button class="hub-tab primary" data-tab="youtube">Video Gaps</button>
+          <div class="ci-tab-divider"></div>
+          <button class="hub-tab" data-tab="competitors">Competitor Watch</button>
+          <button class="hub-tab" data-tab="crosspost">Cross-Pollinate</button>
         </div>
-        <div style="display:flex;align-items:center;gap:2px;padding-bottom:2px;">
-          <button class="btn btn-s" onclick="loadTopicHistory()" style="font-size:11px;color:var(--text3);border-color:transparent;background:transparent;">History</button>
-          <button class="btn btn-s" onclick="loadTopicBookmarks()" style="font-size:11px;color:var(--text3);border-color:transparent;background:transparent;">Bookmarks</button>
+        <div class="ci-tab-actions">
+          <button class="ci-ghost-btn" onclick="loadTopicHistory()">History</button>
+          <button class="ci-ghost-btn" onclick="loadTopicBookmarks()">Bookmarks</button>
         </div>
       </div>
 
-      <!-- ═══════════════════════════════════════
+      <!-- ══════════════════════════════
            BLOG GAP FINDER
-      ═══════════════════════════════════════ -->
+      ══════════════════════════════ -->
       <div class="hub-panel active" id="hub-blog">
 
-        <!-- Keyword input + Find Gaps -->
-        <div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:8px;">
+        <div class="ci-input-row">
           <div style="flex:1;">
             <label class="flbl">Keyword or topic</label>
             <input class="finput" id="v2-seed" type="text" placeholder="e.g. prop firm drawdown, how to pass FXIFY, instant funding"/>
           </div>
-          <button class="btn btn-p" id="v2-research-btn" style="height:38px;padding:0 20px;white-space:nowrap;flex-shrink:0;font-weight:600;">
-            Find Gaps
-          </button>
+          <button class="btn btn-p ci-find-btn" id="v2-research-btn">Find Gaps</button>
         </div>
 
-        <!-- Seed chips -->
-        <div class="ci-seed-chips">
-          <span style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;">Try:</span>
+        <div class="ci-chips">
+          <span class="ci-chip-label">Try:</span>
           <button class="ci-chip" onclick="v2Seed('prop firm drawdown rules')">prop firm drawdown rules</button>
           <button class="ci-chip" onclick="v2Seed('FXIFY review')">FXIFY review</button>
-          <button class="ci-chip" onclick="v2Seed('instant funding prop firm')">instant funding prop firm</button>
-          <button class="ci-chip" onclick="v2Seed('how to pass prop firm challenge')">how to pass prop firm challenge</button>
+          <button class="ci-chip" onclick="v2Seed('instant funding prop firm')">instant funding</button>
+          <button class="ci-chip" onclick="v2Seed('how to pass prop firm challenge')">how to pass a challenge</button>
           <button class="ci-chip" onclick="v2Seed('prop firm for scalpers')">prop firm for scalpers</button>
-          <button class="ci-chip" onclick="v2Seed('funded trading account')">funded trading account</button>
           <button class="ci-chip" onclick="v2Seed('prop firm no consistency rule')">no consistency rule</button>
           <button class="ci-chip" onclick="v2Seed('FXIFY vs FTMO')">FXIFY vs FTMO</button>
         </div>
 
-        <!-- Advanced options -->
-        <details style="margin-bottom:16px;">
-          <summary class="ci-summary">
-            <span class="ci-adv-icon" id="blog-adv-icon">+</span>
+        <details class="ci-details">
+          <summary>
+            <span style="font-size:10px;width:14px;height:14px;border:1px solid var(--border);border-radius:3px;display:inline-flex;align-items:center;justify-content:center;" id="blog-adv-icon">+</span>
             Advanced options
-            <span class="ci-adv-hint">trader type · goal · word count · competitor focus · data sources</span>
+            <span style="font-size:10px;color:var(--muted);">trader type · goal · word count · competitor focus</span>
           </summary>
-          <div class="ci-adv">
-            <div class="ci-frow" style="margin-bottom:12px;">
+          <div class="ci-adv-body">
+            <div class="ci-adv-grid">
               <div>
                 <label class="flbl">Trader type</label>
                 <select class="finput" id="v2-audience">
                   <option value="all">All traders</option>
-                  <option value="beginner">Beginners — new to prop</option>
-                  <option value="experienced">Experienced — passed before</option>
-                  <option value="researcher">Researchers — comparing</option>
-                  <option value="funded">Funded — live accounts</option>
+                  <option value="beginner">Beginners</option>
+                  <option value="experienced">Experienced</option>
+                  <option value="researcher">Researchers</option>
+                  <option value="funded">Funded traders</option>
                 </select>
               </div>
               <div>
                 <label class="flbl">Content goal</label>
                 <select class="finput" id="v2-goal">
                   <option value="rank">Rank on Google</option>
-                  <option value="convert">Drive challenge signups</option>
-                  <option value="authority">Build FXIFY authority</option>
-                  <option value="retention">Retain funded traders</option>
+                  <option value="convert">Drive signups</option>
+                  <option value="authority">Build authority</option>
+                  <option value="retention">Retain traders</option>
                 </select>
               </div>
               <div>
@@ -857,96 +923,89 @@ tr:last-child td{border-bottom:none;}
                 </select>
               </div>
             </div>
-            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);">
-              <span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;">Data sources</span>
-              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-dfs" checked style="accent-color:var(--teal);"> DataForSEO volumes</label>
-              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-comp" checked> Competitor content</label>
-              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-use-fxify" checked> FXIFY gap check</label>
-              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="v2-cat"> Category filter</label>
+            <div class="ci-adv-checks">
+              <span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;">Data</span>
+              <label class="ci-adv-check-label"><input type="checkbox" id="v2-use-dfs" checked style="accent-color:var(--teal);"> DataForSEO</label>
+              <label class="ci-adv-check-label"><input type="checkbox" id="v2-use-comp" checked> Competitor research</label>
+              <label class="ci-adv-check-label"><input type="checkbox" id="v2-use-fxify" checked> FXIFY gap check</label>
+              <label class="ci-adv-check-label"><input type="checkbox" id="v2-cat"> Category filter</label>
             </div>
           </div>
         </details>
 
-        <!-- Output -->
         <div id="v2-brief-output"></div>
       </div>
 
-      <!-- ═══════════════════════════════════════
+      <!-- ══════════════════════════════
            VIDEO GAP FINDER
-      ═══════════════════════════════════════ -->
+      ══════════════════════════════ -->
       <div class="hub-panel" id="hub-youtube">
 
-        <div style="display:flex;align-items:flex-end;gap:10px;margin-bottom:8px;">
+        <div class="ci-input-row">
           <div style="flex:1;">
             <label class="flbl">Topic or keyword</label>
             <input class="finput" id="yt-topic" type="text" placeholder="e.g. prop firm challenge, FXIFY review, trailing drawdown"/>
           </div>
-          <button class="btn btn-p" id="ayt-research-btn" style="height:38px;padding:0 20px;white-space:nowrap;flex-shrink:0;font-weight:600;">
-            Find Video Gaps
-          </button>
+          <button class="btn btn-p ci-find-btn" id="ayt-research-btn">Find Video Gaps</button>
         </div>
 
-        <details style="margin-bottom:16px;">
-          <summary class="ci-summary">
-            <span class="ci-adv-icon">+</span>
+        <details class="ci-details">
+          <summary>
+            <span style="font-size:10px;width:14px;height:14px;border:1px solid var(--border);border-radius:3px;display:inline-flex;align-items:center;justify-content:center;">+</span>
             Advanced options
-            <span class="ci-adv-hint">format · competitor focus · signals</span>
+            <span style="font-size:10px;color:var(--muted);">format · competitor focus · signals</span>
           </summary>
-          <div class="ci-adv">
-            <div class="ci-frow" style="margin-bottom:12px;">
+          <div class="ci-adv-body">
+            <div class="ci-adv-grid" style="margin-bottom:14px;">
               <div>
                 <label class="flbl">Video format</label>
                 <select class="finput" id="yt-type">
                   <option value="long">Long-form (5–15 mins)</option>
-                  <option value="short">Short-form (15–60 secs)</option>
-                  <option value="both">Both formats</option>
+                  <option value="short">Short-form (under 60s)</option>
+                  <option value="both">Both</option>
                 </select>
               </div>
               <div>
                 <label class="flbl">Competitor focus</label>
                 <select class="finput" id="yt-comp-focus">
                   <option value="all">All competitors</option>
-                  <option value="ftmo">FTMO channel</option>
-                  <option value="fundednext">FundedNext channel</option>
+                  <option value="ftmo">FTMO</option>
+                  <option value="fundednext">FundedNext</option>
                   <option value="goat">Goat Funded Trader</option>
-                  <option value="the5ers">The5ers channel</option>
+                  <option value="the5ers">The5ers</option>
                 </select>
               </div>
             </div>
-            <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:10px;border-top:1px solid var(--border);">
+            <div class="ci-adv-checks">
               <span style="font-size:10px;font-weight:700;color:var(--text3);text-transform:uppercase;letter-spacing:.08em;">Signals</span>
-              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-seo" checked style="accent-color:var(--teal);"> YouTube search demand</label>
-              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-comp" checked> Competitor channels</label>
-              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-reddit" checked> Reddit questions</label>
-              <label style="display:flex;align-items:center;gap:5px;font-size:11px;color:var(--text2);cursor:pointer;"><input type="checkbox" id="sig-x"> X/Twitter signals</label>
+              <label class="ci-adv-check-label"><input type="checkbox" id="sig-seo" checked style="accent-color:var(--teal);"> YouTube search</label>
+              <label class="ci-adv-check-label"><input type="checkbox" id="sig-comp" checked> Competitor channels</label>
+              <label class="ci-adv-check-label"><input type="checkbox" id="sig-reddit" checked> Reddit questions</label>
+              <label class="ci-adv-check-label"><input type="checkbox" id="sig-x"> X/Twitter</label>
             </div>
           </div>
         </details>
 
-        <div id="yt-loading" style="display:none;padding:24px;text-align:center;">
+        <div id="yt-loading" style="display:none;padding:32px;text-align:center;">
           <div class="loader-spinner"></div>
           <div id="yt-signal-steps" style="margin-top:12px;font-size:12px;color:var(--text3);"></div>
         </div>
         <div id="yt-results"></div>
       </div>
 
-      <!-- ═══════════════════════════════════════
+      <!-- ══════════════════════════════
            COMPETITOR WATCH
-      ═══════════════════════════════════════ -->
+      ══════════════════════════════ -->
       <div class="hub-panel" id="hub-competitors-ci">
-
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+        <div class="ci-comp-header">
           <div>
-            <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Competitor Watch</p>
-            <p style="font-size:11px;color:var(--text3);">What competitors published recently that FXIFY doesn't have. Ranked by urgency.</p>
+            <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px;">Competitor Watch</p>
+            <p style="font-size:12px;color:var(--text3);">What competitors published recently. Ranked by how many are covering it.</p>
           </div>
-          <button class="btn btn-p" id="ci-comp-btn" onclick="runCICompetitorWatch()" style="white-space:nowrap;font-weight:600;">
-            Run Competitor Watch
-          </button>
+          <button class="btn btn-p" id="ci-comp-btn" onclick="runCICompetitorWatch()" style="white-space:nowrap;font-weight:600;">Run Competitor Watch</button>
         </div>
-
-        <div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:16px;align-items:center;">
-          <span style="font-size:10px;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.06em;margin-right:4px;">Tracking:</span>
+        <div class="ci-comp-pills">
+          <span class="ci-chip-label">Tracking:</span>
           <span class="ci-chip" style="cursor:default;">FTMO</span>
           <span class="ci-chip" style="cursor:default;">FundedNext</span>
           <span class="ci-chip" style="cursor:default;">FundingPips</span>
@@ -958,33 +1017,29 @@ tr:last-child td{border-bottom:none;}
           <span class="ci-chip" style="cursor:default;">Apex Trader Funding</span>
           <span class="ci-chip" style="cursor:default;">E8 Funding</span>
         </div>
-
         <div id="ci-comp-output"></div>
       </div>
 
-      <!-- ═══════════════════════════════════════
+      <!-- ══════════════════════════════
            CROSS-POLLINATE
-      ═══════════════════════════════════════ -->
+      ══════════════════════════════ -->
       <div class="hub-panel" id="hub-crosspost">
-
-        <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:3px;">Cross-Pollinate</p>
-        <p style="font-size:11px;color:var(--text3);margin-bottom:16px;">Convert a proven blog topic into a YouTube package, or a YouTube topic into a blog structure.</p>
-
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-            <span style="font-size:9px;padding:2px 8px;border-radius:4px;background:var(--tealL);color:var(--teal);font-weight:700;letter-spacing:.06em;display:inline-block;margin-bottom:10px;">BLOG → VIDEO</span>
+        <p style="font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px;">Cross-Pollinate</p>
+        <p style="font-size:12px;color:var(--text3);margin-bottom:20px;">Turn a proven blog topic into a YouTube package — or a YouTube title into a blog structure.</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
+            <span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);display:block;margin-bottom:12px;">Blog → Video</span>
             <label class="flbl">Blog topic or title</label>
-            <input class="finput" id="cp-blog-input" type="text" placeholder="e.g. Best Prop Firm for Swing Traders in 2026" style="margin-bottom:10px;"/>
+            <input class="finput" id="cp-blog-input" type="text" placeholder="e.g. Best Prop Firm for Swing Traders in 2026" style="margin-bottom:12px;"/>
             <button class="btn btn-p" id="cp-blog-btn" style="width:100%;justify-content:center;font-size:12px;">Convert to Video Package →</button>
           </div>
-          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px;">
-            <span style="font-size:9px;padding:2px 8px;border-radius:4px;background:rgba(239,68,68,.12);color:var(--urgent);font-weight:700;letter-spacing:.06em;display:inline-block;margin-bottom:10px;">VIDEO → BLOG</span>
-            <label class="flbl">YouTube topic or video title</label>
-            <input class="finput" id="cp-yt-input" type="text" placeholder="e.g. FXIFY vs FTMO: Which Prop Firm is Better in 2026" style="margin-bottom:10px;"/>
+          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">
+            <span style="font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--urgent);display:block;margin-bottom:12px;">Video → Blog</span>
+            <label class="flbl">YouTube topic or title</label>
+            <input class="finput" id="cp-yt-input" type="text" placeholder="e.g. FXIFY vs FTMO: Which Prop Firm is Better in 2026" style="margin-bottom:12px;"/>
             <button class="btn btn-p" id="cp-yt-btn" style="width:100%;justify-content:center;font-size:12px;">Convert to Blog Structure →</button>
           </div>
         </div>
-
         <div id="cp-output" style="margin-top:16px;display:none;"></div>
       </div>
 
@@ -7614,173 +7669,126 @@ async function runTopicIdeas() {
 async function renderTopicGrid(topics, isStub, publishedCount) {
   var output = document.getElementById('v2-brief-output');
   if (!output) return;
+
   if (!topics || !topics.length) {
-    output.innerHTML =
-      '<div style="padding:40px 0;text-align:center;color:var(--text3);">' +
-        '<p style="font-size:13px;">No topics generated. Check console for details.</p>' +
-      '</div>';
+    output.innerHTML = '<div style="padding:48px 0;text-align:center;color:var(--text3);"><p style="font-size:13px;">No gaps found. Try a different keyword.</p></div>';
     return;
   }
 
-  var INTENT = {
-    'Commercial':    { label:'Commercial',    bg:'rgba(245,158,11,.12)', fc:'var(--amber)', bdr:'rgba(245,158,11,.25)' },
-    'Transactional': { label:'Transactional', bg:'rgba(239,68,68,.12)',  fc:'var(--urgent)', bdr:'rgba(239,68,68,.25)' },
-    'Informational': { label:'Informational', bg:'rgba(37,99,235,.12)',  fc:'var(--teal)',   bdr:'rgba(37,99,235,.25)' },
+  var intentClass = {
+    'Commercial':    'ci-badge-commercial',
+    'Transactional': 'ci-badge-transactional',
+    'Informational': 'ci-badge-informational',
   };
-  var TIER = {
-    '1': { label:'Tier 1 · High intent',  fc:'#059669', bg:'#DCFCE7' },
-    '2': { label:'Tier 2 · Mid-funnel',   fc:'#D97706', bg:'#FEF3C7' },
-    '3': { label:'Tier 3 · Awareness',    fc:'#6B7280', bg:'#F3F4F6' },
-  };
+  var tierClass = { '1':'ci-badge-tier1', '2':'ci-badge-tier2', '3':'ci-badge-tier3' };
+  var tierLabel = { '1':'High intent', '2':'Mid-funnel', '3':'Awareness' };
 
   var html =
-    // ── Header (matches Yoast exactly) ──
-    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding-bottom:12px;border-bottom:1px solid var(--border);">' +
-      '<div style="display:flex;align-items:center;gap:8px;">' +
-        '<span style="font-size:13px;font-weight:700;color:var(--text);">Content suggestions</span>' +
-        '<span style="font-size:11px;font-weight:700;background:var(--brand);color:#fff;padding:1px 8px;border-radius:10px;">' + topics.length + '</span>' +
+    '<div class="ci-output-header">' +
+      '<div class="ci-output-count">' +
+        '<span style="font-size:13px;font-weight:700;color:var(--text);">' + topics.length + ' content gaps</span>' +
+        '<span style="font-size:11px;color:var(--text3);">sorted by opportunity score</span>' +
       '</div>' +
       '<div style="display:flex;gap:6px;">' +
-        '<button class="btn btn-s" id="v2-export-btn" style="font-size:11px;">Export</button>' +
-        '<button class="btn btn-s" id="v2-refresh-btn" style="font-size:11px;">↻ Refresh</button>' +
+        '<button class="btn btn-s ci-action-ghost" id="v2-export-btn">Export CSV</button>' +
+        '<button class="btn btn-s ci-action-ghost" id="v2-refresh-btn">↻ Refresh</button>' +
       '</div>' +
     '</div>' +
 
-    (isStub ?
-      '<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:6px;padding:8px 12px;margin-bottom:12px;font-size:12px;color:#92400E;">⚠ Keyword volumes are estimated. Add DataForSEO SERP webhook for live data.</div>' : '') +
+    (isStub ? '<div class="ci-stub-warn">⚠ No keyword volume data — DataForSEO credentials needed. Showing gap analysis only.</div>' : '') +
 
-    // ── Topic list ──
-    '<div style="margin-top:12px;">';
+    '<div class="ci-card-list">';
 
   topics.forEach(function(t, idx) {
-    var ist   = INTENT[t.intent] || INTENT['Informational'];
-    var tier  = TIER[String(t.conversion_tier||'3')] || TIER['3'];
-    var score = parseInt(t.opportunity_score) || 0;
-    var scoreCol = score>=80?'#059669':score>=65?'#D97706':'#9CA3AF';
-    var kd    = parseInt(t.kd_score) || 0;
-    var kdTxt = t.kd_score && t.kd_score !== 'TBC' ? 'KD ' + t.kd_score : '';
-    var volTxt = t.search_volume && t.search_volume !== 'TBC' ? t.search_volume + '/mo' : '';
-    var isLast = idx === topics.length - 1;
+    var score    = parseInt(t.opportunity_score) || 0;
+    var scoreCol = score >= 75 ? '#10B981' : score >= 55 ? 'var(--amber)' : 'var(--text3)';
+    var iClass   = intentClass[t.intent] || 'ci-badge-informational';
+    var tClass   = tierClass[String(t.conversion_tier||'3')] || 'ci-badge-tier3';
+    var tLabel   = tierLabel[String(t.conversion_tier||'3')] || 'Awareness';
+    var kd       = t.kd_score && t.kd_score !== 'TBC' ? t.kd_score : null;
+    var vol      = t.search_volume && t.search_volume !== 'TBC' ? t.search_volume : null;
+    var kdCol    = kd ? (parseInt(kd)<20?'#10B981':parseInt(kd)<40?'var(--amber)':'var(--urgent)') : 'var(--text3)';
 
-    // Build the why paragraph — Yoast's one-paragraph explanation
-    var why = [t.why_trending, t.competitor_gap, t.fxify_angle, t.why_now].filter(Boolean).join(' · ');
-    if (!why && t.short_form_hook) why = t.short_form_hook;
+    // Build why paragraph from best available field
+    var why = t.competitor_gap || t.why_trending || t.why_now || '';
 
     html +=
-      '<div style="padding:16px 0;' + (isLast?'':'border-bottom:1px solid var(--border);') + '">' +
+      '<div class="ci-card">' +
 
-        // ── Row 1: Intent badge + tier + score ──
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
-
-          // Intent badge — exactly like Yoast screenshot
-          '<span style="display:inline-flex;align-items:center;font-size:11px;font-weight:600;' +
-            'background:' + ist.bg + ';color:' + ist.fc + ';' +
-            'border:1px solid ' + ist.bdr + ';border-radius:4px;padding:2px 10px;gap:4px;">' +
-            ist.label +
-          '</span>' +
-
-          // Tier
-          '<span style="font-size:11px;font-weight:500;' +
-            'background:' + tier.bg + ';color:' + tier.fc + ';' +
-            'border-radius:4px;padding:2px 8px;">' +
-            tier.label +
-          '</span>' +
-
-          // KD + Vol + Score — right side
-          '<div style="margin-left:auto;display:flex;align-items:center;gap:10px;">' +
-            (volTxt ? '<span style="font-size:10px;color:var(--text3);font-family:var(--mono);">' + volTxt + '</span>' : '') +
-            (kdTxt  ? '<span style="font-size:10px;font-weight:700;color:' + (kd<15?'#059669':kd<30?'#D97706':'#DC2626') + ';font-family:var(--mono);">' + kdTxt + '</span>' : '') +
-            '<span style="font-size:11px;font-weight:700;color:' + scoreCol + ';font-family:var(--mono);">' + score + '</span>' +
+        // Meta row — badges + stats
+        '<div class="ci-card-meta">' +
+          '<span class="ci-badge ' + iClass + '">' + (t.intent||'Informational') + '</span>' +
+          '<span class="ci-badge ' + tClass + '">' + tLabel + '</span>' +
+          (t.type ? '<span class="ci-badge ci-badge-tier3">' + t.type + '</span>' : '') +
+          '<div class="ci-card-stats">' +
+            (vol  ? '<span class="ci-stat">' + Number(vol).toLocaleString() + '/mo</span>' : '') +
+            (kd   ? '<span class="ci-stat" style="color:' + kdCol + ';">KD ' + kd + '</span>' : '') +
+            '<span class="ci-score" style="color:' + scoreCol + ';">' + score + '</span>' +
           '</div>' +
         '</div>' +
 
-        // ── Row 1b: Signal type badge ──
-        (t.signal_type ?
-          '<div style="margin-bottom:6px;">' +
-            '<span style="font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;' +
-              'background:' + ({Blog:'var(--blueL)',YouTube:'#FEF2F2','Google Ads':'var(--greenL)',Reddit:'var(--highL)',X:'#F0FDF4',Mixed:'var(--brandL)'}[t.signal_type]||'var(--bg3)') + ';' +
-              'color:' + ({Blog:'var(--blue)',YouTube:'var(--urgent)','Google Ads':'var(--green)',Reddit:'var(--high)',X:'var(--green)',Mixed:'var(--brand)'}[t.signal_type]||'var(--text3)') + ';">' +
-              ({'Blog':' Blog','YouTube':' YouTube','Google Ads':'📣 Google Ads','Reddit':'💬 Reddit','X':'𝕏 X/Twitter','Mixed':' Multi-signal'}[t.signal_type]||t.signal_type) +
-            '</span>' +
-            (t.signal_source ? '<span style="font-size:10px;color:var(--text3);margin-left:8px;">' + t.signal_source.substring(0,80) + '</span>' : '') +
-          '</div>' : '') +
+        // Search title (H1)
+        '<p class="ci-title-label seo">H1 · Search Title</p>' +
+        '<p class="ci-search-title">' + (t.title || 'Untitled') + '</p>' +
 
-        // ── Row 2: Search Title (SEO/H1) + Hook Title (intro/social) ──
-        '<p style="font-size:11px;font-weight:700;color:var(--teal);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;">H1 · Search Title</p>' +
-        '<p style="font-size:14px;font-weight:600;color:var(--text);line-height:1.45;margin-bottom:6px;">' +
-          (t.title || 'Untitled') +
-        '</p>' +
+        // Hook title (social/intro)
         (t.hook_title ?
-          '<p style="font-size:11px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:3px;">Hook · Intro + Social</p>' +
-          '<p style="font-size:13px;color:var(--text2);line-height:1.45;margin-bottom:' + (why?'8px':'10px') + ';font-style:italic;">' +
-            t.hook_title +
-          '</p>'
+          '<p class="ci-title-label hook">Hook · Intro + Social</p>' +
+          '<p class="ci-hook-title">' + t.hook_title + '</p>'
         : '') +
 
-        // ── Row 3: Why paragraph — Yoast's one-para explanation ──
-        (why ?
-          '<p style="font-size:13px;color:var(--text3);line-height:1.65;margin-bottom:10px;">' +
-            why +
-          '</p>' : '') +
+        // Why this gap exists
+        (why ? '<p class="ci-why">' + why + '</p>' : '') +
 
-        // ── Row 4: Hook line (italic blue) ──
+        // Short form hook — quote style
         (t.short_form_hook && t.short_form_hook !== why ?
-          '<p style="font-size:12px;color:var(--blue);font-style:italic;border-left:3px solid var(--blue);padding-left:10px;margin-bottom:10px;line-height:1.5;">"' +
-            t.short_form_hook + '"' +
-          '</p>' : '') +
+          '<p class="ci-quote">&ldquo;' + t.short_form_hook + '&rdquo;</p>'
+        : '') +
 
-        // ── Row 4b: YouTube + Ad angles if present ──
-        (t.youtube_title || t.ad_headline ?
-          '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;">' +
-            (t.youtube_title ? '<div style="background:#FEF2F2;border-radius:4px;padding:5px 10px;flex:1;min-width:0;">' +
-              '<p style="font-size:9px;font-weight:700;color:var(--urgent);letter-spacing:.07em;margin-bottom:2px;"> YOUTUBE ANGLE</p>' +
-              '<p style="font-size:11px;color:var(--text2);">' + t.youtube_title + '</p>' +
-            '</div>' : '') +
-            (t.ad_headline ? '<div style="background:var(--greenL);border-radius:4px;padding:5px 10px;flex:1;min-width:0;">' +
-              '<p style="font-size:9px;font-weight:700;color:var(--green);letter-spacing:.07em;margin-bottom:2px;">📣 AD HEADLINE</p>' +
-              '<p style="font-size:11px;color:var(--text2);">' + t.ad_headline + '</p>' +
-            '</div>' : '') +
-          '</div>' : '') +
+        // YouTube + Ad angles
+        (t.youtube_title || t.fxify_angle ?
+          '<div class="ci-angles">' +
+            (t.youtube_title ?
+              '<div class="ci-angle">' +
+                '<p class="ci-angle-label" style="color:var(--urgent);">▶ YouTube angle</p>' +
+                '<p class="ci-angle-text">' + t.youtube_title + '</p>' +
+              '</div>' : '') +
+            (t.fxify_angle ?
+              '<div class="ci-angle">' +
+                '<p class="ci-angle-label" style="color:var(--teal);">⚡ FXIFY angle</p>' +
+                '<p class="ci-angle-text">' + t.fxify_angle + '</p>' +
+              '</div>' : '') +
+          '</div>'
+        : '') +
 
-        // ── Row 5: Keyword pill + actions ──
-        '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
-          (t.primary_keyword ?
-            '<span style="font-size:11px;background:var(--brandL);color:var(--brand);border-radius:4px;padding:2px 9px;font-family:var(--mono);"><span class="ico"><svg viewBox="0 0 24 24"><path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 1 1-7.778 7.778 5.5 5.5 0 0 1 7.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/></svg></span> ' + t.primary_keyword + '</span>' : '') +
-          ((t.nlp_entities||[]).slice(0,3).map(function(e){
-            return '<span style="font-size:10px;background:var(--g2);color:var(--g5);border-radius:4px;padding:1px 7px;">' + e + '</span>';
-          })).join('') +
+        // Actions row
+        '<div class="ci-card-actions">' +
+          (t.primary_keyword ? '<span class="ci-kw-pill">' + t.primary_keyword + '</span>' : '') +
           '<div style="margin-left:auto;display:flex;gap:5px;">' +
-            '<button class="btn btn-p btn-s" style="font-size:11px;" ' +
-              'onclick="window.createTaskFromTopic(window._v2Topics[' + idx + '])">+ Create task</button>' +
-            '<button class="btn btn-s v2-serp-btn" data-kw="' + (t.primary_keyword||t.title||'').replace(/"/g, '') + '" style="font-size:11px;padding:4px 10px;" title="SERP Intelligence">📊 SERP</button>' +
-            '<button class="btn btn-s v2-bookmark-btn" data-idx="' + idx + '" style="font-size:11px;padding:4px 10px;" title="Bookmark">★</button>' +
-            '<button class="btn btn-s v2-open-refine-btn" data-idx="' + idx + '" style="font-size:11px;padding:4px 10px;">✏ Refine</button>' +
+            '<button class="btn btn-p ci-action-primary" onclick="window.createTaskFromTopic(window._v2Topics[' + idx + '])">+ Create task</button>' +
+            '<button class="btn btn-s ci-action-ghost v2-serp-btn" data-kw="' + (t.primary_keyword||t.title||'').replace(/"/g,'') + '" title="SERP">SERP</button>' +
+            '<button class="btn btn-s ci-action-ghost v2-bookmark-btn" data-idx="' + idx + '" title="Bookmark">☆</button>' +
+            '<button class="btn btn-s ci-action-ghost v2-open-refine-btn" data-idx="' + idx + '">Refine</button>' +
           '</div>' +
         '</div>' +
 
-        // ── Refine panel (hidden by default, toggled per card) ──
-        '<div id="v2-refine-' + idx + '" style="display:none;border-top:1px solid var(--border);padding:12px 0 4px;">' +
-          '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Refine this topic</p>' +
-
-          // Preset refine options
-          '<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;">' +
+        // Refine panel
+        '<div id="v2-refine-' + idx + '" class="ci-refine" style="display:none;">' +
+          '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);margin-bottom:8px;">Refine this gap</p>' +
+          '<div class="ci-refine-presets">' +
             '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="specific">More specific</button>' +
-            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="broad">Broader angle</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="broad">Broader</button>' +
             '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="commercial">More commercial</button>' +
-            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="comparison">Make it a comparison</button>' +
-            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="beginner">Target beginners</button>' +
-            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="advanced">Target advanced traders</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="comparison">Make a comparison</button>' +
+            '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="beginner">For beginners</button>' +
             '<button class="chip v2-refine-preset-btn" data-idx="' + idx + '" data-preset="fxify">Lean into FXIFY angle</button>' +
           '</div>' +
-
-          // Custom AI instruction
-          '<div style="display:flex;gap:6px;align-items:center;">' +
-            '<input type="text" id="v2-custom-refine-' + idx + '" placeholder="Custom instruction... e.g. rewrite for swing traders" ' +
-              'style="flex:1;font-size:12px;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--bg2);color:var(--text);outline:none;" ' +
-              'data-enter-refine="true" />' +
-            '<button class="btn btn-p btn-s v2-refine-custom-btn" data-idx="' + idx + '" style="font-size:11px;white-space:nowrap;">Apply →</button>' +
+          '<div style="display:flex;gap:6px;">' +
+            '<input type="text" id="v2-custom-refine-' + idx + '" placeholder="Custom instruction..." data-enter-refine="true" ' +
+              'style="flex:1;font-size:12px;padding:7px 10px;border:1.5px solid var(--border);border-radius:var(--r);background:var(--bg2);color:var(--text);outline:none;"/>' +
+            '<button class="btn btn-p btn-s v2-refine-custom-btn" data-idx="' + idx + '" style="font-size:11px;">Apply →</button>' +
           '</div>' +
-          '<div id="v2-refine-loading-' + idx + '" style="display:none;font-size:11px;color:var(--teal);margin-top:6px;font-family:var(--mono);">Refining...</div>' +
+          '<div id="v2-refine-loading-' + idx + '" style="display:none;font-size:11px;color:var(--teal);margin-top:6px;">Refining...</div>' +
         '</div>' +
 
       '</div>';
@@ -7790,27 +7798,22 @@ async function renderTopicGrid(topics, isStub, publishedCount) {
   output.innerHTML = html;
   window._v2Topics = topics;
 
-  // Check which topics are already bookmarked and mark their stars
+  // Mark already-bookmarked topics
   try {
-    var titlesRes = await supa.from('topic_bookmarks').select('title');
-    if (titlesRes.data && titlesRes.data.length) {
-      var bookmarkedTitles = titlesRes.data.map(function(r) { return r.title; });
+    var res = await supa.from('topic_bookmarks').select('title');
+    if (res.data && res.data.length) {
+      var bookmarked = res.data.map(function(r) { return r.title; });
       output.querySelectorAll('.v2-bookmark-btn').forEach(function(btn) {
-        var bidx = parseInt(btn.dataset.idx);
-        var t = window._v2Topics && window._v2Topics[bidx];
-        if (t && bookmarkedTitles.indexOf(t.title) !== -1) {
+        var t = window._v2Topics && window._v2Topics[parseInt(btn.dataset.idx)];
+        if (t && bookmarked.indexOf(t.title) !== -1) {
           btn.textContent = '★';
           btn.style.color = 'var(--amber)';
-          btn.style.background = 'rgba(245,158,11,.15)';
-          btn.style.border = '1px solid rgba(245,158,11,.3)';
-          btn.title = 'Already bookmarked';
           btn.disabled = true;
         }
       });
     }
-  } catch(e) { /* silent — bookmark check is non-critical */ }
+  } catch(e) {}
 }
-
 
 
 window.handleTopicClick = function handleTopicClick(idx) {
