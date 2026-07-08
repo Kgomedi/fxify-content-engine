@@ -5710,7 +5710,7 @@ function renderYouTubeDiscovery(topics, signals) {
           '<div class="ctop">' +
             '<div style="display:flex;align-items:flex-start;gap:6px;">' +
               '<p class="ctitle" style="font-size:14px;font-weight:600;flex:1;">' + t.title + '</p>' +
-              '<button class="btn btn-s" style="font-size:10px;flex-shrink:0;" onclick="v2Copy(' + JSON.stringify(t.title||'') + ', \'Title copied\')">Copy</button>' +
+              '<button class="btn btn-s v2-copy-btn" style="font-size:10px;flex-shrink:0;" data-label="Title copied" data-copy-js="yt-title" data-i="' + i + '">Copy</button>' +
             '</div>' +
             '<div style="text-align:center;flex-shrink:0;">' +
               '<p style="font-size:20px;font-weight:800;color:'+sc+';line-height:1;">' + (t.score||'—') + '</p>' +
@@ -5856,7 +5856,7 @@ function renderYTSEOPackage(pkg, topic) {
         return '<div style="padding:14px 20px;border-bottom:1px solid var(--border);">' +
           '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
             '<p style="font-size:10px;font-weight:700;color:var(--text3);letter-spacing:.1em;text-transform:uppercase;">'+section+'</p>' +
-            '<button class="btn btn-s" style="font-size:10px;" onclick="v2Copy('+JSON.stringify(copyVal||'')+', \'Copied\')" >Copy</button>' +
+            '<button class="btn btn-s v2-copy-btn" style="font-size:10px;" data-label="Copied" data-copy-js="copyval" data-i="' + section + '">Copy</button>' +
           '</div>' +
           '<p style="font-size:13px;color:var(--text2);line-height:1.65;white-space:pre-wrap;'+(mono?'font-family:monospace;font-size:12px;':'')+'">'+val+'</p>' +
         '</div>';
@@ -6346,9 +6346,6 @@ function generateOutline() {
         editor.innerHTML = html;
       } else {
         v2Copy(headings.join('\n'), 'Outline copied');
-          (function() {
-          var _dummy = 'Outline copied — paste into article ✓', 'success');
-        });
       }
     } catch(e) { v2Toast('Outline failed: ' + e.message, 'error'); }
     if (loadEl) loadEl.style.display = 'none';
@@ -7433,7 +7430,7 @@ async function renderTopicGrid(topics, isStub, publishedCount) {
         '<p class="ci-title-label seo">H1 · Search Title</p>' +
         '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:6px;">' +
           '<p class="ci-search-title" style="margin-bottom:0;flex:1;">' + (t.title || 'Untitled') + '</p>' +
-          '<button class="btn btn-s" style="font-size:10px;flex-shrink:0;margin-top:2px;" onclick="v2Copy(' + JSON.stringify(t.title||'') + ', \'H1 copied\')">Copy</button>' +
+          '<button class="btn btn-s v2-copy-btn" style="font-size:10px;flex-shrink:0;margin-top:2px;" data-label="H1 copied" data-copy-js="topic-title" data-i="' + idx + '">Copy</button>' +
         '</div>' +
 
         // Hook title (social/intro)
@@ -8222,6 +8219,38 @@ function v2WireCustomBtn() {
       }
       return;
     }
+    // ── Generic copy button (data-copy-js) ─────────────────────────────
+    var copyJsBtn = e.target.closest('.v2-copy-btn');
+    if (copyJsBtn) {
+      var label  = copyJsBtn.dataset.label || 'Copied';
+      var cpKey  = copyJsBtn.dataset.copyJs || '';
+      var cpIdx  = parseInt(copyJsBtn.dataset.i || '0');
+      var text   = '';
+
+      if (cpKey === 'topic-title' || cpKey === 'yt-title') {
+        var topics = window._v2Topics || [];
+        text = (topics[cpIdx] && topics[cpIdx].title) || '';
+      } else if (cpKey === 'gap-title') {
+        var gaps = window._ciGaps || [];
+        text = (gaps[cpIdx] && gaps[cpIdx].suggested_title) || '';
+      } else if (cpKey === 'serp-winning') {
+        text = (window._serpResult && window._serpResult.winning_title) || '';
+      } else if (cpKey === 'serp-hook') {
+        text = (window._serpResult && window._serpResult.hook_title) || '';
+      } else if (cpKey === 'serp-row-val' || cpKey === 'copyval') {
+        text = copyJsBtn.closest('[data-value]') ?
+          copyJsBtn.closest('[data-value]').dataset.value : copyJsBtn.previousSibling ?
+          (copyJsBtn.previousSibling.textContent || '') : '';
+      }
+
+      if (text) {
+        v2Copy(text, label);
+      } else {
+        v2Toast('Nothing to copy');
+      }
+      return;
+    }
+
     var presetBtn = e.target.closest('.v2-refine-preset-btn');
     if (presetBtn) { refineTopicPreset(parseInt(presetBtn.dataset.idx), presetBtn.dataset.preset); return; }
     var customBtn = e.target.closest('.v2-refine-custom-btn');
@@ -10154,6 +10183,7 @@ function renderCICompetitorWatch(result, firms) {
   if (!output) return;
 
   var gaps     = result.gaps     || [];
+  window._ciGaps = gaps;
   var trending = result.trending || [];
   var summary  = result.summary  || '';
 
@@ -10189,7 +10219,7 @@ function renderCICompetitorWatch(result, firms) {
             (t.fxify_angle ? '<p style="font-size:11px;color:var(--teal);">FXIFY angle: ' + t.fxify_angle + '</p>' : '') +
           '</div>' +
           '<div style="flex-shrink:0;">' +
-            (t.suggested_title ? '<button class="btn btn-s" style="font-size:10px;" onclick="v2Copy(' + JSON.stringify(t.suggested_title||'') + ', \'Title copied\')">Copy title</button> ' +
+            (t.suggested_title ? '<button class="btn btn-s v2-copy-btn" style="font-size:10px;" data-label="Title copied" data-copy-js="gap-title" data-i="' + gidx + '">Copy</button> ' +
             '<button class="btn btn-p btn-s" onclick="document.getElementById(\'v2-seed\').value=' + JSON.stringify(t.suggested_title).replace(/"/g,'&quot;') + ';document.querySelector(\'[data-tab=blog]\').click()" style="font-size:11px;">Use as seed →</button>' : '') +
           '</div>' +
         '</div>' +
@@ -10342,6 +10372,7 @@ async function runSERPIntelligence(keyword) {
 
     var text   = await v2Fetch(prompt, 4000);
     var result = parseJSON(text);
+    window._serpResult = result;
     renderSERPIntelligence(result, serpData);
 
   } catch(e) {
@@ -10386,14 +10417,14 @@ function renderSERPIntelligence(result, serpData) {
         '<p style="font-size:10px;font-weight:700;color:var(--teal);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;">H1 · Search Title</p>' +
         '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;">' +
           '<p style="font-size:14px;font-weight:600;color:var(--text);flex:1;">' + result.winning_title + '</p>' +
-          '<button class="btn btn-s" style="font-size:10px;flex-shrink:0;" onclick="v2Copy(' + JSON.stringify(result.winning_title) + ', \'H1 copied\')">Copy H1</button>' +
+          '<button class="btn btn-s v2-copy-btn" style="font-size:10px;flex-shrink:0;" data-label="H1 copied" data-copy-js="serp-winning">Copy H1</button>' +
         '</div>'
       : '') +
       (result.hook_title ?
         '<p style="font-size:10px;font-weight:700;color:var(--amber);letter-spacing:.06em;text-transform:uppercase;margin-bottom:2px;">Hook · Intro + Social</p>' +
         '<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:10px;">' +
           '<p style="font-size:13px;color:var(--text2);font-style:italic;flex:1;">' + result.hook_title + '</p>' +
-          '<button class="btn btn-s" style="font-size:10px;flex-shrink:0;" onclick="v2Copy(' + JSON.stringify(result.hook_title) + ', \'Hook copied\')">Copy</button>' +
+          '<button class="btn btn-s v2-copy-btn" style="font-size:10px;flex-shrink:0;" data-label="Hook copied" data-copy-js="serp-hook">Copy</button>' +
         '</div>'
       : '') +
       (result.winning_meta ?
@@ -10459,7 +10490,7 @@ function renderSERPRow(label, value, color, bold) {
   return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--r);padding:10px 14px;display:flex;gap:12px;align-items:baseline;">' +
     '<span style="font-size:10px;font-weight:700;color:var(--text3);min-width:120px;flex-shrink:0;">' + label.toUpperCase() + '</span>' +
     '<span style="font-size:' + (bold?'14px':'12px') + ';' + (bold?'font-weight:600;':'') + 'color:' + color + ';flex:1;">' + value + '</span>' +
-    '<button class="btn btn-s" style="font-size:10px;padding:2px 8px;flex-shrink:0;" onclick="v2Copy(' + JSON.stringify(value) + ', \'Copied\')">Copy</button>' +
+    '<button class="btn btn-s v2-copy-btn" style="font-size:10px;padding:2px 8px;flex-shrink:0;" data-label="Copied" data-copy-js="serp-row-val">Copy</button>' +
   '</div>';
 }
 window.renderSERPRow = renderSERPRow;
