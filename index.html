@@ -744,70 +744,6 @@ tr:last-child td{border-bottom:none;}
           </div>
         </div>
 
-        <!-- TRENDING DISCOVERY STRIP -->
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 20px;margin-bottom:16px;">
-          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:12px;">
-            <div>
-              <p style="font-size:12px;font-weight:600;color:var(--text);margin-bottom:3px;">What's trending in prop trading right now?</p>
-              <p style="font-size:11px;color:var(--text3);line-height:1.5;">Pulls Reddit, X, Google Ads, YouTube, blogs — no seed needed.</p>
-            </div>
-            <button class="btn btn-s" id="trending-btn" style="flex-shrink:0;white-space:nowrap;gap:6px;font-size:12px;">
-              <span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M8.5 14.5A6 6 0 0 0 18 8c0-3-2-5.5-5-6 1 2 .5 4-1 5.5s-3.5 2-3.5 4.5c0 1 .5 2 1 2.5A6 6 0 0 0 8.5 14.5z"/><path d="M9 18c0 1.657 1.343 3 3 3s3-1.343 3-3-3-6-3-6-3 4.343-3 6z"/></svg></span> Scan trends
-            </button>
-          </div>
-          <div style="display:flex;align-items:center;gap:12px;flex-wrap:wrap;">
-            <span style="font-size:11px;font-weight:600;color:var(--text3);">Output for:</span>
-            <div style="display:flex;gap:4px;background:var(--bg3);border:1px solid var(--border);border-radius:var(--r);padding:2px;">
-              <button class="trend-format-btn active" data-fmt="blog" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:var(--teal);color:#fff;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> Blog</button>
-              <button class="trend-format-btn" data-fmt="video" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3"/></svg></span> Video</button>
-              <button class="trend-format-btn" data-fmt="both" style="padding:4px 12px;border:none;border-radius:4px;font-size:11px;font-weight:500;cursor:pointer;background:transparent;color:var(--text3);">Both</button>
-            </div>
-            <span style="font-size:11px;color:var(--text3);">Signals:</span>
-            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-blogs" checked style="accent-color:var(--teal);"> Blogs</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-youtube-trend" checked style="accent-color:var(--teal);"> YouTube</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-google-ads" checked style="accent-color:var(--teal);"> Google Ads</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-reddit-trend" checked style="accent-color:var(--teal);"> Reddit</label>
-            <label style="display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;"><input type="checkbox" id="sig-x-trend" checked style="accent-color:var(--teal);"> X</label>
-          </div>
-        </div>
-
-        <!-- TRENDING LOADER -->
-        <div id="trending-loading" style="display:none;background:var(--bg2);border:1px solid rgba(29,155,240,0.2);border-radius:var(--rl);padding:20px 24px;margin-bottom:16px;">
-          <p style="font-size:12px;font-weight:600;color:var(--teal);margin-bottom:14px;font-family:var(--mono);">Scanning all signals...</p>
-          <div id="trending-steps"></div>
-        </div>
-
-        <!-- TRENDING OUTPUT (replaces seed output when used) -->
-        <div id="trending-output" style="display:none;margin-bottom:16px;"></div>
-
-        <!-- MODE TABS -->
-        <!-- STEP FLOW GUIDE -->
-        <div style="display:flex;align-items:center;gap:0;margin-bottom:16px;overflow-x:auto;padding-bottom:2px;flex-wrap:wrap;gap:4px;">
-          <div style="display:flex;align-items:center;gap:4px;">
-            <span style="font-size:11px;font-weight:700;background:var(--teal);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">1</span>
-            <span style="font-size:11px;color:var(--text3);">Scan trends</span>
-            <span style="color:var(--border);margin:0 6px;">→</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:4px;">
-            <span style="font-size:11px;font-weight:700;background:var(--teal);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">2</span>
-            <span style="font-size:11px;color:var(--text3);">Seed + filters</span>
-            <span style="color:var(--border);margin:0 6px;">→</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:4px;">
-            <span style="font-size:11px;font-weight:700;background:var(--teal);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">3</span>
-            <span style="font-size:11px;color:var(--text3);">Generate topics</span>
-            <span style="color:var(--border);margin:0 6px;">→</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:4px;">
-            <span style="font-size:11px;font-weight:700;background:var(--teal);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">4</span>
-            <span style="font-size:11px;color:var(--text3);">Refine · SERP · Bookmark</span>
-            <span style="color:var(--border);margin:0 6px;">→</span>
-          </div>
-          <div style="display:flex;align-items:center;gap:4px;">
-            <span style="font-size:11px;font-weight:700;background:var(--brand);color:#fff;width:18px;height:18px;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;">5</span>
-            <span style="font-size:11px;color:var(--text2);font-weight:600;">Create ClickUp task</span>
-          </div>
-        </div>
 
         <!-- TAB NAV -->
         <div style="display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:3px;width:fit-content;margin-bottom:20px;">
@@ -10422,49 +10358,119 @@ async function runCICompetitorWatch() {
   if (!output) return;
   if (btn) { btn.disabled = true; btn.textContent = 'Scanning...'; }
 
-  output.innerHTML = '<div style="padding:24px;text-align:center;"><div class="loader-spinner"></div><p style="font-size:12px;color:var(--text3);margin-top:12px;">Scanning 10 competitors for recent content...</p></div>';
+  // Competitor blogs with their actual blog domains
+  var competitors = [
+    { name: 'FTMO',                domain: 'ftmo.com',                query: 'site:ftmo.com/blog 2026' },
+    { name: 'FundedNext',          domain: 'fundednext.com',          query: 'site:fundednext.com/blog 2026' },
+    { name: 'FundingPips',         domain: 'fundingpips.com',         query: 'site:fundingpips.com blog prop trading 2026' },
+    { name: 'The5ers',             domain: 'the5ers.com',             query: 'site:the5ers.com/blog 2026' },
+    { name: 'Goat Funded Trader',  domain: 'goatfundedtrader.com',    query: 'site:goatfundedtrader.com blog 2026' },
+    { name: 'Alpha Capital',       domain: 'alphacapitalgroup.uk',    query: 'site:alphacapitalgroup.uk blog prop trading 2026' },
+    { name: 'Blue Guardian',       domain: 'blueguardian.com',        query: 'site:blueguardian.com blog 2026' },
+    { name: 'E8 Funding',          domain: 'e8funding.com',           query: 'site:e8funding.com blog prop trading 2026' },
+  ];
 
-  var firms = ['FTMO', 'FundedNext', 'FundingPips', 'The5ers', 'Goat Funded Trader',
-               'Alpha Capital Group', 'My Funded Futures', 'Blue Guardian',
-               'Apex Trader Funding', 'E8 Funding'];
+  // Run Firecrawl searches in batches — 4 at a time
+  var allContent = [];
+  var step = 0;
+
+  function updateProgress(msg) {
+    output.innerHTML =
+      '<div style="padding:24px;text-align:center;">' +
+        '<div class="loader-spinner"></div>' +
+        '<p style="font-size:12px;color:var(--text3);margin-top:12px;">' + msg + '</p>' +
+      '</div>';
+  }
 
   try {
-    // Firecrawl search for recent competitor content
-    var liveData = await v2LiveResearch(
-      'prop trading blog articles 2026 ' + firms.slice(0,5).join(' OR ') + ' site content',
-      'Search for recent blog articles and YouTube content from these prop trading competitors: ' + firms.join(', ') +
-      '. Find their most recent articles — title, topic, angle.'
+    // Batch 1
+    updateProgress('Scanning FTMO, FundedNext, FundingPips, The5ers...');
+    var batch1 = await Promise.allSettled(
+      competitors.slice(0,4).map(function(c) {
+        return fetch('https://api.firecrawl.dev/v1/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer fc-918ef0f7ffac439caca532272347e770' },
+          body: JSON.stringify({ query: c.query, limit: 5, scrapeOptions: { formats: ['markdown'] } })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(d) { return { firm: c.name, data: d }; })
+        .catch(function() { return { firm: c.name, data: null }; });
+      })
     );
 
-    var prompt =
-      'You are a content intelligence analyst for FXIFY prop firm. July 2026.\n\n' +
-      'COMPETITORS ANALYSED: ' + firms.join(', ') + '\n\n' +
-      (liveData ? 'LIVE COMPETITOR CONTENT FOUND:\n' + liveData.substring(0, 3000) + '\n\n' : '') +
-      'TASK: Identify content opportunities for FXIFY based on what competitors are publishing.\n\n' +
-      'Classify each topic found into:\n' +
-      '1. COVERED BY FXIFY ALREADY — skip\n' +
-      '2. GAP — competitors have it, FXIFY does not\n' +
-      '3. TRENDING — multiple competitors publishing on same topic right now\n\n' +
-      'For each GAP and TRENDING topic output:\n' +
-      '- What the topic is\n' +
-      '- Which competitors are covering it\n' +
-      '- The FXIFY angle (how FXIFY wins this topic specifically)\n' +
-      '- Priority: HIGH (3+ competitors) / MEDIUM (2 competitors) / LOW (1 competitor)\n' +
-      '- Suggested search title for FXIFY blog article (keyword-first, under 65 chars)\n\n' +
-      'Return ONLY valid JSON:\n' +
-      '{"gaps":[{"topic":"","competitors":[""],"fxify_angle":"","priority":"HIGH|MEDIUM|LOW","suggested_title":"","intent":"Transactional|Commercial|Informational"}],' +
-      '"trending":[{"topic":"","competitors":[""],"why_trending":"","fxify_angle":"","suggested_title":""}],' +
-      '"summary":"2 sentences — what is the biggest opportunity FXIFY is missing right now"}';
+    // Batch 2
+    updateProgress('Scanning Goat Funded, Alpha Capital, Blue Guardian, E8...');
+    var batch2 = await Promise.allSettled(
+      competitors.slice(4).map(function(c) {
+        return fetch('https://api.firecrawl.dev/v1/search', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer fc-918ef0f7ffac439caca532272347e770' },
+          body: JSON.stringify({ query: c.query, limit: 5, scrapeOptions: { formats: ['markdown'] } })
+        })
+        .then(function(r) { return r.json(); })
+        .then(function(d) { return { firm: c.name, data: d }; })
+        .catch(function() { return { firm: c.name, data: null }; });
+      })
+    );
 
-    var text   = await v2Fetch(prompt, 3000);
+    // Parse results into readable content block
+    var contentBlock = '';
+    var allBatches = batch1.concat(batch2);
+    allBatches.forEach(function(result) {
+      if (result.status !== 'fulfilled') return;
+      var r = result.value;
+      if (!r || !r.data || !r.data.data) return;
+      contentBlock += '\n--- ' + r.firm + ' ---\n';
+      r.data.data.slice(0,5).forEach(function(item) {
+        if (item.title || item.url) {
+          contentBlock += '• ' + (item.title || item.url) + '\n';
+          if (item.description) contentBlock += '  ' + item.description.substring(0,120) + '\n';
+        }
+      });
+    });
+
+    if (!contentBlock.trim()) {
+      // Firecrawl returned nothing — fall back to Claude's training knowledge with strict instruction
+      contentBlock = '[FIRECRAWL_EMPTY]';
+    }
+
+    updateProgress('Analysing gaps against FXIFY content...');
+
+    var fxifyArticles = (window.publishedCache || []).map(function(a) { return a.title; }).slice(0,40).join('\n');
+
+    var prompt =
+      'You are a content gap analyst for FXIFY prop firm. July 2026.\n\n' +
+      'TASK: Find content gaps — topics competitors publish that FXIFY does not have.\n\n' +
+      (contentBlock !== '[FIRECRAWL_EMPTY]'
+        ? 'LIVE COMPETITOR CONTENT (scraped now):\n' + contentBlock + '\n\n'
+        : 'NO LIVE DATA: Firecrawl returned no results. Use your knowledge of what FTMO, FundedNext, FundingPips, The5ers, Goat Funded Trader, Alpha Capital, Blue Guardian, and E8 Funding typically publish on their blogs in 2026. Base this on their known content strategy, not invented titles.\n\n'
+      ) +
+      (fxifyArticles ? 'FXIFY ALREADY HAS THESE (do not suggest them):\n' + fxifyArticles + '\n\n' : '') +
+      'COMPETITORS: FTMO, FundedNext, FundingPips, The5ers, Goat Funded Trader, Alpha Capital, Blue Guardian, E8 Funding\n\n' +
+      'OUTPUT RULES:\n' +
+      '- Only output real, specific topics — no vague categories\n' +
+      '- Every gap must name the specific competitors covering it\n' +
+      '- Every suggested_title must be keyword-first and under 65 chars\n' +
+      '- FXIFY angle must name a specific FXIFY program and a specific fact\n' +
+      '- Priority: HIGH = 3+ competitors cover it, MEDIUM = 2, LOW = 1\n\n' +
+      'Return ONLY valid JSON:\n' +
+      '{"gaps":[{"topic":"specific topic description","competitors":["FirmA","FirmB"],"fxify_angle":"One Phase + specific fact","priority":"HIGH|MEDIUM|LOW","suggested_title":"Keyword-first title under 65 chars","intent":"Transactional|Commercial|Informational"}],' +
+      '"trending":[{"topic":"specific trending topic","competitors":["FirmA","FirmB","FirmC"],"why_trending":"specific reason it is trending now","fxify_angle":"how FXIFY wins this specifically","suggested_title":"Keyword-first title under 65 chars"}],' +
+      '"summary":"One sentence — the single biggest content gap FXIFY should fill this week.",' +
+      '"data_source":"' + (contentBlock !== '[FIRECRAWL_EMPTY]' ? 'live_firecrawl' : 'claude_knowledge') + '"}';
+
+    var text   = await v2Fetch(prompt, 4000);
     var result = v2SafeParseJSON(text);
-    renderCICompetitorWatch(result, firms);
+    renderCICompetitorWatch(result, competitors.map(function(c){ return c.name; }));
 
   } catch(e) {
     output.innerHTML = '<p style="color:var(--urgent);padding:20px;">Error: ' + (e && e.message) + '</p>';
   }
 
-  if (btn) { btn.disabled = false; btn.innerHTML = '<span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Run Competitor Watch'; }
+  if (btn) {
+    btn.disabled = false;
+    btn.innerHTML = '<span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Run Competitor Watch';
+  }
 }
 window.runCICompetitorWatch = runCICompetitorWatch;
 
@@ -10484,6 +10490,14 @@ function renderCICompetitorWatch(result, firms) {
   var priBg    = { HIGH: 'rgba(239,68,68,.1)', MEDIUM: 'rgba(245,158,11,.1)', LOW: 'var(--bg3)' };
 
   var html = '';
+
+  // Data source badge
+  var isLive = result.data_source === 'live_firecrawl';
+  html += '<div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">' +
+    '<span style="font-size:10px;padding:2px 10px;border-radius:10px;font-weight:700;background:' +
+    (isLive ? 'rgba(16,185,129,.15);color:var(--green);border:1px solid rgba(16,185,129,.3)' : 'var(--bg3);color:var(--text3);border:1px solid var(--border)') +
+    ';">' + (isLive ? '✓ Live Firecrawl data' : 'ℹ Claude knowledge — Firecrawl returned no results') + '</span>' +
+  '</div>';
 
   if (summary) {
     html += '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid var(--brand);border-radius:var(--rl);padding:14px 16px;margin-bottom:16px;">' +
