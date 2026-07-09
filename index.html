@@ -5538,6 +5538,10 @@ async function runYouTubeDiscovery() {
       '</div>';
   }
 
+  // Switch to YouTube tab so user sees the output
+  var ytTabBtn = document.querySelector('.hub-tab[data-tab="youtube"]');
+  if (ytTabBtn) ytTabBtn.click();
+
   if (btn) { btn.disabled = false; btn.textContent = ' Research'; }
 }
 
@@ -6404,6 +6408,9 @@ async function runCrossPost(direction) {
     if (outputEl) outputEl.innerHTML = '<p style="color:var(--urgent);font-size:12px;padding:12px 0;">Error: ' + e.message + '</p>';
     toast('Error: ' + e.message);
   }
+  // Switch to crosspost tab so output is visible
+  var cpTab = document.querySelector('.hub-tab[data-tab="crosspost"]');
+  if (cpTab) cpTab.click();
 }
 
 
@@ -11028,6 +11035,9 @@ async function runCICompetitorWatch() {
     btn.disabled = false;
     btn.innerHTML = '<span class="ico ico-sm"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg></span> Run Competitor Watch';
   }
+  // Switch to competitors tab so output is visible
+  var ciTab = document.querySelector('.hub-tab[data-tab="competitors"]');
+  if (ciTab) ciTab.click();
 }
 window.runCICompetitorWatch = runCICompetitorWatch;
 
