@@ -7044,19 +7044,27 @@ async function buildTopicalAuthorityMap() {
 // ── LOAD AUTHORITY MAP FROM SUPABASE ────────────────────────────────────────
 async function loadTopicalAuthorityMap() {
   try {
+    // Try with cluster columns — may not exist yet if SQL not run
     var res = await supa.from('published_articles').select('title,url,cluster,primary_keyword');
     var articles = res.data || [];
 
-    // Check if cluster column exists and has data
-    var hasClusterData = articles.some(function(a){ return a.cluster; });
+    // If Supabase errored (columns don't exist yet) fall back to basic select
+    if (res.error || !articles.length) {
+      var res2 = await supa.from('published_articles').select('title,url');
+      articles = (res2.data || []).map(function(a) {
+        return { title: a.title, url: a.url, cluster: null, primary_keyword: null };
+      });
+    }
 
-    // If no cluster data yet — fall back to publishedCache for article count
-    // This gives a useful map even before Build is clicked
-    if (!hasClusterData && window.publishedCache && window.publishedCache.length) {
+    // If still empty, pull from publishedCache (scraped on boot)
+    if (!articles.length && window.publishedCache && window.publishedCache.length) {
       articles = window.publishedCache.map(function(a) {
         return { title: a.title, url: a.url, cluster: null, primary_keyword: null };
       });
     }
+
+    // Check if cluster column exists and has data
+    var hasClusterData = articles.some(function(a){ return a.cluster; });
 
     // Group by cluster
     var map = {};
@@ -7112,10 +7120,11 @@ function renderAuthorityMap(data) {
 
   // Not built yet — show setup instructions
   if (!data.hasClusterData) {
+    var artCount = data.total || (window.publishedCache && window.publishedCache.length) || 0;
     container.innerHTML =
-      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 24px;margin-bottom:16px;">' +
-        '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">Setup required — 2 steps</p>' +
-        '<p style="font-size:12px;color:var(--text3);margin-bottom:14px;">The authority map classifies your ' + (data.total||0) + ' published articles into 10 topic clusters so Content Intelligence knows where FXIFY is strong vs weak.</p>' +
+      '<div style="background:var(--bg2);border:1px solid var(--amber);border-radius:var(--rl);padding:20px 24px;margin-bottom:16px;">' +
+        '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">⚙ Setup required — 2 steps</p>' +
+        '<p style="font-size:12px;color:var(--text3);margin-bottom:14px;">The authority map classifies your ' + artCount + ' published articles into 10 topic clusters so Content Intelligence knows where FXIFY is strong vs weak before generating topic ideas.</p>' +
         '<div style="margin-bottom:14px;">' +
           '<p style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px;">Step 1 — Run this SQL in Supabase (once only):</p>' +
           '<pre style="font-size:11px;color:var(--green);background:var(--bg3);padding:10px;border-radius:6px;overflow-x:auto;">ALTER TABLE published_articles\n  ADD COLUMN IF NOT EXISTS cluster text,\n  ADD COLUMN IF NOT EXISTS primary_keyword text;</pre>' +
@@ -9217,14 +9226,10 @@ function v2WireCustomBtn() {
       var panelId = panels[tab] || ('hub-' + tab);
       var panel = document.getElementById(panelId);
       // Auto-load authority map when tab opens
-      if (tab === 'authority' && !window._topicalAuthorityMap) {
+      if (tab === 'authority') {
         loadTopicalAuthorityMap().then(function(d) {
           window._topicalAuthorityMap = d;
-          if (d && d.total > 0) renderAuthorityMap(d);
-          else {
-            var st = document.getElementById('ta-status');
-            if (st) st.textContent = d && d.total === 0 ? 'No classified articles yet — click Build to start.' : '';
-          }
+          renderAuthorityMap(d); // always render — function handles all states
         });
       }
       if (panel) { panel.style.display = ''; panel.classList.add('active'); }
