@@ -7047,6 +7047,17 @@ async function loadTopicalAuthorityMap() {
     var res = await supa.from('published_articles').select('title,url,cluster,primary_keyword');
     var articles = res.data || [];
 
+    // Check if cluster column exists and has data
+    var hasClusterData = articles.some(function(a){ return a.cluster; });
+
+    // If no cluster data yet — fall back to publishedCache for article count
+    // This gives a useful map even before Build is clicked
+    if (!hasClusterData && window.publishedCache && window.publishedCache.length) {
+      articles = window.publishedCache.map(function(a) {
+        return { title: a.title, url: a.url, cluster: null, primary_keyword: null };
+      });
+    }
+
     // Group by cluster
     var map = {};
     TOPIC_CLUSTERS.forEach(function(c) {
@@ -7054,14 +7065,14 @@ async function loadTopicalAuthorityMap() {
     });
 
     articles.forEach(function(a) {
-      var cluster = a.cluster || 'prop-firm-basics';
-      if (!map[cluster]) cluster = 'prop-firm-basics';
-      map[cluster].articles.push({ title: a.title, url: a.url, keyword: a.primary_keyword });
-      map[cluster].count++;
+      var cluster = a.cluster || null;
+      if (cluster && map[cluster]) {
+        map[cluster].articles.push({ title: a.title, url: a.url, keyword: a.primary_keyword });
+        map[cluster].count++;
+      }
     });
 
-    // Score each cluster: 0-100 based on article count relative to total
-    var total = articles.length || 1;
+    // Score each cluster
     var maxCount = Math.max.apply(null, Object.values(map).map(function(c){ return c.count; })) || 1;
     Object.keys(map).forEach(function(id) {
       var c = map[id];
@@ -7070,17 +7081,62 @@ async function loadTopicalAuthorityMap() {
       c.tier = c.strength >= 60 ? 'strong' : c.strength >= 25 ? 'medium' : 'weak';
     });
 
-    return { map: map, total: articles.length, clusters: TOPIC_CLUSTERS };
+    return {
+      map: map,
+      total: articles.length,
+      clusters: TOPIC_CLUSTERS,
+      hasClusterData: hasClusterData
+    };
   } catch(e) {
+    // Supabase error — may mean cluster column doesn't exist yet
     console.warn('[TopicalAuthority] load failed:', e.message);
-    return null;
+    // Return empty map with helpful state
+    var map = {};
+    TOPIC_CLUSTERS.forEach(function(c) {
+      map[c.id] = { label: c.label, desc: c.desc, articles: [], count: 0, strength: 0, tier: 'weak' };
+    });
+    return { map: map, total: 0, clusters: TOPIC_CLUSTERS, hasClusterData: false, error: e.message };
   }
 }
 
 // ── RENDER AUTHORITY MAP ─────────────────────────────────────────────────────
 function renderAuthorityMap(data) {
   var container = document.getElementById('ta-map-container');
-  if (!container || !data) return;
+  var status    = document.getElementById('ta-status');
+  if (!container) return;
+
+  if (!data) {
+    container.innerHTML = '<p style="color:var(--text3);font-size:13px;text-align:center;padding:32px 0;">Could not load authority map. Check Supabase connection.</p>';
+    return;
+  }
+
+  // Not built yet — show setup instructions
+  if (!data.hasClusterData) {
+    container.innerHTML =
+      '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:20px 24px;margin-bottom:16px;">' +
+        '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:8px;">Setup required — 2 steps</p>' +
+        '<p style="font-size:12px;color:var(--text3);margin-bottom:14px;">The authority map classifies your ' + (data.total||0) + ' published articles into 10 topic clusters so Content Intelligence knows where FXIFY is strong vs weak.</p>' +
+        '<div style="margin-bottom:14px;">' +
+          '<p style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px;">Step 1 — Run this SQL in Supabase (once only):</p>' +
+          '<pre style="font-size:11px;color:var(--green);background:var(--bg3);padding:10px;border-radius:6px;overflow-x:auto;">ALTER TABLE published_articles\n  ADD COLUMN IF NOT EXISTS cluster text,\n  ADD COLUMN IF NOT EXISTS primary_keyword text;</pre>' +
+        '</div>' +
+        '<div>' +
+          '<p style="font-size:11px;font-weight:700;color:var(--teal);margin-bottom:6px;">Step 2 — Click Build:</p>' +
+          '<button class="btn btn-p btn-s" onclick="buildTopicalAuthorityMap()">⚡ Build authority map now</button>' +
+          '<p style="font-size:11px;color:var(--text3);margin-top:6px;">Takes ~60 seconds. Claude classifies each article into a cluster. Only needs to run when you publish new articles.</p>' +
+        '</div>' +
+      '</div>' +
+      '<div style="opacity:.4;">' +
+        data.clusters.map(function(c) {
+          return '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--border);">' +
+            '<span style="font-size:12px;color:var(--text3);">' + c.label + '</span>' +
+            '<div style="background:var(--bg3);border-radius:3px;height:4px;width:200px;"></div>' +
+          '</div>';
+        }).join('') +
+      '</div>';
+    if (status) status.textContent = data.total > 0 ? data.total + ' articles in Supabase — ready to classify' : 'No articles in published_articles table yet';
+    return;
+  }
 
   var clusters = data.clusters.map(function(c) {
     var info = data.map[c.id];
