@@ -844,6 +844,7 @@ tr:last-child td{border-bottom:none;}
           <div class="ci-tab-divider"></div>
           <button class="hub-tab" data-tab="competitors">Competitor Watch</button>
           <button class="hub-tab" data-tab="crosspost">Cross-Pollinate</button>
+          <button class="hub-tab" data-tab="authority">Authority Map</button>
         </div>
         <div class="ci-tab-actions">
           <button class="ci-ghost-btn" onclick="loadTopicHistory()">History</button>
@@ -1039,6 +1040,33 @@ tr:last-child td{border-bottom:none;}
             <label class="flbl">YouTube topic or title</label>
             <input class="finput" id="cp-yt-input" type="text" placeholder="e.g. FXIFY vs FTMO: Which Prop Firm is Better in 2026" style="margin-bottom:12px;"/>
             <button class="btn btn-p" id="cp-yt-btn" style="width:100%;justify-content:center;font-size:12px;">Convert to Blog Structure →</button>
+          </div>
+        </div>
+
+        <!-- ── AUTHORITY MAP PANEL ──────────────────────────────────── -->
+        <div class="hub-panel" id="hub-authority">
+          <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:16px;flex-wrap:wrap;">
+            <div>
+              <p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">Topical Authority Map</p>
+              <p style="font-size:12px;color:var(--text3);">Shows where FXIFY has strong coverage vs content gaps. Claude uses this before generating topics — it avoids suggesting topics where FXIFY is already strong and prioritises gaps.</p>
+            </div>
+            <div style="display:flex;gap:8px;align-items:center;">
+              <button class="btn btn-p btn-s" id="ta-build-btn" onclick="buildTopicalAuthorityMap()">Build authority map</button>
+              <button class="btn btn-s" onclick="loadTopicalAuthorityMap().then(function(d){window._topicalAuthorityMap=d;renderAuthorityMap(d);})">↻ Refresh</button>
+            </div>
+          </div>
+          <p id="ta-status" style="font-size:12px;color:var(--text3);margin-bottom:14px;"></p>
+          <div id="ta-map-container">
+            <p style="font-size:13px;color:var(--text3);text-align:center;padding:40px 0;">No authority map yet — click Build to classify your published articles into clusters.<br><span style="font-size:11px;">Takes about 60 seconds. Only needs to run when you publish new articles.</span></p>
+          </div>
+
+          <!-- SQL reminder -->
+          <div style="margin-top:20px;background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">
+            <p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text3);margin-bottom:8px;">Required Supabase columns</p>
+            <p style="font-size:11px;color:var(--text3);margin-bottom:8px;">Run this once in Supabase SQL editor if you haven't already:</p>
+            <pre style="font-size:11px;color:var(--teal);background:var(--bg3);padding:10px;border-radius:6px;overflow-x:auto;white-space:pre-wrap;">ALTER TABLE published_articles
+  ADD COLUMN IF NOT EXISTS cluster text,
+  ADD COLUMN IF NOT EXISTS primary_keyword text;</pre>
           </div>
         </div>
         <div id="cp-output" style="margin-top:16px;display:none;"></div>
@@ -1410,22 +1438,7 @@ tr:last-child td{border-bottom:none;}
           </div>
         </div>
 
-        <!-- ── ACTIVITY CHART ────────────────────────── -->
-        <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:20px;">
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-            <p style="font-size:13px;font-weight:600;color:var(--text);">Output this month</p>
-            <span style="font-size:11px;color:var(--text3);font-family:var(--mono);" id="ws-month-label"></span>
-          </div>
-          <canvas id="ws-chart" height="70" style="width:100%;"></canvas>
-          <div style="display:flex;justify-content:space-between;margin-top:6px;">
-            <span style="font-size:10px;color:var(--muted);">Week 1</span>
-            <span style="font-size:10px;color:var(--muted);">Week 2</span>
-            <span style="font-size:10px;color:var(--muted);">Week 3</span>
-            <span style="font-size:10px;color:var(--muted);">Week 4</span>
-          </div>
-        </div>
-
-        <!-- ── STATUS PIPELINE ───────────────────────── -->
+                  <!-- ── STATUS PIPELINE ───────────────────────── -->
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 20px;margin-bottom:20px;">
           <p style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);margin-bottom:12px;">Your pipeline</p>
           <div style="display:flex;align-items:center;gap:0;" id="ws-pipeline">
@@ -3240,7 +3253,7 @@ async function loadWriterDrafts() {
   // ── Populate stats ────────────────────────────────────
   var set = function(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; };
   set('ws-active',  active.length);
-  // ws-done set inside chart section with monthly context
+  set('ws-done', published.length);
   set('ws-overdue', overdue.length);
   // Real streak: count consecutive days with published tasks up to today
   var streakDays = 0;
@@ -3258,102 +3271,12 @@ async function loadWriterDrafts() {
   }
   set('ws-streak', streakDays > 0 ? streakDays + ' day' + (streakDays > 1 ? 's' : '') : '—');
 
-  // Dynamic month label
-  var monthLabel = document.getElementById('ws-month-label');
-  if (monthLabel) {
-    monthLabel.textContent = new Date().toLocaleString('en-US', {month:'long', year:'numeric'});
-  }
 
   var nb = document.getElementById('nb-wdrafts');
   if (nb) nb.textContent = active.length || '';
 
-  // ── Draw activity chart ───────────────────────────────
-  var canvas = document.getElementById('ws-chart');
-  if (canvas && canvas.getContext) {
-    var ctx = canvas.getContext('2d');
-    canvas.width = canvas.offsetWidth || 600;
-    canvas.height = 70;
 
-    // Group published tasks by week of current month
-    // Use date_closed → date_updated → due_date as fallback (date_closed not always set)
-    var now   = new Date();
-    var weeks = [0, 0, 0, 0];
-    var thisMonthPublished = 0;
-    published.forEach(function(t) {
-      var ts = t.date_closed || t.date_updated || t.due_date;
-      if (!ts) return;
-      var d = new Date(parseInt(ts));
-      if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return;
-      thisMonthPublished++;
-      var week = Math.min(Math.floor((d.getDate() - 1) / 7), 3);
-      weeks[week]++;
-    });
-
-    // Update the stat to show this month's count
-    set('ws-done', thisMonthPublished > 0 ? thisMonthPublished + ' this month' : published.length + ' total');
-
-    // Group active tasks by creation week
-    var activeWeeks = [0, 0, 0, 0];
-    active.forEach(function(t) {
-      var ts = t.date_created || t.date_updated;
-      if (!ts) return;
-      var d = new Date(parseInt(ts));
-      if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return;
-      var week = Math.min(Math.floor((d.getDate() - 1) / 7), 3);
-      activeWeeks[week]++;
-    });
-
-    var maxVal = Math.max.apply(null, weeks.concat(activeWeeks).concat([1]));
-    var W = canvas.width, H = 70, pad = 4, barW = (W - pad*5) / 8;
-
-    ctx.clearRect(0, 0, W, H);
-
-    // Draw baseline
-    ctx.strokeStyle = 'rgba(148,163,184,0.2)';
-    ctx.lineWidth = 1;
-    ctx.beginPath(); ctx.moveTo(0, H-1); ctx.lineTo(W, H-1); ctx.stroke();
-
-    // Draw bars for each week
-    for (var i = 0; i < 4; i++) {
-      var x = pad + i * (barW * 2 + pad * 2);
-
-      // Published bar (green)
-      var ph = Math.max(weeks[i] / maxVal * (H - 10), weeks[i] > 0 ? 4 : 0);
-      ctx.fillStyle = '#059669';
-      ctx.beginPath();
-      ctx.roundRect(x, H - ph - 1, barW, ph, [3, 3, 0, 0]);
-      ctx.fill();
-
-      // Active bar (blue)
-      var ah = Math.max(activeWeeks[i] / maxVal * (H - 10), activeWeeks[i] > 0 ? 4 : 0);
-      ctx.fillStyle = '#2563EB';
-      ctx.globalAlpha = 0.35;
-      ctx.beginPath();
-      ctx.roundRect(x + barW + 2, H - ah - 1, barW, ah, [3, 3, 0, 0]);
-      ctx.fill();
-      ctx.globalAlpha = 1;
-
-      // Value label
-      if (weeks[i] > 0) {
-        ctx.fillStyle = '#059669';
-        ctx.font = '700 10px system-ui';
-        ctx.textAlign = 'center';
-        ctx.fillText(weeks[i], x + barW/2, H - ph - 5);
-      }
-    }
-
-    // Legend
-    ctx.font = '10px system-ui';
-    ctx.fillStyle = '#059669';
-    ctx.textAlign = 'left';
-    ctx.fillText('■ Published', 0, 10);
-    ctx.fillStyle = '#2563EB';
-    ctx.globalAlpha = 0.6;
-    ctx.fillText('■ Active', 72, 10);
-    ctx.globalAlpha = 1;
-  }
-
-  // ── Pipeline bar ─────────────────────────────────────
+    // ── Pipeline bar ─────────────────────────────────────
   var pipe = document.getElementById('ws-pipeline');
   if (pipe && active.length) {
     var statusGroups = {};
@@ -6995,6 +6918,230 @@ window.v2UpdateStatus = v2UpdateStatus;
 // ── BLOG PLAYBOOK — embedded in brief modal ──────────────────────────────
 var WRITER_STYLE_GUIDE = 'var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">\n            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;"><span class="ico ico-sm"><svg viewBox="0 0 24 24"><path d="M12 2l2.4 7.4H22l-6.2 4.5 2.4 7.4L12 17l-6.2 4.3 2.4-7.4L2 9.4h7.6L12 2z"/></svg></span> Required in every article</p>\n            <div style="display:flex;flex-direction:column;gap:12px;">\n              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Summary table</p><p style="font-size:12px;color:var(--text3);">For articles over 800 words. 4 columns, 4-5 rows of key facts at the top.</p></div></div>\n              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Table of contents</p><p style="font-size:12px;color:var(--text3);">For articles over 800 words. Anchor links to each H2 section.</p></div></div>\n              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">FAQ section</p><p style="font-size:12px;color:var(--text3);">Minimum 5 questions. Direct, concise answers. Major SEO opportunity.</p></div></div>\n              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Key Takeaways block</p><p style="font-size:12px;color:var(--text3);">5-7 bullets at the end. Readers who skim get the full value.</p></div></div>\n              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Internal links</p><p style="font-size:12px;color:var(--text3);">Minimum 2-3 links to relevant FXIFY pages. Don\'t leave link equity on the table.</p></div></div>\n              <div style="display:flex;gap:10px;"><div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0;margin-top:6px;"></div><div><p style="font-size:13px;font-weight:500;margin-bottom:2px;">Author byline</p><p style="font-size:12px;color:var(--text3);">Every article gets a real author name. No ghost writing. Select your name in the brief.</p></div></div>\n            </div>\n          </div>\n\n          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">\n            <p style="font-size:11px;font-weight:600;color:var(--blue);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;"><span class="ico"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span> Keywords &amp; SEO</p>\n            <div style="display:flex;flex-direction:column;gap:10px;">\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--blueL);">Primary keyword in <strong style="color:var(--text);">H1 and at least 2 H2 headings</strong></p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--blueL);">Secondary keywords in H2s and body — <strong style="color:var(--text);">naturally, never stuffed</strong></p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--blueL);">Bold <strong style="color:var(--text);">8-10 key terms and stats</strong> throughout the article</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--blueL);">Every H2 must have at least one bolded phrase or statistic</p>\n            </div>\n          </div>\n\n          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">\n            <p style="font-size:11px;font-weight:600;color:var(--purple);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;"><span class="ico"><svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg></span> Scannability rules</p>\n            <div style="display:flex;flex-direction:column;gap:10px;">\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--purpleL);"><strong style="color:var(--text);">Max 25 words</strong> per sentence</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--purpleL);"><strong style="color:var(--text);">Max 3 sentences</strong> per paragraph</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--purpleL);">Use bullet points and numbered lists — not walls of text</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--purpleL);">Break long sections with H3 subheadings</p>\n            </div>\n          </div>\n\n          <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:18px;">\n            <p style="font-size:11px;font-weight:600;color:var(--teal);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;"><span class="ico"><svg viewBox="0 0 24 24"><polyline points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg></span> FXIFY voice</p>\n            <div style="display:flex;flex-direction:column;gap:10px;">\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--tealL);"><strong style="color:var(--text);">Confident.</strong> We know trading. No hedging or over-qualifying.</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--tealL);"><strong style="color:var(--text);">Direct.</strong> Short sentences. Get to the point fast.</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--tealL);"><strong style="color:var(--text);">Second person.</strong> Always "you" — talk to the trader directly.</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid var(--tealL);">Accurate on drawdown. When in doubt, check fxify.com/rules before writing.</p>\n            </div>\n          </div>\n\n          <div style="background:var(--urgentL);border:1px solid rgba(239,68,68,.2);border-radius:var(--rl);padding:18px;">\n            <p style="font-size:11px;font-weight:600;color:var(--urgent);letter-spacing:.08em;text-transform:uppercase;margin-bottom:14px;">✗ Never do this</p>\n            <div style="display:flex;flex-direction:column;gap:8px;">\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Start with "In this article we will..."</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Vague language — "some traders may find..." or "it is possible that..."</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Long paragraphs with no bolding or structure</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Skip the FAQ or internal links to save time</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Make claims about FXIFY that are not on fxify.com</p>\n              <p style="font-size:13px;color:var(--text3);padding-left:12px;border-left:2px solid rgba(239,68,68,.3);">Submit without checking keyword placement in headings</p>\n            </div>\n          </div>\n\n        </div>';
 
+
+// ── TOPICAL AUTHORITY LAYER ──────────────────────────────────────────────────
+// Purpose: Map every FXIFY published article to a topic cluster.
+// This gives Claude a domain-specific authority score before generating topics.
+// Clusters: prop-firm-basics | challenge-mechanics | payout-funding |
+//           trading-psychology | risk-management | platform-tools |
+//           industry-news | comparisons | instant-funding | regulation
+
+var TOPIC_CLUSTERS = [
+  { id: 'challenge-mechanics',  label: 'Challenge Mechanics',  desc: 'How prop firm challenges work — rules, phases, targets, drawdown' },
+  { id: 'comparisons',          label: 'Comparisons',          desc: 'FXIFY vs competitors, side-by-side, best prop firm for X' },
+  { id: 'payout-funding',       label: 'Payout & Funding',     desc: 'How payouts work, splits, withdrawal, funded accounts' },
+  { id: 'instant-funding',      label: 'Instant Funding',      desc: 'No-challenge accounts, direct funding, Instant Funding Lite' },
+  { id: 'risk-management',      label: 'Risk Management',      desc: 'Drawdown, position sizing, consistency rules, risk per trade' },
+  { id: 'trading-psychology',   label: 'Trading Psychology',   desc: 'Discipline, mindset, emotions, common mistakes' },
+  { id: 'prop-firm-basics',     label: 'Prop Firm Basics',     desc: 'What is a prop firm, how they work, who they are for' },
+  { id: 'platform-tools',       label: 'Platform & Tools',     desc: 'MT4, MT5, TradingView, indicators, EA, copiers' },
+  { id: 'industry-news',        label: 'Industry News',        desc: 'Prop firm regulations, industry changes, news events' },
+  { id: 'regulation',           label: 'Regulation',           desc: 'FCA, FSCA, broker regulation, legal aspects of prop trading' }
+];
+
+// ── CLASSIFY ARTICLES INTO CLUSTERS ─────────────────────────────────────────
+async function buildTopicalAuthorityMap() {
+  var btn = document.getElementById('ta-build-btn');
+  var status = document.getElementById('ta-status');
+  if (btn) { btn.disabled = true; btn.textContent = 'Building...'; }
+  if (status) status.textContent = 'Loading published articles...';
+
+  try {
+    // 1. Load all published articles
+    var res = await supa.from('published_articles').select('id,title,url,cluster,primary_keyword');
+    var articles = res.data || [];
+    if (!articles.length) {
+      if (status) status.textContent = 'No published articles found in Supabase.';
+      if (btn) { btn.disabled = false; btn.textContent = 'Build authority map'; }
+      return;
+    }
+
+    if (status) status.textContent = 'Classifying ' + articles.length + ' articles into clusters...';
+
+    // 2. Batch classify — 20 articles per Claude call to stay within token limits
+    var batchSize = 20;
+    var updates = [];
+    var clusterList = TOPIC_CLUSTERS.map(function(c){ return c.id + ' (' + c.desc + ')'; }).join('\n');
+
+    for (var i = 0; i < articles.length; i += batchSize) {
+      var batch = articles.slice(i, i + batchSize);
+      if (status) status.textContent = 'Classifying articles ' + (i+1) + '–' + Math.min(i+batchSize, articles.length) + ' of ' + articles.length + '...';
+
+      var batchList = batch.map(function(a, idx) {
+        return (idx+1) + '. ' + a.title;
+      }).join('\n');
+
+      var prompt =
+        'You are classifying FXIFY prop trading blog articles into topic clusters.\n\n' +
+        'CLUSTERS:\n' + clusterList + '\n\n' +
+        'ARTICLES TO CLASSIFY:\n' + batchList + '\n\n' +
+        'For each article, return its cluster id and primary keyword (2-4 words max).\n' +
+        'Return ONLY valid JSON — array with same order as input:\n' +
+        '[{"cluster":"challenge-mechanics","keyword":"prop firm challenge rules"}]';
+
+      var text = await v2Fetch(prompt, 2000);
+      var result = parseJSON(text);
+
+      if (Array.isArray(result)) {
+        batch.forEach(function(art, idx) {
+          if (result[idx]) {
+            updates.push({
+              id:              art.id,
+              cluster:         result[idx].cluster || 'prop-firm-basics',
+              primary_keyword: result[idx].keyword || ''
+            });
+          }
+        });
+      }
+
+      // Small delay between batches
+      if (i + batchSize < articles.length) {
+        await new Promise(function(r){ setTimeout(r, 500); });
+      }
+    }
+
+    // 3. Write classifications back to Supabase
+    if (status) status.textContent = 'Saving ' + updates.length + ' classifications to Supabase...';
+
+    for (var ui = 0; ui < updates.length; ui += 50) {
+      var upBatch = updates.slice(ui, ui + 50);
+      await supa.from('published_articles').upsert(upBatch);
+    }
+
+    // 4. Build the authority map summary and cache it
+    window._topicalAuthorityMap = await loadTopicalAuthorityMap();
+    renderAuthorityMap(window._topicalAuthorityMap);
+
+    if (status) status.textContent = '✓ Authority map built — ' + updates.length + ' articles classified';
+    v2Toast('Topical authority map built ✓');
+
+  } catch(e) {
+    console.error('[TopicalAuthority]', e);
+    if (status) status.textContent = 'Error: ' + e.message;
+  }
+
+  if (btn) { btn.disabled = false; btn.textContent = 'Rebuild map'; }
+}
+
+// ── LOAD AUTHORITY MAP FROM SUPABASE ────────────────────────────────────────
+async function loadTopicalAuthorityMap() {
+  try {
+    var res = await supa.from('published_articles').select('title,url,cluster,primary_keyword');
+    var articles = res.data || [];
+
+    // Group by cluster
+    var map = {};
+    TOPIC_CLUSTERS.forEach(function(c) {
+      map[c.id] = { label: c.label, desc: c.desc, articles: [], count: 0 };
+    });
+
+    articles.forEach(function(a) {
+      var cluster = a.cluster || 'prop-firm-basics';
+      if (!map[cluster]) cluster = 'prop-firm-basics';
+      map[cluster].articles.push({ title: a.title, url: a.url, keyword: a.primary_keyword });
+      map[cluster].count++;
+    });
+
+    // Score each cluster: 0-100 based on article count relative to total
+    var total = articles.length || 1;
+    var maxCount = Math.max.apply(null, Object.values(map).map(function(c){ return c.count; })) || 1;
+    Object.keys(map).forEach(function(id) {
+      var c = map[id];
+      var raw = c.count / maxCount;
+      c.strength = Math.round(raw * 100);
+      c.tier = c.strength >= 60 ? 'strong' : c.strength >= 25 ? 'medium' : 'weak';
+    });
+
+    return { map: map, total: articles.length, clusters: TOPIC_CLUSTERS };
+  } catch(e) {
+    console.warn('[TopicalAuthority] load failed:', e.message);
+    return null;
+  }
+}
+
+// ── RENDER AUTHORITY MAP ─────────────────────────────────────────────────────
+function renderAuthorityMap(data) {
+  var container = document.getElementById('ta-map-container');
+  if (!container || !data) return;
+
+  var clusters = data.clusters.map(function(c) {
+    var info = data.map[c.id];
+    if (!info) return '';
+    var tierCol = info.tier === 'strong' ? 'var(--green)' : info.tier === 'medium' ? 'var(--amber)' : 'var(--urgent)';
+    var tierLbl = info.tier === 'strong' ? 'Strong' : info.tier === 'medium' ? 'Medium' : 'Gap';
+    var barW    = Math.max(4, info.strength);
+    return '<div style="margin-bottom:10px;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">' +
+        '<span style="font-size:12px;font-weight:600;color:var(--text);">' + info.label + '</span>' +
+        '<div style="display:flex;align-items:center;gap:8px;">' +
+          '<span style="font-size:10px;color:var(--text3);">' + info.count + ' articles</span>' +
+          '<span style="font-size:10px;font-weight:700;color:' + tierCol + ';background:' + tierCol.replace(')', ',.12)').replace('var(', 'rgba(').replace(/--[a-z]+/, function(v){ return {
+            '--green':'16,185,129','--amber':'245,158,11','--urgent':'239,68,68'
+          }[v]||'255,255,255'; }) + ';padding:1px 7px;border-radius:3px;">' + tierLbl + '</span>' +
+        '</div>' +
+      '</div>' +
+      '<div style="background:var(--bg3);border-radius:3px;height:5px;overflow:hidden;">' +
+        '<div style="background:' + tierCol + ';width:' + barW + '%;height:100%;border-radius:3px;transition:width .4s;"></div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+
+  container.innerHTML =
+    '<div style="margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;">' +
+      '<p style="font-size:12px;color:var(--text3);">' + data.total + ' articles mapped across ' + data.clusters.length + ' clusters</p>' +
+      '<span style="font-size:11px;color:var(--text3);">Gap = opportunity to build authority</span>' +
+    '</div>' +
+    clusters;
+}
+
+// ── INJECT AUTHORITY CONTEXT INTO CI PROMPT ─────────────────────────────────
+async function getAuthorityContext(seed) {
+  // Load from cache or Supabase
+  if (!window._topicalAuthorityMap) {
+    window._topicalAuthorityMap = await loadTopicalAuthorityMap();
+  }
+  var data = window._topicalAuthorityMap;
+  if (!data || !data.map) return '';
+
+  // Find which clusters are most relevant to this seed
+  var seedLower = seed.toLowerCase();
+  var relevantClusters = data.clusters.filter(function(c) {
+    var info = data.map[c.id];
+    return info && (
+      c.desc.toLowerCase().includes(seedLower.split(' ')[0]) ||
+      seedLower.includes(c.id.replace(/-/g,' ')) ||
+      (info.articles || []).some(function(a){
+        return a.keyword && seedLower.includes(a.keyword.split(' ')[0]);
+      })
+    );
+  });
+
+  // Build authority context block
+  var lines = ['FXIFY TOPICAL AUTHORITY MAP (do not suggest topics in STRONG clusters — write to fill GAPS):'];
+
+  data.clusters.forEach(function(c) {
+    var info = data.map[c.id];
+    if (!info) return;
+    var isRelevant = relevantClusters.some(function(r){ return r.id === c.id; });
+    lines.push(
+      info.tier.toUpperCase() + ' [' + info.count + ' articles] ' + info.label +
+      (info.tier === 'weak' ? ' ← CONTENT GAP — prioritise topics here' : '') +
+      (info.tier === 'strong' ? ' — already well covered, avoid duplication' : '') +
+      (isRelevant ? ' ★ RELEVANT TO THIS SEED' : '')
+    );
+    // For weak clusters related to seed — show what topics are missing
+    if (info.tier === 'weak' && isRelevant && info.articles.length < 3) {
+      lines.push('  Currently covers: ' + (info.articles.map(function(a){ return a.title; }).join('; ') || 'nothing yet'));
+    }
+    // For strong clusters — list a few titles so Claude knows what exists
+    if (info.tier === 'strong' && isRelevant && info.articles.length) {
+      lines.push('  Example articles already live: ' + info.articles.slice(0,3).map(function(a){ return a.title; }).join('; '));
+    }
+  });
+
+  return lines.join('\n');
+}
+
 var PULSE_FIRMS = [
   { name:'FTMO',                domain:'ftmo.com',                color:'#FF6B6B' },
   { name:'FundedNext',          domain:'fundednext.com',          color:'#4ECDC4' },
@@ -7626,10 +7773,11 @@ window.runFullCompetitorAnalysis = runFullCompetitorAnalysis;
 
 
 async function v2SerpResearch(keyword) {
-  // Call DataForSEO SERP API via n8n — same credentials already in V2_CONFIG
+  // Step 1: Get top 10 organic URLs from DataForSEO SERP API
   var serpWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/serp');
+  var serpItems = [];
+
   try {
-    console.log('[SERP] calling:', serpWebhook, 'keyword:', keyword);
     var r = await fetch(serpWebhook, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -7643,36 +7791,113 @@ async function v2SerpResearch(keyword) {
         device:   'desktop'
       })
     });
-    console.log('[SERP] HTTP:', r.status);
     var raw = await r.text();
-    if (!raw || !raw.trim()) throw new Error('SERP webhook returned empty');
-
+    if (!raw || !raw.trim()) throw new Error('SERP empty');
     var data = JSON.parse(raw);
-    // Parse DataForSEO SERP response format
-    var items = [];
-    if (data.tasks && data.tasks[0] && data.tasks[0].result && data.tasks[0].result[0]) {
-      var result = data.tasks[0].result[0];
-      items = (result.items || []).filter(function(item) {
-        return item.type === 'organic';
-      }).slice(0, 10).map(function(item) {
-        return {
-          title:       item.title || '',
-          url:         item.url || '',
-          description: item.description || '',
-          rank:        item.rank_absolute || 0
-        };
-      });
-    } else if (Array.isArray(data)) {
-      // Already processed
-      items = data;
-    }
 
-    console.log('[SERP] results:', items.length, 'organic results');
-    return items;
+    if (data.tasks && data.tasks[0] && data.tasks[0].result && data.tasks[0].result[0]) {
+      serpItems = (data.tasks[0].result[0].items || [])
+        .filter(function(item) { return item.type === 'organic'; })
+        .slice(0, 5)  // Top 5 only — we scrape each, so quality > quantity
+        .map(function(item) {
+          return {
+            title:       item.title || '',
+            url:         item.url   || '',
+            description: item.description || '',
+            rank:        item.rank_absolute || 0
+          };
+        });
+    }
+    console.log('[SERP] Got', serpItems.length, 'organic URLs');
   } catch(e) {
     console.warn('[SERP] DataForSEO failed:', e.message);
-    return []; // Return empty — no fabricated SERP data
+    return [];
   }
+
+  if (!serpItems.length) return [];
+
+  // Step 2: Scrape actual content from top 3 pages via Firecrawl
+  // Extract: H2 headings, word count estimate, key entities
+  var fcKey = 'Bearer ' + V2_CONFIG.firecrawl;
+  var top3  = serpItems.slice(0, 3);
+
+  var scraped = await Promise.allSettled(top3.map(function(item) {
+    return fetch('https://api.firecrawl.dev/v1/scrape', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': fcKey },
+      body: JSON.stringify({
+        url: item.url,
+        formats: ['markdown'],
+        onlyMainContent: true,
+        waitFor: 1000
+      })
+    })
+    .then(function(r) { return r.json(); })
+    .then(function(d) {
+      var md    = (d.data && d.data.markdown) || (d.markdown) || '';
+      if (!md) return { item: item, content: null };
+
+      // Extract H2 headings — lines starting with ##
+      var headings = md.match(/^##\s+.+$/gm) || [];
+      headings = headings.map(function(h){ return h.replace(/^#+\s+/, '').trim(); }).slice(0, 12);
+
+      // Extract H3 headings for finer structure
+      var h3s = md.match(/^###\s+.+$/gm) || [];
+      h3s = h3s.slice(0, 8).map(function(h){ return h.replace(/^#+\s+/, '').trim(); });
+
+      // Estimate word count
+      var wordCount = md.split(/\s+/).length;
+
+      // Extract bold phrases — often key entities or terms
+      var boldTerms = [];
+      var boldMatches = md.match(/\*\*([^*]{3,40})\*\*/g) || [];
+      boldMatches.slice(0, 15).forEach(function(b) {
+        boldTerms.push(b.replace(/\*\*/g, '').trim());
+      });
+
+      // Check for FAQ section
+      var hasFAQ = /##\s*(faq|frequently asked|questions)/i.test(md);
+
+      // Check for table
+      var hasTable = /\|.+\|.+\|/.test(md);
+
+      return {
+        item:      item,
+        content: {
+          headings:    headings,
+          h3s:         h3s,
+          word_count:  wordCount,
+          bold_terms:  boldTerms,
+          has_faq:     hasFAQ,
+          has_table:   hasTable,
+          snippet:     md.substring(0, 300)
+        }
+      };
+    })
+    .catch(function() { return { item: item, content: null }; });
+  }));
+
+  // Merge SERP metadata with scraped content
+  var enriched = [];
+  scraped.forEach(function(result) {
+    if (result.status !== 'fulfilled') return;
+    var v = result.value;
+    enriched.push({
+      title:       v.item.title,
+      url:         v.item.url,
+      description: v.item.description,
+      rank:        v.item.rank,
+      scraped:     v.content  // null if scrape failed
+    });
+  });
+
+  // Add remaining SERP items (4-5) without scraping — titles + descriptions only
+  serpItems.slice(3).forEach(function(item) {
+    enriched.push({ title: item.title, url: item.url, description: item.description, rank: item.rank, scraped: null });
+  });
+
+  console.log('[SERP] Enriched', enriched.filter(function(e){ return e.scraped; }).length, '/', enriched.length, 'with page content');
+  return enriched;
 }
 
 
@@ -7701,26 +7926,28 @@ async function runTopicIdeas() {
   console.log('[Topics] Research webhook:', researchWebhook);
 
   v2ShowLoader(output, [
-    'Pulling DataForSEO keyword data...',
-    'Live-searching competitor content and Reddit...',
-    'Cross-referencing 123 FXIFY published articles...',
-    'Claude analysing gaps and building Yoast-style topics...'
+    'Pulling DataForSEO keyword data — US + UK...',
+    'Scraping top-ranking pages — headings, entities, word count...',
+    'Reading competitor content + authority map...',
+    'Claude analysing structure gaps and building topics...'
   ]);
 
-  // Run all data sources in parallel
+  // Run all data sources in parallel — including topical authority map
   var results = await Promise.allSettled([
     dfsKeywords(seed),
     v2ScrapeCompetitors(compKey),
     v2LoadFxifyPublished(),
     dfsAutocomplete(seed),
-    v2SerpResearch(seed)
+    v2SerpResearch(seed),
+    getAuthorityContext(seed)
   ]);
 
-  var kwData        = results[0].status === 'fulfilled' ? results[0].value : [];
-  var compData      = results[1].status === 'fulfilled' ? results[1].value : [];
-  var fxifyArticles = results[2].status === 'fulfilled' ? results[2].value : [];
-  var autocomplete  = results[3].status === 'fulfilled' ? results[3].value : [];
-  var serpData      = results[4].status === 'fulfilled' ? results[4].value : [];
+  var kwData           = results[0].status === 'fulfilled' ? results[0].value : [];
+  var compData         = results[1].status === 'fulfilled' ? results[1].value : [];
+  var fxifyArticles    = results[2].status === 'fulfilled' ? results[2].value : [];
+  var autocomplete     = results[3].status === 'fulfilled' ? results[3].value : [];
+  var serpData         = results[4].status === 'fulfilled' ? results[4].value : [];
+  var authorityContext = results[5].status === 'fulfilled' ? results[5].value : '';
 
   var isStub = kwData.length > 0 && kwData[0].stub;
   var stubNote = isStub
@@ -7766,8 +7993,19 @@ async function runTopicIdeas() {
 
   // SERP data — what is actually ranking for this keyword right now
   var serpBlock = serpData.length ? serpData.map(function(r, i) {
-    return (i+1) + '. ' + r.title + (r.description ? ' — ' + r.description.substring(0,100) : '');
-  }).join('\n') : '';
+    var base = (i+1) + '. [#' + (r.rank||i+1) + '] ' + r.title + '\n   URL: ' + r.url;
+    if (r.description) base += '\n   Meta: ' + r.description.substring(0, 120);
+    if (r.scraped) {
+      var sc = r.scraped;
+      base += '\n   Word count: ~' + sc.word_count;
+      if (sc.headings && sc.headings.length) base += '\n   H2 sections: ' + sc.headings.join(' | ');
+      if (sc.h3s && sc.h3s.length)          base += '\n   H3 detail: '   + sc.h3s.join(' | ');
+      if (sc.bold_terms && sc.bold_terms.length) base += '\n   Key entities: ' + sc.bold_terms.slice(0,8).join(', ');
+      if (sc.has_faq)   base += '\n   ✓ FAQ section present';
+      if (sc.has_table) base += '\n   ✓ Comparison table present';
+    }
+    return base;
+  }).join('\n\n') : '';
 
   var kwBlock = kwData.slice(0,25).map(function(k) {
     if (k.stub) return '- ' + k.keyword + ' (volume: TBC — add DataForSEO credentials)';
@@ -7792,6 +8030,8 @@ async function runTopicIdeas() {
     // ─────────────────────────────────────────────────────────────────────
 
     'You are doing NLP-powered content gap analysis for FXIFY prop firm. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
+
+    (authorityContext ? authorityContext + '\n\n' : '') +
 
     'STEP 1 — ENTITY EXTRACTION\n' +
     'Read all competitor content below. Extract the key ENTITIES (concepts, features, rules, ' +
@@ -7861,9 +8101,14 @@ async function runTopicIdeas() {
     'CONTENT GOAL: ' + ({rank:'Rank for keyword in Google',authority:'Build FXIFY authority and trust',convert:'Drive challenge signups and conversions',retention:'Retain and educate funded traders'}[goal]||'Rank for keyword') + '\n' +
     'TARGET WORD COUNT: ' + wordcount + ' words\n\n' +
 
-    (serpBlock ? '── WHAT CURRENTLY RANKS FOR THIS TOPIC (SERP data) ──\n' +
-      'These are the pages traders find right now. Study their angles — what do ALL of them cover? ' +
-      'What does NONE of them cover?\n' + serpBlock + '\n\n' : '') +
+    (serpBlock ? '── SERP STRUCTURE ANALYSIS (top 5 pages — actual content scraped) ──\n' +
+      'These are the pages currently ranking. For each: word count, H2 headings, key entities, FAQ presence.\n' +
+      'Use this to identify:\n' +
+      '1. STRUCTURAL GAPS: heading sections none of the top pages have\n' +
+      '2. ENTITY GAPS: concepts/terms missing from most ranking pages\n' +
+      '3. FORMAT GAPS: no FAQ, no comparison table, thin word count = opportunity\n' +
+      '4. ANGLE GAPS: what question these pages fail to answer directly\n\n' +
+      serpBlock + '\n\n' : '') +
 
     (acBlock ? '── AUTOCOMPLETE — EXACT SEARCHES HAPPENING NOW ──\n' +
       'These are real search phrases. Every topic should map to one of these.\n' + acBlock + '\n\n' : '') +
@@ -8856,9 +9101,20 @@ function v2WireCustomBtn() {
       });
       document.querySelectorAll('.hub-panel').forEach(function(p) { p.style.display='none'; p.classList.remove('active'); });
       // hub-blog doesn't have class hub-panel — handle separately
-      var panels = { blog:'hub-blog', youtube:'hub-youtube', competitors:'hub-competitors-ci', crosspost:'hub-crosspost' };
+      var panels = { blog:'hub-blog', youtube:'hub-youtube', competitors:'hub-competitors-ci', crosspost:'hub-crosspost', authority:'hub-authority' };
       var panelId = panels[tab] || ('hub-' + tab);
       var panel = document.getElementById(panelId);
+      // Auto-load authority map when tab opens
+      if (tab === 'authority' && !window._topicalAuthorityMap) {
+        loadTopicalAuthorityMap().then(function(d) {
+          window._topicalAuthorityMap = d;
+          if (d && d.total > 0) renderAuthorityMap(d);
+          else {
+            var st = document.getElementById('ta-status');
+            if (st) st.textContent = d && d.total === 0 ? 'No classified articles yet — click Build to start.' : '';
+          }
+        });
+      }
       if (panel) { panel.style.display='block'; panel.classList.add('active'); }
       return;
     }
