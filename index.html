@@ -5466,7 +5466,7 @@ function ytShowLoader(steps) {
 
 async function runYouTubeDiscovery() {
   var btn    = document.getElementById('ayt-research-btn');
-  var output = document.getElementById('v2-brief-output');
+  var output = document.getElementById('yt-results') || document.getElementById('v2-brief-output');
   var topic  = (document.getElementById('yt-topic') || {}).value || 'prop trading funded accounts';
   var vidType = (document.getElementById('yt-type') || {}).value || 'short';
 
@@ -8044,27 +8044,28 @@ async function runTopicIdeas() {
 
     (authorityContext ? authorityContext + '\n\n' : '') +
 
-    'STEP 1 — ENTITY EXTRACTION\n' +
-    'Read all competitor content below. Extract the key ENTITIES (concepts, features, rules, ' +
-    'pain points) that appear across the majority of competing pages. These are the topics already saturated.\n\n' +
+    'ANALYSIS PROCESS — follow this exactly:\n\n' +
 
-    'STEP 2 — SEMANTIC GAP ANALYSIS\n' +
-    'Identify entities and intent clusters that SHOULD exist based on the seed topic but are ' +
-    'MISSING from competitor content. These missing clusters are the gaps.\n' +
-    'Look for: unanswered trader questions, features competitors have but never explain clearly, ' +
-    'comparison angles that no one has mapped side-by-side, rule nuances that confuse traders.\n\n' +
+    'STEP 1 — WHAT RANKS (read the SERP data below)\n' +
+    'For each of the top 5 pages: what H2 sections do they have? What entities appear across 3+ pages?\n' +
+    'List: SATURATED = topics all 5 pages cover. These are NOT gaps — do not suggest them.\n\n' +
 
-    'STEP 3 — INTENT CLUSTERING\n' +
-    'Group every gap by purchase intent:\n' +
-    '- TRANSACTIONAL: trader is ready to buy (comparison, price, sign up)\n' +
-    '- COMMERCIAL: trader is comparing options (vs, review, best, which)\n' +
-    '- INFORMATIONAL: trader is learning (how, what, why, explain)\n' +
-    'Prioritise Transactional > Commercial > Informational.\n\n' +
+    'STEP 2 — STRUCTURAL GAPS (from SERP headings)\n' +
+    'What H2 sections are MISSING from all 5 ranking pages that traders clearly need?\n' +
+    'What questions do the autocomplete phrases imply that NONE of the ranking pages answer directly?\n' +
+    'These heading gaps = high-value cluster topics.\n\n' +
 
-    'STEP 4 — PILLAR + CLUSTER STRUCTURE\n' +
-    'For each gap, identify if it is a PILLAR topic (broad, high volume, cornerstone page) ' +
-    'or a CLUSTER topic (specific, supports a pillar, faster to rank).\n' +
-    'We want 2 pillar topics and 6 cluster topics in the output.\n\n' +
+    'STEP 3 — FORMAT GAPS (from SERP metadata)\n' +
+    'Which ranking pages have no FAQ section? No comparison table? Word count under 1,000?\n' +
+    'Thin content or missing formats = opportunity to outrank with better structure.\n\n' +
+
+    'STEP 4 — COMPETITOR GAPS (from competitor blog data)\n' +
+    'Which specific competitor articles have high engagement but weak FXIFY-specific angles?\n' +
+    'Only cite gaps where FXIFY has a real differentiator (specific product, number, rule difference).\n\n' +
+
+    'STEP 5 — FXIFY FIT\n' +
+    'For each gap: which FXIFY product wins this angle? Name it. Cite the specific number.\n' +
+    'If no FXIFY product fits the gap, discard the topic — we cannot write it credibly.\n\n' +
 
     'TITLE RULES — TWO titles per topic required:\n' +
     '\n' +
@@ -8132,31 +8133,66 @@ async function runTopicIdeas() {
 
     (fxifyBlock ? '── FXIFY ALREADY PUBLISHED (exclude these completely) ──\n' + fxifyBlock + '\n\n' : '') +
 
-    'Generate exactly 8 topics: 2 PILLAR + 6 CLUSTER.\n\n' +
-    'PILLAR = broad, high-volume cornerstone topic. Covers the main angle.\n' +
-    'CLUSTER = specific, fast-to-rank supporting topic. Answers one trader question precisely.\n\n' +
-    'QUALITY RULES:\n' +
-    '- Every topic MUST trace to specific data from the competitor or SERP research above\n' +
-    '- Cite the specific competitor content or trader question that created this gap\n' +
-    '- The short_form_hook must sound like a real trader said it, not a marketer\n' +
-    '- The competitor_gap must name an actual firm and an actual angle they miss\n' +
-    '- The fxify_angle must use a specific product name and a specific number\n\n' +
+    'TASK: Identify 8 content gaps — 2 PILLAR + 6 CLUSTER.\n' +
+    'A gap = a topic traders search for where the current ranking pages are weak, wrong, or missing a specific angle.\n' +
+    'Not what Claude thinks FXIFY should write. What is ACTUALLY missing from what already ranks.\n\n' +
+
+    'PILLAR = broad, high-volume topic. Minimum 2,000 words. Cornerstone page.\n' +
+    'CLUSTER = specific, answerable in 800-1,200 words. Supports a pillar. Ranks faster.\n\n' +
+
+    'QUALITY GATE — every topic must pass ALL of these before being included:\n' +
+    '1. EVIDENCE: Must trace directly to the SERP data or competitor content above. Not Claude training data.\n' +
+    '2. SPECIFICITY: Title must include a number, a firm name, or a specific rule/feature. NO generic titles.\n' +
+    '3. FRESHNESS: Must be a gap FXIFY does not already cover (check the published articles list above).\n' +
+    '4. FXIFY FIT: Must map to a real FXIFY product with a real number. No vague "FXIFY offers competitive payouts."\n\n' +
+
+    'BANNED OUTPUT — reject any topic that:\n' +
+    '- Could have been written without the SERP data (generic prop firm content)\n' +
+    '- Has a title like "How Prop Firms Work" or "What is a Funded Account" (Wikipedia-level)\n' +
+    '- Uses banned words: Guide, Ultimate, Master, Deep Dive, Comprehensive, Unlocking\n' +
+    '- Duplicates an existing FXIFY article angle\n' +
+    '- Has a competitor_gap that says "many firms" instead of naming a specific firm\n\n' +
+
+    'NEGATIVE EXAMPLES — do NOT generate topics like these:\n' +
+    '✗ "How to Pass a Prop Firm Challenge in 2026" — too generic, everyone has this\n' +
+    '✗ "Best Prop Firm for Forex Traders" — no specific angle, no FXIFY differentiator\n' +
+    '✗ "Understanding Drawdown in Prop Trading" — educational filler, zero conversion\n\n' +
+
+    'POSITIVE EXAMPLES — this is the quality standard:\n' +
+    '✓ "FTMO Consistency Rule vs FXIFY One Phase: Which Lets You Keep More Profit" — names firms, names feature, clear comparison angle\n' +
+    '✓ "Why FundedNext Traders Are Switching to Instant Funding in 2026" — names firm, names product, trend signal\n' +
+    '✓ "FXIFY One Phase vs Two Phase Standard: Which Drawdown Type Wins for Swing Traders" — internal comparison, specific audience\n\n' +
+
+    'short_form_hook = First spoken sentence of a trader-facing video or reel. Under 15 words.\n' +
+    'Sounds like a trader talking, not a copywriter.\n' +
+    'BAD: "In this article we explore the key differences between prop firm evaluation models."\n' +
+    'GOOD: "I lost my funded account because of a rule nobody explained to me."\n' +
+    'GOOD: "You can get a live funded account for $19. No evaluation. Here is the catch."\n\n' +
+
+    'competitor_gap: ONLY populate if the SERP data or competitor content above contains evidence.\n' +
+    'Name the specific firm and the specific article or heading that creates the gap.\n' +
+    'If no evidence exists, use null — do not fabricate.\n\n' +
+
+    'why_now: ONLY populate if the scraped SERP data contains a date-relevant signal (2025-2026).\n' +
+    'If no real signal exists, use null — do not invent urgency.\n\n' +
+
     'Return ONLY valid JSON, no markdown:\n' +
     '{"topics":[{' +
-    '"title":"SEARCH TITLE — keyword-first, under 65 chars, exact phrase traders type in Google",' +
-    '"hook_title":"HOOK TITLE — brand voice statement or trader scene, under 65 chars, for article intro + social",' +
+    '"title":"keyword-first title — exact phrase traders search, under 65 chars, must include a specific term (firm name, rule, number, product)",' +
+    '"hook_title":"brand voice statement — specific scenario or fact, under 65 chars, for article intro + social",' +
     '"type":"pillar|cluster",' +
     '"intent":"Commercial|Informational|Transactional",' +
     '"conversion_tier":"1|2|3",' +
-    '"primary_keyword":"exact phrase traders type in Google — must match the search title keyword",' +
-    '"search_volume":"number from DFS data or TBC",' +
-    '"kd_score":"0-100 or TBC",' +
-    '"short_form_hook":"First sentence Harry says to camera. Under 15 words. Brand voice. NOT the search title.",' +
-    '"competitor_gap":"[Firm name] covers [specific topic] but never addresses [specific gap]. FXIFY wins because [specific fact with number].",' +
-    '"fxify_angle":"[Exact FXIFY account type] + [one verifiable number]. One sentence max.",' +
-    '"why_now":"Specific event or stat from July 2026. Never vague. Cite the source.",' +
+    '"primary_keyword":"2-4 word exact match phrase from autocomplete or SERP data",' +
+    '"search_volume":"number from DFS data or null",' +
+    '"kd_score":"0-100 from DFS data or null",' +
+    '"short_form_hook":"first spoken sentence, trader voice, under 15 words, NOT the title reworded",' +
+    '"competitor_gap":"[Specific firm] + [specific article/heading they have] + [specific angle they miss] OR null",' +
+    '"fxify_angle":"[Exact product name] + [one specific number from FXIFY facts]. One sentence. OR null if no fit.",' +
+    '"why_now":"specific 2025-2026 signal from scraped data with source OR null",' +
     '"opportunity_score":0,' +
-    '"youtube_title":"Searchable YouTube title — use Firm vs Firm OR How to X OR Top N for Y format. Under 60 chars."' +
+    '"youtube_title":"Firm vs Firm OR How to X in 2026 OR N Reasons Why — searchable, under 60 chars",' +
+    '"evidence":"which specific SERP URL or competitor article proves this gap exists"' +
     '}]}';
 
   try {
