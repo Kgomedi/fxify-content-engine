@@ -3240,7 +3240,7 @@ async function loadWriterDrafts() {
   // ── Populate stats ────────────────────────────────────
   var set = function(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; };
   set('ws-active',  active.length);
-  set('ws-done',    published.length);
+  // ws-done set inside chart section with monthly context
   set('ws-overdue', overdue.length);
   // Real streak: count consecutive days with published tasks up to today
   var streakDays = 0;
@@ -3275,21 +3275,29 @@ async function loadWriterDrafts() {
     canvas.height = 70;
 
     // Group published tasks by week of current month
+    // Use date_closed → date_updated → due_date as fallback (date_closed not always set)
     var now   = new Date();
     var weeks = [0, 0, 0, 0];
+    var thisMonthPublished = 0;
     published.forEach(function(t) {
-      if (!t.date_closed) return;
-      var d = new Date(parseInt(t.date_closed));
+      var ts = t.date_closed || t.date_updated || t.due_date;
+      if (!ts) return;
+      var d = new Date(parseInt(ts));
       if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return;
+      thisMonthPublished++;
       var week = Math.min(Math.floor((d.getDate() - 1) / 7), 3);
       weeks[week]++;
     });
 
-    // Also count active tasks per week (by creation date)
+    // Update the stat to show this month's count
+    set('ws-done', thisMonthPublished > 0 ? thisMonthPublished + ' this month' : published.length + ' total');
+
+    // Group active tasks by creation week
     var activeWeeks = [0, 0, 0, 0];
     active.forEach(function(t) {
-      if (!t.date_created) return;
-      var d = new Date(parseInt(t.date_created));
+      var ts = t.date_created || t.date_updated;
+      if (!ts) return;
+      var d = new Date(parseInt(ts));
       if (d.getMonth() !== now.getMonth() || d.getFullYear() !== now.getFullYear()) return;
       var week = Math.min(Math.floor((d.getDate() - 1) / 7), 3);
       activeWeeks[week]++;
