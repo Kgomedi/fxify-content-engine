@@ -1200,7 +1200,7 @@ tr:last-child td{border-bottom:none;}
             <div id="train-rules" style="background:rgba(255,255,255,.04);border-radius:var(--r);padding:12px 14px;font-size:12px;color:var(--muted);line-height:1.8;"></div>
           </div>
         </div>
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:13px;font-weight:500;">FXIFY Blog Draft Prompt</span><span class="badge bt">Active</span></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;"><span style="font-size:13px;font-weight:500;">FXIFY Blog Draft Prompt</span><span class="badge bt">Active</span><span id="prompt-source-badge" style="font-size:10px;color:var(--text3);margin-left:8px;">Loading...</span></div>
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;">
           <div style="padding:10px 14px;background:var(--bg3);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;">
             <p style="font-size:12px;font-weight:600;color:var(--text);">FXIFY Blog Draft Prompt</p>
@@ -1300,11 +1300,13 @@ tr:last-child td{border-bottom:none;}
             </select>
             <select id="comp-filter-type" style="background:var(--bg2);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 10px;font-size:12px;">
               <option value="all">All signals</option>
-              <option value="launch">Launch</option>
+              <option value="pricing">Pricing</option>
               <option value="rule_change">Rule change</option>
-              <option value="payout">Payout news</option>
-              <option value="trouble">Trouble / controversy</option>
-              <option value="trending">Trending</option>
+              <option value="payout">Payout</option>
+              <option value="trust">Trust / Rep</option>
+              <option value="commercial">Commercial</option>
+              <option value="promo">Promo / Campaign</option>
+              <option value="position">Market position</option>
               <option value="new_entrant">New entrant</option>
             </select>
             <button class="btn btn-p btn-s" id="comp-run-btn" style="white-space:nowrap;"><span class="ico"><svg viewBox="0 0 24 24"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>Run pulse</button>
@@ -1313,7 +1315,7 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <!-- FIRM CARDS STRIP -->
-        <div id="comp-firm-strip" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px;margin-bottom:20px;">
+        <div id="comp-firm-strip" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin-bottom:20px;">
           <div style="grid-column:1/-1;text-align:center;padding:32px;color:var(--text3);">
             <p style="font-size:13px;">Run the pulse to load live firm data</p>
             <button class="btn btn-p btn-s" id="comp-run-empty-btn" style="margin-top:12px;">⚡ Run pulse →</button>
@@ -1321,7 +1323,7 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <!-- PULSE FEED -->
-        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex-wrap:wrap;gap:8px;">
           <div class="shead" style="margin-bottom:0;">Industry pulse feed</div>
           <span id="comp-last-run" style="font-size:11px;color:var(--text3);"></span>
         </div>
@@ -7049,112 +7051,227 @@ var PULSE_FIRMS = [
 ];
 
 var SIGNAL_TYPES = {
-  launch:      { label:'Launch',          color:'var(--green)',  bg:'rgba(16,185,129,.12)' },
+  pricing:     { label:'Pricing',         color:'var(--green)',  bg:'rgba(16,185,129,.12)' },
   rule_change: { label:'Rule change',     color:'var(--amber)',  bg:'rgba(245,158,11,.12)' },
-  payout:      { label:'Payout news',     color:'var(--teal)',   bg:'rgba(20,184,166,.12)' },
-  trouble:     { label:'Controversy',     color:'var(--urgent)', bg:'rgba(239,68,68,.12)'  },
-  trending:    { label:'Trending',        color:'var(--brand)',  bg:'rgba(107,63,160,.12)' },
-  new_entrant: { label:'New entrant',     color:'var(--blue)',   bg:'rgba(59,130,246,.12)' },
+  payout:      { label:'Payout',          color:'var(--teal)',   bg:'rgba(20,184,166,.12)' },
+  trust:       { label:'Trust / Rep',     color:'var(--urgent)', bg:'rgba(239,68,68,.12)'  },
+  commercial:  { label:'Commercial',      color:'var(--brand)',  bg:'rgba(107,63,160,.12)' },
+  promo:       { label:'Promo / Campaign',color:'#FF9F43',       bg:'rgba(255,159,67,.12)' },
+  position:    { label:'Market position', color:'var(--blue)',   bg:'rgba(59,130,246,.12)' },
+  new_entrant: { label:'New entrant',     color:'#87CEEB',       bg:'rgba(135,206,235,.12)'},
   general:     { label:'Intel',           color:'var(--text3)',  bg:'var(--bg3)'            }
 };
 
 // ── SCRAPE FIRM ──────────────────────────────────────────────────────────────
+
+
+// ── COMPETITOR PULSE — Strategic Business Intelligence ──────────────────────
+// Purpose: What are competitors doing at a BUSINESS level?
+// Not content gaps. Not SEO. Business decisions: pricing, rules, payouts,
+// legal/regulatory, market position, new entrants, capital structure.
+// Sources: firm websites, Reddit r/Forex r/PropTrading, Twitter/X,
+//          TrustPilot, MyFXBook community, Forex Factory, FPA.
+
+var PULSE_SEARCH_QUERIES = {
+  business: [
+    // Pricing and commercial
+    '{firm} challenge price change 2026',
+    '{firm} new account size funding 2026',
+    '{firm} instant funding program launch',
+    // Rules and structure
+    '{firm} drawdown rule change 2026',
+    '{firm} consistency rule removed added 2026',
+    '{firm} payout percentage split change',
+    // Reputation and trust
+    '{firm} withdrawal problem delay complaint 2026',
+    '{firm} scam fraud investigation 2026',
+    '{firm} regulated broker license 2026',
+    // Trader community pulse
+    '{firm} review reddit 2026',
+    '{firm} trustpilot rating 2026',
+    '{firm} twitter controversy 2026'
+  ]
+};
+
 async function scrapeFirmPulse(firm) {
-  var fc = 'Bearer ' + V2_CONFIG.firecrawl;
-  var searches = [
-    firm.name + ' prop firm 2026 new announcement',
-    firm.name + ' payout rule change challenge 2026',
-    firm.domain + ' blog news update'
+  var fc   = 'Bearer ' + V2_CONFIG.firecrawl;
+  // Pick 4 most targeted queries per firm — quality over quantity
+  var queries = [
+    firm.name + ' payout withdrawal problem delay 2026',
+    firm.name + ' rule change drawdown challenge price 2026',
+    firm.name + ' funded trader review reddit trustpilot 2026',
+    firm.name + ' launch announcement broker regulation 2026',
+    firm.name + ' promo discount coupon campaign sale 2026',
+    firm.name + ' free trial offer bonus promotion funded'
   ];
 
-  var results = await Promise.allSettled(searches.map(function(q) {
+  var results = await Promise.allSettled(queries.map(function(q) {
     return fetch('https://api.firecrawl.dev/v1/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': fc },
-      body: JSON.stringify({ query: q, limit: 3, scrapeOptions: { formats: ['markdown'] } })
+      body: JSON.stringify({
+        query: q,
+        limit: 4,
+        scrapeOptions: { formats: ['markdown'] }
+      })
     }).then(function(r) { return r.json(); })
     .then(function(d) {
       return (d.data || []).map(function(item) {
-        return (item.title || '') + '\n' + (item.description || '') + '\n' + ((item.markdown||'').substring(0, 400));
-      }).join('\n---\n');
+        var src = item.url || item.metadata && item.metadata.url || '';
+        // Only accept reputable sources — reject SEO listicles and firm own blogs
+        var reputable = src && (
+          src.includes('reddit.com') ||
+          src.includes('trustpilot.com') ||
+          src.includes('forexfactory.com') ||
+          src.includes('myfxbook.com') ||
+          src.includes('forexpeacearmy.com') ||
+          src.includes('financemagnates.com') ||
+          src.includes('fxstreet.com') ||
+          src.includes('coindesk.com') ||
+          src.includes('twitter.com') || src.includes('x.com') ||
+          src.includes(firm.domain)  // firm own site — press releases, blog
+        );
+        if (!reputable) return '';
+        return '[SOURCE: ' + src + ']\n' +
+          (item.title || '') + '\n' +
+          (item.description || '') + '\n' +
+          ((item.markdown||'').substring(0, 500));
+      }).filter(Boolean).join('\n---\n');
     })
     .catch(function() { return ''; });
   }));
 
-  return results
+  var raw = results
     .filter(function(r) { return r.status === 'fulfilled' && r.value; })
     .map(function(r) { return r.value; })
     .join('\n\n');
+
+  return raw || '';
 }
 
-// ── RUN PULSE FOR ONE FIRM ───────────────────────────────────────────────────
 async function runFirmPulse(firm, rawData) {
-  var prompt =
-    'You are a prop trading industry analyst. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
-    'Analyse this firm: ' + firm.name + ' (' + firm.domain + ')\n\n' +
-    'RAW SCRAPED DATA:\n' + (rawData || 'No live data retrieved.') + '\n\n' +
-    'Extract every signal you can find. For each signal:\n' +
-    '- LAUNCHES: new products, new account sizes, new features announced\n' +
-    '- RULE CHANGES: drawdown changes, consistency rule changes, time limit changes, payout % changes\n' +
-    '- PAYOUT NEWS: payout rate, payout delays, payout complaints, new payout records\n' +
-    '- TROUBLE: regulatory issues, complaints, Twitter/Reddit controversy, withdrawal issues, scam allegations\n' +
-    '- TRENDING: what are traders saying about this firm right now, viral posts, Reddit discussions\n' +
-    '- PULSE PERCENTAGE: estimate this firm\'s current market reputation score 0-100 based on recent sentiment\n\n' +
-    'Also check: have any NEW prop firms entered the market that are competing with ' + firm.name + '?\n\n' +
-    'Return ONLY valid JSON:\n' +
-    '{"firm":"' + firm.name + '",' +
-    '"pulse_score":72,' +
-    '"pulse_label":"Strong|Growing|Stable|Declining|Troubled",' +
-    '"signals":[{"type":"launch|rule_change|payout|trouble|trending|new_entrant","headline":"specific factual headline under 12 words","detail":"2 sentences of specific detail — name numbers, dates, exact changes","source":"url or platform if known","date":"approximate date if known","fxify_angle":"how FXIFY can respond or benefit from this"}],' +
-    '"summary":"2 sentences on this firm right now — specific, not generic"}';
+  var hasLiveData = rawData && rawData.length > 100;
 
-  var text = await v2Fetch(prompt, 2000);
-  return parseJSON(text);
+  var prompt =
+    'You are a senior prop trading industry analyst for a multi-million dollar business. ' +
+    new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
+    'FIRM: ' + firm.name + ' (' + firm.domain + ')\n\n' +
+    (hasLiveData ?
+      'SCRAPED DATA FROM REPUTABLE SOURCES:\n' + rawData + '\n\n' :
+      'No live scraped data available for this firm. Use your most current training knowledge only. Mark all signals as [UNVERIFIED].\n\n'
+    ) +
+    'TASK: Extract BUSINESS-LEVEL intelligence only.\n\n' +
+    'WHAT TO LOOK FOR:\n' +
+    '1. PRICING: Challenge cost changes, new account tiers, discount campaigns\n' +
+    '2. RULES: Drawdown %, consistency rule on/off, time limits, max contracts\n' +
+    '3. PAYOUTS: % split changes, payout delays, withdrawal complaints, payout records\n' +
+    '4. TRUST: TrustPilot score, Reddit sentiment, FPA complaints, regulatory issues\n' +
+    '5. COMMERCIAL MOVES: New broker partnerships, new markets, capital raises, acquisitions\n' +
+    '6. PROMOS & CAMPAIGNS: Limited-time discounts, referral programs, Black Friday deals, ' +
+    'free retries, reduced fees, bonus offers, influencer partnership campaigns, seasonal promotions\n' +
+    '7. MARKET POSITION: Growing/shrinking trader base, social media following trends\n\n' +
+    'RULES:\n' +
+    '- Only report what you found in the scraped data or can verify from training. No speculation.\n' +
+    '- Every signal must have a specific fact: a number, a date, a percentage, a name.\n' +
+    '- Do NOT report content marketing, blog posts, or educational videos as signals.\n' +
+    '- If you have no verified data for a signal type, omit it entirely.\n' +
+    '- For FXIFY implication: think like a CFO/CMO — what does this mean for pricing, retention, product?\n\n' +
+    'PULSE SCORE (0-100): Based only on verifiable recent signals:\n' +
+    '  90-100: Market leader, strong sentiment, no issues\n' +
+    '  70-89:  Solid, growing, minor issues\n' +
+    '  50-69:  Stable but losing ground or facing headwinds\n' +
+    '  30-49:  Declining, multiple complaints, losing traders\n' +
+    '  0-29:   In serious trouble, regulatory issues, mass withdrawals\n\n' +
+    'Return ONLY valid JSON. If a field has no verified data, use null:\n' +
+    '{"firm":"' + firm.name + '",' +
+    '"pulse_score":null,' +
+    '"pulse_label":"Strong|Growing|Stable|Declining|Troubled",' +
+    '"pulse_reasoning":"1 sentence on why this score — cite a specific fact",' +
+    '"signals":[{' +
+      '"type":"pricing|rule_change|payout|trust|commercial|promo|position",' +
+      '"verified":true,' +
+      '"headline":"specific factual headline — include a number or date",' +
+      '"detail":"2 sentences — specific facts only, no fluff",' +
+      '"source":"exact URL from scraped data or platform name",' +
+      '"date":"specific date or month/year if known, null if unknown",' +
+      '"fxify_implication":"business implication for FXIFY — pricing, retention, or product decision"' +
+    '}],' +
+    '"summary":"2 sentences — specific business situation, cite at least one number",' +
+    '"data_quality":"live|training_only|mixed"}';
+
+  var text = await v2Fetch(prompt, 2500);
+  var result = parseJSON(text);
+  // Flag unverified data
+  if (!hasLiveData && result && result.signals) {
+    result.signals.forEach(function(s) { s.verified = false; s._unverified = true; });
+  }
+  return result;
 }
 
-// ── MAIN RUN ─────────────────────────────────────────────────────────────────
 async function runFullCompetitorAnalysis() {
   var btn     = document.getElementById('comp-run-btn');
   var feed    = document.getElementById('comp-pulse-feed');
   var strip   = document.getElementById('comp-firm-strip');
   var lastRun = document.getElementById('comp-last-run');
 
-  if (btn) { btn.disabled = true; btn.textContent = 'Running pulse...'; }
+  if (btn) { btn.disabled = true; btn.textContent = 'Running...'; }
 
-  // Show loading state in feed
-  if (feed) feed.innerHTML =
-    '<div style="text-align:center;padding:40px;">' +
-      '<div class="loader-spinner"></div>' +
-      '<p style="font-size:13px;color:var(--text3);margin-top:12px;" id="comp-progress-txt">Scraping competitor activity...</p>' +
+  // ── Loading state — keep feed stable ────────────────────────────────────
+  var progressHtml =
+    '<div id="comp-progress-wrap" style="background:var(--bg2);border:1px solid var(--border);' +
+    'border-radius:var(--rl);padding:20px 24px;margin-bottom:16px;">' +
+      '<div style="display:flex;align-items:center;gap:12px;">' +
+        '<div class="loader-spinner"></div>' +
+        '<div>' +
+          '<p style="font-size:13px;font-weight:600;color:var(--text);" id="comp-progress-txt">Initialising pulse...</p>' +
+          '<p style="font-size:11px;color:var(--text3);" id="comp-progress-sub">Scraping reputable sources — Reddit, TrustPilot, Finance Magnates, firm sites</p>' +
+        '</div>' +
+      '</div>' +
+      '<div id="comp-progress-log" style="margin-top:12px;font-size:11px;color:var(--text3);' +
+      'max-height:80px;overflow:hidden;"></div>' +
     '</div>';
+
+  if (feed) feed.innerHTML = progressHtml;
 
   if (strip) strip.innerHTML = PULSE_FIRMS.map(function(f) {
     return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 12px;">' +
       '<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">' +
         '<span style="width:6px;height:6px;border-radius:50%;background:' + f.color + ';flex-shrink:0;"></span>' +
-        '<p style="font-size:12px;font-weight:600;color:var(--text);">' + f.name + '</p>' +
+        '<p style="font-size:11px;font-weight:600;color:var(--text);">' + f.name + '</p>' +
       '</div>' +
       '<div class="loader-spinner" style="width:12px;height:12px;border-width:1.5px;"></div>' +
     '</div>';
   }).join('');
 
   try {
-    // Run all firms in batches of 3 to avoid rate limits
-    var allSignals = [];
+    var allSignals  = [];
     var firmResults = {};
-    var progressEl = document.getElementById('comp-progress-txt');
 
+    function logProgress(txt) {
+      var el = document.getElementById('comp-progress-txt');
+      if (el) el.textContent = txt;
+    }
+    function logSub(txt) {
+      var log = document.getElementById('comp-progress-log');
+      if (log) {
+        log.innerHTML = '<p>' + txt + '</p>' + log.innerHTML;
+      }
+    }
+
+    // Run firms in batches of 3
     var batches = [];
     for (var b = 0; b < PULSE_FIRMS.length; b += 3) {
       batches.push(PULSE_FIRMS.slice(b, b+3));
     }
 
     for (var bi = 0; bi < batches.length; bi++) {
-      var batch = batches[bi];
-      if (progressEl) progressEl.textContent = 'Scanning ' + batch.map(function(f){return f.name;}).join(', ') + '...';
+      var batch    = batches[bi];
+      var names    = batch.map(function(f){ return f.name; }).join(', ');
+      logProgress('Scraping ' + names + '...');
 
       var batchResults = await Promise.allSettled(batch.map(function(firm) {
         return scrapeFirmPulse(firm).then(function(raw) {
+          logSub(firm.name + ': ' + (raw.length > 50 ? raw.length + ' chars scraped' : 'no live data — using training'));
           return runFirmPulse(firm, raw).then(function(result) {
             return { firm: firm, result: result };
           });
@@ -7162,11 +7279,12 @@ async function runFullCompetitorAnalysis() {
       }));
 
       batchResults.forEach(function(r) {
-        if (r.status !== 'fulfilled') return;
+        if (r.status !== 'fulfilled' || !r.value) return;
         var firm   = r.value.firm;
         var result = r.value.result;
+        if (!result) return;
         firmResults[firm.name] = result;
-        if (result && result.signals) {
+        if (result.signals) {
           result.signals.forEach(function(sig) {
             sig._firm  = firm.name;
             sig._color = firm.color;
@@ -7175,112 +7293,194 @@ async function runFullCompetitorAnalysis() {
         }
       });
 
-      // Update firm cards as results come in
+      // Update strip as each batch completes — don't touch feed
       renderFirmStrip(firmResults);
     }
 
-    // Run new entrant scan
-    if (progressEl) progressEl.textContent = 'Scanning for new prop firm entrants...';
-    var entrantData = await v2Fetch(
+    // New entrant scan — live Firecrawl search
+    logProgress('Scanning for new prop firm entrants...');
+    var entrantRaw = '';
+    try {
+      var eRes = await fetch('https://api.firecrawl.dev/v1/search', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + V2_CONFIG.firecrawl },
+        body: JSON.stringify({ query: 'new prop trading firm launched 2025 2026', limit: 5, scrapeOptions: { formats: ['markdown'] } })
+      });
+      var eData = await eRes.json();
+      entrantRaw = (eData.data||[]).map(function(d){
+        return (d.title||'') + '\n' + (d.description||'') + '\n' + ((d.markdown||'').substring(0,400));
+      }).join('\n---\n');
+    } catch(e2) {}
+
+    var entrantText = await v2Fetch(
       'You are a prop trading industry analyst. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
-      'What NEW prop trading firms have entered the market in 2025-2026? ' +
-      'Look for firms that launched within the last 12 months that are competing with FTMO, FundedNext, FundingPips.\n\n' +
-      'For each new entrant, describe:\n' +
-      '- Firm name and launch date\n' +
-      '- Their differentiator (what makes them different)\n' +
-      '- Their pricing / challenge structure\n' +
-      '- Current reputation / trader reception\n' +
-      '- Threat level to FXIFY\n\n' +
+      'SCRAPED DATA:\n' + (entrantRaw || 'No live data — use training knowledge, mark as unverified.') + '\n\n' +
+      'Identify NEW prop trading firms that entered the market in 2024-2026.\n' +
+      'For each: what is their business model differentiation? Pricing? Broker backing? Payout structure?\n' +
+      'What threat do they pose to an established firm like FXIFY?\n\n' +
+      'Only include firms you can cite a specific launch date or source for.\n\n' +
       'Return ONLY valid JSON:\n' +
-      '{"new_entrants":[{"name":"firm name","launched":"month year","differentiator":"what makes them different","pricing":"challenge cost and structure","reception":"trader sentiment","threat":"High|Medium|Low","fxify_note":"specific FXIFY response"}]}',
+      '{"new_entrants":[{"name":"firm","launched":"Q1 2026","differentiator":"specific","pricing":"$X for $Yk account","broker":"broker name or unknown","threat":"High|Medium|Low","threat_reason":"why specifically"}]}',
       2000
     );
-    var entrantResult = parseJSON(entrantData);
+    var entrantResult = parseJSON(entrantText);
     if (entrantResult && entrantResult.new_entrants) {
       entrantResult.new_entrants.forEach(function(e) {
         allSignals.push({
           type: 'new_entrant',
-          headline: e.name + ' entered the market',
-          detail: e.differentiator + ' Pricing: ' + e.pricing + '. Reception: ' + e.reception,
-          fxify_angle: e.fxify_note,
+          verified: !!entrantRaw,
+          headline: e.name + ' — new entrant (' + (e.launched||'2025-2026') + ')',
+          detail: e.differentiator + ' Pricing: ' + (e.pricing||'unknown') + '. Broker: ' + (e.broker||'unknown') + '.',
+          fxify_implication: 'Threat level ' + e.threat + ': ' + e.threat_reason,
           date: e.launched,
           _firm: e.name,
           _color: '#87CEEB',
-          _threat: e.threat
+          _threat: e.threat,
+          _unverified: !entrantRaw
         });
       });
     }
 
-    // Run FXIFY takeaways
-    if (progressEl) progressEl.textContent = 'Generating FXIFY takeaways...';
+    // Strategic takeaways — CFO/CMO level
+    logProgress('Generating strategic takeaways...');
     var takeawayText = await v2Fetch(
-      'You are a strategist for FXIFY prop firm. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
-      'Based on this competitor intelligence:\n\n' +
-      JSON.stringify(allSignals.slice(0, 20)) + '\n\n' +
-      'What are the 5 most important actions FXIFY should take RIGHT NOW?\n' +
-      'Be specific. Name the competitor. Name the FXIFY product. Name the content type or action.\n\n' +
+      'You are the Chief Strategy Officer of FXIFY, a multi-million dollar prop trading firm backed by broker FXPIG.\n' +
+      'FXIFY products: One Phase (10% target, static DD, no consistency rule, on-demand payout), ' +
+      'Two Phase Classic (25% consistency rule funded stage only), Two Phase Standard (trailing DD), ' +
+      'Instant Funding Lite ($19, $2,500 live). 90% performance split. $40M+ paid out.\n\n' +
+      'COMPETITOR INTELLIGENCE:\n' + JSON.stringify(allSignals.filter(function(s){ return s.verified !== false; }).slice(0,25)) + '\n\n' +
+      'Give me the 5 most important BUSINESS decisions FXIFY should make based on this intelligence.\n' +
+      'Think: pricing adjustments, rule changes, product launches, market positioning, risk management.\n' +
+      'NOT content or marketing. BUSINESS decisions.\n\n' +
+      'For each decision:\n' +
+      '- What is the competitor signal that triggered it?\n' +
+      '- What is the specific FXIFY response?\n' +
+      '- What is the business risk of NOT acting?\n' +
+      '- Timeline: how urgent is this?\n\n' +
       'Return ONLY valid JSON:\n' +
-      '{"takeaways":[{"priority":1,"action":"specific action in under 12 words","rationale":"2 sentences — name the competitor move and FXIFY response","urgency":"High|Medium|Low"}]}',
-      1500
+      '{"takeaways":[{' +
+        '"priority":1,' +
+        '"decision":"specific business decision in under 15 words",' +
+        '"trigger":"the competitor signal that requires this response",' +
+        '"response":"specific FXIFY action — name the product, name the change",' +
+        '"risk_of_inaction":"what happens if FXIFY does nothing",' +
+        '"urgency":"Immediate|This month|This quarter"' +
+      '}]}',
+      2000
     );
     var takeaways = parseJSON(takeawayText);
 
-    // Store and render
+    // ── Render — replace progress with results ────────────────────────────
     var pulseTs = new Date();
     window._compPulseData = { signals: allSignals, firms: firmResults, takeaways: takeaways, ts: pulseTs };
     renderPulseFeed(allSignals, firmResults, takeaways);
+    renderFirmStrip(firmResults);
+    if (lastRun) lastRun.textContent = 'Last run: ' + pulseTs.toLocaleString();
 
-    // ── Persist to Supabase ───────────────────────────────────────────
+    // ── Persist to Supabase ───────────────────────────────────────────────
     try {
-      var pulsePayload = {
-        signals:   allSignals,
-        firms:     firmResults,
-        takeaways: takeaways,
-        run_at:    pulseTs.toISOString()
-      };
-      await supa
-        .from('competitor_pulse')
-        .upsert({ id: 1, payload: pulsePayload, run_at: pulseTs.toISOString() });
-      console.log('[Pulse] Saved to Supabase');
+      await supa.from('competitor_pulse').upsert({
+        id: 1,
+        payload: { signals: allSignals, firms: firmResults, takeaways: takeaways, run_at: pulseTs.toISOString() },
+        run_at: pulseTs.toISOString()
+      });
     } catch(saveErr) {
       console.warn('[Pulse] Supabase save failed:', saveErr.message);
     }
-
-    if (lastRun) lastRun.textContent = 'Last run: ' + new Date().toLocaleTimeString();
 
   } catch(e) {
     console.error('[CompPulse]', e);
     if (feed) feed.innerHTML =
       '<div style="background:var(--bg2);border:1px solid rgba(239,68,68,.3);border-radius:var(--rl);padding:24px;text-align:center;">' +
-        '<p style="color:var(--urgent);font-size:13px;font-weight:600;">Pulse failed: ' + e.message + '</p>' +
-        '<p style="color:var(--text3);font-size:12px;margin-top:6px;">Check Firecrawl key and n8n webhook connectivity.</p>' +
+        '<p style="color:var(--urgent);font-size:13px;font-weight:600;">Pulse failed: </p>' + '<p>' + e.message + '</p>' +
+        '<p style="color:var(--text3);font-size:12px;margin-top:6px;">Check Firecrawl key and n8n webhook.</p>' +
       '</div>';
   }
 
   if (btn) { btn.disabled = false; btn.textContent = '⚡ Run pulse'; }
 }
 
+
+
+// ── RUN PULSE FOR ONE FIRM ───────────────────────────────────────────────────
+
+
+// ── MAIN RUN ─────────────────────────────────────────────────────────────────
+
+
 // ── RENDER FIRM STRIP ────────────────────────────────────────────────────────
 function renderFirmStrip(firmResults) {
   var strip = document.getElementById('comp-firm-strip');
   if (!strip) return;
+
+  // Build SVG arc speedometer for each firm
+  function buildGauge(score, color) {
+    if (score === null || score === undefined) {
+      return '<svg viewBox="0 0 100 60" style="width:100%;max-width:110px;">' +
+        '<path d="M10,55 A45,45,0,0,1,90,55" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="10" stroke-linecap="round"/>' +
+        '<text x="50" y="50" text-anchor="middle" font-size="11" fill="rgba(255,255,255,.3)" font-family="monospace">—</text>' +
+      '</svg>';
+    }
+    var s = Math.max(0, Math.min(100, score));
+    // Arc: from -180deg to 0deg = 0-100
+    // Circumference of half-circle with r=45: π*45 ≈ 141.4
+    var circumference = Math.PI * 45;
+    var dashLen = (s / 100) * circumference;
+    var gapLen  = circumference - dashLen;
+    // Color bands
+    var arcCol  = s >= 70 ? '#10B981' : s >= 45 ? '#F59E0B' : '#EF4444';
+    var label   = s >= 70 ? 'Strong' : s >= 55 ? 'Growing' : s >= 45 ? 'Stable' : s >= 30 ? 'Declining' : 'Troubled';
+    return '<svg viewBox="0 0 100 60" style="width:100%;max-width:110px;">' +
+      // Track
+      '<path d="M10,55 A45,45,0,0,1,90,55" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="9" stroke-linecap="round"/>' +
+      // Value arc — dasharray trick on a half-circle
+      '<path d="M10,55 A45,45,0,0,1,90,55" fill="none" stroke="' + arcCol + '" stroke-width="9" stroke-linecap="round"' +
+        ' stroke-dasharray="' + dashLen.toFixed(1) + ' ' + gapLen.toFixed(1) + '"' +
+        ' style="filter:drop-shadow(0 0 4px ' + arcCol + '80);"/>' +
+      // Score number
+      '<text x="50" y="46" text-anchor="middle" font-size="18" font-weight="800" fill="' + arcCol + '" font-family="monospace">' + s + '</text>' +
+      // Label
+      '<text x="50" y="57" text-anchor="middle" font-size="7" fill="rgba(255,255,255,.5)" font-family="system-ui">' + label + '</text>' +
+    '</svg>';
+  }
+
   strip.innerHTML = PULSE_FIRMS.map(function(f) {
-    var res   = firmResults[f.name];
-    var score = res && res.pulse_score !== undefined ? res.pulse_score : null;
-    var label = res && res.pulse_label ? res.pulse_label : (res ? 'Analysed' : 'Pending...');
-    var scoreCol = score >= 70 ? 'var(--green)' : score >= 45 ? 'var(--amber)' : score !== null ? 'var(--urgent)' : 'var(--text3)';
-    return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:10px 12px;cursor:default;">' +
-      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;">' +
-        '<span style="width:6px;height:6px;border-radius:50%;background:' + f.color + ';flex-shrink:0;"></span>' +
-        '<p style="font-size:11px;font-weight:600;color:var(--text);">' + f.name + '</p>' +
+    var res     = firmResults[f.name];
+    var score   = res && res.pulse_score !== undefined ? res.pulse_score : null;
+    var summary = res && res.summary ? res.summary : '';
+    var dq      = res && res.data_quality ? res.data_quality : null;
+    var signals = res && res.signals ? res.signals.length : 0;
+    var reasoning = res && res.pulse_reasoning ? res.pulse_reasoning : '';
+
+    return '<div style="background:var(--bg2);border:1px solid var(--border);border-top:2px solid ' + f.color + ';' +
+      'border-radius:var(--rl);padding:14px 12px;display:flex;flex-direction:column;gap:6px;">' +
+      // Firm name + color dot
+      '<div style="display:flex;align-items:center;gap:6px;">' +
+        '<span style="width:7px;height:7px;border-radius:50%;background:' + f.color + ';flex-shrink:0;box-shadow:0 0 6px ' + f.color + '60;"></span>' +
+        '<p style="font-size:11px;font-weight:700;color:var(--text);letter-spacing:.02em;">' + f.name + '</p>' +
+        (dq === 'live' ? '<span style="font-size:8px;color:var(--green);margin-left:auto;">● LIVE</span>' :
+         dq === 'mixed' ? '<span style="font-size:8px;color:var(--amber);margin-left:auto;">◐ MIXED</span>' :
+         dq ? '<span style="font-size:8px;color:var(--text3);margin-left:auto;">○ EST</span>' : '') +
       '</div>' +
-      (score !== null ?
-        '<div style="display:flex;align-items:baseline;gap:4px;">' +
-          '<span style="font-size:20px;font-weight:800;font-family:var(--mono);color:' + scoreCol + ';">' + score + '</span>' +
-          '<span style="font-size:9px;color:var(--text3);">/100</span>' +
+      // Gauge
+      '<div style="display:flex;justify-content:center;padding:4px 0;">' +
+        (score !== null ? buildGauge(score, f.color) :
+          '<div style="display:flex;align-items:center;justify-content:center;height:55px;">' +
+            '<div class="loader-spinner" style="width:14px;height:14px;border-width:2px;"></div>' +
+          '</div>') +
+      '</div>' +
+      // Stats row
+      (res ? '<div style="display:flex;gap:8px;justify-content:center;">' +
+        '<div style="text-align:center;">' +
+          '<p style="font-size:14px;font-weight:700;color:var(--text);font-family:var(--mono);">' + signals + '</p>' +
+          '<p style="font-size:9px;color:var(--text3);">signals</p>' +
         '</div>' +
-        '<p style="font-size:10px;color:' + scoreCol + ';font-weight:600;">' + label + '</p>'
-      : '<div class="loader-spinner" style="width:12px;height:12px;border-width:1.5px;"></div>') +
+      '</div>' : '') +
+      // Reasoning snippet
+      (reasoning ?
+        '<p style="font-size:10px;color:var(--text3);line-height:1.4;border-top:1px solid var(--border);padding-top:6px;margin-top:2px;">' +
+          reasoning.substring(0,80) + (reasoning.length > 80 ? '…' : '') +
+        '</p>' : '') +
     '</div>';
   }).join('');
 }
@@ -7320,24 +7520,26 @@ function renderPulseFeed(allSignals, firmResults, takeaways) {
     var stype  = SIGNAL_TYPES[sig.type] || SIGNAL_TYPES.general;
     var threat = sig._threat ? (' <span style="font-size:9px;font-weight:700;color:var(--urgent);">⚠ ' + sig._threat + ' threat</span>') : '';
     var isNew  = isNewRun && idx < 5; // first 5 signals in a new run get NEW badge
+    var unverified = sig._unverified || sig.verified === false;
     return '<div class="comp-signal-card" data-firm="' + (sig._firm||'') + '" data-type="' + (sig.type||'general') + '" ' +
-      'style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ' + (sig._color||'var(--border)') + ';border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;">' +
+      'style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ' + (sig._color||'var(--border)') + ';border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;' + (unverified ? 'opacity:.8;' : '') + '">' +
       '<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;flex-wrap:wrap;">' +
         '<span style="font-size:10px;font-weight:700;background:' + stype.bg + ';color:' + stype.color + ';padding:2px 8px;border-radius:4px;">' + stype.label + '</span>' +
         '<span style="font-size:11px;font-weight:600;color:var(--text3);">' + (sig._firm||'') + '</span>' +
         (sig.date ? '<span style="font-size:10px;color:var(--muted);">' + sig.date + '</span>' : '') +
         threat +
+        (unverified ? '<span style="font-size:9px;font-weight:700;background:rgba(245,158,11,.15);color:var(--amber);padding:1px 6px;border-radius:3px;" title="Not verified from live sources">UNVERIFIED</span>' : '<span style="font-size:9px;color:var(--green);" title="From live scraped source">✓</span>') +
         (isNew ? '<span style="font-size:9px;font-weight:700;background:rgba(16,185,129,.2);color:var(--green);padding:1px 6px;border-radius:3px;margin-left:auto;">NEW</span>' : '') +
       '</div>' +
       '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:6px;line-height:1.4;">' + (sig.headline||'') + '</p>' +
       '<p style="font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:8px;">' + (sig.detail||'') + '</p>' +
-      (sig.fxify_angle ?
+      (sig.fxify_implication ?
         '<div style="border-top:1px solid var(--border);padding-top:8px;margin-top:4px;">' +
-          '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--teal);margin-bottom:3px;">⚡ FXIFY angle</p>' +
-          '<p style="font-size:11px;color:var(--text2);">' + sig.fxify_angle + '</p>' +
+          '<p style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--amber);margin-bottom:3px;">▸ FXIFY implication</p>' +
+          '<p style="font-size:11px;color:var(--text2);">' + sig.fxify_implication + '</p>' +
         '</div>' : '') +
-      (sig.source ?
-        '<p style="font-size:10px;color:var(--muted);margin-top:6px;">Source: ' + sig.source + '</p>' : '') +
+      (sig.source && sig.source !== 'null' && sig.source !== 'unknown' ?
+        '<p style="font-size:10px;color:var(--muted);margin-top:6px;">⟶ ' + sig.source + '</p>' : '') +
     '</div>';
   }).join('');
 
@@ -7347,13 +7549,23 @@ function renderPulseFeed(allSignals, firmResults, takeaways) {
   if (takDiv && takBody && takeaways && takeaways.takeaways && takeaways.takeaways.length) {
     takDiv.style.display = 'block';
     takBody.innerHTML = takeaways.takeaways.map(function(t) {
-      var urgCol = t.urgency === 'High' ? 'var(--urgent)' : t.urgency === 'Medium' ? 'var(--amber)' : 'var(--text3)';
-      return '<div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;margin-bottom:8px;display:flex;gap:12px;">' +
-        '<span style="font-size:18px;font-weight:800;font-family:var(--mono);color:' + urgCol + ';min-width:24px;">' + t.priority + '</span>' +
-        '<div>' +
-          '<p style="font-size:13px;font-weight:600;color:var(--text);margin-bottom:4px;">' + (t.action||'') + '</p>' +
-          '<p style="font-size:12px;color:var(--text2);line-height:1.5;margin-bottom:4px;">' + (t.rationale||'') + '</p>' +
-          '<span style="font-size:10px;font-weight:700;color:' + urgCol + ';">' + (t.urgency||'') + '</span>' +
+      var urg    = t.urgency || 'This quarter';
+      var urgCol = urg === 'Immediate' ? 'var(--urgent)' : urg === 'This month' ? 'var(--amber)' : 'var(--text3)';
+      return '<div style="background:var(--bg2);border:1px solid var(--border);border-left:3px solid ' + urgCol + ';border-radius:var(--rl);padding:16px 18px;margin-bottom:10px;">' +
+        '<div style="display:flex;align-items:flex-start;gap:12px;">' +
+          '<span style="font-size:22px;font-weight:800;font-family:var(--mono);color:' + urgCol + ';min-width:28px;line-height:1;">' + t.priority + '</span>' +
+          '<div style="flex:1;">' +
+            '<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;flex-wrap:wrap;">' +
+              '<p style="font-size:13px;font-weight:700;color:var(--text);">' + (t.decision||t.action||'') + '</p>' +
+              '<span style="font-size:10px;font-weight:700;background:' + (urg==='Immediate'?'rgba(239,68,68,.12)':urg==='This month'?'rgba(245,158,11,.12)':'var(--bg3)') + ';color:' + urgCol + ';padding:1px 8px;border-radius:4px;">' + urg + '</span>' +
+            '</div>' +
+            (t.trigger ? '<p style="font-size:11px;color:var(--text3);margin-bottom:6px;">Trigger: ' + t.trigger + '</p>' : '') +
+            '<p style="font-size:12px;color:var(--text2);line-height:1.55;margin-bottom:6px;">' + (t.response||t.rationale||'') + '</p>' +
+            (t.risk_of_inaction ?
+              '<div style="background:rgba(239,68,68,.06);border-radius:4px;padding:6px 10px;margin-top:4px;">' +
+                '<p style="font-size:11px;color:var(--urgent);">Risk of inaction: ' + t.risk_of_inaction + '</p>' +
+              '</div>' : '') +
+          '</div>' +
         '</div>' +
       '</div>';
     }).join('');
@@ -11260,9 +11472,22 @@ async function loadPromptTemplate() {
   try {
     var res = await supa.from('ai_rules').select('rules').eq('active', true).order('created_at', {ascending:false}).limit(1);
     if (res.data && res.data.length && res.data[0].rules) {
-      var pre = document.getElementById('prompt-pre');
-      if (pre) pre.textContent = res.data[0].rules;
-      window._activePrompt = res.data[0].rules;
+      var rules = res.data[0].rules;
+      var pre   = document.getElementById('prompt-pre');
+      var ta    = document.getElementById('prompt-textarea');
+      if (pre) {
+        pre.textContent = rules;
+        pre.style.opacity = '1';
+      }
+      if (ta) ta.value = rules;
+      window._activePrompt = rules;
+      // Show data source badge
+      var badge = document.getElementById('prompt-source-badge');
+      if (badge) badge.textContent = '✓ Live from Supabase';
+    } else {
+      // No Supabase rule — mark hardcoded display clearly
+      var badge2 = document.getElementById('prompt-source-badge');
+      if (badge2) { badge2.textContent = '⚠ Default — not saved to Supabase yet'; badge2.style.color = 'var(--amber)'; }
     }
   } catch(e) { console.warn('[Prompt] load failed:', e.message); }
 }
