@@ -6732,34 +6732,43 @@ async function testN8nConnection() {
 // Returns array of {keyword, search_volume, competition, cpc, difficulty}
 // Stubs gracefully when credentials not set
 async function dfsKeywords(seedKw) {
-  // ── Direct DataForSEO webhook ─────────────────────────────
-  // n8n webhook at /webhook/dataforseo receives {keyword, login, pass}
-  // and calls DataForSEO Labs API server-side — no CORS issues
+  // ── DataForSEO Labs — US + UK parallel calls ──────────────
   var dfsWebhook = V2_CONFIG.webhook.replace('/generate-draft', '/dataforseo');
 
-  try {
-    console.log('[DFS] calling:', dfsWebhook, 'keyword:', seedKw);
-
-    var r = await fetch(dfsWebhook, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        keyword:  seedKw,
-        login:    V2_CONFIG.dfsLogin,
-        pass:     V2_CONFIG.dfsPass,
-        location: 2840,   // US
-        language: 'en',
-        limit:    30
-      })
+  function buildPayload(location) {
+    return JSON.stringify({
+      keyword:  seedKw,
+      login:    V2_CONFIG.dfsLogin,
+      pass:     V2_CONFIG.dfsPass,
+      location: location,
+      language: 'en',
+      limit:    30,
+      include_trends:        true,
+      include_serp_info:     true,
+      include_avg_backlinks: true
     });
+  }
 
-    console.log('[DFS] HTTP status:', r.status);
-    var raw = await r.text();
-    console.log('[DFS] raw (first 300):', raw.substring(0, 300));
+  try {
+    console.log('[DFS] fetching US + UK for:', seedKw);
+    // Run US (2840) and UK (2826) in parallel
+    var results = await Promise.allSettled([
+      fetch(dfsWebhook, { method:'POST', headers:{'Content-Type':'application/json'}, body: buildPayload(2840) }).then(function(r){ return r.text(); }),
+      fetch(dfsWebhook, { method:'POST', headers:{'Content-Type':'application/json'}, body: buildPayload(2826) }).then(function(r){ return r.text(); })
+    ]);
 
-    if (!raw || !raw.trim()) throw new Error('DFS webhook returned empty');
+    var rawUS = results[0].status === 'fulfilled' ? results[0].value : null;
+    var rawUK = results[1].status === 'fulfilled' ? results[1].value : null;
+    var raw   = rawUS || rawUK;
 
+    console.log('[DFS] US:', rawUS ? 'ok' : 'failed', '| UK:', rawUK ? 'ok' : 'failed');
+    if (!raw || !raw.trim()) throw new Error('DFS webhook returned empty for both markets');
+
+    // Parse US data (primary)
     var data = JSON.parse(raw);
+    // Parse UK data for volume comparison
+    var dataUK = null;
+    try { if (rawUK) dataUK = JSON.parse(rawUK); } catch(e2) {}
 
     // Handle both raw DataForSEO response and pre-processed response
     var items = [];
@@ -6770,12 +6779,34 @@ async function dfsKeywords(seedKw) {
       // Raw DataForSEO format
       var result = data.tasks[0].result[0] || {};
       items = (result.items || []).map(function(item) {
+        var kinfo  = item.keyword_info         || {};
+        var kprop  = item.keyword_properties   || {};
+        var sinfo  = item.serp_info            || {};
+        var blinks = item.avg_backlinks_info   || {};
+        // 12-month trend: calculate direction from monthly_searches array
+        var monthly = kinfo.monthly_searches || [];
+        var trend = null;
+        if (monthly.length >= 3) {
+          var recent = monthly.slice(-3).reduce(function(s,m){ return s+(m.search_volume||0); },0)/3;
+          var older  = monthly.slice(0,3).reduce(function(s,m){ return s+(m.search_volume||0); },0)/3;
+          trend = older > 0 ? Math.round(((recent-older)/older)*100) : 0;
+        }
         return {
           keyword:       item.keyword,
-          search_volume: item.keyword_info && item.keyword_info.search_volume,
-          kd:            item.keyword_properties && item.keyword_properties.keyword_difficulty,
-          cpc:           item.keyword_info && item.keyword_info.cpc,
-          competition:   item.keyword_info && item.keyword_info.competition_level
+          search_volume: kinfo.search_volume,
+          kd:            kprop.keyword_difficulty,
+          cpc:           kinfo.cpc,
+          competition:   kinfo.competition_level,
+          competition_index: kinfo.competition,
+          cpc_paid:      kinfo.high_top_of_page_bid,
+          trend:         trend,
+          monthly:       monthly,
+          intent:        sinfo.search_intent_info && sinfo.search_intent_info.main_intent,
+          secondary_intent: sinfo.search_intent_info && sinfo.search_intent_info.foreign_intent,
+          serp_types:    sinfo.serp_types || [],
+          backlinks_avg: blinks.backlinks,
+          ref_domains_avg: blinks.referring_domains,
+          rank_avg:      blinks.rank
         };
       });
     } else if (Array.isArray(data)) {
@@ -6783,14 +6814,38 @@ async function dfsKeywords(seedKw) {
     }
 
     console.log('[DFS] keywords returned:', items.length);
+    // Build UK volume lookup
+    var ukMap = {};
+    if (dataUK) {
+      try {
+        var ukResult = dataUK.tasks && dataUK.tasks[0] && dataUK.tasks[0].result && dataUK.tasks[0].result[0] || {};
+        (ukResult.items || (Array.isArray(dataUK) ? dataUK : [])).forEach(function(item) {
+          var kw = item.keyword || (item.keyword_info && item.keyword_info.keyword);
+          if (kw) ukMap[kw] = item.keyword_info && item.keyword_info.search_volume;
+        });
+      } catch(e3) {}
+    }
+
+    console.log('[DFS] keywords returned:', items.length, '| UK enrichment:', Object.keys(ukMap).length);
+
     return items.map(function(k) {
       return {
-        keyword:       k.keyword,
-        search_volume: k.search_volume || k.volume,
-        competition:   k.competition || k.competition_level,
-        cpc:           k.cpc,
-        difficulty:    k.kd || k.keyword_difficulty || k.difficulty,
-        stub:          false
+        keyword:         k.keyword,
+        search_volume:   k.search_volume || k.volume,
+        search_volume_uk: ukMap[k.keyword] || null,
+        competition:     k.competition   || k.competition_level,
+        competition_idx: k.competition_index,
+        cpc:             k.cpc,
+        cpc_paid:        k.cpc_paid,
+        difficulty:      k.kd || k.keyword_difficulty || k.difficulty,
+        trend:           k.trend,
+        monthly:         k.monthly || [],
+        intent:          k.intent,
+        secondary_intent: k.secondary_intent,
+        serp_types:      k.serp_types || [],
+        backlinks_avg:   k.backlinks_avg,
+        ref_domains_avg: k.ref_domains_avg,
+        stub:            false
       };
     });
 
@@ -7074,7 +7129,8 @@ async function v2SerpResearch(keyword) {
         pass:     V2_CONFIG.dfsPass,
         location: 2840,
         language: 'en',
-        depth:    10
+        depth:    10,
+        device:   'desktop'
       })
     });
     console.log('[SERP] HTTP:', r.status);
@@ -7104,18 +7160,8 @@ async function v2SerpResearch(keyword) {
     console.log('[SERP] results:', items.length, 'organic results');
     return items;
   } catch(e) {
-    console.warn('[SERP] DataForSEO failed:', e.message, '— falling back to Claude estimate');
-    // Fallback: ask Claude what typically ranks for this keyword
-    try {
-      var text = await v2Fetch(
-        'Based on your knowledge, what pages typically rank in the top 10 Google results for: "' + keyword + '" in prop trading?\n' +
-        'List 6 results with their approximate title and the angle they take.\n' +
-        'Return ONLY valid JSON no markdown: {"results":[{"title":"page title","url":"example.com","description":"their angle in one sentence"}]}',
-        2000
-      );
-      var p = JSON.parse(text.replace(/```json|```/g,'').trim());
-      return p.results || [];
-    } catch(e2) { return []; }
+    console.warn('[SERP] DataForSEO failed:', e.message);
+    return []; // Return empty — no fabricated SERP data
   }
 }
 
@@ -7593,7 +7639,20 @@ async function runKeywordAnalysis() {
 
     // Step 3: Ask Claude to analyse and cluster
     var kwSummary = kwData.slice(0,20).map(function(k){
-      return k.keyword + ' | vol:' + (k.search_volume||'?') + ' | KD:' + (k.difficulty||'?') + ' | CPC:' + (k.cpc||'?');
+      var trend = k.trend !== null && k.trend !== undefined ? (k.trend > 0 ? '+' + k.trend + '%' : k.trend + '%') : 'n/a';
+      var intent = k.intent || '?';
+      var bl = k.backlinks_avg ? 'BL:' + Math.round(k.backlinks_avg) : '';
+      var snippetFlag = (k.serp_types||[]).indexOf('featured_snippet') !== -1 ? '[SNIPPET]' : '';
+      var ukVol = k.search_volume_uk ? 'UK:' + k.search_volume_uk : '';
+      return k.keyword +
+        ' | vol:' + (k.search_volume||'n/a') +
+        (ukVol ? ' | ' + ukVol : '') +
+        ' | KD:' + (k.difficulty !== null && k.difficulty !== undefined ? k.difficulty : 'n/a') +
+        ' | CPC:$' + (k.cpc||'n/a') +
+        ' | trend:' + trend +
+        ' | intent:' + intent +
+        (bl ? ' | ' + bl : '') +
+        (snippetFlag ? ' ' + snippetFlag : '');
     }).join('\n');
 
     var serpSummary = serpData.slice(0,6).map(function(r,i){
@@ -7601,23 +7660,94 @@ async function runKeywordAnalysis() {
     }).join('\n');
 
     var analysisText = await v2Fetch(
-      'Keyword analysis for FXIFY prop trading firm. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
+      'Keyword intelligence for FXIFY prop trading firm. ' + new Date().toLocaleString('en-US',{month:'long',year:'numeric'}) + '.\n\n' +
+      'FXIFY context: broker-backed prop firm (FXPIG), $40M+ paid out, 90% performance split. ' +
+      'Products: One Phase (10% target, static drawdown), Two Phase Classic (25% consistency rule), Two Phase Standard (trailing drawdown), Instant Funding Lite ($19, $2,500 live).\n\n' +
       'SEED KEYWORD: "' + seed + '"\n\n' +
-      'DATAFORSEO DATA:\n' + (kwSummary || 'No DFS data available') + '\n\n' +
-      (serpSummary ? 'CURRENTLY RANKING (top 6):\n' + serpSummary + '\n\n' : '') +
-      'Provide a keyword intelligence report:\n' +
-      '1. Which keywords have the best opportunity (high volume + low KD)?\n' +
-      '2. What is the search intent pattern across this cluster?\n' +
-      '3. Which keywords does FXIFY likely NOT rank for yet?\n' +
-      '4. What related keywords are missing from this list?\n' +
-      '5. Recommended content strategy for this keyword cluster.\n\n' +
-      'Also flag any keywords showing rising trend in 2026.\n\n' +
+      'DATAFORSEO KEYWORD DATA (real search volumes from Google):\n' + (kwSummary || 'No DFS data available') + '\n\n' +
+      (serpSummary ? 'WHAT CURRENTLY RANKS (these pages own the SERP):\n' + serpSummary + '\n\n' : '') +
+      'INSTRUCTIONS:\n' +
+      '1. INTENT — The keyword data above already includes DataForSEO intent classification (intent field). Use it. Only override if SERP titles clearly contradict it. Mark intent as: Commercial (comparison/review), Informational (how-to/what-is), Transactional (signup/buy/apply).\n' +
+      '2. OPPORTUNITY — identify keywords where KD < 35 AND volume > 200 as primary targets. Boost keywords with trend > +10% (rising fast). Downgrade keywords with backlinks_avg > 300 (dominant pages hard to beat). Flag if FXIFY has a specific product angle that competitors miss.\n' +
+      '3. MISSING — keywords in this topic cluster that are NOT in the DataForSEO list but traders clearly search for.\n' +
+      '4. RISING — keywords gaining momentum in 2026 prop trading space (instant funding, one-phase, FXPIG-backed).\n' +
+      '5. STRATEGY — specific to FXIFY programs. Name the program. Name the content format. Name the gap.\n\n' +
+      'BANNED: generic advice like "create quality content" or "target long-tail keywords". Be specific.\n\n' +
       'Return ONLY valid JSON:\n' +
-      '{"summary":"2 sentence overview","opportunities":[{"keyword":"term","volume":"number","kd":"0-100","cpc":"$X.XX","intent":"Commercial|Informational|Transactional","priority":"High|Medium|Low","notes":"why this matters for FXIFY"}],"missing_keywords":["kw1","kw2","kw3"],"rising":["kw1","kw2"],"strategy":"2-3 sentence content strategy for this cluster"}',
+      '{"summary":"2 specific sentences — name a volume figure, name a KD, name a FXIFY product angle",' +
+      '"opportunities":[{"keyword":"exact term from DFS list","volume":1200,"kd":22,"cpc":1.40,"intent":"Commercial|Informational|Transactional","notes":"specific reason this matters for FXIFY — name a program or a gap"}],' +
+      '"missing_keywords":["specific missing term","another missing term"],' +
+      '"rising":["specific rising term"],' +
+      '"strategy":"3 sentences — program name + content format + specific SERP gap to exploit"}',
       6000
     );
 
     var analysis = parseJSON(analysisText);
+
+    // ── Deterministic priority from real DFS data ───────────────────────
+    // Score = (vol/maxVol * 0.6) + ((100-kd)/100 * 0.4)
+    // High > 0.55, Medium 0.30–0.55, Low < 0.30
+    // KD null → treated as 50 (moderate)
+    var opps = analysis.opportunities || [];
+    if (opps.length && kwData.length) {
+      // Build lookup of real DFS data by keyword
+      var dfsMap = {};
+      kwData.forEach(function(k) {
+        dfsMap[k.keyword] = k;
+      });
+
+      var maxVol = Math.max.apply(null, kwData.map(function(k){ return k.search_volume || 0; })) || 1;
+
+      opps.forEach(function(opp) {
+        // Prefer real DFS data over Claude's values
+        var dfsRow = dfsMap[opp.keyword] || {};
+        var vol    = dfsRow.search_volume || opp.volume || 0;
+        var kd     = (dfsRow.difficulty !== null && dfsRow.difficulty !== undefined)
+                     ? dfsRow.difficulty
+                     : (opp.kd !== null && opp.kd !== undefined ? opp.kd : 50);
+        var cpc    = parseFloat(dfsRow.cpc) || parseFloat(opp.cpc) || 0;
+
+        // Sync real DFS values back
+        opp.volume           = vol;
+        opp.kd               = kd;
+        opp.cpc              = cpc || opp.cpc;
+        opp.search_volume_uk = dfsRow.search_volume_uk;
+        opp.trend            = dfsRow.trend;
+        opp.competition      = dfsRow.competition;
+        opp.competition_idx  = dfsRow.competition_idx;
+        opp.backlinks_avg    = dfsRow.backlinks_avg;
+        opp.ref_domains_avg  = dfsRow.ref_domains_avg;
+        opp.serp_types       = dfsRow.serp_types || [];
+        // Use DataForSEO intent if available, else keep Claude's
+        if (dfsRow.intent) opp.intent = dfsRow.intent;
+
+        // ── Opportunity score formula ──────────────────────────────────
+        // Base: volume (60%) + ease (40%)
+        var volScore  = maxVol > 0 ? (vol / maxVol) : 0;
+        var kdScore   = (100 - Math.min(parseInt(kd)||50, 100)) / 100;
+        var base      = (volScore * 0.6) + (kdScore * 0.4);
+
+        // Bonuses
+        var cpcBonus    = cpc >= 2 ? 0.06 : cpc >= 1 ? 0.03 : 0;       // commercial value
+        var trendBonus  = dfsRow.trend > 20 ? 0.08 : dfsRow.trend > 5 ? 0.04 : 0; // rising
+
+        // Penalties
+        var featSnippet = opp.serp_types.indexOf('featured_snippet') !== -1;
+        var snippetPen  = featSnippet ? -0.05 : 0;                       // harder to get CTR
+        var blPenalty   = dfsRow.backlinks_avg > 500 ? -0.08              // very strong pages ranking
+                        : dfsRow.backlinks_avg > 200 ? -0.04 : 0;
+
+        var score = Math.min(1, Math.max(0, base + cpcBonus + trendBonus + snippetPen + blPenalty));
+
+        opp.score    = Math.round(score * 100);
+        opp.priority = score > 0.55 ? 'High' : score > 0.30 ? 'Medium' : 'Low';
+      });
+
+      // Sort by score descending
+      opps.sort(function(a, b){ return (b.score||0) - (a.score||0); });
+      analysis.opportunities = opps;
+    }
+
     renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub);
 
   } catch(e) {
@@ -7645,9 +7775,9 @@ function renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub) {
     // Header
     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;flex-wrap:wrap;gap:8px;">' +
       '<div>' +
-        '<p style="font-size:15px;font-weight:700;color:var(--text);">' + opps.length + ' keyword opportunities for "' + seed + '"</p>' +
+        '<p style="font-size:15px;font-weight:700;color:var(--text);">' + opps.length + ' keyword opportunities · "' + seed + '"</p>' +
         '<p style="font-size:12px;color:var(--text3);">' +
-          (isStub ? '⚠ Estimated data — DataForSEO unreachable. All volumes marked [EST] and should not be used for decisions.' : '✓ Live DataForSEO data') +
+          (isStub ? '⚠ Estimated — DFS unreachable. Volumes marked [EST]. Do not use for decisions.' : '✓ Live DataForSEO · ' + kwData.length + ' keywords pulled · US market · Sorted by opportunity score') +
         '</p>' +
       '</div>' +
       '<button class="btn btn-s" onclick="exportKeywordCSV()" style="font-size:11px;">Export CSV</button>' +
@@ -7691,31 +7821,73 @@ function renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub) {
       '<table style="width:100%;border-collapse:collapse;font-size:12px;">' +
         '<thead><tr style="background:var(--bg3);">' +
           '<th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Keyword</th>' +
-          '<th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Volume</th>' +
-          '<th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">KD</th>' +
-          '<th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">CPC</th>' +
+          '<th style="padding:10px 8px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);" title="Monthly search volume (US)">Vol</th>' +
+          '<th style="padding:10px 8px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);" title="Keyword difficulty 0–100">KD</th>' +
+          '<th style="padding:10px 8px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);" title="Google Ads CPC">CPC</th>' +
+          '<th style="padding:10px 8px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);" title="3-month trend vs 3 months prior">Trend</th>' +
+          '<th style="padding:10px 8px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);" title="Avg backlinks of ranking pages">BL Avg</th>' +
+          '<th style="padding:10px 8px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);" title="Paid competition 0–1">Comp</th>' +
           '<th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Intent</th>' +
           '<th style="padding:10px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Notes</th>' +
-          '<th style="padding:10px 12px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Priority</th>' +
+          '<th style="padding:10px 8px;text-align:center;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text3);border-bottom:1px solid var(--border);">Score</th>' +
         '</tr></thead><tbody>' +
         opps.map(function(k, i){
-          var kd = parseInt(k.kd) || 0;
-          var kdCol = kd<15?'var(--green)':kd<30?'var(--amber)':'var(--urgent)';
-          var vol = parseInt(String(k.volume||k.volume||'0').replace(/[^0-9]/g,''))||0;
-          var volStr = vol >= 1000 ? (vol/1000).toFixed(1)+'k' : String(k.volume||'—');
-          return '<tr style="border-bottom:0.5px solid var(--border);' + (i%2===0?'':'background:var(--bg3);') + '">' +
-            '<td style="padding:10px 12px;">' +
-            '<div style="display:flex;align-items:center;gap:8px;">' +
-              '<span style="font-weight:500;color:var(--text);">' + k.keyword + '</span>' +
-              '<button class="btn btn-s kw-use-seed-btn" data-kw="' + k.keyword.replace(/"/g,'') + '" style="font-size:9px;padding:2px 7px;white-space:nowrap;">Use as seed</button>' +
-            '</div>' +
-          '</td>' +
-            '<td style="padding:10px 12px;text-align:center;font-family:var(--mono);font-weight:600;color:' + (vol>=1000?'var(--green)':vol>=200?'var(--amber)':'var(--text3)') + ';">' + volStr + '</td>' +
-            '<td style="padding:10px 12px;text-align:center;font-family:var(--mono);font-weight:700;color:' + kdCol + ';">' + (k.kd||'—') + '</td>' +
-            '<td style="padding:10px 12px;text-align:center;color:var(--text3);">' + (k.cpc||'—') + '</td>' +
-            '<td style="padding:10px 12px;"><span style="font-size:10px;font-weight:600;color:' + (INTENT_COLOR[k.intent]||'var(--text3)') + ';">' + (k.intent||'—') + '</span></td>' +
-            '<td style="padding:10px 12px;color:var(--text3);font-size:11px;">' + (k.notes||'') + '</td>' +
-            '<td style="padding:10px 12px;text-align:center;"><span style="font-size:10px;font-weight:700;background:' + (PRIORITY_BG[k.priority]||'var(--g2)') + ';color:' + (PRIORITY_FC[k.priority]||'var(--g5)') + ';padding:2px 8px;border-radius:10px;">' + (k.priority||'—') + '</span></td>' +
+          // Volume
+          var vol    = parseInt(String(k.volume||'0').replace(/[^0-9]/g,''))||0;
+          var volStr = vol>=1000 ? (vol/1000).toFixed(1)+'k' : vol>0 ? String(vol) : '—';
+          var volCol = vol>=1000 ? 'var(--green)' : vol>=200 ? 'var(--amber)' : 'var(--text3)';
+          // KD
+          var kd    = (k.kd!==null && k.kd!==undefined && k.kd!=='') ? parseInt(k.kd) : null;
+          var kdCol = kd===null ? 'var(--text3)' : kd<15 ? 'var(--green)' : kd<30 ? 'var(--amber)' : 'var(--urgent)';
+          var kdStr = kd===null ? '—' : String(kd);
+          // CPC
+          var cpcStr = k.cpc ? '$'+parseFloat(k.cpc).toFixed(2) : '—';
+          // Trend
+          var trend  = k.trend!==null && k.trend!==undefined ? k.trend : null;
+          var trendStr = trend===null ? '—' : (trend>0?'↑+':'↓')+Math.abs(trend)+'%';
+          var trendCol = trend===null ? 'var(--text3)' : trend>10 ? 'var(--green)' : trend>0 ? 'var(--teal)' : trend>-10 ? 'var(--text3)' : 'var(--urgent)';
+          // Backlinks
+          var bl    = k.backlinks_avg!==null && k.backlinks_avg!==undefined ? Math.round(k.backlinks_avg) : null;
+          var blStr = bl===null ? '—' : bl>=1000 ? (bl/1000).toFixed(1)+'k' : String(bl);
+          var blCol = bl===null ? 'var(--text3)' : bl>500 ? 'var(--urgent)' : bl>200 ? 'var(--amber)' : 'var(--green)';
+          // Competition (paid)
+          var comp    = k.competition_idx!==null && k.competition_idx!==undefined ? parseFloat(k.competition_idx) : null;
+          var compStr = comp===null ? (k.competition||'—') : comp.toFixed(2);
+          var compCol = comp===null ? 'var(--text3)' : comp>0.7 ? 'var(--urgent)' : comp>0.4 ? 'var(--amber)' : 'var(--green)';
+          // Intent
+          var intentStr = (k.intent||'').replace(/_/g,' ');
+          // Score + priority
+          var score    = k.score!==undefined ? k.score : null;
+          var scoreCol = score>=55 ? 'var(--green)' : score>=30 ? 'var(--amber)' : 'var(--text3)';
+          var priorityBg = PRIORITY_BG[k.priority]||'var(--g2)';
+          var priorityFc = PRIORITY_FC[k.priority]||'var(--g5)';
+          // Featured snippet warning
+          var hasSnippet = (k.serp_types||[]).indexOf('featured_snippet')!==-1;
+          return '<tr style="border-bottom:0.5px solid var(--border);'+(i%2===0?'':'background:rgba(255,255,255,.02);')+'">' +
+            '<td style="padding:10px 12px;min-width:180px;">' +
+              '<div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">' +
+                '<span style="font-weight:500;color:var(--text);font-size:12px;">' + k.keyword + '</span>' +
+                (hasSnippet ? '<span style="font-size:9px;background:rgba(245,158,11,.15);color:var(--amber);border-radius:3px;padding:1px 5px;" title="Featured snippet present — lower organic CTR">SNIP</span>' : '') +
+                '<button class="btn btn-s kw-use-seed-btn" data-kw="'+k.keyword.replace(/"/g,'&quot;')+'" style="font-size:9px;padding:2px 6px;">↗</button>' +
+              '</div>' +
+            '</td>' +
+            '<td style="padding:8px;text-align:center;font-family:var(--mono);font-size:12px;color:'+volCol+';">' +
+              '<div style="font-weight:600;">'+volStr+'</div>' +
+              (k.search_volume_uk ? '<div style="font-size:9px;color:var(--text3);">UK: '+(k.search_volume_uk>=1000?(k.search_volume_uk/1000).toFixed(1)+'k':k.search_volume_uk)+'</div>' : '') +
+            '</td>' +
+            '<td style="padding:8px;text-align:center;font-family:var(--mono);font-weight:700;font-size:12px;color:'+kdCol+';">'+kdStr+'</td>' +
+            '<td style="padding:8px;text-align:center;font-family:var(--mono);font-size:12px;color:var(--text3);">'+cpcStr+'</td>' +
+            '<td style="padding:8px;text-align:center;font-family:var(--mono);font-size:12px;color:'+trendCol+';font-weight:600;">'+trendStr+'</td>' +
+            '<td style="padding:8px;text-align:center;font-family:var(--mono);font-size:12px;color:'+blCol+';">'+blStr+'</td>' +
+            '<td style="padding:8px;text-align:center;font-size:11px;color:'+compCol+';">'+compStr+'</td>' +
+            '<td style="padding:8px 12px;"><span style="font-size:10px;font-weight:600;color:'+(INTENT_COLOR[intentStr]||INTENT_COLOR[k.intent]||'var(--text3)')+'">'+intentStr+'</span></td>' +
+            '<td style="padding:8px 12px;color:var(--text2);font-size:11px;line-height:1.5;max-width:220px;">'+( k.notes||'')+'</td>' +
+            '<td style="padding:8px;text-align:center;">' +
+              '<div style="display:flex;flex-direction:column;align-items:center;gap:2px;">' +
+                '<span style="font-size:10px;font-weight:700;background:'+priorityBg+';color:'+priorityFc+';padding:2px 7px;border-radius:10px;">'+( k.priority||'—')+'</span>' +
+                (score!==null ? '<span style="font-size:9px;font-family:var(--mono);color:'+scoreCol+';">'+score+'</span>' : '') +
+              '</div>' +
+            '</td>' +
           '</tr>';
         }).join('') +
       '</tbody></table></div>';
@@ -7726,15 +7898,24 @@ function renderKeywordAnalysis(seed, kwData, analysis, serpData, isStub) {
 
 function exportKeywordCSV() {
   if (!window._kwData) return;
-  var rows = [['Keyword','Volume','KD','CPC','Intent','Priority','Notes']];
+  var rows = [['Keyword','Vol (US)','Vol (UK)','KD','CPC','Trend %','BL Avg','Comp','Intent','Priority','Score/100','Notes']];
   (window._kwData.opps||[]).forEach(function(k){
-    rows.push([k.keyword,k.volume,k.kd,k.cpc,k.intent,k.priority,k.notes]);
+    var vol  = k.volume || '';
+    var volUK = k.search_volume_uk || '';
+    var kd   = (k.kd !== null && k.kd !== undefined) ? k.kd : '';
+    var cpc  = k.cpc ? '$' + parseFloat(k.cpc).toFixed(2) : '';
+    var trend = k.trend !== null && k.trend !== undefined ? k.trend + '%' : '';
+    var bl   = k.backlinks_avg !== null && k.backlinks_avg !== undefined ? Math.round(k.backlinks_avg) : '';
+    var comp = k.competition_idx !== null && k.competition_idx !== undefined ? parseFloat(k.competition_idx).toFixed(2) : (k.competition||'');
+    rows.push([k.keyword, vol, volUK, kd, cpc, trend, bl, comp, k.intent||'', k.priority||'', k.score||'', k.notes||'']);
   });
-  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+(c||'')+'"'; }).join(','); }).join('\n');
+  // Also export raw DFS data on a second sheet stub
+  var csv = rows.map(function(r){ return r.map(function(c){ return '"'+String(c).replace(/"/g,'""')+'"'; }).join(','); }).join('\n');
   var a = document.createElement('a');
   a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
-  a.download = 'keywords_' + (window._kwData.seed||'export').replace(/\s+/g,'_') + '.csv';
+  a.download = 'kw_' + (window._kwData.seed||'export').replace(/\s+/g,'_') + '_' + new Date().toISOString().slice(0,10) + '.csv';
   a.click();
+  v2Toast('CSV downloaded ✓');
 }
 
 // ── CSV EXPORT ────────────────────────────────────────────────────────
