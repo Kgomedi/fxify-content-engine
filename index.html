@@ -1408,7 +1408,7 @@ tr:last-child td{border-bottom:none;}
           </div>
           <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;">
             <p style="font-size:24px;font-weight:700;color:var(--brand);letter-spacing:-.5px;line-height:1;" id="ws-streak">—</p>
-            <p style="font-size:11px;color:var(--text3);margin-top:4px;">Day streak</p>
+            <p style="font-size:11px;color:var(--text3);margin-top:4px;">Pub streak</p>
           </div>
         </div>
 
@@ -1416,7 +1416,7 @@ tr:last-child td{border-bottom:none;}
         <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--rl);padding:16px 20px;margin-bottom:20px;">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
             <p style="font-size:13px;font-weight:600;color:var(--text);">Output this month</p>
-            <span style="font-size:11px;color:var(--text3);font-family:var(--mono);" id="ws-month-label">June 2026</span>
+            <span style="font-size:11px;color:var(--text3);font-family:var(--mono);" id="ws-month-label"></span>
           </div>
           <canvas id="ws-chart" height="70" style="width:100%;"></canvas>
           <div style="display:flex;justify-content:space-between;margin-top:6px;">
@@ -1436,7 +1436,10 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <!-- ── HOW IT WORKS ──────────────────────────── -->
-        <div style="background:var(--tealL);border:1px solid var(--tealG);border-radius:var(--rl);padding:12px 18px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
+          <div id="writer-how-wrap" style="margin-bottom:12px;">
+            <button onclick="(function(){var b=document.getElementById('writer-how-body');var t=document.getElementById('writer-how-toggle');if(b.style.display===\'none\'){b.style.display=\'flex\';t.textContent=\'▾ How it works\';}else{b.style.display=\'none\';t.textContent=\'▸ How it works\';}})();" id="writer-how-toggle" class="btn btn-s" style="font-size:11px;color:var(--text3);">▸ How it works</button>
+            <div id="writer-how-body" style="display:none;margin-top:8px;">
+<div style="background:var(--tealL);border:1px solid var(--tealG);border-radius:var(--rl);padding:12px 18px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
             <span style="font-size:13px;color:var(--text2);">Read your brief below</span>
@@ -1450,6 +1453,8 @@ tr:last-child td{border-bottom:none;}
           <div style="display:flex;align-items:center;gap:8px;">
             <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
             <span style="font-size:13px;color:var(--text2);">Click "Set for review" when done</span>
+          </div>
+            </div>
           </div>
         </div>
 
@@ -3317,7 +3322,27 @@ async function loadWriterDrafts() {
   set('ws-active',  active.length);
   set('ws-done',    published.length);
   set('ws-overdue', overdue.length);
-  set('ws-streak',  published.length >= 4 ? '' + Math.min(published.length, 12) : published.length);
+  // Real streak: count consecutive days with published tasks up to today
+  var streakDays = 0;
+  if (published.length) {
+    var closedDates = published
+      .filter(function(t){ return t.date_closed; })
+      .map(function(t){ return new Date(parseInt(t.date_closed)).toDateString(); });
+    var uniqueDates = closedDates.filter(function(d, i){ return closedDates.indexOf(d) === i; });
+    var today = new Date();
+    for (var sd = 0; sd < 30; sd++) {
+      var check = new Date(today); check.setDate(today.getDate() - sd);
+      if (uniqueDates.indexOf(check.toDateString()) !== -1) { streakDays++; }
+      else if (sd > 0) { break; } // break on first gap (allow today to be 0)
+    }
+  }
+  set('ws-streak', streakDays > 0 ? streakDays + ' day' + (streakDays > 1 ? 's' : '') : '—');
+
+  // Dynamic month label
+  var monthLabel = document.getElementById('ws-month-label');
+  if (monthLabel) {
+    monthLabel.textContent = new Date().toLocaleString('en-US', {month:'long', year:'numeric'});
+  }
 
   var nb = document.getElementById('nb-wdrafts');
   if (nb) nb.textContent = active.length || '';
