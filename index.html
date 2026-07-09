@@ -936,6 +936,7 @@ tr:last-child td{border-bottom:none;}
         </details>
 
         <div id="v2-brief-output"></div>
+
       </div>
 
       <!-- ══════════════════════════════
@@ -6645,11 +6646,17 @@ async function dfsKeywords(seedKw) {
     var rawUK = results[1].status === 'fulfilled' ? results[1].value : null;
     var raw   = rawUS || rawUK;
 
-    console.log('[DFS] US:', rawUS ? 'ok' : 'failed', '| UK:', rawUK ? 'ok' : 'failed');
+    console.log('[DFS] US:', rawUS ? 'ok (' + (rawUS||'').length + ' chars)' : 'failed', '| UK:', rawUK ? 'ok' : 'failed');
+    console.log('[DFS] US raw (first 200):', (rawUS||'').substring(0,200));
     if (!raw || !raw.trim()) throw new Error('DFS webhook returned empty for both markets');
 
     // Parse US data (primary)
-    var data = JSON.parse(raw);
+    var data;
+    try { data = JSON.parse(raw); }
+    catch(parseErr) {
+      console.error('[DFS] JSON parse failed:', parseErr.message, '| raw:', raw.substring(0,300));
+      throw new Error('DFS webhook returned non-JSON: ' + raw.substring(0,100));
+    }
     // Parse UK data for volume comparison
     var dataUK = null;
     try { if (rawUK) dataUK = JSON.parse(rawUK); } catch(e2) {}
@@ -6697,7 +6704,11 @@ async function dfsKeywords(seedKw) {
       items = data;
     }
 
-    console.log('[DFS] keywords returned:', items.length);
+    console.log('[DFS] keywords returned:', items.length, '| data keys:', Object.keys(data||{}).join(','));
+    if (items.length === 0) {
+      console.warn('[DFS] Zero items returned — n8n may have returned an error object:', JSON.stringify(data).substring(0,200));
+      throw new Error('DataForSEO returned 0 keywords — check n8n /dataforseo webhook response');
+    }
     // Build UK volume lookup
     var ukMap = {};
     if (dataUK) {
