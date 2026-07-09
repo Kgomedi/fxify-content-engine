@@ -4293,6 +4293,8 @@ async function scrapePublishedArticles(listId, countId) {
 }
 
 async function loadPublishedFromSupabase() {
+  if (window._publishedLoading) return; // prevent double-load
+  window._publishedLoading = true;
   try {
     // Load all published articles from Supabase on startup
     var res = await supa.from('published_articles').select('*').order('scraped_at', { ascending: false });
@@ -4317,10 +4319,10 @@ async function loadPublishedFromSupabase() {
 
     // Also update the nav badge for live
     console.log('Loaded ' + articles.length + ' published articles from Supabase');
-
-    console.log('Loaded ' + articles.length + ' published articles from Supabase');
   } catch(e) {
     console.warn('Could not load published articles:', e);
+  } finally {
+    window._publishedLoading = false;
   }
 }
 
@@ -9542,10 +9544,11 @@ function resolveUserFromEmail(email) {
 window.resolveUserFromEmail = resolveUserFromEmail;
 
 supa.auth.onAuthStateChange(function(event, session) {
-  if ((event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED') && session) {
+  if (event === 'SIGNED_IN' && session) {
     var email = session.user.email.toLowerCase();
     if (!currentUser) resolveUserFromEmail(email);
   }
+  // TOKEN_REFRESHED fires after SIGNED_IN and would trigger a second boot — skip it
   if (event === 'SIGNED_OUT') {
     currentUser = null;
     sessionStorage.removeItem('fxify_user');
