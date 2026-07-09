@@ -1434,27 +1434,6 @@ tr:last-child td{border-bottom:none;}
         </div>
 
         <!-- ── HOW IT WORKS ──────────────────────────── -->
-          <div id="writer-how-wrap" style="margin-bottom:12px;">
-            <button onclick="(function(){var b=document.getElementById('writer-how-body');var t=document.getElementById('writer-how-toggle');if(b.style.display===\'none\'){b.style.display=\'flex\';t.textContent=\'▾ How it works\';}else{b.style.display=\'none\';t.textContent=\'▸ How it works\';}})();" id="writer-how-toggle" class="btn btn-s" style="font-size:11px;color:var(--text3);">▸ How it works</button>
-            <div id="writer-how-body" style="display:none;margin-top:8px;">
-<div style="background:var(--tealL);border:1px solid var(--tealG);border-radius:var(--rl);padding:12px 18px;margin-bottom:20px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">1</span>
-            <span style="font-size:13px;color:var(--text2);">Read your brief below</span>
-          </div>
-          <span style="color:var(--border2);">→</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">2</span>
-            <span style="font-size:13px;color:var(--text2);">Write in Google Docs</span>
-          </div>
-          <span style="color:var(--border2);">→</span>
-          <div style="display:flex;align-items:center;gap:8px;">
-            <span style="width:22px;height:22px;border-radius:50%;background:var(--teal);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;">3</span>
-            <span style="font-size:13px;color:var(--text2);">Click "Set for review" when done</span>
-          </div>
-            </div>
-          </div>
-        </div>
 
         <!-- ── TASK LIST ─────────────────────────────── -->
         <div id="w-drafts-list" style="display:grid;gap:10px;">
@@ -2371,9 +2350,14 @@ async function loadClickUpBoard(listFilter){
 
   // Stats
   function setEl(id, val){ var e=document.getElementById(id); if(e) e.textContent=val; }
-  var todo   = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['to do','assigned to agency','ready to start'].includes(s); }).length;
+  // Stats — accurate status mapping to ClickUp statuses
+  // Briefed = assigned/ready but not yet started (excludes bare 'to do' unprocessed tasks)
+  var todo   = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['assigned to agency','ready to start'].includes(s); }).length;
+  // In progress = all active writing stages
   var prog   = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['ideation & research','in progress','copy draft','production','post-production'].includes(s); }).length;
+  // In review = all review/edit/revision stages
   var review = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['review','revisions','editing','final review','adaptation'].includes(s); }).length;
+  // Live = approved, scheduled or published
   var done   = tasks.filter(function(t){ var s=(t.status&&t.status.status)||''; return ['approved','scheduled','published','completed'].includes(s); }).length;
   setEl('cu-st-todo',   todo);
   setEl('cu-st-prog',   prog);
@@ -6270,6 +6254,7 @@ async function doGoogleLogin() {
 var USERS = {
   'sheperd.morena@fxify.com':    { role:'admin',  name:'Sheperd Morena',  screen:'admin',  initials:'SM', av:'b' },
   'david.xavier@fxify.com':      { role:'admin',  name:'David Xavier',    screen:'admin',  initials:'DX', av:'a' },
+  'samuel@fxify.com':            { role:'admin',  name:'Samuel',          screen:'admin',  initials:'SA', av:''  },
   'fariha.khan@fxify.com':       { role:'writer', name:'Fariha Khan',     screen:'writer', initials:'FK', av:''  },
   'harrison.hosking@fxify.com':  { role:'hybrid', name:'Harry Hosking',   screen:'writer', initials:'HH', av:''  },
   'imran.najib@fxify.com':       { role:'writer', name:'Imran Muhd Najib', screen:'writer', initials:'IN', av:''  },
